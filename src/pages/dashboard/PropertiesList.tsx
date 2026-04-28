@@ -1,13 +1,18 @@
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Home, ArrowRight, Copy, QrCode } from "lucide-react";
+import { Plus, Home, ArrowRight, Copy, QrCode, Files, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { slugify, randomSuffix } from "@/lib/slug";
 
 export default function PropertiesList() {
+  const qc = useQueryClient();
+  const [duplicatingId, setDuplicatingId] = useState<string | null>(null);
+
   const { data: properties, isLoading } = useQuery({
     queryKey: ["properties"],
     queryFn: async () => {
