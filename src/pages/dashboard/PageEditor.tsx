@@ -72,14 +72,21 @@ export default function PageEditor() {
     qc.invalidateQueries({ queryKey: ["page", id, pageKey] });
   };
 
-  // Debounced auto-save
+  const isDirty = useMemo(
+    () => !!data?.blocks && JSON.stringify(localBlocks) !== JSON.stringify(data.blocks),
+    [localBlocks, data?.blocks],
+  );
+
+  // Avisa antes de sair com alterações não salvas
   useEffect(() => {
-    if (!data?.blocks) return;
-    if (JSON.stringify(localBlocks) === JSON.stringify(data.blocks)) return;
-    const t = setTimeout(() => persistBlocks(localBlocks), 1000);
-    return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [localBlocks]);
+    if (!isDirty) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [isDirty]);
 
   const addBlock = (type: BlockType) => {
     const newBlock = {
@@ -122,10 +129,19 @@ export default function PageEditor() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground flex items-center gap-1.5 min-w-[80px]">
+          <span className="text-xs text-muted-foreground flex items-center gap-1.5">
             {savingState === "saving" && <><Loader2 className="h-3 w-3 animate-spin" /> Salvando...</>}
             {savingState === "saved" && <><CheckCircle2 className="h-3 w-3 text-success" /> Salvo</>}
+            {savingState === "idle" && isDirty && <span className="text-warning">Alterações não salvas</span>}
           </span>
+          <Button
+            size="sm"
+            onClick={() => persistBlocks(localBlocks)}
+            disabled={!isDirty || savingState === "saving"}
+          >
+            {savingState === "saving" ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : null}
+            Salvar
+          </Button>
           {publicUrl && (
             <Button asChild variant="outline" size="sm">
               <a href={publicUrl} target="_blank" rel="noreferrer">Ver <ExternalLink className="ml-1.5 h-3.5 w-3.5" /></a>
