@@ -129,10 +129,19 @@ export default function PageEditor() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground flex items-center gap-1.5 min-w-[80px]">
+          <span className="text-xs text-muted-foreground flex items-center gap-1.5">
             {savingState === "saving" && <><Loader2 className="h-3 w-3 animate-spin" /> Salvando...</>}
             {savingState === "saved" && <><CheckCircle2 className="h-3 w-3 text-success" /> Salvo</>}
+            {savingState === "idle" && isDirty && <span className="text-warning">Alterações não salvas</span>}
           </span>
+          <Button
+            size="sm"
+            onClick={() => persistBlocks(localBlocks)}
+            disabled={!isDirty || savingState === "saving"}
+          >
+            {savingState === "saving" ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> : null}
+            Salvar
+          </Button>
           {publicUrl && (
             <Button asChild variant="outline" size="sm">
               <a href={publicUrl} target="_blank" rel="noreferrer">Ver <ExternalLink className="ml-1.5 h-3.5 w-3.5" /></a>
