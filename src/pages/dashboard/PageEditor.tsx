@@ -72,14 +72,21 @@ export default function PageEditor() {
     qc.invalidateQueries({ queryKey: ["page", id, pageKey] });
   };
 
-  // Debounced auto-save
+  const isDirty = useMemo(
+    () => !!data?.blocks && JSON.stringify(localBlocks) !== JSON.stringify(data.blocks),
+    [localBlocks, data?.blocks],
+  );
+
+  // Avisa antes de sair com alterações não salvas
   useEffect(() => {
-    if (!data?.blocks) return;
-    if (JSON.stringify(localBlocks) === JSON.stringify(data.blocks)) return;
-    const t = setTimeout(() => persistBlocks(localBlocks), 1000);
-    return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [localBlocks]);
+    if (!isDirty) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [isDirty]);
 
   const addBlock = (type: BlockType) => {
     const newBlock = {
