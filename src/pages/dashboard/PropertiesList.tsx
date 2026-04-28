@@ -1,0 +1,100 @@
+import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Plus, Home, ArrowRight, Copy, QrCode } from "lucide-react";
+import { toast } from "sonner";
+
+export default function PropertiesList() {
+  const { data: properties, isLoading } = useQuery({
+    queryKey: ["properties"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("properties")
+        .select("id, name, address, status, public_slug, cover_image_url")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const copyLink = (slug: string) => {
+    const url = `${window.location.origin}/g/${slug}`;
+    navigator.clipboard.writeText(url);
+    toast.success("Link copiado!");
+  };
+
+  return (
+    <div className="container py-8 max-w-6xl space-y-6 animate-fade-in">
+      <header className="flex items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold">Imóveis</h1>
+          <p className="text-muted-foreground text-sm mt-1">Gerencie seus imóveis e guias do hóspede.</p>
+        </div>
+        <Button asChild>
+          <Link to="/app/properties/new"><Plus className="mr-2 h-4 w-4" /> Novo imóvel</Link>
+        </Button>
+      </header>
+
+      {isLoading ? (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Card key={i} className="h-64 animate-pulse" />
+          ))}
+        </div>
+      ) : properties?.length === 0 ? (
+        <Card className="p-12 text-center">
+          <Home className="h-10 w-10 mx-auto mb-4 text-muted-foreground opacity-40" />
+          <p className="text-muted-foreground mb-4">Nenhum imóvel cadastrado ainda.</p>
+          <Button asChild>
+            <Link to="/app/properties/new"><Plus className="mr-2 h-4 w-4" /> Cadastrar primeiro imóvel</Link>
+          </Button>
+        </Card>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {properties?.map((p) => (
+            <Card key={p.id} className="overflow-hidden shadow-card hover:shadow-card-hover transition-shadow">
+              <div className="aspect-video bg-muted relative">
+                {p.cover_image_url ? (
+                  <img src={p.cover_image_url} alt={p.name} className="h-full w-full object-cover" />
+                ) : (
+                  <div className="h-full w-full grid place-items-center text-muted-foreground">
+                    <Home className="h-8 w-8 opacity-40" />
+                  </div>
+                )}
+                <Badge className="absolute top-3 right-3" variant={p.status === "active" ? "default" : "secondary"}>
+                  {p.status === "active" ? "Publicado" : "Rascunho"}
+                </Badge>
+              </div>
+              <div className="p-4 space-y-3">
+                <div>
+                  <h3 className="font-semibold truncate">{p.name}</h3>
+                  {p.address && <p className="text-xs text-muted-foreground truncate mt-0.5">{p.address}</p>}
+                </div>
+                <div className="flex gap-2">
+                  <Button asChild size="sm" variant="secondary" className="flex-1">
+                    <Link to={`/app/properties/${p.id}`}>
+                      Editar <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+                    </Link>
+                  </Button>
+                  {p.status === "active" && (
+                    <>
+                      <Button size="icon" variant="outline" onClick={() => copyLink(p.public_slug)} title="Copiar link">
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                      <Button asChild size="icon" variant="outline" title="QR Code">
+                        <Link to={`/app/properties/${p.id}#qr`}><QrCode className="h-4 w-4" /></Link>
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
