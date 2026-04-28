@@ -175,6 +175,19 @@ export default function PropertiesList() {
                       Editar <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
                     </Link>
                   </Button>
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    title="Duplicar imóvel"
+                    onClick={() => duplicateProperty(p.id)}
+                    disabled={duplicatingId === p.id}
+                  >
+                    {duplicatingId === p.id ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Files className="h-4 w-4" />
+                    )}
+                  </Button>
                   {p.status === "active" && (
                     <>
                       <Button size="icon" variant="outline" onClick={() => copyLink(p.public_slug)} title="Copiar link">
