@@ -199,6 +199,7 @@ export default function PageEditor() {
                 <GuestPagePreview
                   template={tenant?.template ?? "clean"}
                   pageTitle={data.page.title}
+                  pageIcon={data.page.icon}
                   blocks={localBlocks}
                   primaryColor={tenant?.primary_color}
                 />
