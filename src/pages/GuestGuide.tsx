@@ -142,7 +142,7 @@ export default function GuestGuide() {
   );
 }
 
-function PageContent({ pageId, title, template, onClose }: { pageId: string; title: string; template: "clean" | "dark" | "luxury"; onClose: () => void }) {
+function PageContent({ pageId, title, icon, template, primaryColor, onClose }: { pageId: string; title: string; icon?: string; template: "clean" | "dark" | "luxury"; primaryColor?: string; onClose: () => void }) {
   const { data: blocks } = useQuery({
     queryKey: ["guide_page_blocks", pageId],
     queryFn: async () => {
@@ -155,5 +155,5 @@ function PageContent({ pageId, title, template, onClose }: { pageId: string; tit
       return data ?? [];
     },
   });
-  return <GuestPagePreview template={template} pageTitle={title} blocks={(blocks ?? []) as any} onBack={onClose} />;
+  return <GuestPagePreview template={template} pageTitle={title} pageIcon={icon} primaryColor={primaryColor} blocks={(blocks ?? []) as any} onBack={onClose} />;
 }
