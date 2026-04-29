@@ -77,13 +77,6 @@ export default function GuestGuide() {
 
   return (
     <div className={`guide-root guide-template-${template} min-h-screen`}>
-      {/* Logo da empresa */}
-      {tenant?.show_logo && tenant?.logo_url && (
-        <div className="w-full grid place-items-center pt-4 pb-2 px-4">
-          <img src={tenant.logo_url} alt={tenant.name} className="max-h-16 w-auto object-contain" />
-        </div>
-      )}
-
       {/* Hero */}
       <div className="relative">
         <div className="aspect-[4/3] sm:aspect-[16/10] max-h-[60vh] w-full overflow-hidden">
@@ -94,6 +87,20 @@ export default function GuestGuide() {
           )}
           <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.65) 100%)" }} />
         </div>
+
+        {/* Logo flutuante sobre a capa */}
+        {tenant?.show_logo && tenant?.logo_url && (
+          <div className="absolute left-1/2 -translate-x-1/2 top-4 sm:top-6 z-20">
+            <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full bg-white shadow-lg overflow-hidden ring-4 ring-white/80 grid place-items-center">
+              <img
+                src={tenant.logo_url}
+                alt={tenant.name}
+                className="h-full w-full object-cover"
+              />
+            </div>
+          </div>
+        )}
+
         <div className="absolute bottom-0 left-0 right-0 p-6 text-white text-center">
           <h1 className="text-3xl sm:text-4xl font-semibold drop-shadow-lg">{data.name}</h1>
           {data.address && <p className="text-sm sm:text-base opacity-90 mt-2 drop-shadow">{data.address}</p>}
