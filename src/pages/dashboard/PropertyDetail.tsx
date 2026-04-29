@@ -111,15 +111,22 @@ export default function PropertyDetail() {
             />
             <span className="text-sm font-medium">{property.status === "active" ? "Publicado" : "Despublicado"}</span>
           </div>
-          {property.status === "active" && (
-            <Button asChild variant="outline" size="sm">
-              <a href={qrUrl} target="_blank" rel="noreferrer">
-                Ver guia <ExternalLink className="ml-2 h-3.5 w-3.5" />
-              </a>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => setEditOpen(true)}>
+              <Pencil className="mr-2 h-3.5 w-3.5" /> Editar
             </Button>
-          )}
+            {property.status === "active" && (
+              <Button asChild variant="outline" size="sm">
+                <a href={qrUrl} target="_blank" rel="noreferrer">
+                  Ver guia <ExternalLink className="ml-2 h-3.5 w-3.5" />
+                </a>
+              </Button>
+            )}
+          </div>
         </div>
       </Card>
+
+      <EditPropertyDialog open={editOpen} onOpenChange={setEditOpen} property={property as any} />
 
       {/* QR + Link */}
       <Card id="qr" className="p-6 shadow-card grid sm:grid-cols-[auto_1fr] gap-6 items-center">
