@@ -17,10 +17,10 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    /* Brand — deep navy from the guest guide hero */
-    --primary: 222 60% 15%;
+    /* Brand — Mr Flow teal */
+    --primary: 181 100% 28%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 222 70% 25%;
+    --primary-glow: 181 90% 35%;
 
     /* Cyan accent — from the admin "Publicar" CTA */
     --accent: 188 86% 53%;
