@@ -87,7 +87,7 @@ export default function Auth() {
           <span className="text-[10px] tracking-[0.25em] text-white/70 uppercase">Welcome Hub</span>
         </Link>
         <div className="relative space-y-6">
-          <h1 className="text-5xl font-semibold leading-[1.05] tracking-tight text-white">
+          <h1 className="text-5xl font-extrabold leading-[1.05] tracking-tight text-white">
             Hub de Boas Vindas{" "}
             <span style={{ color: "#00FFFF" }}>Inteligente</span>
           </h1>
@@ -102,13 +102,7 @@ export default function Auth() {
       </div>
 
       {/* Form side */}
-      <div
-        className="flex items-center justify-center p-6 lg:bg-transparent"
-        style={{
-          background:
-            "radial-gradient(800px 400px at 50% 0%, rgba(0,255,255,0.08), transparent 60%), linear-gradient(180deg, #020617 0%, #0a1f2e 100%)",
-        }}
-      >
+      <div className="flex items-center justify-center p-6 bg-[#f6f6f7]">
         <Card className="w-full max-w-md p-8 sm:p-10 rounded-3xl shadow-2xl border-0 bg-white">
           <div className="lg:hidden flex flex-col items-start gap-1 mb-8">
             <img src={mrFlowLogoWhite} alt="Mr Flow" className="h-9 w-auto invert" />
