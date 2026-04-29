@@ -52,6 +52,50 @@ export type Database = {
           },
         ]
       }
+      invitations: {
+        Row: {
+          accepted_at: string | null
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          invited_by: string | null
+          plan_code: string
+          revoked_at: string | null
+          token: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          email: string
+          expires_at?: string
+          id?: string
+          invited_by?: string | null
+          plan_code?: string
+          revoked_at?: string | null
+          token?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          invited_by?: string | null
+          plan_code?: string
+          revoked_at?: string | null
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invitations_plan_code_fkey"
+            columns: ["plan_code"]
+            isOneToOne: false
+            referencedRelation: "subscription_plans"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -216,6 +260,42 @@ export type Database = {
           },
         ]
       }
+      subscription_plans: {
+        Row: {
+          code: string
+          created_at: string
+          is_active: boolean
+          name: string
+          position: number
+          price_cents: number
+          property_limit: number
+          stripe_price_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          is_active?: boolean
+          name: string
+          position?: number
+          price_cents?: number
+          property_limit: number
+          stripe_price_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          is_active?: boolean
+          name?: string
+          position?: number
+          price_cents?: number
+          property_limit?: number
+          stripe_price_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       tenants: {
         Row: {
           created_at: string
@@ -223,10 +303,15 @@ export type Database = {
           is_active: boolean
           logo_url: string | null
           name: string
+          plan_code: string
+          plan_expires_at: string | null
+          plan_status: string
           primary_color: string
           secondary_color: string
           show_logo: boolean
           slug: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
           template: Database["public"]["Enums"]["tenant_template"]
           updated_at: string
         }
@@ -236,10 +321,15 @@ export type Database = {
           is_active?: boolean
           logo_url?: string | null
           name: string
+          plan_code?: string
+          plan_expires_at?: string | null
+          plan_status?: string
           primary_color?: string
           secondary_color?: string
           show_logo?: boolean
           slug: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
           template?: Database["public"]["Enums"]["tenant_template"]
           updated_at?: string
         }
@@ -249,14 +339,27 @@ export type Database = {
           is_active?: boolean
           logo_url?: string | null
           name?: string
+          plan_code?: string
+          plan_expires_at?: string | null
+          plan_status?: string
           primary_color?: string
           secondary_color?: string
           show_logo?: boolean
           slug?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
           template?: Database["public"]["Enums"]["tenant_template"]
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "tenants_plan_code_fkey"
+            columns: ["plan_code"]
+            isOneToOne: false
+            referencedRelation: "subscription_plans"
+            referencedColumns: ["code"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -296,6 +399,26 @@ export type Database = {
     }
     Functions: {
       current_tenant_id: { Args: never; Returns: string }
+      find_valid_invitation: {
+        Args: { _email: string }
+        Returns: {
+          accepted_at: string | null
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          invited_by: string | null
+          plan_code: string
+          revoked_at: string | null
+          token: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "invitations"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -304,6 +427,7 @@ export type Database = {
         Returns: boolean
       }
       is_property_active: { Args: { _property_id: string }; Returns: boolean }
+      tenant_property_count: { Args: { _tenant_id: string }; Returns: number }
       unaccent_safe: { Args: { input: string }; Returns: string }
     }
     Enums: {
