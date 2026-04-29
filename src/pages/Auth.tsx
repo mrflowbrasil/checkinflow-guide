@@ -7,14 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Home, Loader2 } from "lucide-react";
 import mrFlowLogoWhite from "@/assets/mrflow-logo-white.png";
 
 const emailSchema = z.string().trim().email("Email inválido").max(255);
 const passwordSchema = z.string().min(8, "Mínimo 8 caracteres").max(72);
-const nameSchema = z.string().trim().min(2, "Nome muito curto").max(80);
+
 
 export default function Auth() {
   const { user, loading } = useAuth();
@@ -44,32 +43,6 @@ export default function Auth() {
     setBusy(false);
     if (error) return toast.error(error.message);
     navigate("/app");
-  };
-
-  const handleSignUp = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const fd = new FormData(e.currentTarget);
-    const email = String(fd.get("email") ?? "");
-    const password = String(fd.get("password") ?? "");
-    const fullName = String(fd.get("full_name") ?? "");
-    const ev = emailSchema.safeParse(email);
-    const pv = passwordSchema.safeParse(password);
-    const nv = nameSchema.safeParse(fullName);
-    if (!nv.success) return toast.error(nv.error.issues[0].message);
-    if (!ev.success) return toast.error(ev.error.issues[0].message);
-    if (!pv.success) return toast.error(pv.error.issues[0].message);
-    setBusy(true);
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/app`,
-        data: { full_name: fullName },
-      },
-    });
-    setBusy(false);
-    if (error) return toast.error(error.message);
-    toast.success("Conta criada! Faça login para continuar.");
   };
 
   return (
@@ -108,51 +81,27 @@ export default function Auth() {
             <img src={mrFlowLogoWhite} alt="Mr Flow" className="h-9 w-auto invert" />
             <span className="text-[10px] tracking-[0.25em] text-muted-foreground uppercase">Welcome Hub</span>
           </div>
-          <Tabs defaultValue="signin">
-            <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="signin">Entrar</TabsTrigger>
-              <TabsTrigger value="signup">Criar conta</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="signin">
-              <form onSubmit={handleSignIn} className="space-y-5">
-                <div className="space-y-2">
-                  <Label htmlFor="si-email">Email</Label>
-                  <Input id="si-email" name="email" type="email" autoComplete="email" required className="h-11 rounded-xl" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="si-password">Senha</Label>
-                  <Input id="si-password" name="password" type="password" autoComplete="current-password" required className="h-11 rounded-xl" />
-                </div>
-                <Button type="submit" className="w-full h-11 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold" disabled={busy}>
-                  {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Entrar
-                </Button>
-              </form>
-            </TabsContent>
-
-            <TabsContent value="signup">
-              <form onSubmit={handleSignUp} className="space-y-5">
-                <div className="space-y-2">
-                  <Label htmlFor="su-name">Nome</Label>
-                  <Input id="su-name" name="full_name" required className="h-11 rounded-xl" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="su-email">Email</Label>
-                  <Input id="su-email" name="email" type="email" autoComplete="email" required className="h-11 rounded-xl" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="su-password">Senha</Label>
-                  <Input id="su-password" name="password" type="password" autoComplete="new-password" minLength={8} required className="h-11 rounded-xl" />
-                  <p className="text-xs text-muted-foreground">Mínimo 8 caracteres.</p>
-                </div>
-                <Button type="submit" className="w-full h-11 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold" disabled={busy}>
-                  {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Criar conta
-                </Button>
-              </form>
-            </TabsContent>
-          </Tabs>
+          <div className="mb-6">
+            <h2 className="text-2xl font-semibold">Bem-vindo de volta</h2>
+            <p className="text-sm text-muted-foreground mt-1">Entre na sua conta para continuar.</p>
+          </div>
+          <form onSubmit={handleSignIn} className="space-y-5">
+            <div className="space-y-2">
+              <Label htmlFor="si-email">Email</Label>
+              <Input id="si-email" name="email" type="email" autoComplete="email" required className="h-11 rounded-xl" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="si-password">Senha</Label>
+              <Input id="si-password" name="password" type="password" autoComplete="current-password" required className="h-11 rounded-xl" />
+            </div>
+            <Button type="submit" className="w-full h-11 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold" disabled={busy}>
+              {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Entrar
+            </Button>
+            <p className="text-xs text-center text-muted-foreground pt-2">
+              O acesso à plataforma é por convite. Entre em contato com o administrador.
+            </p>
+          </form>
         </Card>
       </div>
     </div>

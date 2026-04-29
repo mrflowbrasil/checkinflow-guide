@@ -12,6 +12,8 @@ export type Tenant = {
   show_logo: boolean;
   template: "clean" | "dark" | "luxury";
   is_active: boolean;
+  plan_code: string;
+  plan_status: string;
 };
 
 export function useTenant() {
@@ -49,6 +51,36 @@ export function useIsSuperAdmin() {
         .eq("role", "super_admin")
         .maybeSingle();
       return !!data;
+    },
+  });
+}
+
+export function usePlanUsage() {
+  const { data: tenant } = useTenant();
+  return useQuery({
+    queryKey: ["plan_usage", tenant?.id, tenant?.plan_code],
+    enabled: !!tenant,
+    queryFn: async () => {
+      const [{ data: plan }, { count }] = await Promise.all([
+        supabase
+          .from("subscription_plans")
+          .select("code, name, property_limit, price_cents")
+          .eq("code", tenant!.plan_code)
+          .maybeSingle(),
+        supabase
+          .from("properties")
+          .select("id", { count: "exact", head: true })
+          .eq("tenant_id", tenant!.id),
+      ]);
+      const used = count ?? 0;
+      const limit = plan?.property_limit ?? 1;
+      return {
+        plan: plan!,
+        used,
+        limit,
+        atLimit: used >= limit,
+        unlimited: limit >= 999,
+      };
     },
   });
 }

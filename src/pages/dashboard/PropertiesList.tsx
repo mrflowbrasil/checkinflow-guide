@@ -2,10 +2,11 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { usePlanUsage } from "@/hooks/useTenant";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Home, ArrowRight, Copy, QrCode, Files, Loader2, Trash2 } from "lucide-react";
+import { Plus, Home, ArrowRight, Copy, QrCode, Files, Loader2, Trash2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { slugify, randomSuffix } from "@/lib/slug";
 import {
@@ -21,6 +22,7 @@ import {
 
 export default function PropertiesList() {
   const qc = useQueryClient();
+  const { data: usage } = usePlanUsage();
   const [duplicatingId, setDuplicatingId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -144,7 +146,10 @@ export default function PropertiesList() {
       toast.success("Imóvel duplicado!");
       qc.invalidateQueries({ queryKey: ["properties"] });
     } catch (e: any) {
-      toast.error(e.message ?? "Erro ao duplicar imóvel");
+      const msg = e?.message?.includes("property_limit_reached")
+        ? "Você atingiu o limite de imóveis do seu plano. Faça upgrade para duplicar."
+        : e.message ?? "Erro ao duplicar imóvel";
+      toast.error(msg);
     } finally {
       setDuplicatingId(null);
     }
@@ -152,15 +157,41 @@ export default function PropertiesList() {
 
   return (
     <div className="container py-8 max-w-6xl space-y-6 animate-fade-in">
-      <header className="flex items-center justify-between gap-4">
+      <header className="flex items-center justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-2xl font-semibold">Imóveis</h1>
           <p className="text-muted-foreground text-sm mt-1">Gerencie seus imóveis e guias do hóspede.</p>
         </div>
-        <Button asChild>
-          <Link to="/app/properties/new"><Plus className="mr-2 h-4 w-4" /> Novo imóvel</Link>
-        </Button>
+        <div className="flex items-center gap-3">
+          {usage && (
+            <Badge variant="outline" className="gap-1.5 py-1.5">
+              <Sparkles className="h-3.5 w-3.5" />
+              <span className="font-normal">
+                {usage.used} / {usage.unlimited ? "∞" : usage.limit} · Plano {usage.plan?.name}
+              </span>
+            </Badge>
+          )}
+          {usage?.atLimit ? (
+            <Button asChild variant="default">
+              <Link to="/app/billing"><Sparkles className="mr-2 h-4 w-4" /> Fazer upgrade</Link>
+            </Button>
+          ) : (
+            <Button asChild>
+              <Link to="/app/properties/new"><Plus className="mr-2 h-4 w-4" /> Novo imóvel</Link>
+            </Button>
+          )}
+        </div>
       </header>
+
+      {usage?.atLimit && (
+        <Card className="p-4 border-primary/30 bg-primary/5 flex items-center gap-3">
+          <Sparkles className="h-5 w-5 text-primary shrink-0" />
+          <div className="flex-1 text-sm">
+            <strong>Você atingiu o limite do plano {usage.plan?.name}</strong> ({usage.limit} {usage.limit === 1 ? "imóvel" : "imóveis"}).
+            Faça upgrade para adicionar mais imóveis.
+          </div>
+        </Card>
+      )}
 
       {isLoading ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
