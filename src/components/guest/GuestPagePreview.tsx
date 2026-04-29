@@ -51,7 +51,7 @@ export function GuestPagePreview({
             Sem conteúdo ainda.
           </p>
         ) : (
-          <BlocksRenderer blocks={blocks} />
+          <BlocksRenderer blocks={blocks} primaryColor={primaryColor} />
         )}
       </div>
     </div>

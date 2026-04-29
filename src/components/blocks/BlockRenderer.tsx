@@ -4,13 +4,17 @@ import { Lightbulb, AlertTriangle, CheckCircle2, Copy, Download, ExternalLink } 
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
-export function BlockRenderer({ block }: { block: BlockBase }) {
+export function BlockRenderer({ block, primaryColor }: { block: BlockBase; primaryColor?: string }) {
   switch (block.type) {
     case "text":
-      return <p className="text-base leading-relaxed whitespace-pre-wrap">{block.data?.content}</p>;
+      return (
+        <p className="text-base leading-relaxed whitespace-pre-wrap break-words text-center">
+          {block.data?.content}
+        </p>
+      );
 
     case "subtitle":
-      return <h3 className="text-xl font-semibold mt-4">{block.data?.content}</h3>;
+      return <h3 className="text-xl font-semibold mt-4 text-center break-words">{block.data?.content}</h3>;
 
     case "image":
       return block.data?.url ? (
@@ -71,7 +75,12 @@ export function BlockRenderer({ block }: { block: BlockBase }) {
       };
       const Icon = block.data?.action === "copy" ? Copy : block.data?.action === "download" ? Download : ExternalLink;
       return (
-        <Button onClick={handle} className="w-full" size="lg" style={{ background: "hsl(var(--guide-fg))", color: "hsl(var(--guide-bg))" }}>
+        <Button
+          onClick={handle}
+          className="w-full"
+          size="lg"
+          style={{ background: primaryColor ?? "hsl(var(--guide-fg))", color: "#fff" }}
+        >
           <Icon className="mr-2 h-4 w-4" /> {block.data?.label}
         </Button>
       );
@@ -91,10 +100,10 @@ export function BlockRenderer({ block }: { block: BlockBase }) {
   }
 }
 
-export function BlocksRenderer({ blocks }: { blocks: BlockBase[] }) {
+export function BlocksRenderer({ blocks, primaryColor }: { blocks: BlockBase[]; primaryColor?: string }) {
   return (
-    <div className="space-y-5">
-      {blocks.map((b) => <div key={b.id}><BlockRenderer block={b} /></div>)}
+    <div className="space-y-5 min-w-0">
+      {blocks.map((b) => <div key={b.id} className="min-w-0"><BlockRenderer block={b} primaryColor={primaryColor} /></div>)}
     </div>
   );
 }
