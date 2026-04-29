@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { LayoutDashboard, Home, Settings, LogOut, Shield, Menu } from "lucide-react";
+import mrFlowLogo from "@/assets/mrflow-logo.png";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsSuperAdmin, useTenant } from "@/hooks/useTenant";
 import { Button } from "@/components/ui/button";
@@ -58,14 +59,9 @@ function NavItems({ onClick }: { onClick?: () => void }) {
 
 function Brand() {
   return (
-    <div className="flex items-center gap-2 px-5 h-16 border-b">
-      <div className="h-8 w-8 rounded-lg bg-primary grid place-items-center text-primary-foreground">
-        <Home className="h-4 w-4" />
-      </div>
-      <div className="leading-tight">
-        <div className="font-semibold text-sm">Mr Flow Host</div>
-        <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Guest guides</div>
-      </div>
+    <div className="flex flex-col items-center gap-1 px-5 py-3 border-b">
+      <img src={mrFlowLogo} alt="Mr Flow" className="h-9 w-auto" />
+      <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Welcome Hub</div>
     </div>
   );
 }
