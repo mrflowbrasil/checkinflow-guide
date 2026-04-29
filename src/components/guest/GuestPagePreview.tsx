@@ -27,7 +27,7 @@ export function GuestPagePreview({
         style={{
           background: "hsl(var(--guide-bg) / 0.85)",
           borderBottom: "1px solid hsl(var(--guide-fg) / 0.08)",
-          paddingTop: "calc(env(safe-area-inset-top, 0px) + 0.75rem)",
+          paddingTop: "calc(env(safe-area-inset-top, 0px) + 1.25rem)",
         }}
       >
         <div className="flex items-center gap-2">
