@@ -225,6 +225,7 @@ export type Database = {
           name: string
           primary_color: string
           secondary_color: string
+          show_logo: boolean
           slug: string
           template: Database["public"]["Enums"]["tenant_template"]
           updated_at: string
@@ -237,6 +238,7 @@ export type Database = {
           name: string
           primary_color?: string
           secondary_color?: string
+          show_logo?: boolean
           slug: string
           template?: Database["public"]["Enums"]["tenant_template"]
           updated_at?: string
@@ -249,6 +251,7 @@ export type Database = {
           name?: string
           primary_color?: string
           secondary_color?: string
+          show_logo?: boolean
           slug?: string
           template?: Database["public"]["Enums"]["tenant_template"]
           updated_at?: string
