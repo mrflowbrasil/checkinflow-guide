@@ -9,6 +9,7 @@ export type Tenant = {
   primary_color: string;
   secondary_color: string;
   logo_url: string | null;
+  show_logo: boolean;
   template: "clean" | "dark" | "luxury";
   is_active: boolean;
 };
