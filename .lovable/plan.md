@@ -1,145 +1,72 @@
+## Plano: Email automático de convite com domínio próprio
 
-# Plano: Acesso por Convite + Planos Pagos com Stripe
-
-Vamos construir em **3 fases** independentes, cada uma entregando valor sozinha. Você pode aprovar e implementar tudo de uma vez ou em etapas.
-
----
-
-## Fase 1 — Fechar signup + Sistema de convites (acesso gratuito)
-
-**Objetivo:** apenas pessoas que você convida podem criar conta. Você gerencia tudo pelo Super Admin.
-
-### O que muda no banco
-- Nova tabela `invitations` com: `email`, `token` (UUID único), `plan_code` (qual plano vai receber), `invited_by`, `expires_at`, `accepted_at`, `status`.
-- Nova tabela `subscription_plans` (catálogo dos planos): `code` (free/starter/pro/business), `name`, `property_limit`, `stripe_price_id`, `price_cents`, `is_active`.
-- Nova coluna `tenants.plan_code` (default `free`) e `tenants.plan_status` (`trialing`/`active`/`past_due`/`canceled`).
-- Atualizar `handle_new_user()`: se houver convite válido para o email, marca o convite como aceito e aplica o `plan_code` do convite ao tenant. Se **não houver convite**, bloqueia o cadastro (lança exceção).
-
-### O que muda na UI
-- **Página `/auth`**: remover aba "Cadastro". Adicionar nova rota `/invite/:token` que aceita o convite, valida (não expirado, não usado), e mostra formulário de signup pré-preenchido com o email do convite.
-- **Super Admin** (`/app/super-admin`):
-  - Nova aba/seção "Convites": formulário para enviar convite (email + plano) + lista de convites pendentes/aceitos com opção de revogar/reenviar.
-  - Card existente de workspaces ganha coluna **Plano** e ação para **alterar plano manualmente** (cortesia, downgrade, etc).
-- **Email do convite**: enviado via edge function usando **Lovable Emails** (built-in, sem precisar configurar Resend) com link `https://hub.mrflow.com.br/invite/{token}`.
-
-### Edge Function
-- `send-invitation`: gera token, insere em `invitations`, envia email com o link.
+### Objetivo
+Substituir o fluxo manual de "copiar link e mandar no WhatsApp" por **disparo automático de email** quando você criar um convite no Super Admin, usando o domínio `mrflow.com.br` como remetente (`noreply@mrflow.com.br`).
 
 ---
 
-## Fase 2 — Limite de imóveis por plano
+### Etapa 1 — Configurar domínio de envio
 
-**Objetivo:** cada plano tem um teto de imóveis. Cliente não consegue criar além do limite.
+Vou abrir o assistente de configuração de email e registrar:
+- **Domínio raiz:** `mrflow.com.br`
+- **Subdomínio de envio:** `notify.mrflow.com.br` (padrão recomendado, isola o tráfego de convites do seu email comercial principal — você continua usando `contato@mrflow.com.br` normalmente sem risco de afetar reputação)
+- **Remetente exibido:** `MR FLOW <noreply@mrflow.com.br>`
 
-### Planos sugeridos (você ajusta os valores depois)
-
-| Código | Nome | Limite de imóveis | Preço (a definir) |
-|--------|------|-------------------|--------------------|
-| `free` | Free (cortesia) | 1 | R$ 0 |
-| `starter` | Starter | 5 | a definir |
-| `pro` | Pro | 20 | a definir |
-| `business` | Business | Ilimitado (999) | a definir |
-
-### Onde aplica
-- **`PropertyNew.tsx`**: antes de inserir, conta imóveis do tenant e compara com `property_limit` do plano. Se atingiu, mostra modal "Você atingiu o limite do plano [X]. Faça upgrade para adicionar mais imóveis." com botão para ir à página de Billing.
-- **`PropertiesList.tsx`**: mostra contador "3 / 5 imóveis (Plano Starter)" no topo. Botão "Novo imóvel" desabilitado quando atingido o limite.
-- **Função SQL** `tenant_property_count(tenant_id)` para evitar bypass via API.
-- **Trigger SQL** `before insert on properties`: verifica limite no servidor (segurança real, não só UI).
-
----
-
-## Fase 3 — Pagamento com Stripe (built-in Lovable)
-
-**Objetivo:** cliente que recebeu convite com plano pago precisa pagar para ativar. Cliente Free pode fazer upgrade.
-
-### Setup
-1. Habilitar **Stripe payments built-in** (sem precisar criar conta Stripe externa — Lovable cuida).
-2. Criar 3 produtos no Stripe (Starter, Pro, Business) — cada um com preço mensal. Usaremos `batch_create_product`.
-3. Salvar `stripe_price_id` na tabela `subscription_plans`.
-
-### Fluxo de checkout
-- **Nova página `/app/billing`**:
-  - Mostra plano atual + status da assinatura.
-  - Se `free` ou expirado: cards dos 3 planos pagos com botão "Assinar".
-  - Se pago ativo: botão "Gerenciar assinatura" → abre Customer Portal do Stripe.
-- **Edge function `create-checkout`**: cria sessão de checkout Stripe para o `price_id` escolhido, com `success_url=/app/billing?success=1`.
-- **Edge function `create-portal`**: abre portal do Stripe (cancelar/trocar plano/atualizar cartão).
-- **Edge function `stripe-webhook`** (verify_jwt=false): escuta eventos:
-  - `checkout.session.completed` → atualiza `tenants.plan_code` e `plan_status='active'`, salva `stripe_customer_id` e `stripe_subscription_id`.
-  - `customer.subscription.updated` → atualiza status.
-  - `customer.subscription.deleted` → volta tenant para `plan_code='free'`, `plan_status='canceled'`.
-  - `invoice.payment_failed` → marca `plan_status='past_due'`.
-
-### Bloqueio quando inadimplente
-- Se `plan_status='past_due'` por mais de X dias OU `canceled` E excede limite Free: tenant continua ativo mas **bloqueia criar/editar imóveis** com banner "Sua assinatura expirou. Regularize para voltar a editar."
-- Imóveis publicados continuam acessíveis ao público (não derrubamos o serviço dos hóspedes).
-
----
-
-## Detalhes técnicos
-
-### Schema novo (resumo SQL)
-```sql
--- catálogo de planos
-create table subscription_plans (
-  code text primary key,            -- free, starter, pro, business
-  name text not null,
-  property_limit int not null,
-  price_cents int not null default 0,
-  stripe_price_id text,
-  is_active boolean default true
-);
-
--- convites
-create table invitations (
-  id uuid primary key default gen_random_uuid(),
-  email text not null,
-  token uuid not null unique default gen_random_uuid(),
-  plan_code text references subscription_plans(code) default 'free',
-  invited_by uuid references auth.users(id),
-  expires_at timestamptz default now() + interval '7 days',
-  accepted_at timestamptz,
-  created_at timestamptz default now()
-);
-
--- extensões em tenants
-alter table tenants
-  add column plan_code text references subscription_plans(code) default 'free',
-  add column plan_status text default 'active',  -- active|trialing|past_due|canceled
-  add column stripe_customer_id text,
-  add column stripe_subscription_id text,
-  add column plan_expires_at timestamptz;
+O assistente vai gerar **2 registros NS** que você adiciona no painel DNS do `mrflow.com.br`:
+```
+notify.mrflow.com.br  NS  ns3.lovable.cloud
+notify.mrflow.com.br  NS  ns4.lovable.cloud
 ```
 
-### RLS
-- `subscription_plans`: leitura pública (`SELECT` para `anon`).
-- `invitations`: super admin gerencia tudo; usuário anônimo lê só pelo token (necessário para `/invite/:token` funcionar antes do login).
+A partir daí, o Lovable cuida automaticamente de SPF, DKIM e MX (sem você precisar configurar nada). A propagação leva de minutos a 72h (geralmente <1h).
 
-### Roteamento
-- `/invite/:token` — pública, fora do guard de auth.
-- `/app/billing` — autenticada, dentro do dashboard.
-- `/app/super-admin` ganha aba "Convites".
-
-### Ordem de implementação sugerida
-1. Migration (planos + convites + colunas em tenants) + seed dos 4 planos.
-2. Atualizar `handle_new_user()` para exigir convite.
-3. UI de convites no Super Admin + edge function de envio.
-4. Página `/invite/:token`.
-5. Limite de imóveis (UI + trigger SQL).
-6. Habilitar Stripe + criar produtos.
-7. Página `/app/billing` + edge functions de checkout/portal/webhook.
+> Observação: o destinatário vê `noreply@mrflow.com.br`, mas tecnicamente o envio sai de `notify.mrflow.com.br`. Isso é padrão de mercado e protege a reputação do seu domínio principal.
 
 ---
 
-## O que **não** vamos fazer agora (deixar para depois)
-- Cobrança anual com desconto.
-- Trial gratuito de 14 dias (podemos adicionar depois — basta marcar `plan_status='trialing'` e `plan_expires_at`).
-- Cupons de desconto.
-- Multi-usuário por workspace (hoje 1 dono por tenant).
-- Notificações de cobrança falhada por email.
+### Etapa 2 — Template do email de convite
 
-Posso adicionar qualquer um desses depois sem refazer o que construirmos agora.
+Vou criar um template HTML responsivo com a identidade visual do MR FLOW:
+- Logo / nome da plataforma no topo
+- Cores e tipografia da landing page
+- Mensagem clara: "Você foi convidado para o MR FLOW — Plano [Starter/Pro/Business]"
+- Botão **"Aceitar convite"** apontando para `https://hub.mrflow.com.br/invite/{token}`
+- Validade do link e instruções básicas
+- Rodapé com info de contato
+
+### Etapa 3 — Disparo automático no Super Admin
+
+Modificar `src/pages/SuperAdmin.tsx`:
+- Quando você clicar em **"Criar convite"**, além de gerar o registro na tabela `invitations`, vai chamar uma edge function que envia o email pro endereço informado
+- Botão **"Reenviar email"** ao lado de cada convite pendente (caso o cliente perca)
+- O botão **"Copiar link"** continua existindo (fallback caso queira mandar por WhatsApp também)
+- Toast de confirmação: "Email enviado para cliente@exemplo.com"
+
+### Etapa 4 — Edge function de envio
+
+Criar `send-invitation-email` que:
+- Recebe `{ email, token, plan_code }`
+- Renderiza o template
+- Envia via infraestrutura de email do Lovable
+- Registra no log (você consegue ver em Cloud → Emails se chegou ou bounced)
 
 ---
 
-**Pode aprovar?** Se quiser que eu faça apenas a **Fase 1 primeiro** (convites + signup fechado), me avise — assim você já consegue liberar acesso aos primeiros clientes hoje, e implementamos pagamento depois quando os planos estiverem definidos com valores.
+### O que você precisa fazer
+
+1. **Aprovar este plano** — eu inicio a configuração
+2. **Adicionar 2 registros NS** no painel DNS do `mrflow.com.br` (te passo os valores exatos depois que o assistente abrir)
+3. Pronto — assim que o DNS verificar, todos os convites futuros saem automaticamente
+
+### O que NÃO muda
+- Convites existentes continuam válidos
+- O link `/invite/{token}` continua o mesmo
+- Você pode continuar copiando o link manualmente se quiser
+- Emails de auth (reset de senha, verificação) também passam a usar esse domínio automaticamente — bônus
+
+### Próximo passo (futuro)
+Quando avançarmos pra Fase 3 (Stripe), os emails de **confirmação de pagamento, fatura e renovação** vão usar essa mesma infraestrutura — sem retrabalho.
+
+---
+
+**Posso prosseguir?** Ao aprovar, abro o assistente de configuração de domínio e em seguida implemento o template + disparo automático.
