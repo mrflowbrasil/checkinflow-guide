@@ -218,10 +218,17 @@ function ListBody({ data, onChange }: any) {
 export function AddBlockMenu({ onAdd }: { onAdd: (type: BlockBase["type"]) => void }) {
   const types: BlockBase["type"][] = ["text", "subtitle", "image", "video", "steps", "tip", "button", "list"];
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-2">
+    <div className="grid grid-cols-2 gap-2 p-3 w-full">
       {types.map((t) => (
-        <Button key={t} variant="outline" size="sm" onClick={() => onAdd(t)} className="justify-start">
-          <Plus className="mr-2 h-3.5 w-3.5" /> {BLOCK_LABELS[t]}
+        <Button
+          key={t}
+          variant="outline"
+          size="sm"
+          onClick={() => onAdd(t)}
+          className="justify-start w-full truncate"
+        >
+          <Plus className="mr-2 h-3.5 w-3.5 shrink-0" />
+          <span className="truncate">{BLOCK_LABELS[t]}</span>
         </Button>
       ))}
     </div>
