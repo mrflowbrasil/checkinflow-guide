@@ -9,6 +9,7 @@ import AppShell from "@/components/layout/AppShell";
 
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import Invite from "./pages/Invite";
 import GuestGuide from "./pages/GuestGuide";
 import SuperAdmin from "./pages/SuperAdmin";
 import DashboardHome from "./pages/dashboard/DashboardHome";
@@ -33,6 +34,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/invite/:token" element={<Invite />} />
             <Route path="/g/:slug" element={<GuestGuide />} />
 
             <Route path="/app" element={<RequireAuth><AppShell /></RequireAuth>}>
