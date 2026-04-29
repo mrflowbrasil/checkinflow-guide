@@ -2,20 +2,24 @@ import { ArrowLeft } from "lucide-react";
 import { BlocksRenderer } from "@/components/blocks/BlockRenderer";
 import type { BlockBase } from "@/lib/blocks";
 import { Button } from "@/components/ui/button";
+import { getPageIcon } from "@/lib/page-icons";
 
 export function GuestPagePreview({
   template,
   pageTitle,
+  pageIcon,
   blocks,
   primaryColor,
   onBack,
 }: {
   template: "clean" | "dark" | "luxury";
   pageTitle: string;
+  pageIcon?: string;
   blocks: BlockBase[];
   primaryColor?: string;
   onBack?: () => void;
 }) {
+  const Icon = pageIcon ? getPageIcon(pageIcon) : null;
   return (
     <div className={`guide-root guide-template-${template} h-full overflow-y-auto`}>
       <div className="sticky top-0 z-10 px-4 py-3 backdrop-blur"
@@ -26,10 +30,16 @@ export function GuestPagePreview({
               <ArrowLeft className="h-5 w-5" />
             </Button>
           )}
-          <h2 className="text-lg font-semibold truncate">{pageTitle}</h2>
         </div>
       </div>
-      <div className="p-5 pb-12">
+      <div className="px-5 pt-4 pb-12">
+        <div className="flex flex-col items-center text-center mb-6">
+          {Icon && (
+            <Icon className="h-12 w-12 mb-3" style={{ color: primaryColor ?? "hsl(var(--guide-fg))" }} />
+          )}
+          <h2 className="text-2xl font-semibold">{pageTitle}</h2>
+        </div>
+
         {blocks.length === 0 ? (
           <p className="text-center text-sm py-12" style={{ color: "hsl(var(--guide-muted))" }}>
             Sem conteúdo ainda.
