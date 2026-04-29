@@ -120,7 +120,7 @@ export default function AppShell() {
           </div>
         </header>
 
-        <main className="flex-1 overflow-x-hidden"><Outlet /></main>
+        <main className="flex-1 overflow-x-hidden bg-[#f7f7f8]"><Outlet /></main>
       </div>
     </div>
   );
