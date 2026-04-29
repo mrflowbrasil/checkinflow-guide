@@ -10,12 +10,14 @@ import { ArrowLeft, Copy, Download, ExternalLink, Pencil, QrCode as QrIcon, Load
 import { toast } from "sonner";
 import { getPageIcon } from "@/lib/page-icons";
 import QRCode from "qrcode";
+import { EditPropertyDialog } from "@/components/property/EditPropertyDialog";
 
 export default function PropertyDetail() {
   const { id } = useParams<{ id: string }>();
   const qc = useQueryClient();
   const qrCanvas = useRef<HTMLCanvasElement>(null);
   const [qrUrl, setQrUrl] = useState<string>("");
+  const [editOpen, setEditOpen] = useState(false);
 
   const { data: property, isLoading } = useQuery({
     queryKey: ["property", id],
