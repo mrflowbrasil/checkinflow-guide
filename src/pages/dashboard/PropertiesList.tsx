@@ -5,13 +5,41 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Home, ArrowRight, Copy, QrCode, Files, Loader2 } from "lucide-react";
+import { Plus, Home, ArrowRight, Copy, QrCode, Files, Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { slugify, randomSuffix } from "@/lib/slug";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function PropertiesList() {
   const qc = useQueryClient();
   const [duplicatingId, setDuplicatingId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  const deleteProperty = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      const { error } = await supabase.from("properties").delete().eq("id", deleteTarget.id);
+      if (error) throw error;
+      toast.success("Imóvel excluído!");
+      qc.invalidateQueries({ queryKey: ["properties"] });
+      setDeleteTarget(null);
+    } catch (e: any) {
+      toast.error(e.message ?? "Erro ao excluir imóvel");
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   const { data: properties, isLoading } = useQuery({
     queryKey: ["properties"],
