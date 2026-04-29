@@ -1,78 +1,52 @@
+## Alterar email do usuário existente
 
-# Promoção a Super Admin + Orientação sobre Tenants
+Hoje existe apenas **1 usuário** no banco: `vitor@supercelular.com.br` (id `e66125f8...`), já confirmado e ligado ao tenant "Vitor's workspace" como `tenant_owner`.
 
-## 1. Pré-requisito: criar o usuário
+Sim, dá para trocar o email **sem perder nada** (tenant, imóveis, páginas, blocos continuam intactos — tudo é vinculado pelo `user_id`, não pelo email).
 
-O usuário `vitor@mrflow.com.br` **ainda não existe** no banco. A plataforma usa **self-signup**, então:
+### Opção recomendada: atualizar direto no banco
 
-1. Acesse `/auth` na preview
-2. Clique em "Criar conta"
-3. Cadastre `vitor@mrflow.com.br` com a senha desejada
-4. O sistema automaticamente cria:
-   - 1 perfil (`profiles`)
-   - 1 workspace/tenant (`tenants`) — chamado "Vitor's workspace"
-   - 1 role `tenant_owner` ligando o usuário ao tenant
+Como você é o dono do projeto e quer apenas corrigir o email, o caminho mais rápido é rodar um UPDATE em `auth.users` trocando o email e já marcando como confirmado:
 
-Me avise quando o cadastro estiver feito (ou confirme se quer usar o `vitor@supercelular.com.br` que já existe).
+```sql
+UPDATE auth.users
+SET email = 'vitor@mrflow.com.br',
+    email_confirmed_at = now(),
+    updated_at = now()
+WHERE email = 'vitor@supercelular.com.br';
+```
 
-## 2. Promoção a Super Admin
-
-Após o usuário existir, vou rodar um INSERT na tabela `user_roles`:
+Depois disso, no mesmo passo, já promovo a **Super Admin**:
 
 ```sql
 INSERT INTO public.user_roles (user_id, role, tenant_id)
-SELECT id, 'super_admin', NULL FROM auth.users WHERE email = 'vitor@mrflow.com.br';
+SELECT id, 'super_admin', NULL
+FROM auth.users
+WHERE email = 'vitor@mrflow.com.br'
+ON CONFLICT DO NOTHING;
 ```
 
-Isso dá acesso à rota `/admin` (Painel Super Admin), onde ele consegue:
-- Ver todos os tenants cadastrados
-- Ativar/desativar qualquer tenant
-- Visualizar imóveis de qualquer tenant
+### O que muda para você
 
-## 3. Como tenants são criados (entender o modelo)
+- O login passa a ser **vitor@mrflow.com.br** (mesma senha de antes).
+- Tenant, imóveis e configurações **permanecem iguais** (mesmo `user_id`).
+- Você ganha acesso à rota **`/admin`** (Painel Super Admin).
+- Continua também como `tenant_owner` do workspace original — pode usar `/app` normalmente.
 
-**Importante:** No MVP, **tenants NÃO são criados manualmente pelo Super Admin**. O modelo é **self-signup**:
+### Detalhes técnicos
 
-```text
-Cliente acessa /auth
-       ↓
-Faz signup (email + senha)
-       ↓
-Trigger handle_new_user() dispara automaticamente
-       ↓
-Cria: profile + tenant + role 'tenant_owner'
-       ↓
-Cliente entra em /app e começa a cadastrar imóveis
-```
+- A operação roda como migração SQL (única forma de fazer UPDATE/DELETE neste ambiente).
+- Não mexe em `profiles`, `tenants`, `properties` — todos referenciam o `id` do usuário, que não muda.
+- Não precisa de novo signup nem confirmação de email.
 
-Cada usuário que se cadastra = 1 novo tenant (workspace isolado).
+### Alternativa (se preferir não tocar no banco)
 
-### O que o Super Admin faz em `/admin`?
+1. Fazer signup novo com `vitor@mrflow.com.br` (cria outro tenant vazio).
+2. Eu promovo o novo a Super Admin.
+3. Você ignora/deleta o tenant antigo manualmente depois.
 
-- **Monitora** todos os tenants criados via signup
-- **Bloqueia** tenants problemáticos (toggle `is_active`)
-- **Audita** imóveis de qualquer cliente
+Não recomendo, porque cria um workspace duplicado.
 
-### O que o Tenant Owner (cliente) faz em `/app`?
+### Próximo passo
 
-- Cadastra imóveis em `/app/properties/new`
-- Edita o guia (blocos) em `/app/properties/:id/pages/:key`
-- Personaliza branding em `/app/settings`
-- Compartilha link público + QR Code com hóspedes
-
-## 4. (Opcional — fase 2) Super Admin criar tenants manualmente
-
-Se quiser que o Super Admin **crie tenants manualmente** (sem precisar do cliente fazer signup), posso adicionar em `/admin`:
-- Botão "Novo Tenant"
-- Form: nome do workspace + email do owner + senha temporária
-- Edge function que cria o auth.user + tenant + role via service role key
-- Email automático com credenciais pro cliente
-
-Isso **não está no MVP atual**. Me diga se quer que eu inclua.
-
-## Próximos passos
-
-1. Você cria o usuário `vitor@mrflow.com.br` via `/auth`
-2. Me avisa
-3. Eu rodo o INSERT que promove a Super Admin
-4. Você acessa `/admin` e vê o painel
+Aprove o plano e eu rodo a migração com os 2 comandos acima (trocar email + promover a Super Admin) em sequência.
