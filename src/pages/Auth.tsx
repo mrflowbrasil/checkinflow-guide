@@ -13,7 +13,7 @@ import mrFlowLogoWhite from "@/assets/mrflow-logo-white.png";
 
 const emailSchema = z.string().trim().email("Email inválido").max(255);
 const passwordSchema = z.string().min(8, "Mínimo 8 caracteres").max(72);
-const nameSchema = z.string().trim().min(2, "Nome muito curto").max(80);
+
 
 export default function Auth() {
   const { user, loading } = useAuth();
@@ -43,32 +43,6 @@ export default function Auth() {
     setBusy(false);
     if (error) return toast.error(error.message);
     navigate("/app");
-  };
-
-  const handleSignUp = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const fd = new FormData(e.currentTarget);
-    const email = String(fd.get("email") ?? "");
-    const password = String(fd.get("password") ?? "");
-    const fullName = String(fd.get("full_name") ?? "");
-    const ev = emailSchema.safeParse(email);
-    const pv = passwordSchema.safeParse(password);
-    const nv = nameSchema.safeParse(fullName);
-    if (!nv.success) return toast.error(nv.error.issues[0].message);
-    if (!ev.success) return toast.error(ev.error.issues[0].message);
-    if (!pv.success) return toast.error(pv.error.issues[0].message);
-    setBusy(true);
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/app`,
-        data: { full_name: fullName },
-      },
-    });
-    setBusy(false);
-    if (error) return toast.error(error.message);
-    toast.success("Conta criada! Faça login para continuar.");
   };
 
   return (
