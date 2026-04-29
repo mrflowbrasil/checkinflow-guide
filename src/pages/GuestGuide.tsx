@@ -141,7 +141,7 @@ export default function GuestGuide() {
 
       {/* Page detail sheet */}
       <Sheet open={!!activePageKey} onOpenChange={(o) => !o && setActivePageKey(null)}>
-        <SheetContent side="bottom" className="h-[92vh] p-0 rounded-t-3xl border-t-0 max-w-md mx-auto">
+        <SheetContent side="bottom" className="h-[88vh] p-0 rounded-t-3xl border-t-0 max-w-md mx-auto">
           {activePage && <PageContent pageId={activePage.id} title={activePage.title} icon={activePage.icon} template={template} primaryColor={primaryColor} onClose={() => setActivePageKey(null)} />}
         </SheetContent>
       </Sheet>
