@@ -2,7 +2,7 @@ import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
-import { useTenant } from "@/hooks/useTenant";
+import { useTenant, usePlanUsage } from "@/hooks/useTenant";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -22,6 +22,7 @@ const schema = z.object({
 
 export default function PropertyNew() {
   const { data: tenant } = useTenant();
+  const { data: usage } = usePlanUsage();
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
   const [coverFile, setCoverFile] = useState<File | null>(null);
@@ -38,6 +39,10 @@ export default function PropertyNew() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!tenant) return toast.error("Workspace não carregado");
+    if (usage?.atLimit) {
+      toast.error(`Você atingiu o limite de ${usage.limit} imóveis do plano ${usage.plan?.name}. Faça upgrade para adicionar mais.`);
+      return;
+    }
     const fd = new FormData(e.currentTarget);
     const raw = {
       name: String(fd.get("name") ?? ""),
@@ -81,7 +86,10 @@ export default function PropertyNew() {
       toast.success("Imóvel criado!");
       navigate(`/app/properties/${data.id}`);
     } catch (err: any) {
-      toast.error(err.message ?? "Erro ao criar imóvel");
+      const msg = err?.message?.includes("property_limit_reached")
+        ? `Você atingiu o limite do plano ${usage?.plan?.name}. Faça upgrade para adicionar mais imóveis.`
+        : err.message ?? "Erro ao criar imóvel";
+      toast.error(msg);
     } finally {
       setBusy(false);
     }
