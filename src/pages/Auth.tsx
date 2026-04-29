@@ -108,51 +108,27 @@ export default function Auth() {
             <img src={mrFlowLogoWhite} alt="Mr Flow" className="h-9 w-auto invert" />
             <span className="text-[10px] tracking-[0.25em] text-muted-foreground uppercase">Welcome Hub</span>
           </div>
-          <Tabs defaultValue="signin">
-            <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="signin">Entrar</TabsTrigger>
-              <TabsTrigger value="signup">Criar conta</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="signin">
-              <form onSubmit={handleSignIn} className="space-y-5">
-                <div className="space-y-2">
-                  <Label htmlFor="si-email">Email</Label>
-                  <Input id="si-email" name="email" type="email" autoComplete="email" required className="h-11 rounded-xl" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="si-password">Senha</Label>
-                  <Input id="si-password" name="password" type="password" autoComplete="current-password" required className="h-11 rounded-xl" />
-                </div>
-                <Button type="submit" className="w-full h-11 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold" disabled={busy}>
-                  {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Entrar
-                </Button>
-              </form>
-            </TabsContent>
-
-            <TabsContent value="signup">
-              <form onSubmit={handleSignUp} className="space-y-5">
-                <div className="space-y-2">
-                  <Label htmlFor="su-name">Nome</Label>
-                  <Input id="su-name" name="full_name" required className="h-11 rounded-xl" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="su-email">Email</Label>
-                  <Input id="su-email" name="email" type="email" autoComplete="email" required className="h-11 rounded-xl" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="su-password">Senha</Label>
-                  <Input id="su-password" name="password" type="password" autoComplete="new-password" minLength={8} required className="h-11 rounded-xl" />
-                  <p className="text-xs text-muted-foreground">Mínimo 8 caracteres.</p>
-                </div>
-                <Button type="submit" className="w-full h-11 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold" disabled={busy}>
-                  {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Criar conta
-                </Button>
-              </form>
-            </TabsContent>
-          </Tabs>
+          <div className="mb-6">
+            <h2 className="text-2xl font-semibold">Bem-vindo de volta</h2>
+            <p className="text-sm text-muted-foreground mt-1">Entre na sua conta para continuar.</p>
+          </div>
+          <form onSubmit={handleSignIn} className="space-y-5">
+            <div className="space-y-2">
+              <Label htmlFor="si-email">Email</Label>
+              <Input id="si-email" name="email" type="email" autoComplete="email" required className="h-11 rounded-xl" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="si-password">Senha</Label>
+              <Input id="si-password" name="password" type="password" autoComplete="current-password" required className="h-11 rounded-xl" />
+            </div>
+            <Button type="submit" className="w-full h-11 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold" disabled={busy}>
+              {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Entrar
+            </Button>
+            <p className="text-xs text-center text-muted-foreground pt-2">
+              O acesso à plataforma é por convite. Entre em contato com o administrador.
+            </p>
+          </form>
         </Card>
       </div>
     </div>
