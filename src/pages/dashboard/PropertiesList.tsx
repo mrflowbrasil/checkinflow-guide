@@ -5,13 +5,41 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Home, ArrowRight, Copy, QrCode, Files, Loader2 } from "lucide-react";
+import { Plus, Home, ArrowRight, Copy, QrCode, Files, Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { slugify, randomSuffix } from "@/lib/slug";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function PropertiesList() {
   const qc = useQueryClient();
   const [duplicatingId, setDuplicatingId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  const deleteProperty = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      const { error } = await supabase.from("properties").delete().eq("id", deleteTarget.id);
+      if (error) throw error;
+      toast.success("Imóvel excluído!");
+      qc.invalidateQueries({ queryKey: ["properties"] });
+      setDeleteTarget(null);
+    } catch (e: any) {
+      toast.error(e.message ?? "Erro ao excluir imóvel");
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   const { data: properties, isLoading } = useQuery({
     queryKey: ["properties"],
@@ -198,12 +226,43 @@ export default function PropertiesList() {
                       </Button>
                     </>
                   )}
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    title="Excluir imóvel"
+                    onClick={() => setDeleteTarget({ id: p.id, name: p.name })}
+                    className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
               </div>
             </Card>
           ))}
         </div>
       )}
+
+      <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir imóvel?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir <strong>{deleteTarget?.name}</strong>? Esta ação não pode ser desfeita e todas as páginas e conteúdos associados serão removidos.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => { e.preventDefault(); deleteProperty(); }}
+              disabled={deleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
