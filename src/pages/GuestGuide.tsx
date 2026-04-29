@@ -77,6 +77,13 @@ export default function GuestGuide() {
 
   return (
     <div className={`guide-root guide-template-${template} min-h-screen`}>
+      {/* Logo da empresa */}
+      {tenant?.show_logo && tenant?.logo_url && (
+        <div className="w-full grid place-items-center pt-4 pb-2 px-4">
+          <img src={tenant.logo_url} alt={tenant.name} className="max-h-16 w-auto object-contain" />
+        </div>
+      )}
+
       {/* Hero */}
       <div className="relative">
         <div className="aspect-[4/3] sm:aspect-[16/10] max-h-[60vh] w-full overflow-hidden">
@@ -134,7 +141,7 @@ export default function GuestGuide() {
 
       {/* Page detail sheet */}
       <Sheet open={!!activePageKey} onOpenChange={(o) => !o && setActivePageKey(null)}>
-        <SheetContent side="bottom" className="h-[92vh] p-0 rounded-t-3xl border-t-0 max-w-md mx-auto">
+        <SheetContent side="bottom" className="h-[88vh] p-0 rounded-t-3xl border-t-0 max-w-md mx-auto">
           {activePage && <PageContent pageId={activePage.id} title={activePage.title} icon={activePage.icon} template={template} primaryColor={primaryColor} onClose={() => setActivePageKey(null)} />}
         </SheetContent>
       </Sheet>

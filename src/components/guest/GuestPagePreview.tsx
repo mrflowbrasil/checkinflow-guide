@@ -22,8 +22,14 @@ export function GuestPagePreview({
   const Icon = pageIcon ? getPageIcon(pageIcon) : null;
   return (
     <div className={`guide-root guide-template-${template} h-full overflow-y-auto`}>
-      <div className="sticky top-0 z-10 px-4 py-3 backdrop-blur"
-           style={{ background: "hsl(var(--guide-bg) / 0.85)", borderBottom: "1px solid hsl(var(--guide-fg) / 0.08)" }}>
+      <div
+        className="sticky top-0 z-10 px-4 pb-3 backdrop-blur"
+        style={{
+          background: "hsl(var(--guide-bg) / 0.85)",
+          borderBottom: "1px solid hsl(var(--guide-fg) / 0.08)",
+          paddingTop: "calc(env(safe-area-inset-top, 0px) + 1.25rem)",
+        }}
+      >
         <div className="flex items-center gap-2">
           {onBack && (
             <Button variant="ghost" size="icon" onClick={onBack} className="-ml-2">
