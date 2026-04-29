@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { LayoutDashboard, Home, Settings, LogOut, Shield, Menu } from "lucide-react";
+import mrFlowLogo from "@/assets/mrflow-logo.png";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsSuperAdmin, useTenant } from "@/hooks/useTenant";
 import { Button } from "@/components/ui/button";
