@@ -87,7 +87,7 @@ export default function Auth() {
           <span className="text-[10px] tracking-[0.25em] text-white/70 uppercase">Welcome Hub</span>
         </Link>
         <div className="relative space-y-6">
-          <h1 className="text-5xl font-extrabold leading-[1.05] tracking-tight text-white">
+          <h1 className="text-5xl leading-[1.05] tracking-tight text-white font-bold">
             Hub de Boas Vindas{" "}
             <span style={{ color: "#00FFFF" }}>Inteligente</span>
           </h1>
