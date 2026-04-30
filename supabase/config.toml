@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.integrations-mark-synced]
 verify_jwt = false
+
+[functions.integrations-trigger-import]
+verify_jwt = true

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,9 +6,15 @@ import { usePlanUsage } from "@/hooks/useTenant";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Home, ArrowRight, Copy, QrCode, Files, Loader2, Trash2, Sparkles } from "lucide-react";
+import { Plus, Home, ArrowRight, Copy, QrCode, Files, Loader2, Trash2, Sparkles, Download } from "lucide-react";
 import { toast } from "sonner";
 import { slugify, randomSuffix } from "@/lib/slug";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,12 +26,82 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
+type IntegrationRow = {
+  provider: "stays" | "hostaway";
+  status: string | null;
+};
+
+const PROVIDER_LABEL: Record<string, string> = {
+  stays: "Stays",
+  hostaway: "Hostaway",
+};
+
 export default function PropertiesList() {
   const qc = useQueryClient();
   const { data: usage } = usePlanUsage();
   const [duplicatingId, setDuplicatingId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [importing, setImporting] = useState<string | null>(null);
+
+  const { data: integrations } = useQuery<IntegrationRow[]>({
+    queryKey: ["tenant_integrations"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("tenant_integrations")
+        .select("provider, status");
+      if (error) throw error;
+      return (data ?? []) as IntegrationRow[];
+    },
+    refetchInterval: (q) => {
+      const rows = (q.state.data as IntegrationRow[] | undefined) ?? [];
+      return rows.some((r) => r.status === "syncing" || r.status === "pending") ? 3000 : false;
+    },
+  });
+
+  const connected = (integrations ?? []).filter((i) => i.status === "connected");
+  const syncing = (integrations ?? []).find((i) => i.status === "syncing");
+
+  // Refetch properties while syncing
+  useEffect(() => {
+    if (!syncing) return;
+    const t = setInterval(() => {
+      qc.invalidateQueries({ queryKey: ["properties"] });
+    }, 4000);
+    return () => clearInterval(t);
+  }, [syncing, qc]);
+
+  // Notify when sync completes
+  const [wasSyncing, setWasSyncing] = useState(false);
+  useEffect(() => {
+    if (syncing) {
+      setWasSyncing(true);
+    } else if (wasSyncing) {
+      setWasSyncing(false);
+      toast.success("Importação concluída!");
+      qc.invalidateQueries({ queryKey: ["properties"] });
+    }
+  }, [syncing, wasSyncing, qc]);
+
+  const triggerImport = async (provider: "stays" | "hostaway") => {
+    setImporting(provider);
+    try {
+      const { data, error } = await supabase.functions.invoke("integrations-trigger-import", {
+        body: { provider },
+      });
+      if (error) throw error;
+      if (!data?.ok) {
+        toast.error(data?.message ?? data?.error ?? "Falha ao iniciar importação.");
+        return;
+      }
+      toast.info("Importação iniciada. Os imóveis aparecerão automaticamente.");
+      qc.invalidateQueries({ queryKey: ["tenant_integrations"] });
+    } catch (e: any) {
+      toast.error(e.message ?? "Erro inesperado.");
+    } finally {
+      setImporting(null);
+    }
+  };
 
   const deleteProperty = async () => {
     if (!deleteTarget) return;
@@ -171,6 +247,12 @@ export default function PropertiesList() {
               </span>
             </Badge>
           )}
+          <ImportButton
+            connected={connected}
+            syncing={!!syncing}
+            importing={importing}
+            onImport={triggerImport}
+          />
           {usage?.atLimit ? (
             <Button asChild variant="default">
               <Link to="/app/billing"><Sparkles className="mr-2 h-4 w-4" /> Fazer upgrade</Link>
@@ -295,5 +377,68 @@ export default function PropertiesList() {
         </AlertDialogContent>
       </AlertDialog>
     </div>
+  );
+}
+
+function ImportButton({
+  connected,
+  syncing,
+  importing,
+  onImport,
+}: {
+  connected: IntegrationRow[];
+  syncing: boolean;
+  importing: string | null;
+  onImport: (provider: "stays" | "hostaway") => void;
+}) {
+  const disabled = connected.length === 0 || syncing || !!importing;
+  const tooltip =
+    connected.length === 0
+      ? "Conecte uma integração em Integrações para importar imóveis."
+      : syncing
+      ? "Importação em andamento…"
+      : "";
+
+  // Single connected provider → direct button
+  if (connected.length === 1) {
+    const provider = connected[0].provider;
+    return (
+      <Button
+        variant="outline"
+        disabled={disabled}
+        title={tooltip}
+        onClick={() => onImport(provider)}
+      >
+        {syncing || importing ? (
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        ) : (
+          <Download className="mr-2 h-4 w-4" />
+        )}
+        {syncing ? "Importando…" : `Importar de ${PROVIDER_LABEL[provider]}`}
+      </Button>
+    );
+  }
+
+  // 0 or multiple → dropdown (disabled when 0)
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" disabled={disabled} title={tooltip}>
+          {syncing || importing ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Download className="mr-2 h-4 w-4" />
+          )}
+          {syncing ? "Importando…" : "Importar imóveis"}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        {connected.map((i) => (
+          <DropdownMenuItem key={i.provider} onClick={() => onImport(i.provider)}>
+            Importar de {PROVIDER_LABEL[i.provider]}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
