@@ -18,6 +18,7 @@ import PropertyNew from "./pages/dashboard/PropertyNew";
 import PropertyDetail from "./pages/dashboard/PropertyDetail";
 import PageEditor from "./pages/dashboard/PageEditor";
 import Settings from "./pages/dashboard/Settings";
+import Billing from "./pages/dashboard/Billing";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -44,6 +45,7 @@ const App = () => (
               <Route path="properties/:id" element={<PropertyDetail />} />
               <Route path="properties/:id/pages/:pageKey" element={<PageEditor />} />
               <Route path="settings" element={<Settings />} />
+              <Route path="billing" element={<Billing />} />
             </Route>
 
             <Route path="/admin" element={<RequireAuth><AppShell /></RequireAuth>}>
