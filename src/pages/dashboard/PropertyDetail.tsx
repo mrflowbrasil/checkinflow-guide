@@ -191,32 +191,23 @@ export default function PropertyDetail() {
       {/* Pages list */}
       <div>
         <h2 className="text-lg font-semibold mb-3">Páginas do guia</h2>
-        <p className="text-sm text-muted-foreground mb-4">Edite o conteúdo de cada categoria que aparece no guia do hóspede.</p>
-        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-          {pages.map((p) => {
-            const Icon = getPageIcon(p.icon);
-            return (
-              <Card key={p.id} className="p-3 flex items-center gap-3 shadow-card hover:shadow-card-hover transition-shadow">
-                <div className="h-10 w-10 rounded-md bg-accent-soft text-accent-foreground grid place-items-center shrink-0">
-                  <Icon className="h-5 w-5" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="font-medium text-sm truncate">{p.title}</div>
-                </div>
-                <Switch
-                  checked={p.is_enabled}
-                  onCheckedChange={(v) => togglePage.mutate({ pageId: p.id, enabled: v })}
-                  className="shrink-0"
+        <p className="text-sm text-muted-foreground mb-4">
+          Arraste pelo ícone <GripVertical className="inline h-3.5 w-3.5 align-text-bottom" /> para reordenar. Edite cada categoria que aparece no guia do hóspede.
+        </p>
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={pages.map((p) => p.id)} strategy={rectSortingStrategy}>
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {pages.map((p) => (
+                <SortablePageCard
+                  key={p.id}
+                  page={p}
+                  propertyId={id!}
+                  onToggle={(enabled) => togglePage.mutate({ pageId: p.id, enabled })}
                 />
-                <Button asChild size="icon" variant="ghost" className="shrink-0">
-                  <Link to={`/app/properties/${id}/pages/${p.page_key}`}>
-                    <Pencil className="h-4 w-4" />
-                  </Link>
-                </Button>
-              </Card>
-            );
-          })}
-        </div>
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
       </div>
     </div>
   );
