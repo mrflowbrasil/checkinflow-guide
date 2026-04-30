@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Loader2, Palette, Upload, Trash2, ImageIcon } from "lucide-react";
 import { toast } from "sonner";
+import { LogoCropDialog } from "@/components/property/LogoCropDialog";
 
 const TEMPLATES: { value: "clean" | "dark" | "luxury"; label: string; desc: string; preview: string }[] = [
   { value: "clean", label: "Clean", desc: "Branco + navy + sombras suaves.", preview: "linear-gradient(135deg, #fff 50%, #0F1E3D 50%)" },
@@ -28,22 +29,29 @@ export default function Settings() {
   const [logoUrl, setLogoUrl] = useState<string | null>(tenant?.logo_url ?? null);
   const [showLogo, setShowLogo] = useState<boolean>(tenant?.show_logo ?? true);
   const [uploading, setUploading] = useState(false);
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
 
-  const handleLogoUpload = async (file: File) => {
-    if (!tenant) return;
-    if (file.size > 2 * 1024 * 1024) {
-      toast.error("Logo deve ter no máximo 2MB.");
+  const handlePickFile = (file: File) => {
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Imagem deve ter no máximo 5MB.");
       return;
     }
+    const reader = new FileReader();
+    reader.onload = () => setCropSrc(reader.result as string);
+    reader.readAsDataURL(file);
+  };
+
+  const handleCropConfirm = async (blob: Blob) => {
+    if (!tenant) return;
     setUploading(true);
     try {
-      const ext = file.name.split(".").pop();
-      const path = `${tenant.id}/logo-${Date.now()}.${ext}`;
-      const { error: upErr } = await supabase.storage.from("tenant-logos").upload(path, file, { upsert: true });
+      const path = `${tenant.id}/logo-${Date.now()}.png`;
+      const { error: upErr } = await supabase.storage.from("tenant-logos").upload(path, blob, { upsert: true, contentType: "image/png" });
       if (upErr) throw upErr;
       const { data: pub } = supabase.storage.from("tenant-logos").getPublicUrl(path);
       setLogoUrl(pub.publicUrl);
-      toast.success("Logo carregada. Clique em Salvar para confirmar.");
+      setCropSrc(null);
+      toast.success("Logo ajustada. Clique em Salvar para confirmar.");
     } catch (e: any) {
       toast.error(e.message);
     } finally {
@@ -111,7 +119,7 @@ export default function Settings() {
               className="hidden"
               onChange={(e) => {
                 const f = e.target.files?.[0];
-                if (f) handleLogoUpload(f);
+                if (f) handlePickFile(f);
                 e.target.value = "";
               }}
             />
@@ -182,6 +190,14 @@ export default function Settings() {
           Salvar alterações
         </Button>
       </div>
+
+      <LogoCropDialog
+        open={!!cropSrc}
+        onOpenChange={(o) => !o && setCropSrc(null)}
+        imageSrc={cropSrc}
+        onConfirm={handleCropConfirm}
+        busy={uploading}
+      />
     </div>
   );
 }

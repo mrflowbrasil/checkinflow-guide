@@ -6,11 +6,18 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Copy, Download, ExternalLink, Pencil, QrCode as QrIcon, Loader2 } from "lucide-react";
+import { ArrowLeft, Copy, Download, ExternalLink, Pencil, QrCode as QrIcon, Loader2, GripVertical } from "lucide-react";
 import { toast } from "sonner";
 import { getPageIcon } from "@/lib/page-icons";
 import QRCode from "qrcode";
 import { EditPropertyDialog } from "@/components/property/EditPropertyDialog";
+import {
+  DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext, sortableKeyboardCoordinates, useSortable, arrayMove, rectSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 export default function PropertyDetail() {
   const { id } = useParams<{ id: string }>();
@@ -52,6 +59,41 @@ export default function PropertyDetail() {
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["property", id] }),
   });
+
+  const reorderPages = useMutation({
+    mutationFn: async (items: { id: string; position: number }[]) => {
+      // Atualiza em paralelo para refletir nova ordem
+      const results = await Promise.all(
+        items.map((it) => supabase.from("property_pages").update({ position: it.position }).eq("id", it.id))
+      );
+      const err = results.find((r) => r.error)?.error;
+      if (err) throw err;
+    },
+    onSuccess: () => toast.success("Ordem atualizada"),
+    onError: (e: any) => {
+      toast.error(e.message);
+      qc.invalidateQueries({ queryKey: ["property", id] });
+    },
+  });
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const handleDragEnd = (e: DragEndEvent) => {
+    const { active, over } = e;
+    if (!over || active.id === over.id) return;
+    const current = (property?.property_pages as any[]).slice().sort((a, b) => a.position - b.position);
+    const oldIdx = current.findIndex((p) => p.id === active.id);
+    const newIdx = current.findIndex((p) => p.id === over.id);
+    if (oldIdx < 0 || newIdx < 0) return;
+    const next = arrayMove(current, oldIdx, newIdx).map((p, i) => ({ ...p, position: i }));
+
+    // Optimistic update
+    qc.setQueryData(["property", id], (old: any) => old ? { ...old, property_pages: next } : old);
+    reorderPages.mutate(next.map((p) => ({ id: p.id, position: p.position })));
+  };
 
   useEffect(() => {
     if (!property) return;
@@ -149,33 +191,73 @@ export default function PropertyDetail() {
       {/* Pages list */}
       <div>
         <h2 className="text-lg font-semibold mb-3">Páginas do guia</h2>
-        <p className="text-sm text-muted-foreground mb-4">Edite o conteúdo de cada categoria que aparece no guia do hóspede.</p>
-        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-          {pages.map((p) => {
-            const Icon = getPageIcon(p.icon);
-            return (
-              <Card key={p.id} className="p-3 flex items-center gap-3 shadow-card hover:shadow-card-hover transition-shadow">
-                <div className="h-10 w-10 rounded-md bg-accent-soft text-accent-foreground grid place-items-center shrink-0">
-                  <Icon className="h-5 w-5" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="font-medium text-sm truncate">{p.title}</div>
-                </div>
-                <Switch
-                  checked={p.is_enabled}
-                  onCheckedChange={(v) => togglePage.mutate({ pageId: p.id, enabled: v })}
-                  className="shrink-0"
+        <p className="text-sm text-muted-foreground mb-4">
+          Arraste pelo ícone <GripVertical className="inline h-3.5 w-3.5 align-text-bottom" /> para reordenar. Edite cada categoria que aparece no guia do hóspede.
+        </p>
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={pages.map((p) => p.id)} strategy={rectSortingStrategy}>
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {pages.map((p) => (
+                <SortablePageCard
+                  key={p.id}
+                  page={p}
+                  propertyId={id!}
+                  onToggle={(enabled) => togglePage.mutate({ pageId: p.id, enabled })}
                 />
-                <Button asChild size="icon" variant="ghost" className="shrink-0">
-                  <Link to={`/app/properties/${id}/pages/${p.page_key}`}>
-                    <Pencil className="h-4 w-4" />
-                  </Link>
-                </Button>
-              </Card>
-            );
-          })}
-        </div>
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
       </div>
     </div>
+  );
+}
+
+function SortablePageCard({
+  page, propertyId, onToggle,
+}: {
+  page: any;
+  propertyId: string;
+  onToggle: (enabled: boolean) => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: page.id });
+  const Icon = getPageIcon(page.icon);
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.6 : 1,
+  };
+  return (
+    <Card
+      ref={setNodeRef}
+      style={style}
+      className="p-3 flex items-center gap-2 shadow-card hover:shadow-card-hover transition-shadow"
+    >
+      <button
+        type="button"
+        className="h-8 w-6 grid place-items-center text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing touch-none"
+        {...attributes}
+        {...listeners}
+        aria-label="Arrastar para reordenar"
+      >
+        <GripVertical className="h-4 w-4" />
+      </button>
+      <div className="h-10 w-10 rounded-md bg-accent-soft text-accent-foreground grid place-items-center shrink-0">
+        <Icon className="h-5 w-5" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="font-medium text-sm truncate">{page.title}</div>
+      </div>
+      <Switch
+        checked={page.is_enabled}
+        onCheckedChange={onToggle}
+        className="shrink-0"
+      />
+      <Button asChild size="icon" variant="ghost" className="shrink-0">
+        <Link to={`/app/properties/${propertyId}/pages/${page.page_key}`}>
+          <Pencil className="h-4 w-4" />
+        </Link>
+      </Button>
+    </Card>
   );
 }
