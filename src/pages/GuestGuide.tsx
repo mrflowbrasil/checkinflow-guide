@@ -108,22 +108,15 @@ export default function GuestGuide() {
       </div>
 
       <div className="max-w-md mx-auto px-4 -mt-4 relative z-10">
-        {/* Reservar */}
-        {data.booking_url && (
-          <Button
-            asChild
-            size="lg"
-            className="w-full h-14 text-base font-semibold tracking-wider uppercase rounded-2xl shadow-hero"
-            style={{ background: primaryColor, color: "#fff" }}
-          >
-            <a href={data.booking_url} target="_blank" rel="noreferrer noopener">
-              <Calendar className="mr-2 h-5 w-5" /> Reservar
-            </a>
-          </Button>
-        )}
+        {/* Título da seção */}
+        <div className="text-center mt-6 mb-4">
+          <h2 className="text-sm font-semibold tracking-[0.25em] uppercase" style={{ color: primaryColor }}>
+            Hub de Boas Vindas
+          </h2>
+        </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-3 gap-3 mt-6 pb-10">
+        <div className="grid grid-cols-3 gap-3 pb-6">
           {pages.map((p) => {
             const Icon = getPageIcon(p.icon);
             const isEmergency = p.page_key === "emergency";
