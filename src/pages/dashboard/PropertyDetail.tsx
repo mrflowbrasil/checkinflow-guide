@@ -212,3 +212,52 @@ export default function PropertyDetail() {
     </div>
   );
 }
+
+function SortablePageCard({
+  page, propertyId, onToggle,
+}: {
+  page: any;
+  propertyId: string;
+  onToggle: (enabled: boolean) => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: page.id });
+  const Icon = getPageIcon(page.icon);
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.6 : 1,
+  };
+  return (
+    <Card
+      ref={setNodeRef}
+      style={style}
+      className="p-3 flex items-center gap-2 shadow-card hover:shadow-card-hover transition-shadow"
+    >
+      <button
+        type="button"
+        className="h-8 w-6 grid place-items-center text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing touch-none"
+        {...attributes}
+        {...listeners}
+        aria-label="Arrastar para reordenar"
+      >
+        <GripVertical className="h-4 w-4" />
+      </button>
+      <div className="h-10 w-10 rounded-md bg-accent-soft text-accent-foreground grid place-items-center shrink-0">
+        <Icon className="h-5 w-5" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="font-medium text-sm truncate">{page.title}</div>
+      </div>
+      <Switch
+        checked={page.is_enabled}
+        onCheckedChange={onToggle}
+        className="shrink-0"
+      />
+      <Button asChild size="icon" variant="ghost" className="shrink-0">
+        <Link to={`/app/properties/${propertyId}/pages/${page.page_key}`}>
+          <Pencil className="h-4 w-4" />
+        </Link>
+      </Button>
+    </Card>
+  );
+}
