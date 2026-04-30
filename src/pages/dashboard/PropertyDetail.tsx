@@ -60,6 +60,41 @@ export default function PropertyDetail() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["property", id] }),
   });
 
+  const reorderPages = useMutation({
+    mutationFn: async (items: { id: string; position: number }[]) => {
+      // Atualiza em paralelo para refletir nova ordem
+      const results = await Promise.all(
+        items.map((it) => supabase.from("property_pages").update({ position: it.position }).eq("id", it.id))
+      );
+      const err = results.find((r) => r.error)?.error;
+      if (err) throw err;
+    },
+    onSuccess: () => toast.success("Ordem atualizada"),
+    onError: (e: any) => {
+      toast.error(e.message);
+      qc.invalidateQueries({ queryKey: ["property", id] });
+    },
+  });
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const handleDragEnd = (e: DragEndEvent) => {
+    const { active, over } = e;
+    if (!over || active.id === over.id) return;
+    const current = (property?.property_pages as any[]).slice().sort((a, b) => a.position - b.position);
+    const oldIdx = current.findIndex((p) => p.id === active.id);
+    const newIdx = current.findIndex((p) => p.id === over.id);
+    if (oldIdx < 0 || newIdx < 0) return;
+    const next = arrayMove(current, oldIdx, newIdx).map((p, i) => ({ ...p, position: i }));
+
+    // Optimistic update
+    qc.setQueryData(["property", id], (old: any) => old ? { ...old, property_pages: next } : old);
+    reorderPages.mutate(next.map((p) => ({ id: p.id, position: p.position })));
+  };
+
   useEffect(() => {
     if (!property) return;
     const url = `${window.location.origin}/g/${property.public_slug}`;
