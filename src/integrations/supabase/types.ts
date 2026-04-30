@@ -264,37 +264,114 @@ export type Database = {
         Row: {
           code: string
           created_at: string
+          description: string | null
           is_active: boolean
           name: string
           position: number
           price_cents: number
+          price_yearly_cents: number
           property_limit: number
           stripe_price_id: string | null
+          stripe_price_id_monthly: string | null
+          stripe_price_id_yearly: string | null
           updated_at: string
         }
         Insert: {
           code: string
           created_at?: string
+          description?: string | null
           is_active?: boolean
           name: string
           position?: number
           price_cents?: number
+          price_yearly_cents?: number
           property_limit: number
           stripe_price_id?: string | null
+          stripe_price_id_monthly?: string | null
+          stripe_price_id_yearly?: string | null
           updated_at?: string
         }
         Update: {
           code?: string
           created_at?: string
+          description?: string | null
           is_active?: boolean
           name?: string
           position?: number
           price_cents?: number
+          price_yearly_cents?: number
           property_limit?: number
           stripe_price_id?: string | null
+          stripe_price_id_monthly?: string | null
+          stripe_price_id_yearly?: string | null
           updated_at?: string
         }
         Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          billing_interval: string
+          cancel_at_period_end: boolean | null
+          created_at: string
+          current_period_end: string | null
+          current_period_start: string | null
+          environment: string
+          id: string
+          plan_code: string
+          price_id: string
+          product_id: string
+          status: string
+          stripe_customer_id: string
+          stripe_subscription_id: string
+          tenant_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          billing_interval?: string
+          cancel_at_period_end?: boolean | null
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          environment?: string
+          id?: string
+          plan_code: string
+          price_id: string
+          product_id: string
+          status?: string
+          stripe_customer_id: string
+          stripe_subscription_id: string
+          tenant_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          billing_interval?: string
+          cancel_at_period_end?: boolean | null
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          environment?: string
+          id?: string
+          plan_code?: string
+          price_id?: string
+          product_id?: string
+          status?: string
+          stripe_customer_id?: string
+          stripe_subscription_id?: string
+          tenant_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tenants: {
         Row: {
