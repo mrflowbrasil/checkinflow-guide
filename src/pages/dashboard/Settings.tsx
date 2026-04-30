@@ -29,22 +29,29 @@ export default function Settings() {
   const [logoUrl, setLogoUrl] = useState<string | null>(tenant?.logo_url ?? null);
   const [showLogo, setShowLogo] = useState<boolean>(tenant?.show_logo ?? true);
   const [uploading, setUploading] = useState(false);
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
 
-  const handleLogoUpload = async (file: File) => {
-    if (!tenant) return;
-    if (file.size > 2 * 1024 * 1024) {
-      toast.error("Logo deve ter no máximo 2MB.");
+  const handlePickFile = (file: File) => {
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Imagem deve ter no máximo 5MB.");
       return;
     }
+    const reader = new FileReader();
+    reader.onload = () => setCropSrc(reader.result as string);
+    reader.readAsDataURL(file);
+  };
+
+  const handleCropConfirm = async (blob: Blob) => {
+    if (!tenant) return;
     setUploading(true);
     try {
-      const ext = file.name.split(".").pop();
-      const path = `${tenant.id}/logo-${Date.now()}.${ext}`;
-      const { error: upErr } = await supabase.storage.from("tenant-logos").upload(path, file, { upsert: true });
+      const path = `${tenant.id}/logo-${Date.now()}.png`;
+      const { error: upErr } = await supabase.storage.from("tenant-logos").upload(path, blob, { upsert: true, contentType: "image/png" });
       if (upErr) throw upErr;
       const { data: pub } = supabase.storage.from("tenant-logos").getPublicUrl(path);
       setLogoUrl(pub.publicUrl);
-      toast.success("Logo carregada. Clique em Salvar para confirmar.");
+      setCropSrc(null);
+      toast.success("Logo ajustada. Clique em Salvar para confirmar.");
     } catch (e: any) {
       toast.error(e.message);
     } finally {
