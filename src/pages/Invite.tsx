@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Home, Loader2, AlertCircle, Mail } from "lucide-react";
 import mrFlowLogoWhite from "@/assets/mrflow-logo-white.png";
+import mrFlowLogo from "@/assets/mrflow-logo.png";
 
 const passwordSchema = z.string().min(8, "Mínimo 8 caracteres").max(72);
 const nameSchema = z.string().trim().min(2, "Nome muito curto").max(80);
@@ -125,7 +126,7 @@ export default function Invite() {
       <div className="flex items-center justify-center p-6 bg-[#f6f6f7]">
         <Card className="w-full max-w-md p-8 sm:p-10 rounded-3xl shadow-2xl border-0 bg-white">
           <div className="lg:hidden flex flex-col items-start gap-1 mb-8">
-            <img src={mrFlowLogoWhite} alt="Mr Flow" className="h-9 w-auto invert" />
+            <img src={mrFlowLogo} alt="Mr Flow" className="h-9 w-auto" />
             <span className="text-[10px] tracking-[0.25em] text-muted-foreground uppercase">Welcome Hub</span>
           </div>
 
