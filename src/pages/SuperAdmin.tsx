@@ -119,7 +119,11 @@ export default function SuperAdmin() {
   };
 
   const copyInviteLink = (token: string) => {
-    const link = `${window.location.origin}/invite/${token}`;
+    // Always use the public production domain for invite links so social previews
+    // (WhatsApp, Telegram, etc.) render Mr Flow metadata instead of the Lovable
+    // sandbox preview metadata served by *.lovableproject.com.
+    const PUBLIC_APP_URL = "https://hub.mrflow.com.br";
+    const link = `${PUBLIC_APP_URL}/invite/${token}`;
     navigator.clipboard.writeText(link);
     toast.success("Link copiado!");
   };

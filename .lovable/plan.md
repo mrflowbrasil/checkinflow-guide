@@ -1,28 +1,62 @@
 ## Problema
 
-Ao clicar em "Salvar" no diálogo "Editar imóvel", aparece:
-`Failed to construct 'FormData': parameter 1 is not of type 'HTMLFormElement'`
+Quando o link de convite é compartilhado em apps como WhatsApp/Telegram, o preview mostra a marca **Lovable** ("Build for the web 20x faster") em vez da identidade do **Mr Flow Welcome Hub**.
 
-## Causa
+Há **duas causas distintas** atuando ao mesmo tempo:
 
-Em `src/components/property/EditPropertyDialog.tsx`, o `handleSubmit` chama `setBusy(true)` (que dispara re-render) antes de passar o evento para `save.mutate(e)`. Quando o `mutationFn` roda em seguida e tenta `new FormData(e.currentTarget)`, o `currentTarget` do evento React já foi liberado/zerado — daí o erro.
+### 1. Domínio errado no link compartilhado
+O link da imagem usa `007ed216-cdf8-4b08-a3dc-f2ec2c83a0a2.lovableproject.com` — este é o **domínio sandbox de preview da Lovable**, que serve metadados genéricos da Lovable para crawlers de redes sociais (independentemente do que está no `index.html` do projeto).
 
-## Correção
+Os links de convite precisam ser gerados com o **domínio publicado**: `https://hub.mrflow.com.br/invite/{token}` (ou `https://checkinflow-guide.lovable.app/invite/{token}` como fallback).
 
-Refatorar `EditPropertyDialog.tsx` para extrair os valores do formulário **antes** de qualquer setState ou mutate:
+### 2. Meta tags com texto/autor genéricos
+No `index.html` atual:
+- `<meta name="author" content="Lovable" />`
+- `<meta name="twitter:site" content="@Lovable" />`
+- Description em inglês: "GuestFlow Hub is a mobile-first SaaS platform..."
 
-1. No `handleSubmit`:
-   - Chamar `e.preventDefault()` imediatamente.
-   - Construir `FormData` a partir de `e.currentTarget` ali mesmo, enquanto o evento ainda é válido.
-   - Extrair os campos (`name`, `address`, `external_id`, `booking_url`, `description`) para um objeto simples.
-   - Só então chamar `save.mutate(values)`.
+Esses precisam ser atualizados para Mr Flow / Welcome Hub em português.
 
-2. Mudar a assinatura de `mutationFn` para receber o objeto de valores (não o evento), e remover `e.preventDefault()` / `new FormData` de dentro dela.
+---
 
-3. Manter `setBusy` controlado apenas via `onSettled` (remover o `setBusy(true)` manual no handler — usar `save.isPending` ou setar dentro de `onMutate`).
+## Plano de Correção
 
-Nenhum outro arquivo precisa ser alterado. Sem mudanças de banco.
+### Passo 1 — Atualizar meta tags em `index.html`
 
-## Resultado esperado
+Trocar para identidade Mr Flow:
+- `author` → `Mr Flow`
+- `twitter:site` → `@mrflow` (ou remover se não houver perfil)
+- `description` (e `og:description`/`twitter:description`) → texto em português alinhado à marca, ex: *"Welcome Hub by Mr Flow — encante seu hóspede com um guia digital completo da sua hospedagem."*
+- Manter `og:title` / `twitter:title` como `"Mr Flow • Welcome Hub"` (mais claro que "Hub de Boas Vindas")
+- Manter a `og:image` atual (logo Welcome Hub) — já está correta
 
-Salvar o imóvel (com ou sem trocar a imagem de capa) funciona sem o erro de FormData.
+### Passo 2 — Garantir que o link de convite use o domínio correto
+
+Investigar onde o link `https://.../invite/{token}` é gerado/copiado no painel admin (provavelmente em `src/pages/SuperAdmin.tsx` onde os convites são criados/listados) e garantir que ele use:
+
+```text
+https://hub.mrflow.com.br/invite/{token}
+```
+
+em vez de `window.location.origin` (que no preview/sandbox retorna o domínio `lovableproject.com`).
+
+Estratégia recomendada: criar uma constante `PUBLIC_APP_URL` que prioriza o domínio customizado. Ex:
+
+```ts
+const PUBLIC_APP_URL = "https://hub.mrflow.com.br";
+const inviteLink = `${PUBLIC_APP_URL}/invite/${token}`;
+```
+
+### Passo 3 — Validar
+
+Após publicar, testar colando o link `https://hub.mrflow.com.br/invite/{token}` no WhatsApp e validar o preview correto. Crawlers podem cachear previews antigos — se necessário, usar o [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/) para forçar re-scrape.
+
+---
+
+## Detalhes técnicos
+
+**Arquivos a editar:**
+- `index.html` — atualizar meta tags (autor, descrições, twitter:site, título OG)
+- `src/pages/SuperAdmin.tsx` (a confirmar na implementação) — trocar `window.location.origin` por constante com domínio público nos pontos onde o link de convite é montado/copiado
+
+**Importante:** O preview que aparece em apps de mensagem é controlado pelo HTML servido na URL específica. O domínio `*.lovableproject.com` (sandbox) **sempre** mostra metadados da Lovable — é por isso que o link precisa apontar para `hub.mrflow.com.br`.
