@@ -52,6 +52,33 @@ export type Database = {
           },
         ]
       }
+      integration_webhooks: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          provider: string
+          updated_at: string
+          webhook_url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          provider: string
+          updated_at?: string
+          webhook_url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          provider?: string
+          updated_at?: string
+          webhook_url?: string
+        }
+        Relationships: []
+      }
       invitations: {
         Row: {
           accepted_at: string | null
@@ -138,7 +165,9 @@ export type Database = {
           cover_image_url: string | null
           created_at: string
           description: string | null
+          external_data: Json | null
           external_id: string | null
+          external_provider: string | null
           id: string
           name: string
           public_slug: string
@@ -152,7 +181,9 @@ export type Database = {
           cover_image_url?: string | null
           created_at?: string
           description?: string | null
+          external_data?: Json | null
           external_id?: string | null
+          external_provider?: string | null
           id?: string
           name: string
           public_slug: string
@@ -166,7 +197,9 @@ export type Database = {
           cover_image_url?: string | null
           created_at?: string
           description?: string | null
+          external_data?: Json | null
           external_id?: string | null
+          external_provider?: string | null
           id?: string
           name?: string
           public_slug?: string
@@ -180,6 +213,71 @@ export type Database = {
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      property_details: {
+        Row: {
+          checkin_instructions: string | null
+          checkin_time: string | null
+          checkout_instructions: string | null
+          checkout_time: string | null
+          emergency_contacts: Json | null
+          extras: Json | null
+          latitude: number | null
+          lock_code: string | null
+          longitude: number | null
+          parking: string | null
+          property_id: string
+          rules: string | null
+          trash: string | null
+          updated_at: string
+          wifi_password: string | null
+          wifi_ssid: string | null
+        }
+        Insert: {
+          checkin_instructions?: string | null
+          checkin_time?: string | null
+          checkout_instructions?: string | null
+          checkout_time?: string | null
+          emergency_contacts?: Json | null
+          extras?: Json | null
+          latitude?: number | null
+          lock_code?: string | null
+          longitude?: number | null
+          parking?: string | null
+          property_id: string
+          rules?: string | null
+          trash?: string | null
+          updated_at?: string
+          wifi_password?: string | null
+          wifi_ssid?: string | null
+        }
+        Update: {
+          checkin_instructions?: string | null
+          checkin_time?: string | null
+          checkout_instructions?: string | null
+          checkout_time?: string | null
+          emergency_contacts?: Json | null
+          extras?: Json | null
+          latitude?: number | null
+          lock_code?: string | null
+          longitude?: number | null
+          parking?: string | null
+          property_id?: string
+          rules?: string | null
+          trash?: string | null
+          updated_at?: string
+          wifi_password?: string | null
+          wifi_ssid?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_details_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: true
+            referencedRelation: "properties"
             referencedColumns: ["id"]
           },
         ]
@@ -366,6 +464,94 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "subscriptions_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tenant_api_keys: {
+        Row: {
+          created_at: string
+          id: string
+          key_hash: string
+          key_prefix: string
+          last_used_at: string | null
+          name: string
+          revoked_at: string | null
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key_hash: string
+          key_prefix: string
+          last_used_at?: string | null
+          name?: string
+          revoked_at?: string | null
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key_hash?: string
+          key_prefix?: string
+          last_used_at?: string | null
+          name?: string
+          revoked_at?: string | null
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenant_api_keys_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tenant_integrations: {
+        Row: {
+          created_at: string
+          credentials_encrypted: string | null
+          id: string
+          last_error: string | null
+          last_sync_at: string | null
+          provider: string
+          status: string
+          system_url: string | null
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          credentials_encrypted?: string | null
+          id?: string
+          last_error?: string | null
+          last_sync_at?: string | null
+          provider: string
+          status?: string
+          system_url?: string | null
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          credentials_encrypted?: string | null
+          id?: string
+          last_error?: string | null
+          last_sync_at?: string | null
+          provider?: string
+          status?: string
+          system_url?: string | null
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenant_integrations_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
