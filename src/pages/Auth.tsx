@@ -81,7 +81,7 @@ export default function Auth() {
       </div>
 
       {/* Form side */}
-      <div className="flex items-center justify-center p-6 bg-[#f6f6f7]">
+      <div className="flex flex-col items-center justify-center p-6 bg-[#f6f6f7]">
         <Card className="w-full max-w-md p-8 sm:p-10 rounded-3xl shadow-2xl border-0 bg-white">
           <div className="lg:hidden flex flex-col items-start gap-1 mb-8">
             <img src={mrFlowLogoWhite} alt="Mr Flow" className="h-9 w-auto invert" />
