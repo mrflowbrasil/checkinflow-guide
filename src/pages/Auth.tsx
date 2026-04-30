@@ -71,7 +71,13 @@ export default function Auth() {
             Encante seu hóspede desde o primeiro momento com um guia digital completo da sua hospedagem.
           </p>
         </div>
-        <p className="text-white/40 text-sm relative">© Mr Flow</p>
+        <p className="text-white/40 text-xs relative leading-relaxed max-w-md">
+          © 2026 –{" "}
+          <a href="http://mrflow.com.br" target="_blank" rel="noreferrer noopener" className="underline hover:text-white/70">
+            Mr. Flow Automações e Serviços Digitais LTDA
+          </a>{" "}
+          – CNPJ 57.466.519/0001-87 – Todos os direitos reservados.
+        </p>
       </div>
 
       {/* Form side */}
