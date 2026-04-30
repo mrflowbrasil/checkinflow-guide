@@ -26,12 +26,82 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
+type IntegrationRow = {
+  provider: "stays" | "hostaway";
+  status: string | null;
+};
+
+const PROVIDER_LABEL: Record<string, string> = {
+  stays: "Stays",
+  hostaway: "Hostaway",
+};
+
 export default function PropertiesList() {
   const qc = useQueryClient();
   const { data: usage } = usePlanUsage();
   const [duplicatingId, setDuplicatingId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [importing, setImporting] = useState<string | null>(null);
+
+  const { data: integrations } = useQuery<IntegrationRow[]>({
+    queryKey: ["tenant_integrations"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("tenant_integrations")
+        .select("provider, status");
+      if (error) throw error;
+      return (data ?? []) as IntegrationRow[];
+    },
+    refetchInterval: (q) => {
+      const rows = (q.state.data as IntegrationRow[] | undefined) ?? [];
+      return rows.some((r) => r.status === "syncing" || r.status === "pending") ? 3000 : false;
+    },
+  });
+
+  const connected = (integrations ?? []).filter((i) => i.status === "connected");
+  const syncing = (integrations ?? []).find((i) => i.status === "syncing");
+
+  // Refetch properties while syncing
+  useEffect(() => {
+    if (!syncing) return;
+    const t = setInterval(() => {
+      qc.invalidateQueries({ queryKey: ["properties"] });
+    }, 4000);
+    return () => clearInterval(t);
+  }, [syncing, qc]);
+
+  // Notify when sync completes
+  const [wasSyncing, setWasSyncing] = useState(false);
+  useEffect(() => {
+    if (syncing) {
+      setWasSyncing(true);
+    } else if (wasSyncing) {
+      setWasSyncing(false);
+      toast.success("Importação concluída!");
+      qc.invalidateQueries({ queryKey: ["properties"] });
+    }
+  }, [syncing, wasSyncing, qc]);
+
+  const triggerImport = async (provider: "stays" | "hostaway") => {
+    setImporting(provider);
+    try {
+      const { data, error } = await supabase.functions.invoke("integrations-trigger-import", {
+        body: { provider },
+      });
+      if (error) throw error;
+      if (!data?.ok) {
+        toast.error(data?.message ?? data?.error ?? "Falha ao iniciar importação.");
+        return;
+      }
+      toast.info("Importação iniciada. Os imóveis aparecerão automaticamente.");
+      qc.invalidateQueries({ queryKey: ["tenant_integrations"] });
+    } catch (e: any) {
+      toast.error(e.message ?? "Erro inesperado.");
+    } finally {
+      setImporting(null);
+    }
+  };
 
   const deleteProperty = async () => {
     if (!deleteTarget) return;
