@@ -71,11 +71,17 @@ export default function Auth() {
             Encante seu hóspede desde o primeiro momento com um guia digital completo da sua hospedagem.
           </p>
         </div>
-        <p className="text-white/40 text-sm relative">© Mr Flow</p>
+        <p className="text-white/40 text-xs relative leading-relaxed max-w-md">
+          © 2026 –{" "}
+          <a href="http://mrflow.com.br" target="_blank" rel="noreferrer noopener" className="underline hover:text-white/70">
+            Mr. Flow Automações e Serviços Digitais LTDA
+          </a>{" "}
+          – CNPJ 57.466.519/0001-87 – Todos os direitos reservados.
+        </p>
       </div>
 
       {/* Form side */}
-      <div className="flex items-center justify-center p-6 bg-[#f6f6f7]">
+      <div className="flex flex-col items-center justify-center p-6 bg-[#f6f6f7]">
         <Card className="w-full max-w-md p-8 sm:p-10 rounded-3xl shadow-2xl border-0 bg-white">
           <div className="lg:hidden flex flex-col items-start gap-1 mb-8">
             <img src={mrFlowLogoWhite} alt="Mr Flow" className="h-9 w-auto invert" />
@@ -103,6 +109,13 @@ export default function Auth() {
             </p>
           </form>
         </Card>
+        <p className="lg:hidden mt-6 text-[11px] leading-relaxed text-center text-muted-foreground max-w-md px-4">
+          © 2026 –{" "}
+          <a href="http://mrflow.com.br" target="_blank" rel="noreferrer noopener" className="underline hover:opacity-80">
+            Mr. Flow Automações e Serviços Digitais LTDA
+          </a>{" "}
+          – CNPJ 57.466.519/0001-87 – Todos os direitos reservados.
+        </p>
       </div>
     </div>
   );
