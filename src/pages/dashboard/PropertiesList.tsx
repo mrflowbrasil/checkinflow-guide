@@ -247,6 +247,12 @@ export default function PropertiesList() {
               </span>
             </Badge>
           )}
+          <ImportButton
+            connected={connected}
+            syncing={!!syncing}
+            importing={importing}
+            onImport={triggerImport}
+          />
           {usage?.atLimit ? (
             <Button asChild variant="default">
               <Link to="/app/billing"><Sparkles className="mr-2 h-4 w-4" /> Fazer upgrade</Link>
