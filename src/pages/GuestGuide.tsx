@@ -137,6 +137,34 @@ export default function GuestGuide() {
             );
           })}
         </div>
+
+        {/* Reservar (após os ícones) */}
+        {data.booking_url && (
+          <Button
+            asChild
+            size="lg"
+            className="w-full h-14 text-base font-semibold tracking-wider uppercase rounded-2xl shadow-hero mt-2"
+            style={{ background: primaryColor, color: "#fff" }}
+          >
+            <a href={data.booking_url} target="_blank" rel="noreferrer noopener">
+              <Calendar className="mr-2 h-5 w-5" /> Reservar
+            </a>
+          </Button>
+        )}
+
+        {/* Rodapé */}
+        <footer className="mt-10 pb-8 text-center text-[11px] leading-relaxed" style={{ color: "hsl(var(--guide-muted))" }}>
+          ©  2026 –{" "}
+          <a
+            href="http://mrflow.com.br"
+            target="_blank"
+            rel="noreferrer noopener"
+            className="underline hover:opacity-80"
+          >
+            Mr. Flow Automações e Serviços Digitais LTDA
+          </a>{" "}
+          – CNPJ 57.466.519/0001-87 – Todos os direitos reservados.
+        </footer>
       </div>
 
       {/* Page detail sheet */}
