@@ -118,26 +118,31 @@ export function LogoCropDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="relative w-full h-[500px] bg-muted rounded-lg overflow-hidden">
+        <div ref={cropperBoxRef} className="relative w-full h-[520px] bg-muted rounded-lg overflow-hidden">
           {imageSrc && (
             <Cropper
               image={imageSrc}
               crop={crop}
               zoom={zoom}
+              minZoom={minZoom}
+              maxZoom={4}
               aspect={1}
+              cropSize={{ width: cropDiameter, height: cropDiameter }}
               cropShape="round"
               showGrid={false}
-              objectFit="horizontal-cover"
+              objectFit="contain"
+              restrictPosition={false}
               onCropChange={setCrop}
               onZoomChange={setZoom}
               onCropComplete={onComplete}
+              onMediaLoaded={setMediaSize}
             />
           )}
         </div>
 
         <div className="space-y-2">
           <label className="text-xs text-muted-foreground">Zoom</label>
-          <Slider value={[zoom]} min={1} max={4} step={0.05} onValueChange={(v) => setZoom(v[0])} />
+          <Slider value={[zoom]} min={minZoom} max={4} step={0.01} onValueChange={(v) => setZoom(v[0])} />
         </div>
 
         <DialogFooter>
