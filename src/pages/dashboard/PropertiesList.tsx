@@ -379,3 +379,66 @@ export default function PropertiesList() {
     </div>
   );
 }
+
+function ImportButton({
+  connected,
+  syncing,
+  importing,
+  onImport,
+}: {
+  connected: IntegrationRow[];
+  syncing: boolean;
+  importing: string | null;
+  onImport: (provider: "stays" | "hostaway") => void;
+}) {
+  const disabled = connected.length === 0 || syncing || !!importing;
+  const tooltip =
+    connected.length === 0
+      ? "Conecte uma integração em Integrações para importar imóveis."
+      : syncing
+      ? "Importação em andamento…"
+      : "";
+
+  // Single connected provider → direct button
+  if (connected.length === 1) {
+    const provider = connected[0].provider;
+    return (
+      <Button
+        variant="outline"
+        disabled={disabled}
+        title={tooltip}
+        onClick={() => onImport(provider)}
+      >
+        {syncing || importing ? (
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        ) : (
+          <Download className="mr-2 h-4 w-4" />
+        )}
+        {syncing ? "Importando…" : `Importar de ${PROVIDER_LABEL[provider]}`}
+      </Button>
+    );
+  }
+
+  // 0 or multiple → dropdown (disabled when 0)
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" disabled={disabled} title={tooltip}>
+          {syncing || importing ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Download className="mr-2 h-4 w-4" />
+          )}
+          {syncing ? "Importando…" : "Importar imóveis"}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        {connected.map((i) => (
+          <DropdownMenuItem key={i.provider} onClick={() => onImport(i.provider)}>
+            Importar de {PROVIDER_LABEL[i.provider]}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
