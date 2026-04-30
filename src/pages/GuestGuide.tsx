@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { getPageIcon } from "@/lib/page-icons";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { GuestPagePreview } from "@/components/guest/GuestPagePreview";
+import { InstallAppButton } from "@/components/guest/InstallAppButton";
 
 export default function GuestGuide() {
   const { slug } = useParams<{ slug: string }>();
@@ -185,9 +186,12 @@ export default function GuestGuide() {
           >
             <a href={data.booking_url} target="_blank" rel="noreferrer noopener">
               <Calendar className="mr-2 h-5 w-5" /> Reservar Novamente
-            </a>
+          </a>
           </Button>
         )}
+
+        {/* Instalar App */}
+        <InstallAppButton primaryColor={primaryColor} />
 
         {/* Rodapé */}
         <footer className="mt-10 pb-8 text-center text-[11px] leading-relaxed" style={{ color: "hsl(var(--guide-muted))" }}>
