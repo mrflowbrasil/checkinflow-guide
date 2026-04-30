@@ -26,13 +26,29 @@ export function BlockRenderer({ block, primaryColor }: { block: BlockBase; prima
       ) : null;
 
     case "video": {
-      const embed = youtubeEmbedUrl(block.data?.url);
-      if (!embed) return null;
-      return (
-        <div className="aspect-video rounded-xl overflow-hidden">
-          <iframe src={embed} className="w-full h-full" allowFullScreen title="vídeo" />
-        </div>
-      );
+      const url: string = block.data?.url ?? "";
+      if (!url) return null;
+      const source = block.data?.source;
+      const embed = source !== "upload" ? youtubeEmbedUrl(url) : null;
+      if (embed) {
+        return (
+          <div className="aspect-video rounded-xl overflow-hidden">
+            <iframe src={embed} className="w-full h-full" allowFullScreen title="vídeo" />
+          </div>
+        );
+      }
+      if (source === "upload") {
+        return (
+          <video
+            src={url}
+            controls
+            preload="metadata"
+            playsInline
+            className="w-full rounded-xl bg-black aspect-video"
+          />
+        );
+      }
+      return null;
     }
 
     case "steps":
