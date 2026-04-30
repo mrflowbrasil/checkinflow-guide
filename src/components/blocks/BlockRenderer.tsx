@@ -1,6 +1,7 @@
+import { useState } from "react";
 import type { BlockBase } from "@/lib/blocks";
 import { youtubeEmbedUrl } from "@/lib/blocks";
-import { Lightbulb, AlertTriangle, CheckCircle2, Copy, Download, ExternalLink } from "lucide-react";
+import { Lightbulb, AlertTriangle, CheckCircle2, Copy, Download, ExternalLink, Eye, EyeOff, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -95,9 +96,68 @@ export function BlockRenderer({ block, primaryColor }: { block: BlockBase; prima
         </ul>
       );
 
+    case "password":
+      return <PasswordBlock data={block.data} primaryColor={primaryColor} />;
+
     default:
       return null;
   }
+}
+
+function PasswordBlock({ data, primaryColor }: { data: any; primaryColor?: string }) {
+  const [shown, setShown] = useState(false);
+  const value: string = data?.value ?? "";
+  const label: string = data?.label ?? "Senha";
+  const masked = "•".repeat(Math.max(value.length, 8));
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(value);
+      toast.success("Senha copiada!");
+    } catch {
+      toast.error("Não foi possível copiar");
+    }
+  };
+  return (
+    <div
+      className="rounded-xl p-4 border"
+      style={{ background: "hsl(var(--guide-fg) / 0.04)", borderColor: "hsl(var(--guide-fg) / 0.1)" }}
+    >
+      <div className="flex items-center gap-2 mb-2">
+        <Lock className="h-4 w-4" style={{ color: primaryColor ?? "hsl(var(--guide-fg))" }} />
+        <span className="text-xs font-semibold tracking-wide uppercase" style={{ color: "hsl(var(--guide-muted))" }}>
+          {label}
+        </span>
+      </div>
+      <div className="flex items-center gap-2">
+        <code
+          className="flex-1 font-mono text-base sm:text-lg tracking-wider px-3 py-2 rounded-lg break-all select-all"
+          style={{ background: "hsl(var(--guide-fg) / 0.06)" }}
+        >
+          {value ? (shown ? value : masked) : "—"}
+        </code>
+        <Button
+          type="button"
+          size="icon"
+          variant="ghost"
+          onClick={() => setShown((s) => !s)}
+          aria-label={shown ? "Ocultar" : "Mostrar"}
+          disabled={!value}
+        >
+          {shown ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+        </Button>
+        <Button
+          type="button"
+          size="icon"
+          onClick={copy}
+          aria-label="Copiar"
+          disabled={!value}
+          style={{ background: primaryColor ?? "hsl(var(--guide-fg))", color: "#fff" }}
+        >
+          <Copy className="h-4 w-4" />
+        </Button>
+      </div>
+    </div>
+  );
 }
 
 export function BlocksRenderer({ blocks, primaryColor }: { blocks: BlockBase[]; primaryColor?: string }) {

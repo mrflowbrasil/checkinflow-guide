@@ -132,6 +132,22 @@ function BlockBody({ block, tenantId, onChange }: { block: BlockBase; tenantId: 
       );
     case "list":
       return <ListBody data={d} onChange={onChange} />;
+    case "password":
+      return (
+        <div className="space-y-2">
+          <Input
+            value={d.label ?? ""}
+            onChange={(e) => onChange({ ...d, label: e.target.value })}
+            placeholder="Rótulo (ex: Senha do Wi-Fi)"
+          />
+          <Input
+            value={d.value ?? ""}
+            onChange={(e) => onChange({ ...d, value: e.target.value })}
+            placeholder="Valor da senha"
+            type="text"
+          />
+        </div>
+      );
   }
 }
 
@@ -216,7 +232,7 @@ function ListBody({ data, onChange }: any) {
 }
 
 export function AddBlockMenu({ onAdd }: { onAdd: (type: BlockBase["type"]) => void }) {
-  const types: BlockBase["type"][] = ["text", "subtitle", "image", "video", "steps", "tip", "button", "list"];
+  const types: BlockBase["type"][] = ["text", "subtitle", "image", "video", "steps", "tip", "button", "list", "password"];
   return (
     <div className="grid grid-cols-2 gap-2 p-3 w-full">
       {types.map((t) => (
