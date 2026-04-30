@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Loader2, Palette, Upload, Trash2, ImageIcon } from "lucide-react";
 import { toast } from "sonner";
+import { LogoCropDialog } from "@/components/property/LogoCropDialog";
 
 const TEMPLATES: { value: "clean" | "dark" | "luxury"; label: string; desc: string; preview: string }[] = [
   { value: "clean", label: "Clean", desc: "Branco + navy + sombras suaves.", preview: "linear-gradient(135deg, #fff 50%, #0F1E3D 50%)" },
