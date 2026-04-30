@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,9 +6,15 @@ import { usePlanUsage } from "@/hooks/useTenant";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Home, ArrowRight, Copy, QrCode, Files, Loader2, Trash2, Sparkles } from "lucide-react";
+import { Plus, Home, ArrowRight, Copy, QrCode, Files, Loader2, Trash2, Sparkles, Download } from "lucide-react";
 import { toast } from "sonner";
 import { slugify, randomSuffix } from "@/lib/slug";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   AlertDialog,
   AlertDialogAction,
