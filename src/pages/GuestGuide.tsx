@@ -147,7 +147,7 @@ export default function GuestGuide() {
             style={{ background: primaryColor, color: "#fff" }}
           >
             <a href={data.booking_url} target="_blank" rel="noreferrer noopener">
-              <Calendar className="mr-2 h-5 w-5" /> Reservar
+              <Calendar className="mr-2 h-5 w-5" /> Reservar Novamente
             </a>
           </Button>
         )}
