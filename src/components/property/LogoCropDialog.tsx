@@ -1,5 +1,5 @@
-import { useCallback, useState } from "react";
-import Cropper, { Area } from "react-easy-crop";
+import { useCallback, useEffect, useRef, useState } from "react";
+import Cropper, { Area, MediaSize } from "react-easy-crop";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -17,11 +17,35 @@ async function getCroppedBlob(imageSrc: string, crop: Area, outputSize = 512): P
   canvas.width = outputSize;
   canvas.height = outputSize;
   const ctx = canvas.getContext("2d")!;
-  ctx.drawImage(img, crop.x, crop.y, crop.width, crop.height, 0, 0, outputSize, outputSize);
+
+  const sourceX = Math.max(0, crop.x);
+  const sourceY = Math.max(0, crop.y);
+  const sourceRight = Math.min(img.naturalWidth, crop.x + crop.width);
+  const sourceBottom = Math.min(img.naturalHeight, crop.y + crop.height);
+  const sourceWidth = Math.max(0, sourceRight - sourceX);
+  const sourceHeight = Math.max(0, sourceBottom - sourceY);
+
+  if (sourceWidth > 0 && sourceHeight > 0) {
+    ctx.drawImage(
+      img,
+      sourceX,
+      sourceY,
+      sourceWidth,
+      sourceHeight,
+      ((sourceX - crop.x) / crop.width) * outputSize,
+      ((sourceY - crop.y) / crop.height) * outputSize,
+      (sourceWidth / crop.width) * outputSize,
+      (sourceHeight / crop.height) * outputSize
+    );
+  }
   return new Promise((resolve, reject) =>
     canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("Falha ao gerar imagem"))), "image/png", 0.95)
   );
 }
+
+const CROP_PADDING = 64;
+const MIN_CROP_DIAMETER = 280;
+const MAX_CROP_DIAMETER = 420;
 
 export function LogoCropDialog({
   open,
@@ -36,11 +60,47 @@ export function LogoCropDialog({
   onConfirm: (blob: Blob) => void;
   busy?: boolean;
 }) {
+  const cropperBoxRef = useRef<HTMLDivElement>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
+  const [minZoom, setMinZoom] = useState(1);
+  const [cropDiameter, setCropDiameter] = useState(360);
+  const [mediaSize, setMediaSize] = useState<MediaSize | null>(null);
   const [pixels, setPixels] = useState<Area | null>(null);
 
   const onComplete = useCallback((_: Area, p: Area) => setPixels(p), []);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const updateCropDiameter = () => {
+      const box = cropperBoxRef.current;
+      if (!box) return;
+      const { width, height } = box.getBoundingClientRect();
+      setCropDiameter(Math.round(Math.max(MIN_CROP_DIAMETER, Math.min(MAX_CROP_DIAMETER, width - CROP_PADDING, height - CROP_PADDING))));
+    };
+
+    updateCropDiameter();
+    const observer = new ResizeObserver(updateCropDiameter);
+    if (cropperBoxRef.current) observer.observe(cropperBoxRef.current);
+    return () => observer.disconnect();
+  }, [open]);
+
+  useEffect(() => {
+    setCrop({ x: 0, y: 0 });
+    setPixels(null);
+    setMediaSize(null);
+    setMinZoom(1);
+    setZoom(1);
+  }, [imageSrc]);
+
+  useEffect(() => {
+    if (!mediaSize) return;
+    const longestSide = Math.max(mediaSize.width, mediaSize.height);
+    const nextMinZoom = longestSide > 0 ? Math.min(1, cropDiameter / longestSide) : 1;
+    setMinZoom(nextMinZoom);
+    setZoom((currentZoom) => Math.max(nextMinZoom, Math.min(currentZoom, 4)));
+  }, [cropDiameter, mediaSize]);
 
   const handleConfirm = async () => {
     if (!imageSrc || !pixels) return;
@@ -58,26 +118,31 @@ export function LogoCropDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="relative w-full h-[500px] bg-muted rounded-lg overflow-hidden">
+        <div ref={cropperBoxRef} className="relative w-full h-[520px] bg-muted rounded-lg overflow-hidden">
           {imageSrc && (
             <Cropper
               image={imageSrc}
               crop={crop}
               zoom={zoom}
+              minZoom={minZoom}
+              maxZoom={4}
               aspect={1}
+              cropSize={{ width: cropDiameter, height: cropDiameter }}
               cropShape="round"
               showGrid={false}
-              objectFit="horizontal-cover"
+              objectFit="contain"
+              restrictPosition={false}
               onCropChange={setCrop}
               onZoomChange={setZoom}
               onCropComplete={onComplete}
+              onMediaLoaded={setMediaSize}
             />
           )}
         </div>
 
         <div className="space-y-2">
           <label className="text-xs text-muted-foreground">Zoom</label>
-          <Slider value={[zoom]} min={1} max={4} step={0.05} onValueChange={(v) => setZoom(v[0])} />
+          <Slider value={[zoom]} min={minZoom} max={4} step={0.01} onValueChange={(v) => setZoom(v[0])} />
         </div>
 
         <DialogFooter>
