@@ -11,7 +11,9 @@ export interface BlockBase {
 export interface TextData { content: string }
 export interface SubtitleData { content: string }
 export interface ImageData { url: string; caption?: string }
-export interface VideoData { url: string }
+export interface VideoData { url: string; source?: "youtube" | "upload"; mime?: string }
+export const MAX_VIDEO_MB = 50;
+export const ACCEPTED_VIDEO_TYPES = ["video/mp4", "video/webm"];
 export interface StepsData { items: { title: string; detail?: string }[] }
 export interface TipData { content: string; variant?: "info" | "warning" | "success" }
 export interface ButtonData { label: string; action: "copy" | "download" | "link"; value: string }
@@ -22,7 +24,7 @@ export const BLOCK_LABELS: Record<BlockType, string> = {
   text: "Texto",
   subtitle: "Subtítulo",
   image: "Imagem",
-  video: "Vídeo (YouTube)",
+  video: "Vídeo",
   steps: "Passo a passo",
   tip: "Caixa de dica",
   button: "Botão",
@@ -35,7 +37,7 @@ export function defaultDataFor(type: BlockType): any {
     case "text": return { content: "" };
     case "subtitle": return { content: "" };
     case "image": return { url: "", caption: "" };
-    case "video": return { url: "" };
+    case "video": return { url: "", source: "youtube" };
     case "steps": return { items: [{ title: "" }] };
     case "tip": return { content: "", variant: "info" };
     case "button": return { label: "", action: "copy", value: "" };
