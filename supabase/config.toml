@@ -1,1 +1,4 @@
 project_id = "pgdfcufjdyhmaqikwbdq"
+
+[functions.property-manifest]
+verify_jwt = false

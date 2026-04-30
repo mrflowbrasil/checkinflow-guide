@@ -38,7 +38,7 @@ export default function GuestGuide() {
     [data]
   );
 
-  // Update meta tags
+  // Update meta tags + dynamic PWA manifest per property
   useEffect(() => {
     if (!data) return;
     const title = `${data.name} — Guia do Hóspede`;
@@ -53,6 +53,43 @@ export default function GuestGuide() {
       el.setAttribute("content", content);
     };
     setMeta("description", `Guia digital do hóspede para ${data.name}.`);
+
+    // ---- Dynamic PWA manifest ----
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
+    const origin = window.location.origin;
+    const manifestUrl = `${supabaseUrl}/functions/v1/property-manifest?slug=${encodeURIComponent(
+      data.public_slug
+    )}&origin=${encodeURIComponent(origin)}`;
+
+    // Replace the manifest link (use a dedicated id so we don't fight the static one)
+    const staticManifest = document.querySelector('link[rel="manifest"]') as HTMLLinkElement | null;
+    const prevHref = staticManifest?.getAttribute("href") ?? null;
+    if (staticManifest) staticManifest.setAttribute("href", manifestUrl);
+
+    // Theme color from tenant
+    const tenantPrimary = data.tenants?.primary_color as string | undefined;
+    const themeMeta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
+    const prevTheme = themeMeta?.getAttribute("content") ?? null;
+    if (themeMeta && tenantPrimary) themeMeta.setAttribute("content", tenantPrimary);
+
+    // Apple touch icon: prefer tenant logo, fallback to cover
+    const appleIconHref = data.tenants?.logo_url || data.cover_image_url || null;
+    const appleIcon = document.querySelector('link[rel="apple-touch-icon"]') as HTMLLinkElement | null;
+    const prevAppleIcon = appleIcon?.getAttribute("href") ?? null;
+    if (appleIcon && appleIconHref) appleIcon.setAttribute("href", appleIconHref);
+
+    // Apple web app title
+    const appleTitle = document.querySelector('meta[name="apple-mobile-web-app-title"]') as HTMLMetaElement | null;
+    const prevAppleTitle = appleTitle?.getAttribute("content") ?? null;
+    if (appleTitle) appleTitle.setAttribute("content", data.name);
+
+    return () => {
+      // Restore defaults when leaving the guide
+      if (staticManifest && prevHref !== null) staticManifest.setAttribute("href", prevHref);
+      if (themeMeta && prevTheme !== null) themeMeta.setAttribute("content", prevTheme);
+      if (appleIcon && prevAppleIcon !== null) appleIcon.setAttribute("href", prevAppleIcon);
+      if (appleTitle && prevAppleTitle !== null) appleTitle.setAttribute("content", prevAppleTitle);
+    };
   }, [data]);
 
   // Apply template class
