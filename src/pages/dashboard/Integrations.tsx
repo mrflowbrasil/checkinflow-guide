@@ -53,11 +53,13 @@ const PROVIDER_META: Record<Provider, {
 
 export default function Integrations() {
   const qc = useQueryClient();
+  const { data: tenant } = useTenant();
   const [openProvider, setOpenProvider] = useState<Provider | null>(null);
   const [systemUrl, setSystemUrl] = useState("");
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const prevStatusRef = useRef<Record<string, string | null>>({});
 
   const { data: integrations } = useQuery({
     queryKey: ["tenant_integrations"],
@@ -68,7 +70,53 @@ export default function Integrations() {
       if (error) throw error;
       return data;
     },
+    refetchInterval: (query) => {
+      const rows = (query.state.data as Array<{ status: string }> | undefined) ?? [];
+      const transitioning = rows.some((r) => r.status === "pending" || r.status === "syncing");
+      return transitioning ? 3000 : false;
+    },
+    refetchOnWindowFocus: true,
   });
+
+  // Toast on status transitions detected via polling/realtime
+  useEffect(() => {
+    if (!integrations) return;
+    for (const row of integrations) {
+      const prev = prevStatusRef.current[row.provider];
+      if (prev && prev !== row.status) {
+        if (row.status === "connected") {
+          toast.success(`${PROVIDER_META[row.provider as Provider]?.title ?? row.provider}: conexão estabelecida.`);
+        } else if (row.status === "error") {
+          toast.error(`${PROVIDER_META[row.provider as Provider]?.title ?? row.provider}: falha ao conectar.`);
+        }
+      }
+      prevStatusRef.current[row.provider] = row.status;
+    }
+  }, [integrations]);
+
+  // Realtime subscription on tenant_integrations for this tenant
+  useEffect(() => {
+    if (!tenant?.id) return;
+    const channel = supabase
+      .channel(`tenant_integrations:${tenant.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "tenant_integrations",
+          filter: `tenant_id=eq.${tenant.id}`,
+        },
+        () => {
+          qc.invalidateQueries({ queryKey: ["tenant_integrations"] });
+        },
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [tenant?.id, qc]);
+
 
   const stays = integrations?.find((i) => i.provider === "stays");
   const hostaway = integrations?.find((i) => i.provider === "hostaway");
