@@ -119,7 +119,7 @@ export default function Settings() {
               className="hidden"
               onChange={(e) => {
                 const f = e.target.files?.[0];
-                if (f) handleLogoUpload(f);
+                if (f) handlePickFile(f);
                 e.target.value = "";
               }}
             />
