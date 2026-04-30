@@ -6,11 +6,18 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Copy, Download, ExternalLink, Pencil, QrCode as QrIcon, Loader2 } from "lucide-react";
+import { ArrowLeft, Copy, Download, ExternalLink, Pencil, QrCode as QrIcon, Loader2, GripVertical } from "lucide-react";
 import { toast } from "sonner";
 import { getPageIcon } from "@/lib/page-icons";
 import QRCode from "qrcode";
 import { EditPropertyDialog } from "@/components/property/EditPropertyDialog";
+import {
+  DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext, sortableKeyboardCoordinates, useSortable, arrayMove, rectSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 export default function PropertyDetail() {
   const { id } = useParams<{ id: string }>();
