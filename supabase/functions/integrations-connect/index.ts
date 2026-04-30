@@ -135,6 +135,7 @@ serve(async (req) => {
 
     // Fire webhook
     const webhookPayload = {
+      event: "connection",
       tenant_id: tenantId,
       provider,
       system_url,

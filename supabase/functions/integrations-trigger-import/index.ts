@@ -111,6 +111,7 @@ serve(async (req) => {
     // Fire webhook (fire-and-forget; n8n will POST to properties-api per unit
     // and then call integrations-mark-synced when done)
     const webhookPayload = {
+      event: "upload_listings",
       action: "import",
       tenant_id: tenantId,
       provider,
