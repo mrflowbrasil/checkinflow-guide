@@ -109,6 +109,13 @@ export default function Auth() {
             </p>
           </form>
         </Card>
+        <p className="lg:hidden mt-6 text-[11px] leading-relaxed text-center text-muted-foreground max-w-md px-4">
+          © 2026 –{" "}
+          <a href="http://mrflow.com.br" target="_blank" rel="noreferrer noopener" className="underline hover:opacity-80">
+            Mr. Flow Automações e Serviços Digitais LTDA
+          </a>{" "}
+          – CNPJ 57.466.519/0001-87 – Todos os direitos reservados.
+        </p>
       </div>
     </div>
   );
