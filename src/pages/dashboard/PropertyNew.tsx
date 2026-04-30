@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Loader2, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { slugify, randomSuffix } from "@/lib/slug";
+import { UpgradePromptDialog } from "@/components/billing/UpgradePromptDialog";
 
 const schema = z.object({
   name: z.string().trim().min(2, "Nome muito curto").max(120),
@@ -27,6 +28,7 @@ export default function PropertyNew() {
   const [busy, setBusy] = useState(false);
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [showUpgrade, setShowUpgrade] = useState(false);
 
   const onCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
@@ -40,7 +42,7 @@ export default function PropertyNew() {
     e.preventDefault();
     if (!tenant) return toast.error("Workspace não carregado");
     if (usage?.atLimit) {
-      toast.error(`Você atingiu o limite de ${usage.limit} imóveis do plano ${usage.plan?.name}. Faça upgrade para adicionar mais.`);
+      setShowUpgrade(true);
       return;
     }
     const fd = new FormData(e.currentTarget);
@@ -86,10 +88,11 @@ export default function PropertyNew() {
       toast.success("Imóvel criado!");
       navigate(`/app/properties/${data.id}`);
     } catch (err: any) {
-      const msg = err?.message?.includes("property_limit_reached")
-        ? `Você atingiu o limite do plano ${usage?.plan?.name}. Faça upgrade para adicionar mais imóveis.`
-        : err.message ?? "Erro ao criar imóvel";
-      toast.error(msg);
+      if (err?.message?.includes("property_limit_reached")) {
+        setShowUpgrade(true);
+      } else {
+        toast.error(err.message ?? "Erro ao criar imóvel");
+      }
     } finally {
       setBusy(false);
     }
@@ -160,6 +163,13 @@ export default function PropertyNew() {
           </Button>
         </div>
       </form>
+
+      <UpgradePromptDialog
+        open={showUpgrade}
+        onOpenChange={setShowUpgrade}
+        planName={usage?.plan?.name}
+        limit={usage?.limit}
+      />
     </div>
   );
 }

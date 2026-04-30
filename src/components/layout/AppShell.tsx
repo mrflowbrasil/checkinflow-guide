@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Home, Settings, LogOut, Shield, Menu } from "lucide-react";
+import { LayoutDashboard, Home, Settings, LogOut, Shield, Menu, CreditCard } from "lucide-react";
+import { PaymentTestModeBanner } from "@/components/billing/PaymentTestModeBanner";
 import mrFlowLogo from "@/assets/mrflow-logo.png";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsSuperAdmin, useTenant } from "@/hooks/useTenant";
@@ -14,6 +15,7 @@ import { useState } from "react";
 const NAV = [
   { to: "/app", label: "Dashboard", icon: LayoutDashboard, end: true },
   { to: "/app/properties", label: "Imóveis", icon: Home },
+  { to: "/app/billing", label: "Planos", icon: CreditCard },
   { to: "/app/settings", label: "Configurações", icon: Settings },
 ];
 
@@ -116,6 +118,7 @@ export default function AppShell() {
           </div>
         </header>
 
+        <PaymentTestModeBanner />
         <main className="flex-1 overflow-x-hidden bg-[#f7f7f8]"><Outlet /></main>
       </div>
     </div>
