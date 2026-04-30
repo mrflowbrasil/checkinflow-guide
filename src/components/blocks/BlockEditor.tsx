@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { BlockBase } from "@/lib/blocks";
-import { BLOCK_LABELS, youtubeEmbedUrl } from "@/lib/blocks";
+import { BLOCK_LABELS, youtubeEmbedUrl, MAX_VIDEO_MB, ACCEPTED_VIDEO_TYPES } from "@/lib/blocks";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -83,19 +84,8 @@ function BlockBody({ block, tenantId, onChange }: { block: BlockBase; tenantId: 
       );
     case "image":
       return <ImageBlockBody data={d} tenantId={tenantId} onChange={onChange} />;
-    case "video": {
-      const embed = youtubeEmbedUrl(d.url);
-      return (
-        <div className="space-y-2">
-          <Input value={d.url ?? ""} onChange={(e) => onChange({ ...d, url: e.target.value })} placeholder="https://youtube.com/..." />
-          {embed && (
-            <div className="aspect-video rounded-lg overflow-hidden bg-muted">
-              <iframe src={embed} className="w-full h-full" allowFullScreen />
-            </div>
-          )}
-        </div>
-      );
-    }
+    case "video":
+      return <VideoBlockBody data={d} tenantId={tenantId} onChange={onChange} />;
     case "steps":
       return <StepsBody data={d} onChange={onChange} />;
     case "tip":
