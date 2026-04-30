@@ -1,63 +1,95 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Home, Sparkles, QrCode, Smartphone, ArrowRight } from "lucide-react";
+import { Sparkles, QrCode, Smartphone, ArrowRight } from "lucide-react";
+import mrFlowLogoWhite from "@/assets/mrflow-logo-white.png";
+
+const HERO_BG = {
+  background:
+    "radial-gradient(1200px 600px at 20% 10%, rgba(0,255,255,0.15), transparent 60%), radial-gradient(900px 500px at 80% 90%, rgba(0,140,142,0.25), transparent 60%), linear-gradient(135deg, #020617 0%, #0a1f2e 50%, #062a33 100%)",
+};
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen flex flex-col text-white" style={HERO_BG}>
       {/* Header */}
-      <header className="border-b bg-card/80 backdrop-blur sticky top-0 z-30">
+      <header className="sticky top-0 z-30 backdrop-blur-md bg-[#020617]/40 border-b border-white/10">
         <div className="container flex items-center justify-between h-16">
-          <div className="flex items-center gap-2 font-semibold">
-            <div className="h-8 w-8 rounded-lg bg-primary grid place-items-center text-primary-foreground">
-              <Home className="h-4 w-4" />
-            </div>
-            Mr Flow Host
-          </div>
-          <Button asChild variant="ghost" size="sm">
+          <Link to="/" className="flex flex-col items-start gap-0.5">
+            <img src={mrFlowLogoWhite} alt="Mr Flow" className="h-8 w-auto" />
+            <span className="text-[9px] tracking-[0.25em] text-white/70 uppercase">Welcome Hub</span>
+          </Link>
+          <Button
+            asChild
+            size="sm"
+            className="bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-xl backdrop-blur"
+          >
             <Link to="/auth">Entrar</Link>
           </Button>
         </div>
       </header>
 
       {/* Hero */}
-      <section className="container py-20 lg:py-32 text-center max-w-3xl">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent-soft text-accent-foreground text-xs font-medium mb-6">
-          <Sparkles className="h-3 w-3" /> Guias digitais para temporada
+      <section className="container py-20 lg:py-32 text-center max-w-3xl mx-auto">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-white/90 text-xs font-medium mb-6">
+          <Sparkles className="h-3 w-3" style={{ color: "#00FFFF" }} /> Guias digitais para temporada
         </div>
-        <h1 className="text-4xl lg:text-6xl font-semibold tracking-tight mb-6 leading-[1.1]">
-          O guia perfeito para cada hóspede,<br />
-          em <span className="text-accent">um único link</span>.
+        <h1 className="text-4xl lg:text-6xl font-bold tracking-tight mb-6 leading-[1.05] text-white">
+          Hub de Boas Vindas{" "}
+          <span style={{ color: "#00FFFF" }}>Inteligente</span>
         </h1>
-        <p className="text-lg text-muted-foreground mb-10 max-w-xl mx-auto">
-          Cadastre seu imóvel, personalize o conteúdo em blocos e compartilhe um link mobile com QR Code. Sem app, sem cadastro para o hóspede.
+        <p
+          className="text-lg mb-10 max-w-xl mx-auto leading-relaxed"
+          style={{ color: "#00FF00" }}
+        >
+          Encante seu hóspede desde o primeiro momento com um guia digital completo da sua hospedagem.
         </p>
         <div className="flex gap-3 justify-center">
-          <Button asChild size="lg" className="h-12 px-8">
-            <Link to="/auth">Começar grátis <ArrowRight className="ml-2 h-4 w-4" /></Link>
+          <Button
+            asChild
+            size="lg"
+            className="h-12 px-8 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg"
+          >
+            <Link to="/auth">
+              Começar grátis <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
           </Button>
         </div>
       </section>
 
       {/* Features */}
-      <section className="container pb-24 grid gap-6 md:grid-cols-3">
+      <section className="container pb-24 grid gap-6 md:grid-cols-3 mx-auto">
         {[
           { icon: Smartphone, title: "Mobile-first", desc: "Pensado para o hóspede acessar do celular, com botões grandes e navegação simples." },
           { icon: Sparkles, title: "Editor por blocos", desc: "Texto, vídeo, imagem, passo-a-passo, dicas. Reordene tudo arrastando." },
           { icon: QrCode, title: "QR Code automático", desc: "Cada imóvel ganha um link e um QR Code para imprimir e deixar no apartamento." },
         ].map((f) => (
-          <div key={f.title} className="p-6 rounded-2xl bg-card border shadow-card">
-            <div className="h-10 w-10 rounded-lg bg-accent-soft text-accent-foreground grid place-items-center mb-4">
+          <div
+            key={f.title}
+            className="p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/[0.07] transition-colors"
+          >
+            <div
+              className="h-10 w-10 rounded-lg grid place-items-center mb-4"
+              style={{ backgroundColor: "rgba(0,255,255,0.12)", color: "#00FFFF" }}
+            >
               <f.icon className="h-5 w-5" />
             </div>
-            <h3 className="font-semibold mb-2">{f.title}</h3>
-            <p className="text-sm text-muted-foreground">{f.desc}</p>
+            <h3 className="font-semibold mb-2 text-white">{f.title}</h3>
+            <p className="text-sm text-white/70">{f.desc}</p>
           </div>
         ))}
       </section>
 
-      <footer className="border-t py-8 text-center text-sm text-muted-foreground">
-        © Mr Flow Host
+      <footer className="mt-auto border-t border-white/10 py-8 text-center text-xs text-white/50 px-4">
+        © 2026 –{" "}
+        <a
+          href="http://mrflow.com.br"
+          target="_blank"
+          rel="noreferrer noopener"
+          className="underline hover:text-white/80"
+        >
+          Mr. Flow Automações e Serviços Digitais LTDA
+        </a>{" "}
+        – CNPJ 57.466.519/0001-87 – Todos os direitos reservados.
       </footer>
     </div>
   );
