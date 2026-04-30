@@ -100,7 +100,7 @@ export default function Settings() {
           <h2 className="font-semibold">Logo da empresa</h2>
         </div>
         <p className="text-sm text-muted-foreground -mt-2">
-          A logo aparece no topo do guia do hóspede. PNG ou SVG com fundo transparente funciona melhor. Máx. 2MB.
+          A logo aparece no topo do guia do hóspede. Limite máximo: 5MB. Tamanho ideal: 960×960px em PNG/WebP com fundo transparente, mantendo a marca centralizada e com respiro para caber no círculo.
         </p>
 
         <div className="flex items-center gap-4">
