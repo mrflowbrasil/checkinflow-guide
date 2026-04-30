@@ -46,6 +46,7 @@ async function getCroppedBlob(imageSrc: string, crop: Area, outputSize = 512): P
 const CROP_PADDING = 64;
 const MIN_CROP_DIAMETER = 280;
 const MAX_CROP_DIAMETER = 420;
+const LOGO_FIT_MARGIN = 0.86;
 
 export function LogoCropDialog({
   open,
@@ -96,10 +97,12 @@ export function LogoCropDialog({
 
   useEffect(() => {
     if (!mediaSize) return;
-    const longestSide = Math.max(mediaSize.width, mediaSize.height);
-    const nextMinZoom = longestSide > 0 ? Math.min(1, cropDiameter / longestSide) : 1;
+    const safeDiameter = cropDiameter * LOGO_FIT_MARGIN;
+    const fitZoom = Math.min(safeDiameter / mediaSize.width, safeDiameter / mediaSize.height);
+    const nextMinZoom = Number.isFinite(fitZoom) && fitZoom > 0 ? Math.min(1, fitZoom) : 1;
     setMinZoom(nextMinZoom);
-    setZoom((currentZoom) => Math.max(nextMinZoom, Math.min(currentZoom, 4)));
+    setCrop({ x: 0, y: 0 });
+    setZoom(nextMinZoom);
   }, [cropDiameter, mediaSize]);
 
   const handleConfirm = async () => {
