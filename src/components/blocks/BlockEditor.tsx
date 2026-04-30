@@ -274,6 +274,8 @@ function VideoBlockBody({ data, tenantId, onChange }: any) {
     </Tabs>
   );
 }
+
+function StepsBody({ data, onChange }: any) {
   const items = data.items ?? [];
   const update = (i: number, patch: any) => onChange({ ...data, items: items.map((it: any, idx: number) => idx === i ? { ...it, ...patch } : it) });
   const add = () => onChange({ ...data, items: [...items, { title: "" }] });
