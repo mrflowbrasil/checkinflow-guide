@@ -163,6 +163,13 @@ export default function PropertyNew() {
           </Button>
         </div>
       </form>
+
+      <UpgradePromptDialog
+        open={showUpgrade}
+        onOpenChange={setShowUpgrade}
+        planName={usage?.plan?.name}
+        limit={usage?.limit}
+      />
     </div>
   );
 }
