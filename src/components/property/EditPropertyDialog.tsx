@@ -39,11 +39,17 @@ export function EditPropertyDialog({ open, onOpenChange, property }: Props) {
     setPreview(URL.createObjectURL(f));
   };
 
+  type FormValues = {
+    name: string;
+    address: string;
+    description: string;
+    booking_url: string;
+    external_id: string;
+  };
+
   const save = useMutation({
-    mutationFn: async (e: FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      const fd = new FormData(e.currentTarget);
-      const name = String(fd.get("name") ?? "").trim();
+    mutationFn: async (values: FormValues) => {
+      const name = values.name.trim();
       if (name.length < 2) throw new Error("Nome muito curto");
 
       let coverUrl = property.cover_image_url;
@@ -59,15 +65,16 @@ export function EditPropertyDialog({ open, onOpenChange, property }: Props) {
         .from("properties")
         .update({
           name,
-          address: String(fd.get("address") ?? "") || null,
-          description: String(fd.get("description") ?? "") || null,
-          booking_url: String(fd.get("booking_url") ?? "") || null,
-          external_id: String(fd.get("external_id") ?? "") || null,
+          address: values.address || null,
+          description: values.description || null,
+          booking_url: values.booking_url || null,
+          external_id: values.external_id || null,
           cover_image_url: coverUrl,
         })
         .eq("id", property.id);
       if (error) throw error;
     },
+    onMutate: () => setBusy(true),
     onSuccess: () => {
       toast.success("Imóvel atualizado!");
       qc.invalidateQueries({ queryKey: ["property", property.id] });
@@ -78,8 +85,16 @@ export function EditPropertyDialog({ open, onOpenChange, property }: Props) {
   });
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    setBusy(true);
-    save.mutate(e);
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    const values: FormValues = {
+      name: String(fd.get("name") ?? ""),
+      address: String(fd.get("address") ?? ""),
+      description: String(fd.get("description") ?? ""),
+      booking_url: String(fd.get("booking_url") ?? ""),
+      external_id: String(fd.get("external_id") ?? ""),
+    };
+    save.mutate(values);
   };
 
   return (
