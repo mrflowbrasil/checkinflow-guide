@@ -1,4 +1,4 @@
-export type BlockType = "text" | "subtitle" | "image" | "video" | "steps" | "tip" | "button" | "list";
+export type BlockType = "text" | "subtitle" | "image" | "video" | "steps" | "tip" | "button" | "list" | "password";
 
 export interface BlockBase {
   id: string;
@@ -16,6 +16,7 @@ export interface StepsData { items: { title: string; detail?: string }[] }
 export interface TipData { content: string; variant?: "info" | "warning" | "success" }
 export interface ButtonData { label: string; action: "copy" | "download" | "link"; value: string }
 export interface ListData { items: { text: string; icon?: string }[] }
+export interface PasswordData { label?: string; value: string }
 
 export const BLOCK_LABELS: Record<BlockType, string> = {
   text: "Texto",
@@ -26,6 +27,7 @@ export const BLOCK_LABELS: Record<BlockType, string> = {
   tip: "Caixa de dica",
   button: "Botão",
   list: "Lista",
+  password: "Senha",
 };
 
 export function defaultDataFor(type: BlockType): any {
@@ -38,6 +40,7 @@ export function defaultDataFor(type: BlockType): any {
     case "tip": return { content: "", variant: "info" };
     case "button": return { label: "", action: "copy", value: "" };
     case "list": return { items: [{ text: "" }] };
+    case "password": return { label: "Senha", value: "" };
   }
 }
 
