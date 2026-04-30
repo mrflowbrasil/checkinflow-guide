@@ -50,7 +50,7 @@ export function LogoCropDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>Ajustar logo</DialogTitle>
           <DialogDescription>
@@ -58,7 +58,7 @@ export function LogoCropDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="relative w-full h-72 bg-muted rounded-lg overflow-hidden">
+        <div className="relative w-full h-[500px] bg-muted rounded-lg overflow-hidden">
           {imageSrc && (
             <Cropper
               image={imageSrc}
@@ -67,6 +67,7 @@ export function LogoCropDialog({
               aspect={1}
               cropShape="round"
               showGrid={false}
+              objectFit="horizontal-cover"
               onCropChange={setCrop}
               onZoomChange={setZoom}
               onCropComplete={onComplete}
