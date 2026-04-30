@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2, Shield, Copy, X, Mail, Check } from "lucide-react";
+import WebhooksAdmin from "@/components/admin/WebhooksAdmin";
 import { toast } from "sonner";
 
 export default function SuperAdmin() {
@@ -299,6 +300,10 @@ export default function SuperAdmin() {
               </div>
             )}
           </Card>
+        </TabsContent>
+
+        <TabsContent value="webhooks">
+          <WebhooksAdmin />
         </TabsContent>
       </Tabs>
     </div>
