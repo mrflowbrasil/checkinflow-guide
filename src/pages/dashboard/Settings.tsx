@@ -190,6 +190,14 @@ export default function Settings() {
           Salvar alterações
         </Button>
       </div>
+
+      <LogoCropDialog
+        open={!!cropSrc}
+        onOpenChange={(o) => !o && setCropSrc(null)}
+        imageSrc={cropSrc}
+        onConfirm={handleCropConfirm}
+        busy={uploading}
+      />
     </div>
   );
 }
