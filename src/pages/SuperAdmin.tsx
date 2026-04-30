@@ -149,6 +149,7 @@ export default function SuperAdmin() {
         <TabsList>
           <TabsTrigger value="workspaces">Workspaces</TabsTrigger>
           <TabsTrigger value="invitations">Convites</TabsTrigger>
+          <TabsTrigger value="webhooks">Webhooks</TabsTrigger>
         </TabsList>
 
         <TabsContent value="workspaces">
