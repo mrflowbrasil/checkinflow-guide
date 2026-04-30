@@ -181,7 +181,99 @@ function ImageBlockBody({ data, tenantId, onChange }: any) {
   );
 }
 
-function StepsBody({ data, onChange }: any) {
+function VideoBlockBody({ data, tenantId, onChange }: any) {
+  const [busy, setBusy] = useState(false);
+  const source: "youtube" | "upload" = data.source ?? "youtube";
+  const embed = source === "youtube" ? youtubeEmbedUrl(data.url) : null;
+
+  const upload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    e.target.value = "";
+    if (!f) return;
+    if (!ACCEPTED_VIDEO_TYPES.includes(f.type)) {
+      return toast.error("Formato não suportado. Envie um arquivo .mp4 ou .webm");
+    }
+    if (f.size > MAX_VIDEO_MB * 1024 * 1024) {
+      return toast.error(`Vídeo maior que ${MAX_VIDEO_MB}MB`);
+    }
+    setBusy(true);
+    const ext = f.type === "video/webm" ? "webm" : "mp4";
+    const path = `videos/${tenantId}/${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabase.storage
+      .from("block-media")
+      .upload(path, f, { upsert: true, contentType: f.type });
+    setBusy(false);
+    if (error) return toast.error(error.message);
+    const url = supabase.storage.from("block-media").getPublicUrl(path).data.publicUrl;
+    onChange({ ...data, url, source: "upload", mime: f.type });
+  };
+
+  const clearUpload = () => onChange({ ...data, url: "", mime: undefined });
+
+  return (
+    <Tabs
+      value={source}
+      onValueChange={(v) => onChange({ ...data, source: v as "youtube" | "upload", url: "", mime: undefined })}
+    >
+      <TabsList className="grid w-full grid-cols-2">
+        <TabsTrigger value="youtube">YouTube</TabsTrigger>
+        <TabsTrigger value="upload">Upload</TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="youtube" className="space-y-2 mt-3">
+        <Input
+          value={source === "youtube" ? (data.url ?? "") : ""}
+          onChange={(e) => onChange({ ...data, url: e.target.value, source: "youtube" })}
+          placeholder="https://youtube.com/..."
+        />
+        {embed && (
+          <div className="aspect-video rounded-lg overflow-hidden bg-muted">
+            <iframe src={embed} className="w-full h-full" allowFullScreen />
+          </div>
+        )}
+      </TabsContent>
+
+      <TabsContent value="upload" className="space-y-2 mt-3">
+        {source === "upload" && data.url ? (
+          <video
+            src={data.url}
+            controls
+            preload="metadata"
+            playsInline
+            className="w-full rounded-lg bg-black aspect-video"
+          />
+        ) : (
+          <div className="h-32 border-2 border-dashed rounded-lg grid place-items-center text-muted-foreground text-sm text-center px-4">
+            <div>
+              <Upload className="h-6 w-6 mx-auto mb-1" />
+              MP4 ou WebM • até {MAX_VIDEO_MB}MB
+            </div>
+          </div>
+        )}
+        <div className="flex gap-2">
+          <Button type="button" variant="outline" size="sm" disabled={busy} asChild>
+            <label className="cursor-pointer">
+              {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+              {source === "upload" && data.url ? "Trocar vídeo" : "Enviar vídeo"}
+              <input
+                type="file"
+                accept="video/mp4,video/webm"
+                className="hidden"
+                onChange={upload}
+                disabled={busy}
+              />
+            </label>
+          </Button>
+          {source === "upload" && data.url && (
+            <Button type="button" variant="ghost" size="sm" onClick={clearUpload} disabled={busy}>
+              Remover
+            </Button>
+          )}
+        </div>
+      </TabsContent>
+    </Tabs>
+  );
+}
   const items = data.items ?? [];
   const update = (i: number, patch: any) => onChange({ ...data, items: items.map((it: any, idx: number) => idx === i ? { ...it, ...patch } : it) });
   const add = () => onChange({ ...data, items: [...items, { title: "" }] });
