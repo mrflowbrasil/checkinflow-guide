@@ -11,3 +11,9 @@ verify_jwt = false
 
 [functions.create-portal-session]
 verify_jwt = false
+
+[functions.properties-api]
+verify_jwt = false
+
+[functions.integrations-mark-synced]
+verify_jwt = false
