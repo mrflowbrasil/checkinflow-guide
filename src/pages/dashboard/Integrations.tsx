@@ -97,7 +97,7 @@ export default function Integrations() {
         toast.error(msg);
         return;
       }
-      toast.success("Conexão iniciada. Estamos sincronizando seus imóveis.");
+      toast.success("Credenciais enviadas. Validando conexão…");
       setOpenProvider(null);
       qc.invalidateQueries({ queryKey: ["tenant_integrations"] });
     } catch (e: any) {
