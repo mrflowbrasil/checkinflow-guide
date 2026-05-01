@@ -209,6 +209,24 @@ export default function PageEditor() {
             {savingState === "idle" && isDirty && <span className="text-warning">Alterações não salvas</span>}
           </span>
           <Button
+            variant="outline"
+            size="sm"
+            onClick={handleCopy}
+            disabled={localBlocks.length === 0 || savingState === "saving"}
+            title="Copiar todos os blocos desta página"
+          >
+            <Copy className="mr-1.5 h-3.5 w-3.5" /> Copiar
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPasteOpen(true)}
+            disabled={!clipboard || savingState === "saving"}
+            title={clipboard ? `Colar blocos copiados de ${clipboard.sourcePropertyName}` : "Nenhum bloco copiado"}
+          >
+            <ClipboardPaste className="mr-1.5 h-3.5 w-3.5" /> Colar
+          </Button>
+          <Button
             size="sm"
             onClick={() => persistBlocks(localBlocks)}
             disabled={!isDirty || savingState === "saving"}
@@ -223,6 +241,43 @@ export default function PageEditor() {
           )}
         </div>
       </header>
+
+      <AlertDialog open={pasteOpen} onOpenChange={setPasteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Colar blocos copiados</AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-2 text-sm">
+                {clipboard ? (
+                  <>
+                    <div>
+                      <strong>{clipboard.blocks.length}</strong>{" "}
+                      {clipboard.blocks.length === 1 ? "bloco copiado" : "blocos copiados"} de{" "}
+                      <strong>{clipboard.sourcePropertyName}</strong> /{" "}
+                      <strong>{clipboard.sourcePageTitle}</strong>.
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      Copiado em {new Date(clipboard.copiedAt).toLocaleString("pt-BR")}
+                    </div>
+                    <div className="pt-2">Como deseja colar nesta página?</div>
+                  </>
+                ) : (
+                  <div>Nenhum conteúdo copiado.</div>
+                )}
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-2 sm:gap-2">
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <Button variant="outline" onClick={() => applyPaste("append")} disabled={!clipboard}>
+              Adicionar ao final
+            </Button>
+            <AlertDialogAction onClick={() => applyPaste("replace")} disabled={!clipboard}>
+              Substituir tudo
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <Tabs defaultValue="edit">
         <TabsList className="mb-4">
