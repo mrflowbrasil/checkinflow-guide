@@ -21,6 +21,7 @@ export type Database = {
           id: string
           page_id: string
           position: number
+          source: string
           type: Database["public"]["Enums"]["block_type"]
           updated_at: string
         }
@@ -30,6 +31,7 @@ export type Database = {
           id?: string
           page_id: string
           position?: number
+          source?: string
           type: Database["public"]["Enums"]["block_type"]
           updated_at?: string
         }
@@ -39,6 +41,7 @@ export type Database = {
           id?: string
           page_id?: string
           position?: number
+          source?: string
           type?: Database["public"]["Enums"]["block_type"]
           updated_at?: string
         }
