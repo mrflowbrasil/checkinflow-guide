@@ -135,6 +135,11 @@ serve(async (req) => {
       await admin.from("property_details").upsert(detailsPayload, { onConflict: "property_id" });
     }
 
+    // Auto-generate content blocks from details
+    if (details && typeof details === "object") {
+      await generateAutoBlocks(admin, propertyId, details, address);
+    }
+
     // Replace images
     if (Array.isArray(images)) {
       await admin.from("property_images").delete().eq("property_id", propertyId);
