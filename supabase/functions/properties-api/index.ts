@@ -120,23 +120,21 @@ async function generateAutoBlocks(admin: any, propertyId: string, details: any, 
   // Remove only previously auto-generated blocks (preserves manual edits)
   await admin.from("content_blocks").delete().in("page_id", pageIds).eq("source", "auto");
 
-  const rows: any[] = [];
+  // Insert per-page so a single bad row doesn't abort all pages
   for (const page of pages) {
     const blocks = buildPageBlocks(page.page_key, details, address);
-    blocks.forEach((b, i) => {
-      rows.push({
-        page_id: page.id,
-        type: b.type,
-        data: b.data,
-        position: i,
-        source: "auto",
-      });
-    });
-  }
-
-  if (rows.length) {
+    if (!blocks.length) continue;
+    const rows = blocks.map((b, i) => ({
+      page_id: page.id,
+      type: b.type,
+      data: b.data,
+      position: i,
+      source: "auto",
+    }));
     const { error } = await admin.from("content_blocks").insert(rows);
-    if (error) console.error("auto-blocks insert error", error);
+    if (error) {
+      console.error(`auto-blocks insert failed for page ${page.page_key}`, error);
+    }
   }
 }
 
