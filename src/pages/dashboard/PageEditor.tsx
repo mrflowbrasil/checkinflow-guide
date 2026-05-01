@@ -9,12 +9,37 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ArrowLeft, Plus, ExternalLink, Loader2, CheckCircle2 } from "lucide-react";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
+  AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { ArrowLeft, Plus, ExternalLink, Loader2, CheckCircle2, Copy, ClipboardPaste } from "lucide-react";
 import { toast } from "sonner";
 import { defaultDataFor, type BlockType } from "@/lib/blocks";
 import { AddBlockMenu, BlockEditor } from "@/components/blocks/BlockEditor";
 import { BlocksRenderer } from "@/components/blocks/BlockRenderer";
 import { GuestPagePreview } from "@/components/guest/GuestPagePreview";
+
+type ClipboardPayload = {
+  copiedAt: string;
+  sourcePropertyId: string;
+  sourcePropertyName: string;
+  sourcePageKey: string;
+  sourcePageTitle: string;
+  blocks: Array<{ type: BlockType; data: any; position: number }>;
+};
+
+const clipboardKey = (tenantId: string) => `blocks-clipboard:${tenantId}`;
+
+function readClipboard(tenantId: string): ClipboardPayload | null {
+  try {
+    const raw = localStorage.getItem(clipboardKey(tenantId));
+    if (!raw) return null;
+    return JSON.parse(raw) as ClipboardPayload;
+  } catch {
+    return null;
+  }
+}
 
 export default function PageEditor() {
   const { id, pageKey } = useParams<{ id: string; pageKey: string }>();
@@ -110,6 +135,55 @@ export default function PageEditor() {
     setLocalBlocks(arrayMove(localBlocks, oldIdx, newIdx));
   };
 
+  // ---- Copiar / Colar entre páginas ----
+  const [clipboard, setClipboard] = useState<ClipboardPayload | null>(null);
+  const [pasteOpen, setPasteOpen] = useState(false);
+
+  useEffect(() => {
+    if (tenant?.id) setClipboard(readClipboard(tenant.id));
+  }, [tenant?.id, pasteOpen]);
+
+  const handleCopy = () => {
+    if (!tenant?.id || !data) return;
+    if (localBlocks.length === 0) {
+      toast.error("Não há blocos para copiar nesta página.");
+      return;
+    }
+    const payload: ClipboardPayload = {
+      copiedAt: new Date().toISOString(),
+      sourcePropertyId: data.page.properties.id,
+      sourcePropertyName: data.page.properties.name,
+      sourcePageKey: data.page.page_key,
+      sourcePageTitle: data.page.title,
+      blocks: localBlocks.map((b, i) => ({ type: b.type, data: b.data, position: i })),
+    };
+    try {
+      localStorage.setItem(clipboardKey(tenant.id), JSON.stringify(payload));
+      setClipboard(payload);
+      toast.success(`${payload.blocks.length} ${payload.blocks.length === 1 ? "bloco copiado" : "blocos copiados"}`);
+    } catch (e: any) {
+      toast.error("Não foi possível copiar: " + (e?.message ?? "erro desconhecido"));
+    }
+  };
+
+  const applyPaste = async (mode: "replace" | "append") => {
+    if (!clipboard) return;
+    const pasted = clipboard.blocks.map((b) => ({
+      id: `tmp-${crypto.randomUUID()}`,
+      type: b.type,
+      data: b.data,
+      position: 0,
+    }));
+    const next = mode === "replace" ? pasted : [...localBlocks, ...pasted];
+    const reindexed = next.map((b, i) => ({ ...b, position: i }));
+    setLocalBlocks(reindexed);
+    setPasteOpen(false);
+    await persistBlocks(reindexed);
+    toast.success(
+      mode === "replace" ? "Blocos substituídos com sucesso" : "Blocos adicionados ao final",
+    );
+  };
+
   const publicUrl = useMemo(() => data?.page ? `${window.location.origin}/g/${data.page.properties.public_slug}` : "", [data]);
 
   if (isLoading || !data) {
@@ -135,6 +209,24 @@ export default function PageEditor() {
             {savingState === "idle" && isDirty && <span className="text-warning">Alterações não salvas</span>}
           </span>
           <Button
+            variant="outline"
+            size="sm"
+            onClick={handleCopy}
+            disabled={localBlocks.length === 0 || savingState === "saving"}
+            title="Copiar todos os blocos desta página"
+          >
+            <Copy className="mr-1.5 h-3.5 w-3.5" /> Copiar
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPasteOpen(true)}
+            disabled={!clipboard || savingState === "saving"}
+            title={clipboard ? `Colar blocos copiados de ${clipboard.sourcePropertyName}` : "Nenhum bloco copiado"}
+          >
+            <ClipboardPaste className="mr-1.5 h-3.5 w-3.5" /> Colar
+          </Button>
+          <Button
             size="sm"
             onClick={() => persistBlocks(localBlocks)}
             disabled={!isDirty || savingState === "saving"}
@@ -149,6 +241,43 @@ export default function PageEditor() {
           )}
         </div>
       </header>
+
+      <AlertDialog open={pasteOpen} onOpenChange={setPasteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Colar blocos copiados</AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-2 text-sm">
+                {clipboard ? (
+                  <>
+                    <div>
+                      <strong>{clipboard.blocks.length}</strong>{" "}
+                      {clipboard.blocks.length === 1 ? "bloco copiado" : "blocos copiados"} de{" "}
+                      <strong>{clipboard.sourcePropertyName}</strong> /{" "}
+                      <strong>{clipboard.sourcePageTitle}</strong>.
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      Copiado em {new Date(clipboard.copiedAt).toLocaleString("pt-BR")}
+                    </div>
+                    <div className="pt-2">Como deseja colar nesta página?</div>
+                  </>
+                ) : (
+                  <div>Nenhum conteúdo copiado.</div>
+                )}
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-2 sm:gap-2">
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <Button variant="outline" onClick={() => applyPaste("append")} disabled={!clipboard}>
+              Adicionar ao final
+            </Button>
+            <AlertDialogAction onClick={() => applyPaste("replace")} disabled={!clipboard}>
+              Substituir tudo
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <Tabs defaultValue="edit">
         <TabsList className="mb-4">
