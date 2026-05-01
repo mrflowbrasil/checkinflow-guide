@@ -120,6 +120,12 @@ serve(async (req) => {
       callback: {
         base_url: `${SUPABASE_URL}/functions/v1`,
         api_key: plainKey,
+        endpoints: {
+          // event=connection → confirm credentials are valid
+          connection_done: "/integrations-mark-synced",
+          // event=upload_listings → confirm import finished (success or error)
+          import_done: "/integrations-mark-import-done",
+        },
       },
     };
 

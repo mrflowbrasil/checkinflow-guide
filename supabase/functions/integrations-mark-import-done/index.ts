@@ -28,28 +28,40 @@ serve(async (req) => {
       .maybeSingle();
     if (!keyRow || keyRow.revoked_at) return json({ error: "invalid_api_key" }, 401);
 
-    const { provider, status, error } = await req.json();
+    const body = await req.json().catch(() => ({}));
+    const { provider, status, imported_count, error } = body ?? {};
+
     if (provider !== "stays" && provider !== "hostaway") {
       return json({ error: "invalid_provider" }, 400);
     }
-    // This endpoint is the connection handshake only.
-    // Use /integrations-mark-import-done for import completion.
-    if (status !== "connected" && status !== "error") {
-      return json({ error: "invalid_status", message: "status must be 'connected' or 'error'" }, 400);
+    if (status !== "completed" && status !== "error") {
+      return json({ error: "invalid_status", message: "status must be 'completed' or 'error'" }, 400);
+    }
+
+    const isOk = status === "completed";
+    const update: Record<string, unknown> = {
+      // Integration credentials remain valid; we just toggle off the syncing state
+      status: isOk ? "connected" : "error",
+      last_error: isOk ? null : (error ?? "import_failed"),
+    };
+    if (isOk) {
+      update.last_sync_at = new Date().toISOString();
     }
 
     await admin
       .from("tenant_integrations")
-      .update({
-        status,
-        last_error: error ?? null,
-      })
+      .update(update)
       .eq("tenant_id", keyRow.tenant_id)
       .eq("provider", provider);
 
+    console.log(
+      `[mark-import-done] tenant=${keyRow.tenant_id} provider=${provider} status=${status} imported=${imported_count ?? "n/a"}`,
+    );
+
     return json({ ok: true });
   } catch (e: any) {
-    return json({ error: e.message }, 500);
+    console.error("integrations-mark-import-done error", e);
+    return json({ error: e.message ?? "internal" }, 500);
   }
 });
 
