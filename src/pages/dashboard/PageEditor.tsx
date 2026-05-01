@@ -9,12 +9,37 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ArrowLeft, Plus, ExternalLink, Loader2, CheckCircle2 } from "lucide-react";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
+  AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { ArrowLeft, Plus, ExternalLink, Loader2, CheckCircle2, Copy, ClipboardPaste } from "lucide-react";
 import { toast } from "sonner";
 import { defaultDataFor, type BlockType } from "@/lib/blocks";
 import { AddBlockMenu, BlockEditor } from "@/components/blocks/BlockEditor";
 import { BlocksRenderer } from "@/components/blocks/BlockRenderer";
 import { GuestPagePreview } from "@/components/guest/GuestPagePreview";
+
+type ClipboardPayload = {
+  copiedAt: string;
+  sourcePropertyId: string;
+  sourcePropertyName: string;
+  sourcePageKey: string;
+  sourcePageTitle: string;
+  blocks: Array<{ type: BlockType; data: any; position: number }>;
+};
+
+const clipboardKey = (tenantId: string) => `blocks-clipboard:${tenantId}`;
+
+function readClipboard(tenantId: string): ClipboardPayload | null {
+  try {
+    const raw = localStorage.getItem(clipboardKey(tenantId));
+    if (!raw) return null;
+    return JSON.parse(raw) as ClipboardPayload;
+  } catch {
+    return null;
+  }
+}
 
 export default function PageEditor() {
   const { id, pageKey } = useParams<{ id: string; pageKey: string }>();
