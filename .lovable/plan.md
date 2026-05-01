@@ -1,64 +1,84 @@
-## Problema confirmado
+## Contexto
 
-1. A requisição da n8n **atualizou** `properties` e tentou popular `content_blocks`, mas o enum `block_type` em produção não inclui `"password"`.
-2. O insert de blocos automáticos é feito em **batch único** — uma única linha inválida (`type: "password"` para Wi-Fi e fechadura) **derruba o batch inteiro**, deixando 0 blocos auto em todas as páginas.
-3. Log do edge confirma: `invalid input value for enum block_type: "password"`.
-4. Front-end (`src/lib/blocks.ts`) já trata `password` como tipo válido — a divergência é só no banco.
+Hoje existe um único endpoint `integrations-mark-synced` que aceita `status: connected | error | pending`. Ele é usado tanto:
 
-## Correções
+1. Após o teste da API (event `connection`) → para marcar a integração como **conectada**.
+2. Após o término do upload de imóveis (event `upload_listings`) → para marcar a importação como **finalizada**.
 
-### 1. Migration: adicionar `password` ao enum `block_type`
+Isso mistura dois conceitos diferentes:
+- **Estado da integração** (credenciais válidas / inválidas)
+- **Estado da última importação** (em andamento / concluída / erro)
 
-```sql
-ALTER TYPE public.block_type ADD VALUE IF NOT EXISTS 'password';
+E cria efeitos colaterais ruins: se o n8n chamar `mark-synced` com `connected` ao terminar uma importação, ele sobrescreve `last_sync_at` corretamente — mas se a importação falhar parcialmente, ou se a UI quiser distinguir "conectado mas nunca importou" de "importação concluída agora", não há como.
+
+## Decisão
+
+Criar um **endpoint dedicado** para finalização de importação, mantendo `integrations-mark-synced` apenas para o handshake de conexão.
+
+```text
+n8n event=connection         → POST /integrations-mark-synced     { status: "connected" | "error" }
+n8n event=upload_listings    → POST /integrations-mark-import-done { status: "completed" | "error", imported_count?, error? }
 ```
 
-(Deve ser executado fora de transação — Postgres exige `COMMIT` antes de usar o novo valor; o sistema de migrations do Lovable lida com isso.)
+## Mudanças
 
-### 2. Edge function `properties-api` — tornar inserção resiliente
+### 1. Nova edge function `integrations-mark-import-done`
 
-No `generateAutoBlocks`, agrupar inserts **por página** (em vez de batch único) e capturar erro por grupo, logando sem abortar o restante:
+Mesma autenticação por `X-API-Key` (hash em `tenant_api_keys`). Recebe:
 
-```ts
-for (const page of pages) {
-  const blocks = buildPageBlocks(page.page_key, details, address);
-  if (!blocks.length) continue;
-  const rows = blocks.map((b, i) => ({
-    page_id: page.id, type: b.type, data: b.data, position: i, source: "auto",
-  }));
-  const { error } = await admin.from("content_blocks").insert(rows);
-  if (error) console.error(`auto-blocks insert failed for page ${page.page_key}`, error);
+```json
+{
+  "provider": "stays" | "hostaway",
+  "status": "completed" | "error",
+  "imported_count": 12,
+  "error": "mensagem opcional"
 }
 ```
 
-Assim, se um tipo futuro voltar a ser inválido, só a página afetada falha.
+Comportamento:
+- Atualiza `tenant_integrations`:
+  - `status` volta para `"connected"` (a integração em si segue válida) **ou** `"error"` se a importação falhou.
+  - `last_sync_at = now()` quando `status = completed`.
+  - `last_error` recebe a mensagem em caso de erro, ou é limpo em caso de sucesso.
+- Retorna `{ ok: true }`.
 
-### 3. Verificar `property_details`
+Isso mantém a UI atual funcionando (badge "Conectado" + "Última sincronização: …") sem precisar de novo enum no front.
 
-Investigar se a linha em `property_details` para `PH02F` existe (a query inicial retornou vazia). Se não existir, há um bug no upsert (campo `onConflict: "property_id"` exige unique constraint). Confirmar e, se necessário, garantir a constraint:
+### 2. `integrations-mark-synced` — restringir a connection handshake
 
-```sql
-ALTER TABLE public.property_details
-  ADD CONSTRAINT property_details_property_id_unique UNIQUE (property_id);
+- Remover o status `pending` da whitelist (não é mais usado por esse endpoint).
+- Aceitar apenas `connected | error`.
+- Não tocar em `last_sync_at` (esse campo passa a ser exclusivo do endpoint de importação) — opcional, mas deixa a semântica clara.
+
+### 3. Documentação para o n8n
+
+Atualizar o payload do webhook em `integrations-trigger-import` para incluir os dois callbacks no objeto `callback`:
+
+```ts
+callback: {
+  base_url: `${SUPABASE_URL}/functions/v1`,
+  api_key: plainKey,
+  endpoints: {
+    connection_done: "/integrations-mark-synced",       // event=connection
+    import_done:     "/integrations-mark-import-done",  // event=upload_listings
+  },
+}
 ```
 
-(Só aplicar se ainda não existir.)
+Assim o fluxo no n8n fica explícito sobre qual endpoint chamar em cada evento.
 
-### 4. Reprocessar o imóvel `PH02F`
+### 4. Front-end — sem mudanças obrigatórias
 
-Após aplicar as mudanças, reenviar o payload via n8n (ou chamar internamente via curl) para popular as 9 páginas (checkin, checkout, wifi, lock_code, location, rules, parking, trash, emergency, contacts) com os blocos automáticos.
+`Integrations.tsx` continua lendo `status` e `last_sync_at` da tabela. O polling/realtime já trata transição `syncing → connected`. Nenhuma alteração de UI necessária.
+
+(Opcional futuro: exibir `imported_count` da última importação — exigiria nova coluna em `tenant_integrations`. Não incluído neste plano.)
 
 ## Arquivos afetados
 
-- Nova migration SQL (enum + constraint se faltar)
-- `supabase/functions/properties-api/index.ts` (insert resiliente por página)
+- **novo** `supabase/functions/integrations-mark-import-done/index.ts`
+- `supabase/functions/integrations-mark-synced/index.ts` (restringir statuses)
+- `supabase/functions/integrations-trigger-import/index.ts` (incluir endpoints no payload do webhook)
 
-## Resultado esperado
+## Resposta direta à sua pergunta
 
-Ao reenviar o payload do `PH02F`:
-- Página **Wi-Fi**: bloco texto "Rede: abmap107" (sem senha pois `wifi_password: null`)
-- Página **Senha Fechadura**: bloco password "NÃO POSSUI"
-- Página **Check-in**: bloco texto "Horário de check-in: 15:00"
-- Página **Check-out**: bloco texto "Horário de check-out: 12:00"
-- Página **Localização**: endereço + botão Google Maps
-- Página **Contatos**: "Interfone da portaria: 94"
+**Sim, faz sentido separar.** Endpoints distintos deixam a semântica clara, evitam que uma falha de importação derrube o estado de "credenciais válidas", e facilitam evoluir cada fluxo de forma independente (ex.: registrar contagem de imóveis importados sem afetar o handshake de conexão).
