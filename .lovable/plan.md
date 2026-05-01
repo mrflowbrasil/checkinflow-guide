@@ -1,50 +1,64 @@
-## Objetivo
+## Problema confirmado
 
-Fazer a tela `/app/integrations` refletir a mudança de status (`pending` → `connected`/`error`) automaticamente, sem precisar de refresh manual, usando **Supabase Realtime** como mecanismo principal e **polling** como fallback.
+1. A requisição da n8n **atualizou** `properties` e tentou popular `content_blocks`, mas o enum `block_type` em produção não inclui `"password"`.
+2. O insert de blocos automáticos é feito em **batch único** — uma única linha inválida (`type: "password"` para Wi-Fi e fechadura) **derruba o batch inteiro**, deixando 0 blocos auto em todas as páginas.
+3. Log do edge confirma: `invalid input value for enum block_type: "password"`.
+4. Front-end (`src/lib/blocks.ts`) já trata `password` como tipo válido — a divergência é só no banco.
 
-## Mudanças
+## Correções
 
-### 1. Banco de dados (migração)
-
-Habilitar realtime para a tabela `tenant_integrations`:
+### 1. Migration: adicionar `password` ao enum `block_type`
 
 ```sql
-ALTER TABLE public.tenant_integrations REPLICA IDENTITY FULL;
-ALTER PUBLICATION supabase_realtime ADD TABLE public.tenant_integrations;
+ALTER TYPE public.block_type ADD VALUE IF NOT EXISTS 'password';
 ```
 
-Isso permite que o frontend receba eventos de `UPDATE` em tempo real quando o n8n chamar `integrations-mark-synced`.
+(Deve ser executado fora de transação — Postgres exige `COMMIT` antes de usar o novo valor; o sistema de migrations do Lovable lida com isso.)
 
-### 2. Frontend — `src/pages/dashboard/Integrations.tsx`
+### 2. Edge function `properties-api` — tornar inserção resiliente
 
-Adicionar dois mecanismos complementares dentro do componente:
+No `generateAutoBlocks`, agrupar inserts **por página** (em vez de batch único) e capturar erro por grupo, logando sem abortar o restante:
 
-**a) Subscription Realtime** (via `useEffect`):
-- Inscrever no canal `postgres_changes` filtrado por `tenant_id` do usuário (obtido via `useTenant`).
-- Em cada evento `UPDATE` na `tenant_integrations`, invalidar a query `["tenant_integrations"]` para o React Query refazer o fetch.
-- Cleanup: remover o canal no unmount.
+```ts
+for (const page of pages) {
+  const blocks = buildPageBlocks(page.page_key, details, address);
+  if (!blocks.length) continue;
+  const rows = blocks.map((b, i) => ({
+    page_id: page.id, type: b.type, data: b.data, position: i, source: "auto",
+  }));
+  const { error } = await admin.from("content_blocks").insert(rows);
+  if (error) console.error(`auto-blocks insert failed for page ${page.page_key}`, error);
+}
+```
 
-**b) Polling como fallback** (via opção do `useQuery`):
-- Adicionar `refetchInterval` dinâmico: se algum integration estiver com status `pending` ou `syncing`, refetch a cada **3 segundos**; caso contrário, desliga (`false`).
-- Adicionar `refetchOnWindowFocus: true` (já é o default, mas explicitar reforça o UX).
+Assim, se um tipo futuro voltar a ser inválido, só a página afetada falha.
 
-Resultado: assim que o n8n confirmar a conexão, o badge muda de "Sincronizando…" para "Conectado" em tempo real (via realtime); e mesmo que o WebSocket caia, o polling de 3s garante que a UI atualize em poucos segundos enquanto o status estiver pendente.
+### 3. Verificar `property_details`
 
-### 3. Toast de feedback (opcional, mesma tela)
+Investigar se a linha em `property_details` para `PH02F` existe (a query inicial retornou vazia). Se não existir, há um bug no upsert (campo `onConflict: "property_id"` exige unique constraint). Confirmar e, se necessário, garantir a constraint:
 
-Quando o realtime detectar que o status mudou de `pending` para `connected` ou `error`, exibir um toast:
-- `connected` → `toast.success("Conexão estabelecida com sucesso.")`
-- `error` → `toast.error("Falha ao conectar. Verifique as credenciais.")`
+```sql
+ALTER TABLE public.property_details
+  ADD CONSTRAINT property_details_property_id_unique UNIQUE (property_id);
+```
 
-Para isso, manter em `useRef` o status anterior por provider e comparar no callback do realtime.
+(Só aplicar se ainda não existir.)
+
+### 4. Reprocessar o imóvel `PH02F`
+
+Após aplicar as mudanças, reenviar o payload via n8n (ou chamar internamente via curl) para popular as 9 páginas (checkin, checkout, wifi, lock_code, location, rules, parking, trash, emergency, contacts) com os blocos automáticos.
 
 ## Arquivos afetados
 
-- **Nova migração SQL** (habilitar realtime na tabela)
-- `src/pages/dashboard/Integrations.tsx` (subscription + polling + toast de transição)
+- Nova migration SQL (enum + constraint se faltar)
+- `supabase/functions/properties-api/index.ts` (insert resiliente por página)
 
-## Observações
+## Resultado esperado
 
-- Nenhuma mudança nas edge functions é necessária — o n8n continua chamando `integrations-mark-synced` exatamente como hoje.
-- O polling só fica ativo quando há integração em estado transitório, então não há custo extra em tela ociosa.
-- A RLS atual da `tenant_integrations` (`Tenant views own integrations`) já garante que o realtime entregue só os eventos do tenant do usuário.
+Ao reenviar o payload do `PH02F`:
+- Página **Wi-Fi**: bloco texto "Rede: abmap107" (sem senha pois `wifi_password: null`)
+- Página **Senha Fechadura**: bloco password "NÃO POSSUI"
+- Página **Check-in**: bloco texto "Horário de check-in: 15:00"
+- Página **Check-out**: bloco texto "Horário de check-out: 12:00"
+- Página **Localização**: endereço + botão Google Maps
+- Página **Contatos**: "Interfone da portaria: 94"
