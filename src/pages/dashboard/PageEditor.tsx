@@ -135,6 +135,55 @@ export default function PageEditor() {
     setLocalBlocks(arrayMove(localBlocks, oldIdx, newIdx));
   };
 
+  // ---- Copiar / Colar entre páginas ----
+  const [clipboard, setClipboard] = useState<ClipboardPayload | null>(null);
+  const [pasteOpen, setPasteOpen] = useState(false);
+
+  useEffect(() => {
+    if (tenant?.id) setClipboard(readClipboard(tenant.id));
+  }, [tenant?.id, pasteOpen]);
+
+  const handleCopy = () => {
+    if (!tenant?.id || !data) return;
+    if (localBlocks.length === 0) {
+      toast.error("Não há blocos para copiar nesta página.");
+      return;
+    }
+    const payload: ClipboardPayload = {
+      copiedAt: new Date().toISOString(),
+      sourcePropertyId: data.page.properties.id,
+      sourcePropertyName: data.page.properties.name,
+      sourcePageKey: data.page.page_key,
+      sourcePageTitle: data.page.title,
+      blocks: localBlocks.map((b, i) => ({ type: b.type, data: b.data, position: i })),
+    };
+    try {
+      localStorage.setItem(clipboardKey(tenant.id), JSON.stringify(payload));
+      setClipboard(payload);
+      toast.success(`${payload.blocks.length} ${payload.blocks.length === 1 ? "bloco copiado" : "blocos copiados"}`);
+    } catch (e: any) {
+      toast.error("Não foi possível copiar: " + (e?.message ?? "erro desconhecido"));
+    }
+  };
+
+  const applyPaste = async (mode: "replace" | "append") => {
+    if (!clipboard) return;
+    const pasted = clipboard.blocks.map((b) => ({
+      id: `tmp-${crypto.randomUUID()}`,
+      type: b.type,
+      data: b.data,
+      position: 0,
+    }));
+    const next = mode === "replace" ? pasted : [...localBlocks, ...pasted];
+    const reindexed = next.map((b, i) => ({ ...b, position: i }));
+    setLocalBlocks(reindexed);
+    setPasteOpen(false);
+    await persistBlocks(reindexed);
+    toast.success(
+      mode === "replace" ? "Blocos substituídos com sucesso" : "Blocos adicionados ao final",
+    );
+  };
+
   const publicUrl = useMemo(() => data?.page ? `${window.location.origin}/g/${data.page.properties.public_slug}` : "", [data]);
 
   if (isLoading || !data) {
