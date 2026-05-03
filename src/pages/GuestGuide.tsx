@@ -101,14 +101,7 @@ export default function GuestGuide() {
     return <div className="min-h-screen grid place-items-center bg-background"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>;
   }
   if (!data) {
-    return (
-      <div className="min-h-screen grid place-items-center text-center px-4">
-        <div>
-          <h1 className="text-2xl font-semibold mb-2">Guia não encontrado</h1>
-          <p className="text-muted-foreground text-sm">Este link pode ter expirado ou estar despublicado.</p>
-        </div>
-      </div>
-    );
+    return <GuestLinkExpired slug={slug!} />;
   }
 
   const primaryColor = tenant?.primary_color ?? "#0F1E3D";
