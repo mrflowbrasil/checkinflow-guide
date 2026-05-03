@@ -66,7 +66,8 @@ export default function Settings() {
       const { error } = await supabase.from("tenants").update({
         name, primary_color: primary, secondary_color: secondary, template,
         logo_url: logoUrl, show_logo: showLogo,
-      }).eq("id", tenant.id);
+        support_whatsapp: supportWhatsapp.trim() || null,
+      } as any).eq("id", tenant.id);
       if (error) throw error;
     },
     onSuccess: () => {
