@@ -39,17 +39,20 @@ const PROVIDER_LABEL: Record<string, string> = {
 export default function PropertiesList() {
   const qc = useQueryClient();
   const { data: usage } = usePlanUsage();
+  const { data: tenant } = useTenant();
   const [duplicatingId, setDuplicatingId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [importing, setImporting] = useState<string | null>(null);
 
   const { data: integrations } = useQuery<IntegrationRow[]>({
-    queryKey: ["tenant_integrations"],
+    queryKey: ["tenant_integrations", tenant?.id],
+    enabled: !!tenant?.id,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("tenant_integrations")
-        .select("provider, status");
+        .select("provider, status")
+        .eq("tenant_id", tenant!.id);
       if (error) throw error;
       return (data ?? []) as IntegrationRow[];
     },
