@@ -307,6 +307,26 @@ export default function PageEditor() {
         </AlertDialogContent>
       </AlertDialog>
 
+      <AlertDialog open={rotatePromptOpen} onOpenChange={setRotatePromptOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Você atualizou a senha da fechadura</AlertDialogTitle>
+            <AlertDialogDescription>
+              Por segurança, recomendamos gerar um novo link de acesso. Isso vai invalidar imediatamente
+              o link anterior, garantindo que apenas hóspedes futuros vejam a nova senha.
+              Hóspedes que receberam o link antigo verão uma página de "link expirado".
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={rotating}>Manter link atual</AlertDialogCancel>
+            <AlertDialogAction onClick={handleRotateSlug} disabled={rotating}>
+              {rotating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Gerar novo link
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <Tabs defaultValue="edit">
         <TabsList className="mb-4">
           <TabsTrigger value="edit">Editar</TabsTrigger>
