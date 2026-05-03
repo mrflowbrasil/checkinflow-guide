@@ -156,16 +156,16 @@ export default function Settings() {
 
         <div>
           <Label className="mb-3 block">Template</Label>
-          <RadioGroup value={template} onValueChange={(v) => setTemplate(v as any)} className="grid sm:grid-cols-3 gap-3">
-            {TEMPLATES.map((t) => (
-              <label key={t.value} className={`relative cursor-pointer rounded-xl border-2 p-3 transition-all ${template === t.value ? "border-accent ring-2 ring-accent/20" : "border-border"}`}>
-                <RadioGroupItem value={t.value} className="sr-only" />
-                <div className="aspect-video rounded-lg mb-2" style={{ background: t.preview }} />
-                <div className="font-medium text-sm">{t.label}</div>
-                <div className="text-xs text-muted-foreground">{t.desc}</div>
-              </label>
-            ))}
-          </RadioGroup>
+        <div className="rounded-lg border bg-muted/30 p-4 flex items-start justify-between gap-3">
+          <div>
+            <div className="font-medium text-sm">Template do guia</div>
+            <div className="text-xs text-muted-foreground mt-0.5">
+              Atual: <span className="font-medium text-foreground">{template}</span>. Troque o visual completo na biblioteca.
+            </div>
+          </div>
+          <Button asChild variant="outline" size="sm">
+            <a href="/app/templates">Ver biblioteca</a>
+          </Button>
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
