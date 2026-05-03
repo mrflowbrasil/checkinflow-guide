@@ -122,6 +122,13 @@ function BlockBody({ block, tenantId, onChange }: { block: BlockBase; tenantId: 
       );
     case "list":
       return <ListBody data={d} onChange={onChange} />;
+    case "divider":
+      return (
+        <div className="py-2">
+          <hr className="border-t border-border" />
+          <p className="text-xs text-muted-foreground mt-2 text-center">Linha divisória — sem configuração</p>
+        </div>
+      );
     case "password":
       return (
         <div className="space-y-2">
@@ -316,7 +323,7 @@ function ListBody({ data, onChange }: any) {
 }
 
 export function AddBlockMenu({ onAdd }: { onAdd: (type: BlockBase["type"]) => void }) {
-  const types: BlockBase["type"][] = ["text", "subtitle", "image", "video", "steps", "tip", "button", "list", "password"];
+  const types: BlockBase["type"][] = ["text", "subtitle", "image", "video", "steps", "tip", "button", "list", "password", "divider"];
   return (
     <div className="grid grid-cols-2 gap-2 p-3 w-full">
       {types.map((t) => (
