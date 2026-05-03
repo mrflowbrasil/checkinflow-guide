@@ -118,8 +118,8 @@ export function BlockRenderer({ block, primaryColor }: { block: BlockBase; prima
     case "divider":
       return (
         <hr
-          className="my-2 border-0 h-px"
-          style={{ background: "hsl(var(--guide-fg) / 0.15)" }}
+          className="my-6 mx-auto border-0 h-px w-3/5"
+          style={{ background: "hsl(var(--guide-fg) / 0.25)" }}
         />
       );
 
