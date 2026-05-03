@@ -708,6 +708,7 @@ export type Database = {
         | "button"
         | "list"
         | "password"
+        | "divider"
       property_status: "active" | "inactive"
       tenant_template: "clean" | "dark" | "luxury"
     }
@@ -848,6 +849,7 @@ export const Constants = {
         "button",
         "list",
         "password",
+        "divider",
       ],
       property_status: ["active", "inactive"],
       tenant_template: ["clean", "dark", "luxury"],
