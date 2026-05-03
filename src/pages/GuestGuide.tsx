@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { getPageIcon } from "@/lib/page-icons";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { GuestPagePreview } from "@/components/guest/GuestPagePreview";
+import { GuestLinkExpired } from "@/components/guest/GuestLinkExpired";
 import { InstallAppButton } from "@/components/guest/InstallAppButton";
 
 export default function GuestGuide() {
