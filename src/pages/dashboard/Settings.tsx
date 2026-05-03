@@ -7,12 +7,11 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Loader2, Palette, Upload, Trash2, ImageIcon, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { LogoCropDialog } from "@/components/property/LogoCropDialog";
 
-const TEMPLATES: { value: "clean" | "dark" | "luxury"; label: string; desc: string; preview: string }[] = [
+
   { value: "clean", label: "Clean", desc: "Branco + navy + sombras suaves.", preview: "linear-gradient(135deg, #fff 50%, #0F1E3D 50%)" },
   { value: "dark", label: "Dark", desc: "Fundo escuro, alto contraste.", preview: "linear-gradient(135deg, #0F1E3D 50%, #1a2c52 50%)" },
   { value: "luxury", label: "Luxury", desc: "Creme, serifa, dourado.", preview: "linear-gradient(135deg, #f3ebd9 50%, #c9a35b 50%)" },
@@ -64,7 +63,7 @@ export default function Settings() {
     mutationFn: async () => {
       if (!tenant) return;
       const { error } = await supabase.from("tenants").update({
-        name, primary_color: primary, secondary_color: secondary, template,
+        name, primary_color: primary, secondary_color: secondary,
         logo_url: logoUrl, show_logo: showLogo,
         support_whatsapp: supportWhatsapp.trim() || null,
       } as any).eq("id", tenant.id);
