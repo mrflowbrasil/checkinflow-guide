@@ -154,13 +154,11 @@ export default function Settings() {
           <h2 className="font-semibold">Aparência dos guias</h2>
         </div>
 
-        <div>
-          <Label className="mb-3 block">Template</Label>
         <div className="rounded-lg border bg-muted/30 p-4 flex items-start justify-between gap-3">
           <div>
             <div className="font-medium text-sm">Template do guia</div>
             <div className="text-xs text-muted-foreground mt-0.5">
-              Atual: <span className="font-medium text-foreground">{template}</span>. Troque o visual completo na biblioteca.
+              Atual: <span className="font-medium text-foreground">{template}</span>. Troque o visual completo na biblioteca de templates.
             </div>
           </div>
           <Button asChild variant="outline" size="sm">
