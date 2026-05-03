@@ -12,11 +12,6 @@ import { toast } from "sonner";
 import { LogoCropDialog } from "@/components/property/LogoCropDialog";
 
 
-  { value: "clean", label: "Clean", desc: "Branco + navy + sombras suaves.", preview: "linear-gradient(135deg, #fff 50%, #0F1E3D 50%)" },
-  { value: "dark", label: "Dark", desc: "Fundo escuro, alto contraste.", preview: "linear-gradient(135deg, #0F1E3D 50%, #1a2c52 50%)" },
-  { value: "luxury", label: "Luxury", desc: "Creme, serifa, dourado.", preview: "linear-gradient(135deg, #f3ebd9 50%, #c9a35b 50%)" },
-];
-
 export default function Settings() {
   const { data: tenant, refetch } = useTenant();
   const qc = useQueryClient();
@@ -24,7 +19,7 @@ export default function Settings() {
   const [name, setName] = useState(tenant?.name ?? "");
   const [primary, setPrimary] = useState(tenant?.primary_color ?? "#0F1E3D");
   const [secondary, setSecondary] = useState(tenant?.secondary_color ?? "#FFFFFF");
-  const [template, setTemplate] = useState<"clean" | "dark" | "luxury">(tenant?.template ?? "clean");
+  const [template] = useState<string>(tenant?.template ?? "clean");
   const [logoUrl, setLogoUrl] = useState<string | null>(tenant?.logo_url ?? null);
   const [showLogo, setShowLogo] = useState<boolean>(tenant?.show_logo ?? true);
   const [supportWhatsapp, setSupportWhatsapp] = useState<string>((tenant as any)?.support_whatsapp ?? "");
