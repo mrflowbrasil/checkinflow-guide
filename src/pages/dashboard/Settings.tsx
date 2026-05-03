@@ -186,6 +186,28 @@ export default function Settings() {
         </div>
       </Card>
 
+      <Card className="p-6 shadow-card space-y-4">
+        <div className="flex items-center gap-2">
+          <MessageCircle className="h-4 w-4 text-accent-foreground" />
+          <h2 className="font-semibold">Atendimento ao hóspede</h2>
+        </div>
+        <p className="text-sm text-muted-foreground -mt-2">
+          Quando você gera um novo link de um imóvel, hóspedes que acessam o link antigo veem uma página de "link expirado".
+          O número abaixo será usado no botão "Ajuda" dessa página.
+        </p>
+        <div className="space-y-2">
+          <Label htmlFor="support_whatsapp">WhatsApp de atendimento</Label>
+          <Input
+            id="support_whatsapp"
+            value={supportWhatsapp}
+            onChange={(e) => setSupportWhatsapp(e.target.value)}
+            placeholder="Ex: 5511999998888 (DDI + DDD + número, só dígitos)"
+            inputMode="numeric"
+          />
+          <p className="text-xs text-muted-foreground">Deixe em branco para esconder o botão de ajuda.</p>
+        </div>
+      </Card>
+
       <div className="flex justify-end">
         <Button onClick={() => save.mutate()} disabled={save.isPending}>
           {save.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
