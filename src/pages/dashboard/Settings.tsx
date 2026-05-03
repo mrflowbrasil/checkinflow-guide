@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Loader2, Palette, Upload, Trash2, ImageIcon } from "lucide-react";
+import { Loader2, Palette, Upload, Trash2, ImageIcon, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { LogoCropDialog } from "@/components/property/LogoCropDialog";
 
