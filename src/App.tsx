@@ -20,6 +20,7 @@ import PageEditor from "./pages/dashboard/PageEditor";
 import Settings from "./pages/dashboard/Settings";
 import Billing from "./pages/dashboard/Billing";
 import Integrations from "./pages/dashboard/Integrations";
+import Templates from "./pages/dashboard/Templates";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -48,6 +49,7 @@ const App = () => (
               <Route path="settings" element={<Settings />} />
               <Route path="billing" element={<Billing />} />
               <Route path="integrations" element={<Integrations />} />
+              <Route path="templates" element={<Templates />} />
             </Route>
 
             <Route path="/admin" element={<RequireAuth><AppShell /></RequireAuth>}>

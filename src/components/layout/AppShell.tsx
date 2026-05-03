@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Home, Settings, LogOut, Shield, Menu, CreditCard, Plug } from "lucide-react";
+import { LayoutDashboard, Home, Settings, LogOut, Shield, Menu, CreditCard, Plug, Sparkles } from "lucide-react";
 import { PaymentTestModeBanner } from "@/components/billing/PaymentTestModeBanner";
 import mrFlowLogo from "@/assets/mrflow-logo.png";
 import { useAuth } from "@/hooks/useAuth";
@@ -15,6 +15,7 @@ import { useState } from "react";
 const NAV = [
   { to: "/app", label: "Dashboard", icon: LayoutDashboard, end: true },
   { to: "/app/properties", label: "Imóveis", icon: Home },
+  { to: "/app/templates", label: "Templates", icon: Sparkles },
   { to: "/app/integrations", label: "Integrações", icon: Plug },
   { to: "/app/billing", label: "Planos", icon: CreditCard },
   { to: "/app/settings", label: "Configurações", icon: Settings },
