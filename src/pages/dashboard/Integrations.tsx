@@ -62,11 +62,13 @@ export default function Integrations() {
   const prevStatusRef = useRef<Record<string, string | null>>({});
 
   const { data: integrations } = useQuery({
-    queryKey: ["tenant_integrations"],
+    queryKey: ["tenant_integrations", tenant?.id],
+    enabled: !!tenant?.id,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("tenant_integrations")
-        .select("provider, system_url, status, last_sync_at, last_error");
+        .select("provider, system_url, status, last_sync_at, last_error")
+        .eq("tenant_id", tenant!.id);
       if (error) throw error;
       return data;
     },
