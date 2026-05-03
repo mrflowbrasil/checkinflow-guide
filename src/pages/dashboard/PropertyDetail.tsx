@@ -6,7 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Copy, Download, ExternalLink, Pencil, QrCode as QrIcon, Loader2, GripVertical } from "lucide-react";
+import { ArrowLeft, Copy, Download, ExternalLink, Pencil, QrCode as QrIcon, Loader2, GripVertical, RefreshCw } from "lucide-react";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { getPageIcon } from "@/lib/page-icons";
 import QRCode from "qrcode";
