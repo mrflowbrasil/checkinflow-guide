@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Loader2, Palette, Upload, Trash2, ImageIcon } from "lucide-react";
+import { Loader2, Palette, Upload, Trash2, ImageIcon, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { LogoCropDialog } from "@/components/property/LogoCropDialog";
 
@@ -28,6 +28,7 @@ export default function Settings() {
   const [template, setTemplate] = useState<"clean" | "dark" | "luxury">(tenant?.template ?? "clean");
   const [logoUrl, setLogoUrl] = useState<string | null>(tenant?.logo_url ?? null);
   const [showLogo, setShowLogo] = useState<boolean>(tenant?.show_logo ?? true);
+  const [supportWhatsapp, setSupportWhatsapp] = useState<string>((tenant as any)?.support_whatsapp ?? "");
   const [uploading, setUploading] = useState(false);
   const [cropSrc, setCropSrc] = useState<string | null>(null);
 
@@ -65,7 +66,8 @@ export default function Settings() {
       const { error } = await supabase.from("tenants").update({
         name, primary_color: primary, secondary_color: secondary, template,
         logo_url: logoUrl, show_logo: showLogo,
-      }).eq("id", tenant.id);
+        support_whatsapp: supportWhatsapp.trim() || null,
+      } as any).eq("id", tenant.id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -181,6 +183,28 @@ export default function Settings() {
               <Input value={secondary} onChange={(e) => setSecondary(e.target.value)} maxLength={7} />
             </div>
           </div>
+        </div>
+      </Card>
+
+      <Card className="p-6 shadow-card space-y-4">
+        <div className="flex items-center gap-2">
+          <MessageCircle className="h-4 w-4 text-accent-foreground" />
+          <h2 className="font-semibold">Atendimento ao hóspede</h2>
+        </div>
+        <p className="text-sm text-muted-foreground -mt-2">
+          Quando você gera um novo link de um imóvel, hóspedes que acessam o link antigo veem uma página de "link expirado".
+          O número abaixo será usado no botão "Ajuda" dessa página.
+        </p>
+        <div className="space-y-2">
+          <Label htmlFor="support_whatsapp">WhatsApp de atendimento</Label>
+          <Input
+            id="support_whatsapp"
+            value={supportWhatsapp}
+            onChange={(e) => setSupportWhatsapp(e.target.value)}
+            placeholder="Ex: 5511999998888 (DDI + DDD + número, só dígitos)"
+            inputMode="numeric"
+          />
+          <p className="text-xs text-muted-foreground">Deixe em branco para esconder o botão de ajuda.</p>
         </div>
       </Card>
 

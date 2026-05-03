@@ -6,7 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Copy, Download, ExternalLink, Pencil, QrCode as QrIcon, Loader2, GripVertical } from "lucide-react";
+import { ArrowLeft, Copy, Download, ExternalLink, Pencil, QrCode as QrIcon, Loader2, GripVertical, RefreshCw } from "lucide-react";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { getPageIcon } from "@/lib/page-icons";
 import QRCode from "qrcode";
@@ -74,6 +78,19 @@ export default function PropertyDetail() {
       toast.error(e.message);
       qc.invalidateQueries({ queryKey: ["property", id] });
     },
+  });
+
+  const rotateSlug = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase.rpc("rotate_property_slug", { _property_id: id! });
+      if (error) throw error;
+      return data as string;
+    },
+    onSuccess: (newSlug) => {
+      qc.invalidateQueries({ queryKey: ["property", id] });
+      toast.success("Novo link gerado! O link anterior foi invalidado.");
+    },
+    onError: (e: any) => toast.error(e.message ?? "Erro ao gerar novo link"),
   });
 
   const sensors = useSensors(
@@ -181,6 +198,30 @@ export default function PropertyDetail() {
           <div className="flex flex-wrap gap-2">
             <Button size="sm" onClick={copyLink}><Copy className="mr-2 h-4 w-4" /> Copiar link</Button>
             <Button size="sm" variant="outline" onClick={downloadQR}><Download className="mr-2 h-4 w-4" /> Baixar QR Code</Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button size="sm" variant="outline" disabled={rotateSlug.isPending}>
+                  {rotateSlug.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
+                  Gerar novo link
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Gerar um novo link de acesso?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Isso vai criar uma nova URL para este guia e <strong>invalidar imediatamente o link anterior</strong>.
+                    Hóspedes que receberam o link antigo não conseguirão mais acessar — eles verão uma página de "link expirado".
+                    Use isso quando trocar a senha da fechadura ou em qualquer mudança sensível.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => rotateSlug.mutate()}>
+                    Gerar novo link
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
           {property.status !== "active" && (
             <p className="text-xs text-muted-foreground">⚠️ O imóvel está despublicado. O link só funcionará após publicar.</p>

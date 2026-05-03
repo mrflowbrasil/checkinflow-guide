@@ -361,6 +361,32 @@ export type Database = {
           },
         ]
       }
+      property_slug_history: {
+        Row: {
+          property_id: string
+          rotated_at: string
+          slug: string
+        }
+        Insert: {
+          property_id: string
+          rotated_at?: string
+          slug: string
+        }
+        Update: {
+          property_id?: string
+          rotated_at?: string
+          slug?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_slug_history_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subscription_plans: {
         Row: {
           code: string
@@ -578,6 +604,7 @@ export type Database = {
           slug: string
           stripe_customer_id: string | null
           stripe_subscription_id: string | null
+          support_whatsapp: string | null
           template: Database["public"]["Enums"]["tenant_template"]
           updated_at: string
         }
@@ -596,6 +623,7 @@ export type Database = {
           slug: string
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
+          support_whatsapp?: string | null
           template?: Database["public"]["Enums"]["tenant_template"]
           updated_at?: string
         }
@@ -614,6 +642,7 @@ export type Database = {
           slug?: string
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
+          support_whatsapp?: string | null
           template?: Database["public"]["Enums"]["tenant_template"]
           updated_at?: string
         }
@@ -693,6 +722,7 @@ export type Database = {
         Returns: boolean
       }
       is_property_active: { Args: { _property_id: string }; Returns: boolean }
+      rotate_property_slug: { Args: { _property_id: string }; Returns: string }
       tenant_property_count: { Args: { _tenant_id: string }; Returns: number }
       unaccent_safe: { Args: { input: string }; Returns: string }
     }
