@@ -73,6 +73,9 @@ export default function PageEditor() {
     if (data?.blocks) setLocalBlocks(data.blocks);
   }, [data?.blocks]);
 
+  const [rotatePromptOpen, setRotatePromptOpen] = useState(false);
+  const [rotating, setRotating] = useState(false);
+
   const persistBlocks = async (blocks: any[]) => {
     if (!data?.page.id) return;
     setSavingState("saving");
@@ -95,6 +98,31 @@ export default function PageEditor() {
     setSavingState("saved");
     setTimeout(() => setSavingState("idle"), 1500);
     qc.invalidateQueries({ queryKey: ["page", id, pageKey] });
+    // After saving the lock_code page, prompt to rotate the public link
+    if (pageKey === "lock_code") {
+      setRotatePromptOpen(true);
+    }
+  };
+
+  const handleRotateSlug = async () => {
+    if (!id) return;
+    setRotating(true);
+    const { data: newSlug, error } = await supabase.rpc("rotate_property_slug", { _property_id: id });
+    setRotating(false);
+    if (error) {
+      toast.error(error.message ?? "Erro ao gerar novo link");
+      return;
+    }
+    setRotatePromptOpen(false);
+    qc.invalidateQueries({ queryKey: ["page", id, pageKey] });
+    qc.invalidateQueries({ queryKey: ["property", id] });
+    const newUrl = `${window.location.origin}/g/${newSlug}`;
+    try {
+      await navigator.clipboard.writeText(newUrl);
+      toast.success("Novo link gerado e copiado para a área de transferência.");
+    } catch {
+      toast.success("Novo link gerado: " + newUrl);
+    }
   };
 
   const isDirty = useMemo(
