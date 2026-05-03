@@ -117,10 +117,12 @@ export function BlockRenderer({ block, primaryColor }: { block: BlockBase; prima
 
     case "divider":
       return (
-        <hr
-          className="my-6 mx-auto border-0 h-px w-3/5"
-          style={{ background: "hsl(var(--guide-fg) / 0.25)" }}
-        />
+        <div role="separator" aria-orientation="horizontal" className="py-6">
+          <div
+            className="mx-auto h-0.5 w-4/5 rounded-full"
+            style={{ background: "hsl(var(--guide-fg) / 0.38)" }}
+          />
+        </div>
       );
 
     default:
