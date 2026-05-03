@@ -32,13 +32,19 @@ serve(async (req) => {
       return json({ error: "invalid_provider" }, 400);
     }
 
-    await admin
+    const { error: delErr, count } = await admin
       .from("tenant_integrations")
-      .delete()
+      .delete({ count: "exact" })
       .eq("tenant_id", profile.tenant_id)
       .eq("provider", provider);
 
-    return json({ ok: true });
+    if (delErr) {
+      console.error("disconnect delete error", delErr);
+      return json({ error: delErr.message }, 500);
+    }
+    console.log("disconnect deleted rows:", count, "tenant:", profile.tenant_id, "provider:", provider);
+
+    return json({ ok: true, deleted: count ?? 0 });
   } catch (e: any) {
     return json({ error: e.message }, 500);
   }
