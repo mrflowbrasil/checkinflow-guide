@@ -115,6 +115,14 @@ export function BlockRenderer({ block, primaryColor }: { block: BlockBase; prima
     case "password":
       return <PasswordBlock data={block.data} primaryColor={primaryColor} />;
 
+    case "divider":
+      return (
+        <hr
+          className="my-2 border-0 h-px"
+          style={{ background: "hsl(var(--guide-fg) / 0.15)" }}
+        />
+      );
+
     default:
       return null;
   }
