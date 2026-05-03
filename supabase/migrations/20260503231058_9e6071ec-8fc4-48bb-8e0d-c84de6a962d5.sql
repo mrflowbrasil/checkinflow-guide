@@ -1,0 +1,12 @@
+ALTER TYPE public.tenant_template ADD VALUE IF NOT EXISTS 'boho_fun';
+ALTER TYPE public.tenant_template ADD VALUE IF NOT EXISTS 'pop_vibes';
+ALTER TYPE public.tenant_template ADD VALUE IF NOT EXISTS 'arcade';
+ALTER TYPE public.tenant_template ADD VALUE IF NOT EXISTS 'jungle';
+ALTER TYPE public.tenant_template ADD VALUE IF NOT EXISTS 'serene_coast';
+ALTER TYPE public.tenant_template ADD VALUE IF NOT EXISTS 'coastal_boho';
+ALTER TYPE public.tenant_template ADD VALUE IF NOT EXISTS 'studio_minimal';
+ALTER TYPE public.tenant_template ADD VALUE IF NOT EXISTS 'aegean';
+ALTER TYPE public.tenant_template ADD VALUE IF NOT EXISTS 'surf';
+ALTER TYPE public.tenant_template ADD VALUE IF NOT EXISTS 'urban_oasis';
+ALTER TYPE public.tenant_template ADD VALUE IF NOT EXISTS 'modular';
+ALTER TYPE public.tenant_template ADD VALUE IF NOT EXISTS 'monochrome';

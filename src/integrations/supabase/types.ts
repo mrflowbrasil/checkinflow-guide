@@ -740,7 +740,22 @@ export type Database = {
         | "password"
         | "divider"
       property_status: "active" | "inactive"
-      tenant_template: "clean" | "dark" | "luxury"
+      tenant_template:
+        | "clean"
+        | "dark"
+        | "luxury"
+        | "boho_fun"
+        | "pop_vibes"
+        | "arcade"
+        | "jungle"
+        | "serene_coast"
+        | "coastal_boho"
+        | "studio_minimal"
+        | "aegean"
+        | "surf"
+        | "urban_oasis"
+        | "modular"
+        | "monochrome"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -882,7 +897,23 @@ export const Constants = {
         "divider",
       ],
       property_status: ["active", "inactive"],
-      tenant_template: ["clean", "dark", "luxury"],
+      tenant_template: [
+        "clean",
+        "dark",
+        "luxury",
+        "boho_fun",
+        "pop_vibes",
+        "arcade",
+        "jungle",
+        "serene_coast",
+        "coastal_boho",
+        "studio_minimal",
+        "aegean",
+        "surf",
+        "urban_oasis",
+        "modular",
+        "monochrome",
+      ],
     },
   },
 } as const

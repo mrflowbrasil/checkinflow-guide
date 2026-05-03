@@ -7,16 +7,10 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Loader2, Palette, Upload, Trash2, ImageIcon, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { LogoCropDialog } from "@/components/property/LogoCropDialog";
 
-const TEMPLATES: { value: "clean" | "dark" | "luxury"; label: string; desc: string; preview: string }[] = [
-  { value: "clean", label: "Clean", desc: "Branco + navy + sombras suaves.", preview: "linear-gradient(135deg, #fff 50%, #0F1E3D 50%)" },
-  { value: "dark", label: "Dark", desc: "Fundo escuro, alto contraste.", preview: "linear-gradient(135deg, #0F1E3D 50%, #1a2c52 50%)" },
-  { value: "luxury", label: "Luxury", desc: "Creme, serifa, dourado.", preview: "linear-gradient(135deg, #f3ebd9 50%, #c9a35b 50%)" },
-];
 
 export default function Settings() {
   const { data: tenant, refetch } = useTenant();
@@ -25,7 +19,7 @@ export default function Settings() {
   const [name, setName] = useState(tenant?.name ?? "");
   const [primary, setPrimary] = useState(tenant?.primary_color ?? "#0F1E3D");
   const [secondary, setSecondary] = useState(tenant?.secondary_color ?? "#FFFFFF");
-  const [template, setTemplate] = useState<"clean" | "dark" | "luxury">(tenant?.template ?? "clean");
+  const [template] = useState<string>(tenant?.template ?? "clean");
   const [logoUrl, setLogoUrl] = useState<string | null>(tenant?.logo_url ?? null);
   const [showLogo, setShowLogo] = useState<boolean>(tenant?.show_logo ?? true);
   const [supportWhatsapp, setSupportWhatsapp] = useState<string>((tenant as any)?.support_whatsapp ?? "");
@@ -64,7 +58,7 @@ export default function Settings() {
     mutationFn: async () => {
       if (!tenant) return;
       const { error } = await supabase.from("tenants").update({
-        name, primary_color: primary, secondary_color: secondary, template,
+        name, primary_color: primary, secondary_color: secondary,
         logo_url: logoUrl, show_logo: showLogo,
         support_whatsapp: supportWhatsapp.trim() || null,
       } as any).eq("id", tenant.id);
@@ -154,18 +148,16 @@ export default function Settings() {
           <h2 className="font-semibold">Aparência dos guias</h2>
         </div>
 
-        <div>
-          <Label className="mb-3 block">Template</Label>
-          <RadioGroup value={template} onValueChange={(v) => setTemplate(v as any)} className="grid sm:grid-cols-3 gap-3">
-            {TEMPLATES.map((t) => (
-              <label key={t.value} className={`relative cursor-pointer rounded-xl border-2 p-3 transition-all ${template === t.value ? "border-accent ring-2 ring-accent/20" : "border-border"}`}>
-                <RadioGroupItem value={t.value} className="sr-only" />
-                <div className="aspect-video rounded-lg mb-2" style={{ background: t.preview }} />
-                <div className="font-medium text-sm">{t.label}</div>
-                <div className="text-xs text-muted-foreground">{t.desc}</div>
-              </label>
-            ))}
-          </RadioGroup>
+        <div className="rounded-lg border bg-muted/30 p-4 flex items-start justify-between gap-3">
+          <div>
+            <div className="font-medium text-sm">Template do guia</div>
+            <div className="text-xs text-muted-foreground mt-0.5">
+              Atual: <span className="font-medium text-foreground">{template}</span>. Troque o visual completo na biblioteca de templates.
+            </div>
+          </div>
+          <Button asChild variant="outline" size="sm">
+            <a href="/app/templates">Ver biblioteca</a>
+          </Button>
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
