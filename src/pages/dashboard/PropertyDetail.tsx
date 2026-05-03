@@ -80,6 +80,19 @@ export default function PropertyDetail() {
     },
   });
 
+  const rotateSlug = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase.rpc("rotate_property_slug", { _property_id: id! });
+      if (error) throw error;
+      return data as string;
+    },
+    onSuccess: (newSlug) => {
+      qc.invalidateQueries({ queryKey: ["property", id] });
+      toast.success("Novo link gerado! O link anterior foi invalidado.");
+    },
+    onError: (e: any) => toast.error(e.message ?? "Erro ao gerar novo link"),
+  });
+
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
