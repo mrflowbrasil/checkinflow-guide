@@ -314,6 +314,124 @@ export default function Integrations() {
         {renderCard("hostaway", hostaway)}
       </div>
 
+      {/* API Keys section */}
+      <Card className="p-5 shadow-card space-y-4">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Key className="h-5 w-5 text-accent-foreground" />
+            <div>
+              <h2 className="font-semibold text-lg">Chaves de API</h2>
+              <p className="text-xs text-muted-foreground">
+                Use no header <code className="px-1 py-0.5 rounded bg-muted">X-API-Key</code> para autenticar chamadas externas (n8n, scripts).
+              </p>
+            </div>
+          </div>
+          <Button size="sm" onClick={() => setCreateKeyOpen(true)}>
+            <Plus className="h-4 w-4 mr-1" /> Nova chave
+          </Button>
+        </div>
+
+        {apiKeys.length === 0 ? (
+          <p className="text-sm text-muted-foreground py-4 text-center border border-dashed rounded-md">
+            Nenhuma chave ativa. Crie uma para integrar com sistemas externos.
+          </p>
+        ) : (
+          <ul className="divide-y divide-border rounded-md border">
+            {apiKeys.map((k) => (
+              <li key={k.id} className="flex items-center justify-between gap-3 p-3">
+                <div className="min-w-0">
+                  <p className="font-medium text-sm truncate">{k.name}</p>
+                  <p className="text-xs text-muted-foreground font-mono truncate">{k.key_prefix}…</p>
+                  <p className="text-[11px] text-muted-foreground">
+                    Criada em {new Date(k.created_at).toLocaleDateString("pt-BR")} ·{" "}
+                    {k.last_used_at
+                      ? `usada em ${new Date(k.last_used_at).toLocaleDateString("pt-BR")}`
+                      : "nunca usada"}
+                  </p>
+                </div>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="text-destructive hover:text-destructive"
+                  onClick={() => setRevokeTarget(k)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Card>
+
+      <Dialog open={createKeyOpen} onOpenChange={setCreateKeyOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Nova chave de API</DialogTitle>
+            <DialogDescription>Dê um nome para identificar onde esta chave será usada.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-1.5">
+            <Label htmlFor="key-name">Nome</Label>
+            <Input
+              id="key-name"
+              placeholder="Ex.: n8n produção"
+              value={newKeyName}
+              onChange={(e) => setNewKeyName(e.target.value)}
+              maxLength={60}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setCreateKeyOpen(false)}>Cancelar</Button>
+            <Button onClick={createKey} disabled={creatingKey}>
+              {creatingKey && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Gerar chave
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!revealedKey} onOpenChange={(o) => !o && setRevealedKey(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Chave criada: {revealedKey?.name}</DialogTitle>
+            <DialogDescription>
+              Copie e guarde em local seguro. Por segurança, ela não será exibida novamente.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="rounded-md border bg-muted/40 p-3 flex items-center gap-2">
+            <code className="text-xs flex-1 break-all font-mono">{revealedKey?.key}</code>
+            <Button size="sm" variant="outline" onClick={() => revealedKey && copyKey(revealedKey.key)}>
+              <Copy className="h-4 w-4" />
+            </Button>
+          </div>
+          <div className="rounded-md border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-900 dark:text-amber-200">
+            ⚠️ Esta chave dá acesso à API do seu workspace. Não compartilhe publicamente nem comite em repositórios.
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setRevealedKey(null)}>Entendi, fechar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={!!revokeTarget} onOpenChange={(o) => !o && setRevokeTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Revogar chave "{revokeTarget?.name}"?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Qualquer sistema usando esta chave parará de funcionar imediatamente. Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={doRevoke}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Revogar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <Dialog open={!!openProvider} onOpenChange={(o) => !o && setOpenProvider(null)}>
         <DialogContent>
           <DialogHeader>
