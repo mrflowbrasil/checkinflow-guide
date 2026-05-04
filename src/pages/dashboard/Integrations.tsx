@@ -176,6 +176,85 @@ export default function Integrations() {
     qc.invalidateQueries({ queryKey: ["tenant_integrations"] });
   };
 
+  // ---------- API Keys ----------
+  type ApiKeyRow = { id: string; name: string; key_prefix: string; created_at: string; last_used_at: string | null };
+  const [newKeyName, setNewKeyName] = useState("");
+  const [creatingKey, setCreatingKey] = useState(false);
+  const [createKeyOpen, setCreateKeyOpen] = useState(false);
+  const [revealedKey, setRevealedKey] = useState<{ name: string; key: string } | null>(null);
+  const [revokeTarget, setRevokeTarget] = useState<ApiKeyRow | null>(null);
+
+  const { data: apiKeysData } = useQuery({
+    queryKey: ["tenant_api_keys", tenant?.id],
+    enabled: !!tenant?.id,
+    queryFn: async () => {
+      const { data, error } = await supabase.functions.invoke("tenant-api-keys", { method: "GET" });
+      if (error) throw error;
+      return (data?.items ?? []) as ApiKeyRow[];
+    },
+  });
+  const apiKeys = apiKeysData ?? [];
+
+  const createKey = async () => {
+    setCreatingKey(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("tenant-api-keys", {
+        method: "POST",
+        body: { name: newKeyName.trim() || "API Key" },
+      });
+      if (error) throw error;
+      if (!data?.api_key) throw new Error("Falha ao gerar chave");
+      setRevealedKey({ name: data.name, key: data.api_key });
+      setCreateKeyOpen(false);
+      setNewKeyName("");
+      qc.invalidateQueries({ queryKey: ["tenant_api_keys"] });
+    } catch (e: any) {
+      toast.error(e.message ?? "Erro ao criar chave");
+    } finally {
+      setCreatingKey(false);
+    }
+  };
+
+  const revokeKey = async (id: string) => {
+    const { error } = await supabase.functions.invoke("tenant-api-keys", {
+      method: "DELETE",
+      body: null as any,
+      headers: {} as any,
+    } as any);
+    // supabase-js doesn't expose query params for invoke; use fetch directly
+    if (error) toast.error(error.message);
+  };
+
+  const doRevoke = async () => {
+    if (!revokeTarget) return;
+    try {
+      const session = (await supabase.auth.getSession()).data.session;
+      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/tenant-api-keys?id=${revokeTarget.id}`;
+      const res = await fetch(url, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${session?.access_token}`,
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+      });
+      if (!res.ok) throw new Error(await res.text());
+      toast.success("Chave revogada.");
+      setRevokeTarget(null);
+      qc.invalidateQueries({ queryKey: ["tenant_api_keys"] });
+    } catch (e: any) {
+      toast.error(e.message ?? "Erro ao revogar");
+    }
+  };
+
+  const copyKey = async (k: string) => {
+    try {
+      await navigator.clipboard.writeText(k);
+      toast.success("Copiado!");
+    } catch {
+      toast.error("Não foi possível copiar");
+    }
+  };
+
   const StatusBadge = ({ status }: { status?: string | null }) => {
     if (!status) return <Badge variant="outline">Não conectado</Badge>;
     if (status === "connected")
