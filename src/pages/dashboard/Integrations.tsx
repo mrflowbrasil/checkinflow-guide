@@ -215,16 +215,6 @@ export default function Integrations() {
     }
   };
 
-  const revokeKey = async (id: string) => {
-    const { error } = await supabase.functions.invoke("tenant-api-keys", {
-      method: "DELETE",
-      body: null as any,
-      headers: {} as any,
-    } as any);
-    // supabase-js doesn't expose query params for invoke; use fetch directly
-    if (error) toast.error(error.message);
-  };
-
   const doRevoke = async () => {
     if (!revokeTarget) return;
     try {
