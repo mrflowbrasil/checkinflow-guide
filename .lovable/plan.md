@@ -1,85 +1,53 @@
-## Novo endpoint: listar imóveis (GET)
+## Gerenciamento de Chaves de API no dashboard
 
-Adicionar suporte a `GET` na edge function existente `properties-api`, mantendo a mesma autenticação por `X-API-Key` (que já resolve o `tenant_id` do tenant dono da chave).
+Adicionar uma seção **"Chaves de API"** em **Configurações → Integrações** para o tenant criar, visualizar (prefixo) e revogar suas próprias chaves, sem depender de reconectar a integração.
 
-### Endpoint
+### Comportamento
+
+- **Listar chaves ativas**: nome, prefixo (`mrf_live_xxxxxxxx…`), `created_at`, `last_used_at`, status (ativa/revogada).
+- **Gerar nova chave**: abre dialog que mostra o token completo **uma única vez**, com botão "Copiar" e aviso de que não será mostrado novamente. Permite definir um nome (ex.: "n8n Stays").
+- **Revogar chave**: confirmação + marca `revoked_at = now()`. Chaves revogadas somem da lista (ou ficam em "histórico" colapsado — vamos manter simples: somem).
+- Se o tenant não tem nenhuma chave ativa e tem integração conectada, mostra alerta "sua integração ficará sem callback até gerar uma nova chave".
+
+### Mudanças técnicas
+
+**1. Nova edge function `tenant-api-keys`** (`supabase/functions/tenant-api-keys/index.ts`)
+
+Autenticada via JWT do usuário (`getClaims`), resolve `tenant_id` do `profiles`. Exige role `tenant_owner` (ou `super_admin`) via `has_role`.
+
+- `GET /` → lista chaves ativas do tenant: `[{ id, name, key_prefix, created_at, last_used_at }]`
+- `POST /` body `{ name }` → gera chave, retorna `{ id, name, key_prefix, api_key }` (texto puro só nessa resposta)
+- `DELETE /?id=...` → marca `revoked_at = now()` (valida que pertence ao tenant)
+
+Reaproveita `genApiKey()` e `sha256()` do `integrations-connect` (copiados para o arquivo).
+
+**2. UI em `src/pages/dashboard/Integrations.tsx`**
+
+Nova seção abaixo dos cards Stays/Hostaway:
 
 ```
-GET https://pgdfcufjdyhmaqikwbdq.supabase.co/functions/v1/properties-api
-Header: X-API-Key: mrf_live_...
+┌─ Chaves de API ──────────────────── [+ Nova chave] ─┐
+│  n8n produção · mrf_live_5sCUIi2q…  · usada há 2h   │
+│  Backup       · mrf_live_a9k2Lp4w…  · nunca usada   │
+└─────────────────────────────────────────────────────┘
 ```
 
-### Parâmetros de busca (query string, todos opcionais)
+Componentes shadcn já existentes: Card, Button, Dialog, Input, Badge, AlertDialog (para confirmar revogação).
 
-- `external_id` — filtra por ID externo (ex.: `GQ01G`)
-- `external_provider` — `stays` | `hostaway` (default: sem filtro)
-- `status` — `active` | `inactive`
-- `created_from` — ISO date (`2026-01-01` ou `2026-01-01T00:00:00Z`)
-- `created_to` — ISO date
-- `search` — busca textual no `name` (ilike)
-- `limit` — default 100, máx 500
-- `offset` — default 0
+Dialog "Nova chave criada":
+- Campo readonly com a chave + botão Copiar (`navigator.clipboard.writeText`)
+- Alerta amarelo: "Guarde esta chave em local seguro. Por segurança, não conseguiremos mostrá-la novamente."
+- Botão "Entendi, fechar"
 
-> Observação sobre `tenant_id`: a função **não aceita `tenant_id` como parâmetro** por segurança — o tenant é sempre derivado da `X-API-Key`. Cada chave só enxerga os imóveis do próprio tenant. (Se quiser um modo "admin global" para o n8n consultar qualquer tenant, posso adicionar suporte a uma chave de service-role separada — me avise.)
+**3. RLS** — já existe `Tenant views own api keys` (SELECT). Não precisa migration: as escritas (INSERT/DELETE/UPDATE) acontecem só via edge function com service role + validação manual de tenant. Mantém a política atual restrita.
 
-### Resposta
+### Documentação ao usuário
 
-```json
-{
-  "total": 42,
-  "count": 20,
-  "limit": 20,
-  "offset": 0,
-  "items": [
-    {
-      "id": "uuid",
-      "tenant_id": "uuid",
-      "name": "Ed. Manoel Cordeiro - Stúdio Meu Aconchego II",
-      "external_id": "GQ01G",
-      "external_provider": "stays",
-      "status": "active",
-      "address": "...",
-      "booking_url": null,
-      "cover_image_url": "https://...",
-      "public_slug": "ed-manoel-...-a1b2c3",
-      "public_url": "https://hub.mrflow.com.br/g/ed-manoel-...-a1b2c3",
-      "created_at": "2026-04-12T13:22:10Z",
-      "updated_at": "2026-05-01T09:00:00Z"
-    }
-  ]
-}
-```
+Adicionar texto curto acima da seção:
+> Use estas chaves para autenticar chamadas à API do CheckinFlow (header `X-API-Key`). Cada integração (n8n, scripts próprios) deve usar uma chave separada para facilitar revogação.
 
-`total` usa `count: 'exact'` do Supabase respeitando os filtros (não apenas o tamanho da página).
+### Não-objetivos (ficam para depois)
 
-### Exemplos cURL
-
-Todos os imóveis do tenant:
-```bash
-curl 'https://pgdfcufjdyhmaqikwbdq.supabase.co/functions/v1/properties-api' \
-  -H 'X-API-Key: mrf_live_...'
-```
-
-Filtrando por `external_id`:
-```bash
-curl 'https://pgdfcufjdyhmaqikwbdq.supabase.co/functions/v1/properties-api?external_id=GQ01G' \
-  -H 'X-API-Key: mrf_live_...'
-```
-
-Por intervalo de data + paginação:
-```bash
-curl 'https://.../properties-api?created_from=2026-01-01&created_to=2026-05-01&limit=50&offset=0' \
-  -H 'X-API-Key: mrf_live_...'
-```
-
-### Mudança técnica
-
-Arquivo único: `supabase/functions/properties-api/index.ts`
-
-- Adicionar branch `if (req.method === "GET")` antes do bloco POST/PUT.
-- Validar/parsear query params (limit clamp 1–500).
-- Construir query: `admin.from("properties").select("...", { count: "exact" }).eq("tenant_id", tenantId)` + filtros condicionais + `order("created_at", { ascending: false })` + `range(offset, offset+limit-1)`.
-- Montar `public_url` com `https://hub.mrflow.com.br/g/{public_slug}`.
-- Retornar `{ total, count, limit, offset, items }`.
-
-Sem mudanças de banco, sem nova função, sem nova rota no app — só a edge function existente ganha o método `GET`.
+- Rotação automática
+- Escopos/permissões por chave
+- Logs de uso por chave
