@@ -160,6 +160,47 @@ serve(async (req) => {
     // touch last_used
     admin.from("tenant_api_keys").update({ last_used_at: new Date().toISOString() }).eq("id", keyRow.id).then();
 
+    if (req.method === "GET") {
+      const url = new URL(req.url);
+      const qp = url.searchParams;
+      const externalId = qp.get("external_id");
+      const externalProvider = qp.get("external_provider");
+      const status = qp.get("status");
+      const createdFrom = qp.get("created_from");
+      const createdTo = qp.get("created_to");
+      const search = qp.get("search");
+      const limit = Math.min(Math.max(parseInt(qp.get("limit") ?? "100", 10) || 100, 1), 500);
+      const offset = Math.max(parseInt(qp.get("offset") ?? "0", 10) || 0, 0);
+
+      let q = admin
+        .from("properties")
+        .select(
+          "id, tenant_id, name, external_id, external_provider, status, address, booking_url, cover_image_url, public_slug, created_at, updated_at",
+          { count: "exact" },
+        )
+        .eq("tenant_id", tenantId);
+
+      if (externalId) q = q.eq("external_id", externalId);
+      if (externalProvider) q = q.eq("external_provider", externalProvider);
+      if (status === "active" || status === "inactive") q = q.eq("status", status);
+      if (createdFrom) q = q.gte("created_at", createdFrom);
+      if (createdTo) q = q.lte("created_at", createdTo);
+      if (search) q = q.ilike("name", `%${search}%`);
+
+      const { data, error, count } = await q
+        .order("created_at", { ascending: false })
+        .range(offset, offset + limit - 1);
+      if (error) throw error;
+
+      const publicBase = "https://hub.mrflow.com.br/g/";
+      const items = (data ?? []).map((r: any) => ({
+        ...r,
+        public_url: r.public_slug ? `${publicBase}${r.public_slug}` : null,
+      }));
+
+      return json({ total: count ?? 0, count: items.length, limit, offset, items });
+    }
+
     if (req.method !== "POST" && req.method !== "PUT") {
       return json({ error: "method_not_allowed" }, 405);
     }
