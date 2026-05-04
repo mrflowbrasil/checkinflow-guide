@@ -16,6 +16,7 @@ export default function DashboardHome() {
       const { data: properties } = await supabase
         .from("properties")
         .select("id, name, status, public_slug, cover_image_url, created_at")
+        .eq("tenant_id", tenant!.id)
         .order("created_at", { ascending: false });
       const total = properties?.length ?? 0;
       const active = properties?.filter((p) => p.status === "active").length ?? 0;
