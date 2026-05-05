@@ -723,6 +723,10 @@ export type Database = {
       }
       is_property_active: { Args: { _property_id: string }; Returns: boolean }
       rotate_property_slug: { Args: { _property_id: string }; Returns: string }
+      tenant_has_feature: {
+        Args: { _feature: string; _tenant_id: string }
+        Returns: boolean
+      }
       tenant_property_count: { Args: { _tenant_id: string }; Returns: number }
       unaccent_safe: { Args: { input: string }; Returns: string }
     }

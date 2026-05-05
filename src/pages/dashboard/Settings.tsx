@@ -1,19 +1,22 @@
 import { useState, useRef } from "react";
+import { Link } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useTenant } from "@/hooks/useTenant";
+import { useTenant, usePlanFeatures } from "@/hooks/useTenant";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Loader2, Palette, Upload, Trash2, ImageIcon, MessageCircle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Loader2, Palette, Upload, Trash2, ImageIcon, MessageCircle, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { LogoCropDialog } from "@/components/property/LogoCropDialog";
 
 
 export default function Settings() {
   const { data: tenant, refetch } = useTenant();
+  const features = usePlanFeatures();
   const qc = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [name, setName] = useState(tenant?.name ?? "");
@@ -59,7 +62,7 @@ export default function Settings() {
       if (!tenant) return;
       const { error } = await supabase.from("tenants").update({
         name, primary_color: primary, secondary_color: secondary,
-        logo_url: logoUrl, show_logo: showLogo,
+        logo_url: logoUrl, show_logo: features.customLogo ? showLogo : false,
         support_whatsapp: supportWhatsapp.trim() || null,
       } as any).eq("id", tenant.id);
       if (error) throw error;
@@ -91,10 +94,26 @@ export default function Settings() {
       </Card>
 
       <Card className="p-6 shadow-card space-y-5">
-        <div className="flex items-center gap-2">
-          <ImageIcon className="h-4 w-4 text-accent-foreground" />
-          <h2 className="font-semibold">Logo da empresa</h2>
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <div className="flex items-center gap-2">
+            <ImageIcon className="h-4 w-4 text-accent-foreground" />
+            <h2 className="font-semibold">Logo da empresa</h2>
+          </div>
+          {!features.customLogo && (
+            <Badge variant="secondary" className="gap-1">
+              <Lock className="h-3 w-3" /> Disponível no Pro
+            </Badge>
+          )}
         </div>
+        {!features.customLogo && (
+          <div className="rounded-md border border-accent/30 bg-accent-soft p-3 text-sm flex items-start gap-2">
+            <Lock className="h-4 w-4 mt-0.5 text-accent-foreground shrink-0" />
+            <div>
+              Exibir uma logo personalizada no guia do hóspede está disponível a partir do plano Pro.{" "}
+              <Link to="/app/billing" className="underline text-accent-foreground">Fazer upgrade</Link>.
+            </div>
+          </div>
+        )}
         <p className="text-sm text-muted-foreground -mt-2">
           A logo aparece no topo do guia do hóspede. Limite máximo: 5MB. Tamanho ideal: 960×960px em PNG/WebP com fundo transparente, mantendo a marca centralizada e com respiro para caber no círculo.
         </p>
@@ -120,7 +139,7 @@ export default function Settings() {
               }}
             />
             <div className="flex gap-2">
-              <Button type="button" variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploading}>
+              <Button type="button" variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploading || !features.customLogo}>
                 {uploading ? <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" /> : <Upload className="mr-2 h-3.5 w-3.5" />}
                 {logoUrl ? "Trocar logo" : "Enviar logo"}
               </Button>
@@ -138,7 +157,7 @@ export default function Settings() {
             <Label htmlFor="show-logo" className="cursor-pointer">Exibir logo no guia</Label>
             <p className="text-xs text-muted-foreground mt-0.5">Mostrar a logo no topo da página do hóspede.</p>
           </div>
-          <Switch id="show-logo" checked={showLogo} onCheckedChange={setShowLogo} />
+          <Switch id="show-logo" checked={features.customLogo && showLogo} onCheckedChange={setShowLogo} disabled={!features.customLogo} />
         </div>
       </Card>
 

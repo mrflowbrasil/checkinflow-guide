@@ -48,6 +48,15 @@ serve(async (req) => {
     if (!profile?.tenant_id) return json({ error: "no_tenant" }, 400);
     const tenantId = profile.tenant_id;
 
+    const { data: tenantRow } = await admin
+      .from("tenants")
+      .select("plan_code")
+      .eq("id", tenantId)
+      .maybeSingle();
+    if (tenantRow?.plan_code !== "business") {
+      return json({ error: "feature_not_available_in_plan", message: "Integrações com Stays/Hostaway estão disponíveis apenas no plano Business." }, 403);
+    }
+
     const body = await req.json();
     const { provider, system_url, login, password } = body ?? {};
 

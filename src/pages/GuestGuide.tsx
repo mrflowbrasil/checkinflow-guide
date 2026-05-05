@@ -22,7 +22,7 @@ export default function GuestGuide() {
         .from("properties")
         .select(`
           id, name, address, booking_url, cover_image_url, public_slug, status,
-          tenants!inner(id, name, primary_color, secondary_color, template, is_active, logo_url, show_logo),
+          tenants!inner(id, name, primary_color, secondary_color, template, is_active, logo_url, show_logo, plan_code),
           property_pages(id, page_key, title, icon, position, is_enabled)
         `)
         .eq("public_slug", slug!)
@@ -121,7 +121,7 @@ export default function GuestGuide() {
         </div>
 
         {/* Logo flutuante sobre a capa */}
-        {tenant?.show_logo && tenant?.logo_url && (
+        {tenant?.show_logo && tenant?.logo_url && (tenant?.plan_code === "pro" || tenant?.plan_code === "business") && (
           <div className="absolute left-1/2 -translate-x-1/2 top-4 sm:top-6 z-20">
             <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full bg-white shadow-lg overflow-hidden ring-4 ring-white/80 grid place-items-center">
               <img

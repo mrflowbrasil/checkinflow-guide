@@ -84,3 +84,22 @@ export function usePlanUsage() {
     },
   });
 }
+
+export type PlanFeatures = {
+  proTemplates: boolean;
+  customLogo: boolean;
+  slugRotation: boolean;
+  pmsIntegrations: boolean;
+};
+
+export function usePlanFeatures(): PlanFeatures {
+  const { data: tenant } = useTenant();
+  const plan = tenant?.plan_code;
+  const proOrAbove = plan === "pro" || plan === "business";
+  return {
+    proTemplates: proOrAbove,
+    customLogo: proOrAbove,
+    slugRotation: proOrAbove,
+    pmsIntegrations: plan === "business",
+  };
+}

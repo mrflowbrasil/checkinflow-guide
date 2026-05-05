@@ -29,6 +29,26 @@ type Plan = {
 const formatBRL = (cents: number) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(cents / 100);
 
+const PLAN_FEATURES: Record<string, string[]> = {
+  free: ["1 imóvel", "Guias personalizáveis", "3 templates", "QR codes ilimitados"],
+  starter: ["5 imóveis", "Guias personalizáveis", "3 templates", "QR codes ilimitados"],
+  pro: [
+    "20 imóveis",
+    "Guias personalizáveis",
+    "15 templates premium",
+    "Logo personalizada no guia",
+    "URL rotativa (revoga acesso de hóspedes anteriores)",
+  ],
+  business: [
+    "20 imóveis",
+    "Guias personalizáveis",
+    "15 templates premium",
+    "Logo personalizada no guia",
+    "URL rotativa",
+    "Integração nativa Stays e Hostaway",
+  ],
+};
+
 export default function Billing() {
   const { data: tenant } = useTenant();
   const { data: usage } = usePlanUsage();
@@ -190,20 +210,17 @@ export default function Billing() {
               </div>
 
               <ul className="space-y-2 text-sm mb-6 flex-1">
-                <li className="flex items-start gap-2">
-                  <Check className="h-4 w-4 text-accent-foreground mt-0.5 shrink-0" />
-                  <span>
-                    {plan.property_limit >= 999 ? "Imóveis ilimitados" : `${plan.property_limit} ${plan.property_limit === 1 ? "imóvel" : "imóveis"}`}
-                  </span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="h-4 w-4 text-accent-foreground mt-0.5 shrink-0" />
-                  <span>Guias personalizáveis</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="h-4 w-4 text-accent-foreground mt-0.5 shrink-0" />
-                  <span>QR codes ilimitados</span>
-                </li>
+                {(PLAN_FEATURES[plan.code] ?? [
+                  plan.property_limit >= 999
+                    ? "Imóveis ilimitados"
+                    : `${plan.property_limit} ${plan.property_limit === 1 ? "imóvel" : "imóveis"}`,
+                  "Guias personalizáveis",
+                ]).map((feat) => (
+                  <li key={feat} className="flex items-start gap-2">
+                    <Check className="h-4 w-4 text-accent-foreground mt-0.5 shrink-0" />
+                    <span>{feat}</span>
+                  </li>
+                ))}
               </ul>
 
               <Button

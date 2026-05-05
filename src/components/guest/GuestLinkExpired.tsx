@@ -9,7 +9,7 @@ export function GuestLinkExpired({ slug }: { slug: string }) {
     queryFn: async () => {
       const { data: history } = await supabase
         .from("property_slug_history")
-        .select("property_id, properties(name, booking_url, tenants(name, primary_color, template, support_whatsapp, logo_url, show_logo))")
+        .select("property_id, properties(name, booking_url, tenants(name, primary_color, template, support_whatsapp, logo_url, show_logo, plan_code))")
         .eq("slug", slug)
         .maybeSingle();
       return history as any;
@@ -39,7 +39,7 @@ export function GuestLinkExpired({ slug }: { slug: string }) {
   return (
     <div className={`guide-root guide-template-${template} min-h-screen flex flex-col`}>
       <div className="flex-1 flex flex-col items-center justify-center px-6 text-center max-w-md mx-auto w-full">
-        {tenant?.show_logo && tenant?.logo_url && (
+        {tenant?.show_logo && tenant?.logo_url && (tenant?.plan_code === "pro" || tenant?.plan_code === "business") && (
           <div className="h-20 w-20 rounded-full bg-white shadow-lg overflow-hidden ring-4 ring-white/80 grid place-items-center mb-6">
             <img src={tenant.logo_url} alt={tenant?.name ?? ""} className="h-full w-full object-cover" />
           </div>

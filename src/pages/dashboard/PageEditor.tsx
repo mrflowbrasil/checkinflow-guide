@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { DndContext, PointerSensor, closestCenter, useSensor, useSensors } from "@dnd-kit/core";
 import { SortableContext, arrayMove, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { supabase } from "@/integrations/supabase/client";
-import { useTenant } from "@/hooks/useTenant";
+import { useTenant, usePlanFeatures } from "@/hooks/useTenant";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -44,6 +44,7 @@ function readClipboard(tenantId: string): ClipboardPayload | null {
 export default function PageEditor() {
   const { id, pageKey } = useParams<{ id: string; pageKey: string }>();
   const { data: tenant } = useTenant();
+  const features = usePlanFeatures();
   const qc = useQueryClient();
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
   const [savingState, setSavingState] = useState<"idle" | "saving" | "saved">("idle");
@@ -98,8 +99,8 @@ export default function PageEditor() {
     setSavingState("saved");
     setTimeout(() => setSavingState("idle"), 1500);
     qc.invalidateQueries({ queryKey: ["page", id, pageKey] });
-    // After saving the lock_code page, prompt to rotate the public link
-    if (pageKey === "lock_code") {
+    // After saving the lock_code page, prompt to rotate the public link (Pro/Business only)
+    if (pageKey === "lock_code" && features.slugRotation) {
       setRotatePromptOpen(true);
     }
   };

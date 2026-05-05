@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useTenant } from "@/hooks/useTenant";
+import { useTenant, usePlanFeatures } from "@/hooks/useTenant";
+import { Link } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -15,7 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Plug, Loader2, CheckCircle2, AlertCircle, Key, Plus, Copy, Trash2 } from "lucide-react";
+import { Plug, Loader2, CheckCircle2, AlertCircle, Key, Plus, Copy, Trash2, Lock } from "lucide-react";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -64,6 +65,7 @@ const PROVIDER_META: Record<Provider, {
 export default function Integrations() {
   const qc = useQueryClient();
   const { data: tenant } = useTenant();
+  const features = usePlanFeatures();
   const [openProvider, setOpenProvider] = useState<Provider | null>(null);
   const [systemUrl, setSystemUrl] = useState("");
   const [login, setLogin] = useState("");
@@ -264,33 +266,50 @@ export default function Integrations() {
 
   const renderCard = (provider: Provider, current: typeof stays) => {
     const meta = PROVIDER_META[provider];
+    const locked = !features.pmsIntegrations;
     return (
-      <Card className="p-5 shadow-card space-y-3">
+      <Card className="p-5 shadow-card space-y-3 relative">
         <div className="flex items-start justify-between">
           <div>
             <h2 className="font-semibold text-lg">{meta.title}</h2>
             <p className="text-xs text-muted-foreground">{meta.description}</p>
           </div>
-          <StatusBadge status={current?.status} />
+          {locked ? (
+            <Badge variant="secondary" className="gap-1">
+              <Lock className="h-3 w-3" /> Business
+            </Badge>
+          ) : (
+            <StatusBadge status={current?.status} />
+          )}
         </div>
-        {current?.last_sync_at && (
+        {!locked && current?.last_sync_at && (
           <p className="text-xs text-muted-foreground">
             Última sincronização: {new Date(current.last_sync_at).toLocaleString("pt-BR")}
           </p>
         )}
-        {current?.last_error && (
+        {!locked && current?.last_error && (
           <p className="text-xs text-destructive truncate" title={current.last_error}>
             {current.last_error}
           </p>
         )}
         <div className="flex gap-2 pt-2">
-          <Button size="sm" onClick={() => openDialog(provider)}>
-            {current ? "Reconectar" : "Conectar"}
-          </Button>
-          {current && (
-            <Button size="sm" variant="ghost" onClick={() => disconnect(provider)}>
-              Desconectar
+          {locked ? (
+            <Button size="sm" asChild>
+              <Link to="/app/billing">
+                <Lock className="mr-2 h-4 w-4" /> Disponível no plano Business
+              </Link>
             </Button>
+          ) : (
+            <>
+              <Button size="sm" onClick={() => openDialog(provider)}>
+                {current ? "Reconectar" : "Conectar"}
+              </Button>
+              {current && (
+                <Button size="sm" variant="ghost" onClick={() => disconnect(provider)}>
+                  Desconectar
+                </Button>
+              )}
+            </>
           )}
         </div>
       </Card>
