@@ -117,7 +117,7 @@ export function BlockRenderer({ block, primaryColor }: { block: BlockBase; prima
 
     case "divider":
       return (
-        <div role="separator" aria-orientation="horizontal" className="py-6">
+        <div role="separator" aria-orientation="horizontal" className="py-2">
           <div
             className="mx-auto h-0.5 w-4/5 rounded-full"
             style={{ background: "hsl(215 16% 65%)" }}
