@@ -14,7 +14,14 @@ export type TemplateDef = {
   primary: string;     // hex
   secondary: string;   // hex
   preview: string;     // CSS background for the swatch
+  previewReady?: boolean; // true → "Ver" button enabled
 };
+
+export const PREVIEW_READY_TEMPLATES: TemplateKey[] = ["clean"];
+
+export function isPreviewReady(key: TemplateKey): boolean {
+  return PREVIEW_READY_TEMPLATES.includes(key);
+}
 
 export const TEMPLATES: TemplateDef[] = [
   // Free / básicos

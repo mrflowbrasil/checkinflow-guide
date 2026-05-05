@@ -99,13 +99,13 @@
 
   /* Guest guide template tokens — applied via .guide-template-* on root */
   .guide-template-clean {
-    --guide-bg: 210 20% 98%;
-    --guide-fg: 222 47% 11%;
-    --guide-card: 0 0% 100%;
+    --guide-bg: 0 0% 100%;
+    --guide-fg: 222 60% 15%;
+    --guide-card: 210 20% 96%;
     --guide-muted: 215 15% 45%;
     --guide-font: "Inter", system-ui, sans-serif;
     --guide-heading-font: "Inter", system-ui, sans-serif;
-    --guide-radius: 1rem;
+    --guide-radius: 0.875rem;
   }
 
   .guide-template-dark {
