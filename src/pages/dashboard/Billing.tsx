@@ -29,6 +29,26 @@ type Plan = {
 const formatBRL = (cents: number) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(cents / 100);
 
+const PLAN_FEATURES: Record<string, string[]> = {
+  free: ["1 imóvel", "Guias personalizáveis", "3 templates", "QR codes ilimitados"],
+  starter: ["5 imóveis", "Guias personalizáveis", "3 templates", "QR codes ilimitados"],
+  pro: [
+    "20 imóveis",
+    "Guias personalizáveis",
+    "15 templates premium",
+    "Logo personalizada no guia",
+    "URL rotativa (revoga acesso de hóspedes anteriores)",
+  ],
+  business: [
+    "20 imóveis",
+    "Guias personalizáveis",
+    "15 templates premium",
+    "Logo personalizada no guia",
+    "URL rotativa",
+    "Integração nativa Stays e Hostaway",
+  ],
+};
+
 export default function Billing() {
   const { data: tenant } = useTenant();
   const { data: usage } = usePlanUsage();
