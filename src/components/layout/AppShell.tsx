@@ -115,8 +115,9 @@ export default function AppShell() {
               </div>
             </SheetContent>
           </Sheet>
-          <div className="font-semibold flex items-center gap-2">
-            <Home className="h-4 w-4 text-primary" /> Mr Flow Host
+          <div className="flex items-center gap-2">
+            <img src={mrFlowLogo} alt="Mr Flow" className="h-7 w-auto" />
+            <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Welcome Hub</span>
           </div>
         </header>
 
