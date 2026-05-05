@@ -27,6 +27,7 @@ import { CSS } from "@dnd-kit/utilities";
 export default function PropertyDetail() {
   const { id } = useParams<{ id: string }>();
   const qc = useQueryClient();
+  const features = usePlanFeatures();
   const qrCanvas = useRef<HTMLCanvasElement>(null);
   const [qrUrl, setQrUrl] = useState<string>("");
   const [editOpen, setEditOpen] = useState(false);
