@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sparkles, QrCode, Smartphone, ArrowRight } from "lucide-react";
 import mrFlowLogoWhite from "@/assets/mrflow-logo-white.png";
+import { ImageAutoSlider } from "@/components/ui/image-auto-slider";
 
 const HERO_BG = {
   background:
@@ -53,6 +54,10 @@ const Index = () => {
               Começar grátis <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
+        </div>
+
+        <div className="mt-12 lg:mt-16 -mx-4 sm:mx-0">
+          <ImageAutoSlider />
         </div>
       </section>
 
