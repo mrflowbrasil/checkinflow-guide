@@ -16,7 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Plug, Loader2, CheckCircle2, AlertCircle, Key, Plus, Copy, Trash2 } from "lucide-react";
+import { Plug, Loader2, CheckCircle2, AlertCircle, Key, Plus, Copy, Trash2, Lock } from "lucide-react";
 import { toast } from "sonner";
 import {
   AlertDialog,
