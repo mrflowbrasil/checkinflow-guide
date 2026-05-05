@@ -47,7 +47,7 @@ export const ImageAutoSlider: React.FC<ImageAutoSliderProps> = ({
           {duplicated.map((src, i) => (
             <div
               key={i}
-              className="shrink-0 h-32 sm:h-40 lg:h-48 aspect-[4/3] rounded-2xl overflow-hidden border border-white/10 bg-white/5"
+              className="shrink-0 h-56 sm:h-72 lg:h-96 aspect-[9/16] rounded-2xl overflow-hidden border border-white/10 bg-white/5"
             >
               <img
                 src={src}
