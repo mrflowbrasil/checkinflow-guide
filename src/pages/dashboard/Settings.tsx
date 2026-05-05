@@ -1,13 +1,15 @@
 import { useState, useRef } from "react";
+import { Link } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useTenant } from "@/hooks/useTenant";
+import { useTenant, usePlanFeatures } from "@/hooks/useTenant";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Loader2, Palette, Upload, Trash2, ImageIcon, MessageCircle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Loader2, Palette, Upload, Trash2, ImageIcon, MessageCircle, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { LogoCropDialog } from "@/components/property/LogoCropDialog";
 
