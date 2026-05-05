@@ -99,8 +99,8 @@ export default function PageEditor() {
     setSavingState("saved");
     setTimeout(() => setSavingState("idle"), 1500);
     qc.invalidateQueries({ queryKey: ["page", id, pageKey] });
-    // After saving the lock_code page, prompt to rotate the public link
-    if (pageKey === "lock_code") {
+    // After saving the lock_code page, prompt to rotate the public link (Pro/Business only)
+    if (pageKey === "lock_code" && features.slugRotation) {
       setRotatePromptOpen(true);
     }
   };
