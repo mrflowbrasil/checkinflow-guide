@@ -16,6 +16,7 @@ import { LogoCropDialog } from "@/components/property/LogoCropDialog";
 
 export default function Settings() {
   const { data: tenant, refetch } = useTenant();
+  const features = usePlanFeatures();
   const qc = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [name, setName] = useState(tenant?.name ?? "");
