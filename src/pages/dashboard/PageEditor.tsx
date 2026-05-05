@@ -44,6 +44,7 @@ function readClipboard(tenantId: string): ClipboardPayload | null {
 export default function PageEditor() {
   const { id, pageKey } = useParams<{ id: string; pageKey: string }>();
   const { data: tenant } = useTenant();
+  const features = usePlanFeatures();
   const qc = useQueryClient();
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
   const [savingState, setSavingState] = useState<"idle" | "saving" | "saved">("idle");
