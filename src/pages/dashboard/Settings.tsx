@@ -139,7 +139,7 @@ export default function Settings() {
               }}
             />
             <div className="flex gap-2">
-              <Button type="button" variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploading}>
+              <Button type="button" variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploading || !features.customLogo}>
                 {uploading ? <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" /> : <Upload className="mr-2 h-3.5 w-3.5" />}
                 {logoUrl ? "Trocar logo" : "Enviar logo"}
               </Button>
