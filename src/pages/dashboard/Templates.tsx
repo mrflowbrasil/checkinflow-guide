@@ -157,7 +157,7 @@ export default function Templates() {
             <div className="text-sm">
               <p className="font-medium">Templates premium liberados a partir do plano Pro.</p>
               <p className="text-muted-foreground">
-                Visualize os modelos abaixo e <Link to="/app/billing" className="underline text-accent-foreground">faça upgrade</Link> para aplicar no seu workspace.
+                Visualize os modelos abaixo e <Link to="/app/billing" className="underline text-accent-foreground">faça upgrade para Pro ou Business</Link> para aplicar no seu workspace.
               </p>
             </div>
           </Card>
