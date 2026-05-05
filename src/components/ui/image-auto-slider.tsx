@@ -47,13 +47,13 @@ export const ImageAutoSlider: React.FC<ImageAutoSliderProps> = ({
           {duplicated.map((src, i) => (
             <div
               key={i}
-              className="shrink-0 h-56 sm:h-72 lg:h-96 aspect-[9/16] rounded-2xl overflow-hidden border border-white/10 bg-white/5"
+              className="shrink-0 h-56 sm:h-72 lg:h-96 aspect-[9/16] rounded-2xl overflow-hidden bg-[#020617]"
             >
               <img
                 src={src}
                 alt=""
                 loading="lazy"
-                className="mrflow-img h-full w-full object-cover"
+                className="mrflow-img h-full w-full object-contain"
               />
             </div>
           ))}
