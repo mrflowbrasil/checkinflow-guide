@@ -267,7 +267,16 @@
     background-color: hsl(var(--guide-card));
     border-radius: var(--guide-radius);
   }
-  /* Dark template inverts the primary CTA so it stays legible */
+  /* Dark template: força fundo escuro e inverte CTA primário */
+  .guide-template-dark.guide-root,
+  .guide-root.guide-template-dark {
+    background-color: hsl(222 60% 10%) !important;
+    color: hsl(0 0% 98%) !important;
+  }
+  .guide-template-dark .guide-card {
+    background-color: hsl(222 50% 15%) !important;
+    color: hsl(0 0% 98%);
+  }
   .guide-template-dark .guide-cta-primary {
     background: #FFFFFF !important;
     color: #0F1E3D !important;
