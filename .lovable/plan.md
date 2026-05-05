@@ -1,24 +1,22 @@
-# Substituir imagens do carrossel por uploads do usuário
+## Problema
 
-## O que será feito
+As imagens do carrossel são screenshots de celular com proporções um pouco diferentes entre si. O container usa `aspect-[9/16]` + `object-cover`, que **recorta** a imagem para preencher o quadro — por isso uma corta a logo no topo e outra esconde a barra de navegação na base.
 
-1. **Copiar as 4 imagens enviadas** para `src/assets/carrossel/`:
-   - `user-uploads://Hub1.webp` → `src/assets/carrossel/hub-1.webp`
-   - `user-uploads://Hub2.webp` → `src/assets/carrossel/hub-2.webp`
-   - `user-uploads://Hub3.webp` → `src/assets/carrossel/hub-3.webp`
-   - `user-uploads://Hub4.webp` → `src/assets/carrossel/hub-4.webp`
+## Solução
 
-2. **Editar `src/components/ui/image-auto-slider.tsx`**:
-   - Importar as 4 imagens como módulos ES (`import hub1 from "@/assets/carrossel/hub-1.webp"` etc.)
-   - Substituir o array `DEFAULT_IMAGES` (atualmente Unsplash) pelos 4 imports locais
-   - Aumentar `durationSeconds` de `30` para `50` (animação mais lenta e suave)
-   - Manter a prop `images` opcional para overrides futuros
+Trocar o modo de exibição para mostrar a imagem **inteira**, sem cortes, mantendo o visual alinhado entre os slides.
+
+### Alterações em `src/components/ui/image-auto-slider.tsx`
+
+1. **`object-cover` → `object-contain`** na tag `<img>`, garantindo que nenhuma parte do screenshot seja cortada (logo no topo e menu inferior ficam visíveis em todas as imagens).
+2. **Fundo do card**: trocar `bg-white/5` por um tom escuro consistente (`bg-[#020617]`) para combinar com o hero e disfarçar eventuais faixas laterais quando a imagem for um pouco mais estreita que `9/16`.
+3. **Remover a borda branca** (`border border-white/10`) para um visual mais limpo já que a imagem agora pode não preencher 100% do card.
+4. **Manter** `aspect-[9/16]`, alturas responsivas (`h-56 / sm:h-72 / lg:h-96`), o `mask` lateral, `gap-4` e a duração de 50s.
 
 ## Observação
 
-Como são apenas 4 imagens (poucas), a duplicação interna (`[...images, ...images]`) garante o loop infinito sem salto, mas você verá cada imagem repetir mais rápido na tela. Se quiser, depois você pode mandar mais imagens para deixar o ciclo mais variado.
+Com `object-contain`, se alguma imagem tiver proporção diferente de 9:16 vai aparecer uma fina faixa nas laterais (ou topo/base) na cor de fundo do card — por isso o ajuste do `bg`. Isso é o trade-off necessário para garantir que **nenhum conteúdo do screenshot seja cortado**.
 
 ## Arquivos afetados
 
-- **Criar**: `src/assets/carrossel/hub-1.webp`, `hub-2.webp`, `hub-3.webp`, `hub-4.webp`
 - **Editar**: `src/components/ui/image-auto-slider.tsx`
