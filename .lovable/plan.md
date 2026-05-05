@@ -1,68 +1,72 @@
 
 ## Objetivo
 
-Reorganizar os 4 planos com novos preços/limites e aplicar gates (cliente + servidor) para cada feature exclusiva.
+1. Adicionar um botão **"Ver"** em todos os cards de template para abrir uma prévia realista (modelo de exemplo) sem precisar aplicar o template.
+2. Mudanças visuais mais marcantes por template (fundo, botões, ícones, fonte) — incluindo aplicar a **cor secundária como fundo** quando fizer sentido.
+3. Liberar o botão "Ver" funcional **apenas** para os templates que você aprovar via imagem. Os demais ficam com o botão desabilitado ("Em breve").
+4. Implementar agora o design final do **Clean** (com base na imagem enviada).
 
-## Matriz de planos
+## O que muda na página `/app/templates`
 
-| Plano | Preço/mês | Imóveis | Templates | Logo no guia | URL rotativa | Integrações Stays/Hostaway |
-|---|---|---|---|---|---|---|
-| Free | R$ 0,00 | 1 | 3 (free) | — | — | — |
-| Starter | R$ 29,90 | 5 | 3 (free) | — | — | — |
-| Pro | R$ 49,90 | 20 | 15 (todos) | sim | sim | — |
-| Business | R$ 99,90 | 20 | 15 (todos) | sim | sim | sim |
+- Cada card ganha um botão pequeno **"Ver"** no canto inferior direito do mini-preview.
+- Clique no "Ver" abre um **dialog full-screen** (mockup de celular) renderizando uma propriedade fictícia ("Suíte Premium - Vila Serena") com o template aplicado — usando o mesmo layout de `GuestGuide` (hero, logo, "HUB DE BOAS VINDAS", grid de 9 ícones, botão "Reservar").
+- Templates ainda não desenhados: botão "Ver" aparece como `disabled` com tooltip "Prévia em breve".
+- O fluxo de "aplicar template" continua igual (clicar no card abre o `AlertDialog` de confirmação). O "Ver" não aplica nada.
 
-Anual: aplicar mesmo desconto atual (~17%) sobre o novo mensal.
+## Design final — Template **Clean** (baseado na imagem)
 
-## Mudanças no banco (migration + UPDATE)
+Tokens (`src/index.css` → `.guide-template-clean`):
+- `--guide-bg`: branco neutro (`0 0% 100%`)
+- `--guide-fg`: navy escuro `#0F1E3D`
+- `--guide-card`: cinza muito claro `210 20% 97%` (cards levemente destacados do fundo)
+- `--guide-muted`: cinza médio
+- `--guide-heading-font`: `"Inter"` (mantido)
+- `--guide-radius`: `0.875rem` (cards um pouco mais quadrados que hoje)
 
-1. **UPDATE `subscription_plans`**: ajustar `price_cents`, `price_yearly_cents`, `property_limit` e `description` dos 4 códigos existentes (free/starter/pro/business). Não mudar `code` nem `position`.
-2. **Função SECURITY DEFINER `tenant_has_feature(_tenant_id uuid, _feature text)`** retornando boolean. Mapeia internamente:
-   - `pro_templates` → plan_code in ('pro','business')
-   - `custom_logo` → plan_code in ('pro','business')
-   - `slug_rotation` → plan_code in ('pro','business')
-   - `pms_integrations` → plan_code = 'business'
-3. **Hardening em `rotate_property_slug`**: adicionar verificação que falha com `feature_not_available_in_plan` quando o tenant da propriedade não tem `slug_rotation`.
+Ajustes no `GuestGuide.tsx` para todos os templates (não só Clean):
+- A área abaixo do hero passa a usar `hsl(var(--guide-bg))` em vez de herdar branco do `body`. Isso já vem do `.guide-root`, mas vou garantir que o container `max-w-md` herde corretamente (sem fundo branco fixo) — assim cada template controla esse fundo via `--guide-bg`.
+- Para templates com `--guide-bg` claro (Clean, Studio, Aegean, Surf, Monochrome), fundo branco/quase-branco (como na imagem).
+- Para templates onde faz sentido usar a **secundária como fundo da seção dos cards** (ex.: Luxury creme, Boho Fun bege, Serene Coast areia), o `--guide-bg` já será definido com a cor secundária do template — atualizo cada `.guide-template-*` para refletir isso.
 
-## Mudanças no frontend
+Especificamente para Clean (que é o aprovado agora):
+- Fundo da seção: branco puro.
+- Cards: `bg #F4F6F8`, sombra suave, ícones `#0F1E3D` em traço fino (Lucide já é assim).
+- Título de seção "HUB DE BOAS VINDAS": `#0F1E3D`, peso 600, `letter-spacing: 0.25em`.
+- Botão "Reservar": fundo `#0F1E3D`, texto branco, uppercase, tracking largo (já está assim).
 
-### `src/lib/templates.ts`
-- Substituir `canUseProTemplates` por `templatesAllowedForPlan(planCode)` retornando o número permitido (3 para free/starter, 15 para pro/business) e helpers `isPlanProOrAbove`, `isPlanBusiness`.
+Para os demais templates: nesta task **só ajusto os tokens de fundo** para que cada um use a sua cor secundária/identidade como fundo da página (resolvendo o "tudo branco abaixo dos botões"). O design fino de cada um (cards, ícones, fontes radicais) será feito conforme você for enviando as imagens — nesse momento a gente também libera o "Ver" para aquele template.
 
-### `src/hooks/useTenant.tsx`
-- Novo hook `usePlanFeatures()` que devolve `{ proTemplates, customLogo, slugRotation, pmsIntegrations }` derivado de `tenant.plan_code`. Usado em todas as telas.
+## Implementação técnica
 
-### `src/pages/dashboard/Templates.tsx`
-- Trocar `isPro` por `features.proTemplates`. Mensagem de upgrade passa a citar “Pro ou Business”.
+Arquivos a alterar:
 
-### `src/pages/dashboard/Settings.tsx`
-- Card de logo: se `!features.customLogo`, desabilitar o switch “Exibir logo no guia” e o upload, com badge “Disponível no Pro” + link para `/app/billing`.
-- Ao salvar, se o plano não permite, forçar `show_logo=false`.
+1. **`src/lib/templates.ts`**
+   - Adicionar campo `previewReady: boolean` em cada `TemplateDef`. Inicialmente `true` apenas para `clean`; demais `false`.
 
-### `src/pages/dashboard/PropertyDetail.tsx` e `src/pages/dashboard/PageEditor.tsx`
-- Botão “Gerar novo link / URL rotativa” só aparece se `features.slugRotation`. Caso contrário, mostrar tooltip “Disponível nos planos Pro e Business” + link para upgrade.
+2. **`src/components/templates/TemplatePreviewDialog.tsx`** (novo)
+   - Dialog responsivo mostrando um "mockup" no tamanho de celular (max-w ~ 380px, altura ~ 80vh, scroll interno).
+   - Renderiza uma cópia simplificada da home do guia (hero com imagem stock, logo redonda fake, título, endereço, "HUB DE BOAS VINDAS", grid 3x3 com `getPageIcon`, botão "Reservar Novamente"), tudo dentro de `<div className={'guide-root guide-template-${tpl.key}'}>` para que os tokens CSS atuem.
+   - Usa cores `tpl.primary` / `tpl.secondary` para botão e ícones, espelhando `GuestGuide.tsx`.
+   - Inclui também uma "página interna" navegável (clicar num ícone abre `GuestPagePreview` com blocks fictícios: texto, lista, dica, botão) para mostrar o estilo dos componentes internos.
 
-### `src/pages/dashboard/Integrations.tsx`
-- Se `!features.pmsIntegrations`: cards de Stays/Hostaway viram preview com overlay “Disponível no plano Business” e CTA de upgrade. Bloquear `openDialog`.
-- Seção de Chaves de API permanece liberada para todos.
+3. **`src/pages/dashboard/Templates.tsx`**
+   - No `TemplateCard`, adicionar botão "Ver" (variant `secondary`, size `sm`, ícone `Eye`) sobreposto no canto do `MiniPreview`.
+   - `onClick` do botão chama `e.stopPropagation()` e abre o `TemplatePreviewDialog`. Se `tpl.previewReady === false`, botão renderiza `disabled` com `title="Prévia em breve"`.
+   - Estado local: `previewing: TemplateDef | null`.
 
-### `src/pages/dashboard/Billing.tsx`
-- Atualizar a lista de bullets de cada card para refletir a matriz acima (gerar a lista a partir de uma constante por plano em vez do array hard-coded atual).
+4. **`src/index.css`**
+   - Atualizar `.guide-template-clean` com os novos tokens.
+   - Para os outros templates: ajustar `--guide-bg` para usar a cor secundária / cor de identidade quando o atual estiver "branco genérico" demais. Sem mexer em fontes/raios desta vez (preserva o que já está bom).
 
-### `src/pages/GuestGuide.tsx` e `src/components/guest/GuestLinkExpired.tsx`
-- Ao renderizar a logo, exigir também que `tenant.plan_code` esteja em ('pro','business'). Garante que se o cliente baixar de plano, a logo deixa de aparecer mesmo com `show_logo=true`.
+5. **`src/pages/GuestGuide.tsx`**
+   - Garantir que o container externo dos cards não force `bg-background`/branco; deixar o `--guide-bg` valer. (Conferir e remover qualquer override.)
 
-## Mudanças nas edge functions (gate server-side)
+## Fluxo a partir daqui
 
-### `supabase/functions/integrations-connect/index.ts`
-- Após resolver `tenantId`, ler `plan_code` em `tenants` e retornar 403 `feature_not_available_in_plan` se `!= 'business'`. Aplicar a mesma checagem em `integrations-trigger-import`, `integrations-mark-synced`, `integrations-mark-import-done`, `integrations-disconnect` (no caso do disconnect, permitir sempre, para limpeza).
+- Você manda a imagem de cada template pronto.
+- Para cada um eu: (a) atualizo os tokens CSS daquele `.guide-template-*`, (b) marco `previewReady: true` em `templates.ts`, (c) ajusto detalhes do mock se necessário.
 
-## Stripe / preços
-- Os `stripe_price_id_monthly/yearly` continuam apontando para os mesmos produtos. Como você não pediu novos preços no Stripe, mantemos os IDs atuais; assinantes existentes seguem com o preço já contratado e novos checkouts usam o que estiver no Stripe. Se quiser que eu também recrie os preços no Stripe com os novos valores (R$ 29,90 / 49,90 / 99,90), me confirme depois — é uma operação separada.
+## Pontos de decisão
 
-## Resultado esperado
-- Cards de Billing mostram as novas features por plano.
-- Free/Starter: só veem 3 templates utilizáveis, sem logo, sem URL rotativa, sem integrações.
-- Pro: tudo acima + 15 templates, logo, URL rotativa.
-- Business: idem Pro + Stays/Hostaway liberados.
-- Tentativas via API direta (sem UI) também são bloqueadas pelas funções edge e pela RPC `rotate_property_slug`.
+- O preview usa uma **propriedade fictícia padrão** (não a do usuário). Mais rápido e consistente entre templates. Se preferir que use a 1ª propriedade real do tenant (com capa, logo e páginas dele), me avise — dá mais trabalho mas fica mais "real".
+- O botão "Ver" aparecerá **em todos os cards**, mas desabilitado para templates ainda não desenhados, conforme você pediu.
