@@ -25,12 +25,27 @@ function getContrastText(hex: string): string {
   return luminance > 0.6 ? "#111111" : "#FFFFFF";
 }
 
+function mixWithBlackOrWhite(hex: string, amount = 0.12): string {
+  const h = hex.replace("#", "");
+  const r = parseInt(h.substring(0, 2), 16);
+  const g = parseInt(h.substring(2, 4), 16);
+  const b = parseInt(h.substring(4, 6), 16);
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  // Light bg → darken slightly; Dark bg → lighten slightly
+  const target = luminance > 0.5 ? 0 : 255;
+  const mix = (c: number) => Math.round(c + (target - c) * amount);
+  const toHex = (n: number) => n.toString(16).padStart(2, "0");
+  return `#${toHex(mix(r))}${toHex(mix(g))}${toHex(mix(b))}`;
+}
+
 function MiniPreview({ tpl }: { tpl: TemplateDef }) {
   const ctaText = getContrastText(tpl.primary);
+  const bg = tpl.secondary;
+  const cardBg = mixWithBlackOrWhite(tpl.secondary, 0.12);
   return (
     <div
       className={`guide-template-${tpl.key} relative overflow-hidden rounded-xl h-56 sm:h-64 border`}
-      style={{ background: "hsl(var(--guide-bg))" }}
+      style={{ background: bg }}
     >
       {/* Faux hero */}
       <div className="h-1/2 w-full" style={{ background: tpl.preview }} />
@@ -48,11 +63,7 @@ function MiniPreview({ tpl }: { tpl: TemplateDef }) {
             <div
               key={i}
               className="aspect-square rounded-md grid place-items-center"
-              style={{
-                background: "hsl(var(--guide-card))",
-                color: "hsl(var(--guide-fg))",
-                borderRadius: "var(--guide-radius)",
-              }}
+              style={{ background: cardBg, borderRadius: "var(--guide-radius)" }}
             >
               <Icon className="h-3.5 w-3.5" style={{ color: tpl.primary }} />
             </div>
