@@ -157,7 +157,7 @@ export default function Settings() {
             <Label htmlFor="show-logo" className="cursor-pointer">Exibir logo no guia</Label>
             <p className="text-xs text-muted-foreground mt-0.5">Mostrar a logo no topo da página do hóspede.</p>
           </div>
-          <Switch id="show-logo" checked={showLogo} onCheckedChange={setShowLogo} />
+          <Switch id="show-logo" checked={features.customLogo && showLogo} onCheckedChange={setShowLogo} disabled={!features.customLogo} />
         </div>
       </Card>
 
