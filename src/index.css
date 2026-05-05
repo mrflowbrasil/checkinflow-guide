@@ -281,6 +281,21 @@
     background: #FFFFFF !important;
     color: #0F1E3D !important;
   }
+
+  /* Luxury template: fundo creme, cards mais claros, acentos dourados */
+  .guide-template-luxury.guide-root,
+  .guide-root.guide-template-luxury {
+    background-color: #f3ebd9 !important;
+    color: #c9a35b !important;
+  }
+  .guide-template-luxury .guide-card {
+    background-color: #faf3e3 !important;
+    color: #c9a35b !important;
+  }
+  .guide-template-luxury .guide-cta-primary {
+    background: #c9a35b !important;
+    color: #ffffff !important;
+  }
 }
 
 /* Fonts for guide templates */

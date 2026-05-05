@@ -17,7 +17,7 @@ export type TemplateDef = {
   previewReady?: boolean; // true → "Ver" button enabled
 };
 
-export const PREVIEW_READY_TEMPLATES: TemplateKey[] = ["clean", "dark"];
+export const PREVIEW_READY_TEMPLATES: TemplateKey[] = ["clean", "dark", "luxury"];
 
 export function isPreviewReady(key: TemplateKey): boolean {
   return PREVIEW_READY_TEMPLATES.includes(key);
@@ -32,7 +32,7 @@ export const TEMPLATES: TemplateDef[] = [
     primary: "#FFFFFF", secondary: "#0F1E3D",
     preview: "linear-gradient(135deg, #0F1E3D 50%, #1a2c52 50%)" },
   { key: "luxury", name: "Luxury", description: "Creme, serifa, acentos dourados.", tier: "free",
-    primary: "#9c7a2e", secondary: "#f3ebd9",
+    primary: "#c9a35b", secondary: "#f3ebd9",
     preview: "linear-gradient(135deg, #f3ebd9 50%, #c9a35b 50%)" },
 
   // Pro
