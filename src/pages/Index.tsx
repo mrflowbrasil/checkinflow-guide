@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sparkles, QrCode, Smartphone, ArrowRight } from "lucide-react";
 import mrFlowLogoWhite from "@/assets/mrflow-logo-white.png";
+import { ImageAutoSlider } from "@/components/ui/image-auto-slider";
 
 const HERO_BG = {
   background:
