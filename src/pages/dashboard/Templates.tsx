@@ -16,7 +16,17 @@ import { toast } from "sonner";
 import { TEMPLATES, canUseProTemplates, isPreviewReady, type TemplateDef } from "@/lib/templates";
 import { TemplatePreviewDialog } from "@/components/templates/TemplatePreviewDialog";
 
+function getContrastText(hex: string): string {
+  const h = hex.replace("#", "");
+  const r = parseInt(h.substring(0, 2), 16);
+  const g = parseInt(h.substring(2, 4), 16);
+  const b = parseInt(h.substring(4, 6), 16);
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return luminance > 0.6 ? "#111111" : "#FFFFFF";
+}
+
 function MiniPreview({ tpl }: { tpl: TemplateDef }) {
+  const ctaText = getContrastText(tpl.primary);
   return (
     <div
       className={`guide-template-${tpl.key} relative overflow-hidden rounded-xl h-56 sm:h-64 border`}
@@ -28,7 +38,7 @@ function MiniPreview({ tpl }: { tpl: TemplateDef }) {
         <div className="text-center">
           <div
             className="inline-block px-3 py-1 rounded-md text-[10px] font-bold tracking-widest uppercase"
-            style={{ background: tpl.primary, color: tpl.secondary }}
+            style={{ background: tpl.primary, color: ctaText }}
           >
             Reservar
           </div>
@@ -52,8 +62,8 @@ function MiniPreview({ tpl }: { tpl: TemplateDef }) {
       <div
         className="absolute top-2 left-2 text-[10px] font-semibold px-2 py-0.5 rounded backdrop-blur"
         style={{
-          background: "hsl(var(--guide-bg) / 0.7)",
-          color: "hsl(var(--guide-fg))",
+          background: "rgba(255,255,255,0.9)",
+          color: "#111111",
           fontFamily: "var(--guide-heading-font)",
         }}
       >
