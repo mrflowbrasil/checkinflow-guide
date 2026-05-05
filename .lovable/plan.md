@@ -1,72 +1,44 @@
+# Ajustes no template Dark + prévia padrão
 
-## Objetivo
+## 1. Template Dark — cores corretas (`src/index.css` + `src/lib/templates.ts`)
 
-1. Adicionar um botão **"Ver"** em todos os cards de template para abrir uma prévia realista (modelo de exemplo) sem precisar aplicar o template.
-2. Mudanças visuais mais marcantes por template (fundo, botões, ícones, fonte) — incluindo aplicar a **cor secundária como fundo** quando fizer sentido.
-3. Liberar o botão "Ver" funcional **apenas** para os templates que você aprovar via imagem. Os demais ficam com o botão desabilitado ("Em breve").
-4. Implementar agora o design final do **Clean** (com base na imagem enviada).
+Hoje o Dark herda os mesmos valores do Clean nas variáveis HSL e tem `primary=#0F1E3D` + `secondary=#1a2c52` (ambas escuras), o que deixa botões e labels ilegíveis.
 
-## O que muda na página `/app/templates`
+Mudanças:
+- `src/lib/templates.ts` — Dark: `primary: "#FFFFFF"` (texto/ícones brancos sobre o fundo) e `secondary: "#0F1E3D"` (navy escuro). O `preview` swatch passa a usar `linear-gradient(135deg, #0F1E3D 50%, #1a2c52 50%)` (mantém o visual escuro no card).
+- `.guide-template-dark` em `src/index.css`: já está com `--guide-bg` escuro e `--guide-fg` branco — manter. Vamos garantir que `--guide-card` continue um pouco mais claro que o bg para os botões de página ficarem visíveis.
 
-- Cada card ganha um botão pequeno **"Ver"** no canto inferior direito do mini-preview.
-- Clique no "Ver" abre um **dialog full-screen** (mockup de celular) renderizando uma propriedade fictícia ("Suíte Premium - Vila Serena") com o template aplicado — usando o mesmo layout de `GuestGuide` (hero, logo, "HUB DE BOAS VINDAS", grid de 9 ícones, botão "Reservar").
-- Templates ainda não desenhados: botão "Ver" aparece como `disabled` com tooltip "Prévia em breve".
-- O fluxo de "aplicar template" continua igual (clicar no card abre o `AlertDialog` de confirmação). O "Ver" não aplica nada.
+## 2. Botão "Reservar Novamente" invertido no template Dark
 
-## Design final — Template **Clean** (baseado na imagem)
+Em `src/pages/GuestGuide.tsx` (e no `TemplatePreviewDialog`), o botão usa hoje `background: primary, color: #fff`. Para o Dark, com `primary=#FFFFFF`, ele ficará automaticamente branco com texto escuro se trocarmos `color: "#fff"` por `color: "hsl(var(--guide-bg))"` — invertendo só nesse template, sem `if` específico, pois para os outros templates `primary` continua sendo a cor de destaque e o texto branco continua legível.
 
-Tokens (`src/index.css` → `.guide-template-clean`):
-- `--guide-bg`: branco neutro (`0 0% 100%`)
-- `--guide-fg`: navy escuro `#0F1E3D`
-- `--guide-card`: cinza muito claro `210 20% 97%` (cards levemente destacados do fundo)
-- `--guide-muted`: cinza médio
-- `--guide-heading-font`: `"Inter"` (mantido)
-- `--guide-radius`: `0.875rem` (cards um pouco mais quadrados que hoje)
+Para evitar regressão nos demais templates (onde `primary` é colorido e queremos texto branco), aplicamos a regra apenas via classe: criamos no CSS uma sobreposição:
 
-Ajustes no `GuestGuide.tsx` para todos os templates (não só Clean):
-- A área abaixo do hero passa a usar `hsl(var(--guide-bg))` em vez de herdar branco do `body`. Isso já vem do `.guide-root`, mas vou garantir que o container `max-w-md` herde corretamente (sem fundo branco fixo) — assim cada template controla esse fundo via `--guide-bg`.
-- Para templates com `--guide-bg` claro (Clean, Studio, Aegean, Surf, Monochrome), fundo branco/quase-branco (como na imagem).
-- Para templates onde faz sentido usar a **secundária como fundo da seção dos cards** (ex.: Luxury creme, Boho Fun bege, Serene Coast areia), o `--guide-bg` já será definido com a cor secundária do template — atualizo cada `.guide-template-*` para refletir isso.
+```css
+.guide-template-dark .guide-cta-primary {
+  background: #FFFFFF !important;
+  color: #0F1E3D !important;
+}
+```
 
-Especificamente para Clean (que é o aprovado agora):
-- Fundo da seção: branco puro.
-- Cards: `bg #F4F6F8`, sombra suave, ícones `#0F1E3D` em traço fino (Lucide já é assim).
-- Título de seção "HUB DE BOAS VINDAS": `#0F1E3D`, peso 600, `letter-spacing: 0.25em`.
-- Botão "Reservar": fundo `#0F1E3D`, texto branco, uppercase, tracking largo (já está assim).
+E adicionamos `className="guide-cta-primary"` nos dois botões "Reservar Novamente" (GuestGuide.tsx e TemplatePreviewDialog.tsx).
 
-Para os demais templates: nesta task **só ajusto os tokens de fundo** para que cada um use a sua cor secundária/identidade como fundo da página (resolvendo o "tudo branco abaixo dos botões"). O design fino de cada um (cards, ícones, fontes radicais) será feito conforme você for enviando as imagens — nesse momento a gente também libera o "Ver" para aquele template.
+## 3. Mini-preview da página de Templates legível (`Templates.tsx` → `MiniPreview`)
 
-## Implementação técnica
+Problemas atuais no card "Dark":
+- O badge com o nome ("Dark") usa `background: hsl(var(--guide-bg)/0.7)` sobre um hero também escuro → invisível.
+- O pseudo-botão "RESERVAR" usa `background: tpl.primary, color: tpl.secondary` → ambos escuros no Dark.
 
-Arquivos a alterar:
+Correções no `MiniPreview`:
+- Badge do nome: trocar para `background: rgba(255,255,255,0.85); color: #111` (constante, independente do template) para sempre legível sobre o swatch.
+- Pseudo-botão "RESERVAR": usar texto branco quando `primary` for escuro e fundo branco quando `primary` for claro. Como `secondary` deixou de ser garantido como contraste, vamos calcular um contraste simples: helper inline `getContrastText(hex)` que retorna `#fff` ou `#111` de acordo com luminância do `tpl.primary`. Aplicado também no botão "Reservar Novamente" da prévia em tela cheia.
 
-1. **`src/lib/templates.ts`**
-   - Adicionar campo `previewReady: boolean` em cada `TemplateDef`. Inicialmente `true` apenas para `clean`; demais `false`.
+## 4. Imagem padrão da prévia = Pousada Vila Serena 2
 
-2. **`src/components/templates/TemplatePreviewDialog.tsx`** (novo)
-   - Dialog responsivo mostrando um "mockup" no tamanho de celular (max-w ~ 380px, altura ~ 80vh, scroll interno).
-   - Renderiza uma cópia simplificada da home do guia (hero com imagem stock, logo redonda fake, título, endereço, "HUB DE BOAS VINDAS", grid 3x3 com `getPageIcon`, botão "Reservar Novamente"), tudo dentro de `<div className={'guide-root guide-template-${tpl.key}'}>` para que os tokens CSS atuem.
-   - Usa cores `tpl.primary` / `tpl.secondary` para botão e ícones, espelhando `GuestGuide.tsx`.
-   - Inclui também uma "página interna" navegável (clicar num ícone abre `GuestPagePreview` com blocks fictícios: texto, lista, dica, botão) para mostrar o estilo dos componentes internos.
+- Copiar `user-uploads://Pousada_Vila_Serena2.jpeg` para `src/assets/preview-cover-vila-serena.jpg`.
+- Em `src/components/templates/TemplatePreviewDialog.tsx`, substituir o `COVER_IMG` (URL Unsplash) por `import coverImg from "@/assets/preview-cover-vila-serena.jpg"` e usar `coverImg` no `<img src>`.
 
-3. **`src/pages/dashboard/Templates.tsx`**
-   - No `TemplateCard`, adicionar botão "Ver" (variant `secondary`, size `sm`, ícone `Eye`) sobreposto no canto do `MiniPreview`.
-   - `onClick` do botão chama `e.stopPropagation()` e abre o `TemplatePreviewDialog`. Se `tpl.previewReady === false`, botão renderiza `disabled` com `title="Prévia em breve"`.
-   - Estado local: `previewing: TemplateDef | null`.
-
-4. **`src/index.css`**
-   - Atualizar `.guide-template-clean` com os novos tokens.
-   - Para os outros templates: ajustar `--guide-bg` para usar a cor secundária / cor de identidade quando o atual estiver "branco genérico" demais. Sem mexer em fontes/raios desta vez (preserva o que já está bom).
-
-5. **`src/pages/GuestGuide.tsx`**
-   - Garantir que o container externo dos cards não force `bg-background`/branco; deixar o `--guide-bg` valer. (Conferir e remover qualquer override.)
-
-## Fluxo a partir daqui
-
-- Você manda a imagem de cada template pronto.
-- Para cada um eu: (a) atualizo os tokens CSS daquele `.guide-template-*`, (b) marco `previewReady: true` em `templates.ts`, (c) ajusto detalhes do mock se necessário.
-
-## Pontos de decisão
-
-- O preview usa uma **propriedade fictícia padrão** (não a do usuário). Mais rápido e consistente entre templates. Se preferir que use a 1ª propriedade real do tenant (com capa, logo e páginas dele), me avise — dá mais trabalho mas fica mais "real".
-- O botão "Ver" aparecerá **em todos os cards**, mas desabilitado para templates ainda não desenhados, conforme você pediu.
+## Detalhes técnicos resumidos
+- Arquivos editados: `src/lib/templates.ts`, `src/index.css`, `src/pages/GuestGuide.tsx`, `src/pages/dashboard/Templates.tsx`, `src/components/templates/TemplatePreviewDialog.tsx`.
+- Asset adicionado: `src/assets/preview-cover-vila-serena.jpg`.
+- Sem migrações, sem mudanças em backend, sem alteração de planos ou permissões.
