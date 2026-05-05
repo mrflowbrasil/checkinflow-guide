@@ -143,6 +143,7 @@ export default function Templates() {
               isCurrent={currentKey === tpl.key}
               locked={false}
               onClick={() => handleClick(tpl)}
+              onPreview={() => setPreviewing(tpl)}
             />
           ))}
         </div>
@@ -172,6 +173,7 @@ export default function Templates() {
               isCurrent={currentKey === tpl.key}
               locked={!isPro}
               onClick={() => handleClick(tpl)}
+              onPreview={() => setPreviewing(tpl)}
             />
           ))}
         </div>
@@ -202,28 +204,53 @@ export default function Templates() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <TemplatePreviewDialog
+        template={previewing}
+        open={!!previewing}
+        onOpenChange={(o) => !o && setPreviewing(null)}
+      />
     </div>
   );
 }
 
 function TemplateCard({
-  tpl, isCurrent, locked, onClick,
+  tpl, isCurrent, locked, onClick, onPreview,
 }: {
   tpl: TemplateDef;
   isCurrent: boolean;
   locked: boolean;
   onClick: () => void;
+  onPreview: () => void;
 }) {
+  const previewReady = isPreviewReady(tpl.key);
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={locked}
+    <div
+      role="button"
+      tabIndex={locked ? -1 : 0}
+      onClick={() => { if (!locked) onClick(); }}
+      onKeyDown={(e) => {
+        if (locked) return;
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); }
+      }}
+      aria-disabled={locked}
       className={`group relative text-left rounded-2xl border-2 p-3 transition-all bg-card ${
         isCurrent ? "border-accent ring-2 ring-accent/30" : "border-border hover:border-accent/40"
-      } ${locked ? "cursor-not-allowed opacity-95" : "hover:shadow-card-hover"}`}
+      } ${locked ? "cursor-not-allowed opacity-95" : "cursor-pointer hover:shadow-card-hover"}`}
     >
-      <MiniPreview tpl={tpl} />
+      <div className="relative">
+        <MiniPreview tpl={tpl} />
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); if (previewReady) onPreview(); }}
+          disabled={!previewReady}
+          title={previewReady ? "Ver prévia em tela cheia" : "Prévia em breve"}
+          className="absolute bottom-2 right-2 inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-medium bg-background/90 backdrop-blur border border-border shadow-sm hover:bg-background disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <Eye className="h-3 w-3" />
+          Ver
+        </button>
+      </div>
       <div className="mt-3 flex items-start justify-between gap-2">
         <div className="min-w-0">
           <div className="font-semibold text-sm truncate">{tpl.name}</div>
@@ -246,6 +273,6 @@ function TemplateCard({
           </div>
         </div>
       )}
-    </button>
+    </div>
   );
 }
