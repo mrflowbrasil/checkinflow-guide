@@ -267,6 +267,11 @@
     background-color: hsl(var(--guide-card));
     border-radius: var(--guide-radius);
   }
+  /* Dark template inverts the primary CTA so it stays legible */
+  .guide-template-dark .guide-cta-primary {
+    background: #FFFFFF !important;
+    color: #0F1E3D !important;
+  }
 }
 
 /* Fonts for guide templates */
