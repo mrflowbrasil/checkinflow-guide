@@ -175,7 +175,7 @@ export default function GuestGuide() {
           <Button
             asChild
             size="lg"
-            className="w-full h-14 text-base font-semibold tracking-wider uppercase rounded-2xl shadow-hero mt-2"
+            className="guide-cta-primary w-full h-14 text-base font-semibold tracking-wider uppercase rounded-2xl shadow-hero mt-2"
             style={{ background: primaryColor, color: "#fff" }}
           >
             <a href={data.booking_url} target="_blank" rel="noreferrer noopener">
