@@ -127,7 +127,7 @@ function HomePreview({
 
         <Button
           size="lg"
-          className="w-full h-12 text-sm font-semibold tracking-wider uppercase rounded-2xl mt-4"
+          className="guide-cta-primary w-full h-12 text-sm font-semibold tracking-wider uppercase rounded-2xl mt-4"
           style={{ background: primary, color: "#fff" }}
         >
           <Calendar className="mr-2 h-4 w-4" /> Reservar Novamente
