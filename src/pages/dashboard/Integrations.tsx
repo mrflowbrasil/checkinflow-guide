@@ -65,6 +65,7 @@ const PROVIDER_META: Record<Provider, {
 export default function Integrations() {
   const qc = useQueryClient();
   const { data: tenant } = useTenant();
+  const features = usePlanFeatures();
   const [openProvider, setOpenProvider] = useState<Provider | null>(null);
   const [systemUrl, setSystemUrl] = useState("");
   const [login, setLogin] = useState("");
