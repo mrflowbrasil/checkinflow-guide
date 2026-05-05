@@ -17,8 +17,7 @@ const FAKE_PAGES = [
   { key: "food", title: "Onde Comer", icon: "UtensilsCrossed" },
 ];
 
-const COVER_IMG =
-  "https://images.unsplash.com/photo-1540541338287-41700207dee6?w=1200&q=80&auto=format&fit=crop";
+import COVER_IMG from "@/assets/preview-cover-vila-serena.jpg";
 
 export function TemplatePreviewDialog({
   template,
@@ -128,7 +127,7 @@ function HomePreview({
 
         <Button
           size="lg"
-          className="w-full h-12 text-sm font-semibold tracking-wider uppercase rounded-2xl mt-4"
+          className="guide-cta-primary w-full h-12 text-sm font-semibold tracking-wider uppercase rounded-2xl mt-4"
           style={{ background: primary, color: "#fff" }}
         >
           <Calendar className="mr-2 h-4 w-4" /> Reservar Novamente
