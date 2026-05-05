@@ -122,7 +122,7 @@ export default function Templates() {
           <Button asChild>
             <Link to="/app/billing">
               <Sparkles className="h-4 w-4 mr-2" />
-              Fazer upgrade para Pro
+              Fazer upgrade para Pro ou Business
             </Link>
           </Button>
         )}
