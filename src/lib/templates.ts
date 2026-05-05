@@ -72,6 +72,13 @@ export function getTemplate(key: string | null | undefined): TemplateDef {
 }
 
 export function canUseProTemplates(planCode: string | null | undefined): boolean {
-  if (!planCode) return false;
-  return planCode !== "free";
+  return planCode === "pro" || planCode === "business";
+}
+
+export function isPlanProOrAbove(planCode: string | null | undefined): boolean {
+  return planCode === "pro" || planCode === "business";
+}
+
+export function isPlanBusiness(planCode: string | null | undefined): boolean {
+  return planCode === "business";
 }
