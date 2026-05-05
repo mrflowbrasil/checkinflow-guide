@@ -1,26 +1,21 @@
 import React from "react";
+import hub1 from "@/assets/carrossel/hub-1.webp";
+import hub2 from "@/assets/carrossel/hub-2.webp";
+import hub3 from "@/assets/carrossel/hub-3.webp";
+import hub4 from "@/assets/carrossel/hub-4.webp";
 
 // 👉 Para trocar as imagens, basta editar este array (ou passar a prop `images`).
-const DEFAULT_IMAGES: string[] = [
-  "https://images.unsplash.com/photo-1518495973542-4542c06a5843?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1472396961693-142e6e269027?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1505142468610-359e7d316be0?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1482881497185-d4a9ddbe4151?q=80&w=1200&auto=format&fit=crop",
-  "https://plus.unsplash.com/premium_photo-1673264933212-d78737f38e48?q=80&w=1200&auto=format&fit=crop",
-  "https://plus.unsplash.com/premium_photo-1711434824963-ca894373272e?q=80&w=1200&auto=format&fit=crop",
-  "https://plus.unsplash.com/premium_photo-1675705721263-0bbeec261c49?q=80&w=1200&auto=format&fit=crop",
-  "https://images.unsplash.com/photo-1524799526615-766a9833dec0?q=80&w=1200&auto=format&fit=crop",
-];
+const DEFAULT_IMAGES: string[] = [hub1, hub2, hub3, hub4];
 
 export interface ImageAutoSliderProps {
   images?: string[];
-  /** Duração de um ciclo completo em segundos. Padrão: 30s */
+  /** Duração de um ciclo completo em segundos. Padrão: 50s */
   durationSeconds?: number;
 }
 
 export const ImageAutoSlider: React.FC<ImageAutoSliderProps> = ({
   images = DEFAULT_IMAGES,
-  durationSeconds = 30,
+  durationSeconds = 50,
 }) => {
   const duplicated = [...images, ...images];
 
