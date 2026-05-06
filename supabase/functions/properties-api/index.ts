@@ -30,6 +30,33 @@ function txt(s: any): string | null {
 
 type BlockSeed = { type: string; data: any };
 
+// Mirror of seed_property_pages() — keep in sync with the DB function.
+const PAGES_CATALOG = [
+  { page_key: "checkin",         title: "Check-in",          icon: "Clock",            default_position: 1 },
+  { page_key: "lock_code",       title: "Senha Fechadura",   icon: "KeyRound",         default_position: 2 },
+  { page_key: "checkout",        title: "Check-out",         icon: "LogOut",           default_position: 3 },
+  { page_key: "wifi",            title: "Wi-Fi",             icon: "Wifi",             default_position: 4 },
+  { page_key: "location",        title: "Localização",       icon: "MapPin",           default_position: 5 },
+  { page_key: "rules",           title: "Regras",            icon: "BookOpen",         default_position: 6 },
+  { page_key: "equipment",       title: "Equipamentos",      icon: "Wrench",           default_position: 7 },
+  { page_key: "furniture",       title: "Mobília",           icon: "Sofa",             default_position: 8 },
+  { page_key: "condo",           title: "Condomínio",        icon: "Building2",        default_position: 9 },
+  { page_key: "parking",         title: "Estacionamento",    icon: "Car",              default_position: 10 },
+  { page_key: "trash",           title: "Lixo",              icon: "Trash2",           default_position: 11 },
+  { page_key: "economy",         title: "Economia",          icon: "Zap",              default_position: 12 },
+  { page_key: "before_leaving",  title: "Antes de Sair",     icon: "DoorOpen",         default_position: 13 },
+  { page_key: "tips",            title: "Dicas",             icon: "Lightbulb",        default_position: 14 },
+  { page_key: "contacts",        title: "Contatos",          icon: "Phone",            default_position: 15 },
+  { page_key: "emergency",       title: "Emergência",        icon: "Siren",            default_position: 16 },
+  { page_key: "how_to_arrive",   title: "Como Chegar",       icon: "Navigation",       default_position: 17 },
+  { page_key: "transport",       title: "Transportes",       icon: "Bus",              default_position: 18 },
+  { page_key: "restaurants",     title: "Onde Comer",        icon: "UtensilsCrossed",  default_position: 19 },
+  { page_key: "attractions",     title: "Pontos Turísticos", icon: "Landmark",         default_position: 20 },
+  { page_key: "maintenance",     title: "Manutenção",        icon: "Hammer",           default_position: 21 },
+  { page_key: "review",          title: "Avaliação",         icon: "Star",             default_position: 22 },
+  { page_key: "faq",             title: "FAQ",               icon: "HelpCircle",       default_position: 23 },
+];
+
 function buildPageBlocks(pageKey: string, details: any, address: string | null): BlockSeed[] {
   const blocks: BlockSeed[] = [];
   const d = details ?? {};
@@ -181,6 +208,44 @@ serve(async (req) => {
     if (req.method === "GET") {
       const url = new URL(req.url);
       const qp = url.searchParams;
+
+      // Sub-route: catalog of all default page_keys (no DB)
+      if (/\/pages-catalog\/?$/.test(url.pathname)) {
+        return json({ count: PAGES_CATALOG.length, items: PAGES_CATALOG });
+      }
+
+      // Sub-route: pages of a specific property by external_id
+      if (/\/pages\/?$/.test(url.pathname)) {
+        const extId = qp.get("external_id");
+        const extProv = qp.get("external_provider") ?? "stays";
+        if (!extId) return json({ error: "external_id_required" }, 400);
+
+        const { data: prop } = await admin
+          .from("properties")
+          .select("id")
+          .eq("tenant_id", tenantId)
+          .eq("external_provider", extProv)
+          .eq("external_id", String(extId))
+          .maybeSingle();
+
+        if (!prop) return json({ error: "property_not_found" }, 404);
+
+        const { data: pages, error: pErr } = await admin
+          .from("property_pages")
+          .select("id, page_key, title, icon, position, is_enabled")
+          .eq("property_id", prop.id)
+          .order("position");
+        if (pErr) throw pErr;
+
+        return json({
+          property_id: prop.id,
+          external_id: String(extId),
+          external_provider: extProv,
+          count: pages?.length ?? 0,
+          items: pages ?? [],
+        });
+      }
+
       const externalId = qp.get("external_id");
       const externalProvider = qp.get("external_provider");
       const status = qp.get("status");
