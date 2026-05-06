@@ -32,7 +32,7 @@ const Index = () => {
       </header>
 
       {/* Hero */}
-      <section className="container px-6 sm:px-10 lg:px-20 xl:px-32 py-16 lg:py-24">
+      <section className="relative z-10 container px-6 sm:px-10 lg:px-20 xl:px-32 py-16 lg:py-24">
         <div className="flex justify-center mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-white/90 text-xs font-medium">
             <Sparkles className="h-3 w-3" style={{ color: "#00FFFF" }} /> Guias digitais para temporada
