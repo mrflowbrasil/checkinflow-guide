@@ -12,7 +12,8 @@ const HERO_BG = {
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex flex-col text-white" style={HERO_BG}>
+    <div className="min-h-screen flex flex-col text-white relative" style={HERO_BG}>
+      <ShaderBackground className="pointer-events-none absolute inset-0 h-full w-full opacity-40 mix-blend-screen" />
       {/* Header */}
       <header className="sticky top-0 z-30 backdrop-blur-md bg-[#020617]/40 border-b border-white/10">
         <div className="container px-6 sm:px-10 lg:px-20 xl:px-32 flex items-center justify-between h-16">
