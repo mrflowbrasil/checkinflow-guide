@@ -327,6 +327,21 @@
     color: #ffffff !important;
   }
 
+  /* Monochrome template */
+  .guide-template-monochrome.guide-root,
+  .guide-root.guide-template-monochrome {
+    background-color: #ffffff !important;
+    color: #010101 !important;
+  }
+  .guide-template-monochrome .guide-card {
+    background-color: #f6f6f6 !important;
+    color: #010101 !important;
+  }
+  .guide-template-monochrome .guide-cta-primary {
+    background: #010101 !important;
+    color: #ffffff !important;
+  }
+
   /* Modular template */
   .guide-template-modular.guide-root,
   .guide-root.guide-template-modular {
