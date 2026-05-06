@@ -1,44 +1,49 @@
-# Ajustes no template Dark + prévia padrão
 
-## 1. Template Dark — cores corretas (`src/index.css` + `src/lib/templates.ts`)
+## Objetivo
+Aplicar a paleta definida no template **Boho Fun** (preview, dashboard e página pública) e habilitar o botão "Ver".
 
-Hoje o Dark herda os mesmos valores do Clean nas variáveis HSL e tem `primary=#0F1E3D` + `secondary=#1a2c52` (ambas escuras), o que deixa botões e labels ilegíveis.
+## Paleta
+- Fundo (`bg`): `#f0e3cf`
+- Frame dos ícones / cards (`card`): `#c3b59f`
+- Botões com link/CTA (`cta`): `#2f6e63`
+- Texto dos botões (`cta-text`): `#f0e3cf`
+- Texto principal e ícones (`fg`): `#2f6e63`
 
-Mudanças:
-- `src/lib/templates.ts` — Dark: `primary: "#FFFFFF"` (texto/ícones brancos sobre o fundo) e `secondary: "#0F1E3D"` (navy escuro). O `preview` swatch passa a usar `linear-gradient(135deg, #0F1E3D 50%, #1a2c52 50%)` (mantém o visual escuro no card).
-- `.guide-template-dark` em `src/index.css`: já está com `--guide-bg` escuro e `--guide-fg` branco — manter. Vamos garantir que `--guide-card` continue um pouco mais claro que o bg para os botões de página ficarem visíveis.
+## Mudanças
 
-## 2. Botão "Reservar Novamente" invertido no template Dark
+### 1. `src/lib/templates.ts`
+- Atualizar a entrada `boho_fun`:
+  - `primary: "#2f6e63"` (já está)
+  - `secondary: "#f0e3cf"` (já está)
+  - `preview: "linear-gradient(135deg, #f0e3cf 50%, #2f6e63 50%)"` (ajustar gradient)
+- Adicionar `"boho_fun"` ao array `PREVIEW_READY_TEMPLATES` para liberar o botão "Ver".
 
-Em `src/pages/GuestGuide.tsx` (e no `TemplatePreviewDialog`), o botão usa hoje `background: primary, color: #fff`. Para o Dark, com `primary=#FFFFFF`, ele ficará automaticamente branco com texto escuro se trocarmos `color: "#fff"` por `color: "hsl(var(--guide-bg))"` — invertendo só nesse template, sem `if` específico, pois para os outros templates `primary` continua sendo a cor de destaque e o texto branco continua legível.
-
-Para evitar regressão nos demais templates (onde `primary` é colorido e queremos texto branco), aplicamos a regra apenas via classe: criamos no CSS uma sobreposição:
+### 2. `src/index.css`
+Adicionar bloco de override seguindo o mesmo padrão usado em `dark` e `luxury`:
 
 ```css
-.guide-template-dark .guide-cta-primary {
-  background: #FFFFFF !important;
-  color: #0F1E3D !important;
+.guide-template-boho_fun.guide-root,
+.guide-root.guide-template-boho_fun {
+  background-color: #f0e3cf !important;
+  color: #2f6e63 !important;
+}
+.guide-template-boho_fun .guide-card {
+  background-color: #c3b59f !important;
+  color: #2f6e63 !important;
+}
+.guide-template-boho_fun .guide-cta-primary {
+  background: #2f6e63 !important;
+  color: #f0e3cf !important;
 }
 ```
 
-E adicionamos `className="guide-cta-primary"` nos dois botões "Reservar Novamente" (GuestGuide.tsx e TemplatePreviewDialog.tsx).
+Isso garante consistência entre preview no dialog, página pública (`GuestGuide`) e mini-preview no dashboard (que já lê `tpl.secondary` e `tpl.primary`).
 
-## 3. Mini-preview da página de Templates legível (`Templates.tsx` → `MiniPreview`)
+## Convenção para próximos templates
+Salvar em `mem://design/template-tokens` a convenção dos 5 tokens (bg/card/cta/cta-text/fg) para que todos os próximos templates sejam aplicados no mesmo formato mecânico.
 
-Problemas atuais no card "Dark":
-- O badge com o nome ("Dark") usa `background: hsl(var(--guide-bg)/0.7)` sobre um hero também escuro → invisível.
-- O pseudo-botão "RESERVAR" usa `background: tpl.primary, color: tpl.secondary` → ambos escuros no Dark.
-
-Correções no `MiniPreview`:
-- Badge do nome: trocar para `background: rgba(255,255,255,0.85); color: #111` (constante, independente do template) para sempre legível sobre o swatch.
-- Pseudo-botão "RESERVAR": usar texto branco quando `primary` for escuro e fundo branco quando `primary` for claro. Como `secondary` deixou de ser garantido como contraste, vamos calcular um contraste simples: helper inline `getContrastText(hex)` que retorna `#fff` ou `#111` de acordo com luminância do `tpl.primary`. Aplicado também no botão "Reservar Novamente" da prévia em tela cheia.
-
-## 4. Imagem padrão da prévia = Pousada Vila Serena 2
-
-- Copiar `user-uploads://Pousada_Vila_Serena2.jpeg` para `src/assets/preview-cover-vila-serena.jpg`.
-- Em `src/components/templates/TemplatePreviewDialog.tsx`, substituir o `COVER_IMG` (URL Unsplash) por `import coverImg from "@/assets/preview-cover-vila-serena.jpg"` e usar `coverImg` no `<img src>`.
-
-## Detalhes técnicos resumidos
-- Arquivos editados: `src/lib/templates.ts`, `src/index.css`, `src/pages/GuestGuide.tsx`, `src/pages/dashboard/Templates.tsx`, `src/components/templates/TemplatePreviewDialog.tsx`.
-- Asset adicionado: `src/assets/preview-cover-vila-serena.jpg`.
-- Sem migrações, sem mudanças em backend, sem alteração de planos ou permissões.
+## Arquivos editados
+- `src/lib/templates.ts`
+- `src/index.css`
+- `mem://design/template-tokens` (novo)
+- `mem://index.md` (atualizar índice)
