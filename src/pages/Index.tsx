@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Sparkles, QrCode, Smartphone, ArrowRight } from "lucide-react";
 import mrFlowLogoWhite from "@/assets/mrflow-logo-white.png";
 import mockupHome from "@/assets/mockup-home-light.webp";
+import ShaderBackground from "@/components/ui/shader-background";
 
 const HERO_BG = {
   background:
