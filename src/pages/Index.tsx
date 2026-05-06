@@ -14,7 +14,7 @@ const Index = () => {
     <div className="min-h-screen flex flex-col text-white" style={HERO_BG}>
       {/* Header */}
       <header className="sticky top-0 z-30 backdrop-blur-md bg-[#020617]/40 border-b border-white/10">
-        <div className="container flex items-center justify-between h-16">
+        <div className="container px-6 sm:px-10 lg:px-20 xl:px-32 flex items-center justify-between h-16">
           <Link to="/" className="flex flex-col items-start gap-0.5">
             <img src={mrFlowLogoWhite} alt="Mr Flow" className="h-8 w-auto" />
             <span className="text-[9px] tracking-[0.25em] text-white/70 uppercase">Welcome Hub</span>
@@ -30,7 +30,7 @@ const Index = () => {
       </header>
 
       {/* Hero */}
-      <section className="container px-6 sm:px-8 lg:px-12 py-16 lg:py-24">
+      <section className="container px-6 sm:px-10 lg:px-20 xl:px-32 py-16 lg:py-24">
         <div className="flex justify-center mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-white/90 text-xs font-medium">
             <Sparkles className="h-3 w-3" style={{ color: "#00FFFF" }} /> Guias digitais para temporada
