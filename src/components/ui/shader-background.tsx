@@ -17,13 +17,13 @@ const fsSource = `
   uniform float iTime;
 
   const float overallSpeed = 0.08;
-  const float gridSmoothWidth = 0.015;
-  const float scale = 5.0;
-  const vec4 lineColor = vec4(0.0, 0.55, 0.56, 1.0);
-  const float minLineWidth = 0.005;
-  const float maxLineWidth = 0.08;
+  const float gridSmoothWidth = 0.03;
+  const float scale = 4.2;
+  const vec4 lineColor = vec4(0.0, 1.0, 1.0, 1.0);
+  const float minLineWidth = 0.012;
+  const float maxLineWidth = 0.13;
   const float lineSpeed = 1.0 * overallSpeed;
-  const float lineAmplitude = 0.5;
+  const float lineAmplitude = 0.65;
   const float lineFrequency = 0.2;
   const float warpSpeed = 0.2 * overallSpeed;
   const float warpFrequency = 0.5;
@@ -32,11 +32,11 @@ const fsSource = `
   const float offsetSpeed = 1.33 * overallSpeed;
   const float minOffsetSpread = 0.6;
   const float maxOffsetSpread = 2.0;
-  const int linesPerGroup = 8;
+  const int linesPerGroup = 10;
 
-  #define drawCircle(pos, radius, coord) smoothstep(radius + gridSmoothWidth, radius, length(coord - (pos)))
-  #define drawSmoothLine(pos, halfWidth, t) smoothstep(halfWidth, 0.0, abs(pos - (t)))
-  #define drawCrispLine(pos, halfWidth, t) smoothstep(halfWidth + gridSmoothWidth, halfWidth, abs(pos - (t)))
+  #define drawCircle(pos, radius, coord) (1.0 - smoothstep(radius, radius + gridSmoothWidth, length(coord - (pos))))
+  #define drawSmoothLine(pos, halfWidth, t) (1.0 - smoothstep(0.0, halfWidth, abs(pos - (t))))
+  #define drawCrispLine(pos, halfWidth, t) (1.0 - smoothstep(halfWidth, halfWidth + gridSmoothWidth, abs(pos - (t))))
 
   float random(float t) {
     return (cos(t) + cos(t * 1.3 + 1.3) + cos(t * 1.4 + 1.4)) / 3.0;
