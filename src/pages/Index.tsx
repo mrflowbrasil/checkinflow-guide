@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Sparkles, QrCode, Smartphone, ArrowRight } from "lucide-react";
 import mrFlowLogoWhite from "@/assets/mrflow-logo-white.png";
 import mockupHome from "@/assets/mockup-home-light.webp";
+import ShaderBackground from "@/components/ui/shader-background";
 
 const HERO_BG = {
   background:
@@ -11,7 +12,8 @@ const HERO_BG = {
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex flex-col text-white" style={HERO_BG}>
+    <div className="min-h-screen flex flex-col text-white relative" style={HERO_BG}>
+      <ShaderBackground className="pointer-events-none absolute inset-0 h-full w-full opacity-40 mix-blend-screen" />
       {/* Header */}
       <header className="sticky top-0 z-30 backdrop-blur-md bg-[#020617]/40 border-b border-white/10">
         <div className="container px-6 sm:px-10 lg:px-20 xl:px-32 flex items-center justify-between h-16">
@@ -30,7 +32,7 @@ const Index = () => {
       </header>
 
       {/* Hero */}
-      <section className="container px-6 sm:px-10 lg:px-20 xl:px-32 py-16 lg:py-24">
+      <section className="relative z-10 container px-6 sm:px-10 lg:px-20 xl:px-32 py-16 lg:py-24">
         <div className="flex justify-center mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-white/90 text-xs font-medium">
             <Sparkles className="h-3 w-3" style={{ color: "#00FFFF" }} /> Guias digitais para temporada
