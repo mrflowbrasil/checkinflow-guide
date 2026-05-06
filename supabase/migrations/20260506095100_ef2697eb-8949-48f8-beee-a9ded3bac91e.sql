@@ -1,0 +1,1 @@
+UPDATE public.subscription_plans SET property_limit = 999999 WHERE code = 'business';
