@@ -107,7 +107,6 @@ const ShaderBackground = ({ className }: ShaderBackgroundProps) => {
     if (!canvas) return;
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) return;
 
     const gl = canvas.getContext("webgl");
     if (!gl) return;
@@ -154,7 +153,7 @@ const ShaderBackground = ({ className }: ShaderBackgroundProps) => {
     let raf = 0;
     const start = performance.now();
     const render = () => {
-      const t = (performance.now() - start) / 1000;
+      const t = reduced ? 0 : (performance.now() - start) / 1000;
       gl.clearColor(0, 0, 0, 0);
       gl.clear(gl.COLOR_BUFFER_BIT);
       gl.useProgram(program);
@@ -164,7 +163,9 @@ const ShaderBackground = ({ className }: ShaderBackgroundProps) => {
       gl.vertexAttribPointer(aVertex, 2, gl.FLOAT, false, 0, 0);
       gl.enableVertexAttribArray(aVertex);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-      raf = requestAnimationFrame(render);
+      if (!reduced) {
+        raf = requestAnimationFrame(render);
+      }
     };
     raf = requestAnimationFrame(render);
 
