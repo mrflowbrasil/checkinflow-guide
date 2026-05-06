@@ -16,23 +16,23 @@ const fsSource = `
   uniform vec2 iResolution;
   uniform float iTime;
 
-  const float overallSpeed = 0.08;
-  const float gridSmoothWidth = 0.03;
-  const float scale = 4.2;
-  const vec4 lineColor = vec4(0.0, 1.0, 1.0, 1.0);
-  const float minLineWidth = 0.012;
-  const float maxLineWidth = 0.13;
-  const float lineSpeed = 1.0 * overallSpeed;
-  const float lineAmplitude = 0.65;
+  const float overallSpeed = 0.18;
+  const float gridSmoothWidth = 0.024;
+  const float scale = 4.4;
+  const vec4 lineColor = vec4(0.0, 0.68, 0.70, 1.0);
+  const float minLineWidth = 0.008;
+  const float maxLineWidth = 0.075;
+  const float lineSpeed = 1.4 * overallSpeed;
+  const float lineAmplitude = 0.48;
   const float lineFrequency = 0.2;
   const float warpSpeed = 0.2 * overallSpeed;
   const float warpFrequency = 0.5;
   const float warpAmplitude = 1.0;
   const float offsetFrequency = 0.5;
-  const float offsetSpeed = 1.33 * overallSpeed;
+  const float offsetSpeed = 2.0 * overallSpeed;
   const float minOffsetSpread = 0.6;
   const float maxOffsetSpread = 2.0;
-  const int linesPerGroup = 10;
+  const int linesPerGroup = 7;
 
   #define drawCircle(pos, radius, coord) (1.0 - smoothstep(radius, radius + gridSmoothWidth, length(coord - (pos))))
   #define drawSmoothLine(pos, halfWidth, t) (1.0 - smoothstep(0.0, halfWidth, abs(pos - (t))))
@@ -78,9 +78,9 @@ const fsSource = `
       lines += line * lineColor * rand;
     }
 
-    float lineStrength = clamp(max(lines.g, lines.b) * 0.42, 0.0, 0.38);
-    vec3 ambientTint = vec3(0.0, 0.35, 0.36) * verticalFade * 0.16;
-    fragColor = vec4(ambientTint + lines.rgb * 0.9, clamp(0.08 * verticalFade + lineStrength, 0.0, 0.42));
+    float lineStrength = clamp(max(lines.g, lines.b) * 0.24, 0.0, 0.22);
+    vec3 ambientTint = vec3(0.0, 0.25, 0.26) * verticalFade * 0.08;
+    fragColor = vec4(ambientTint + lines.rgb * 0.45, clamp(0.04 * verticalFade + lineStrength, 0.0, 0.24));
 
     gl_FragColor = fragColor;
   }
