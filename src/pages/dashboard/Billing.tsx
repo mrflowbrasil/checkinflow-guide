@@ -40,7 +40,7 @@ const PLAN_FEATURES: Record<string, string[]> = {
     "URL rotativa (revoga acesso de hóspedes anteriores)",
   ],
   business: [
-    "20 imóveis",
+    "Imóveis ilimitados",
     "Guias personalizáveis",
     "15 templates premium",
     "Logo personalizada no guia",
