@@ -16,7 +16,7 @@ const fsSource = `
   uniform vec2 iResolution;
   uniform float iTime;
 
-  const float overallSpeed = 0.08;
+  const float overallSpeed = 0.05;
   const float gridSmoothWidth = 0.024;
   const float scale = 4.4;
   const vec4 lineColor = vec4(0.0, 0.68, 0.70, 1.0);
@@ -78,9 +78,9 @@ const fsSource = `
       lines += line * lineColor * rand;
     }
 
-    float lineStrength = clamp(max(lines.g, lines.b) * 0.24, 0.0, 0.154);
+    float lineStrength = clamp(max(lines.g, lines.b) * 0.24, 0.0, 0.123);
     vec3 ambientTint = vec3(0.0, 0.25, 0.26) * verticalFade * 0.08;
-    fragColor = vec4(ambientTint + lines.rgb * 0.45, clamp(0.028 * verticalFade + lineStrength, 0.0, 0.168));
+    fragColor = vec4(ambientTint + lines.rgb * 0.45, clamp(0.022 * verticalFade + lineStrength, 0.0, 0.134));
 
     gl_FragColor = fragColor;
   }
