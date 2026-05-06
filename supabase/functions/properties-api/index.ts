@@ -136,20 +136,30 @@ function buildPageBlocks(pageKey: string, details: any, address: string | null):
   return blocks;
 }
 
-async function generateAutoBlocks(admin: any, propertyId: string, details: any, address: string | null) {
+async function generateAutoBlocks(
+  admin: any,
+  propertyId: string,
+  details: any,
+  address: string | null,
+  overrides: Map<string, BlockSeed[]>,
+) {
   const { data: pages } = await admin
     .from("property_pages")
     .select("id, page_key")
     .eq("property_id", propertyId);
-  if (!pages?.length) return;
+  if (!pages?.length) return 0;
 
   const pageIds = pages.map((p: any) => p.id);
   // Remove only previously auto-generated blocks (preserves manual edits)
   await admin.from("content_blocks").delete().in("page_id", pageIds).eq("source", "auto");
 
+  let overridesApplied = 0;
+
   // Insert per-page so a single bad row doesn't abort all pages
   for (const page of pages) {
-    const blocks = buildPageBlocks(page.page_key, details, address);
+    // Override from payload `pages[]` takes precedence over details-derived blocks
+    const override = overrides.get(page.page_key);
+    const blocks = override ?? buildPageBlocks(page.page_key, details, address);
     if (!blocks.length) continue;
 
     // Read remaining manual blocks on this page to avoid overlapping positions
@@ -179,8 +189,25 @@ async function generateAutoBlocks(admin: any, propertyId: string, details: any, 
     const { error } = await admin.from("content_blocks").insert(rows);
     if (error) {
       console.error(`auto-blocks insert failed for page ${page.page_key}`, error);
+    } else if (override) {
+      overridesApplied++;
     }
   }
+  return overridesApplied;
+}
+
+function buildPagesOverrides(pages: any): Map<string, BlockSeed[]> {
+  const map = new Map<string, BlockSeed[]>();
+  if (!Array.isArray(pages)) return map;
+  const validKeys = new Set(PAGES_CATALOG.map((p) => p.page_key));
+  for (const p of pages) {
+    const pageKey = txt(p?.page_key);
+    if (!pageKey || !validKeys.has(pageKey)) continue;
+    const content = txt(p?.content);
+    if (!content) continue;
+    map.set(pageKey, [{ type: "text", data: { content } }]);
+  }
+  return map;
 }
 
 serve(async (req) => {
@@ -376,9 +403,11 @@ serve(async (req) => {
       await admin.from("property_details").upsert(detailsPayload, { onConflict: "property_id" });
     }
 
-    // Auto-generate content blocks from details
-    if (details && typeof details === "object") {
-      await generateAutoBlocks(admin, propertyId, details, address);
+    // Auto-generate content blocks: from details + overrides from payload pages[]
+    const overrides = buildPagesOverrides(pages);
+    let pagesUpdated = 0;
+    if ((details && typeof details === "object") || overrides.size > 0) {
+      pagesUpdated = await generateAutoBlocks(admin, propertyId, details ?? {}, address, overrides);
     }
 
     // Replace images
@@ -391,34 +420,6 @@ serve(async (req) => {
           position: i,
         }));
         await admin.from("property_images").insert(rows);
-      }
-    }
-
-    // Update guide pages (title, icon, position, is_enabled) by page_key
-    let pagesUpdated = 0;
-    if (Array.isArray(pages) && pages.length) {
-      const validKeys = new Set(PAGES_CATALOG.map((p) => p.page_key));
-      for (const p of pages) {
-        const pageKey = txt(p?.page_key);
-        if (!pageKey || !validKeys.has(pageKey)) continue;
-
-        const updatePayload: any = {};
-        if (typeof p.title === "string" && p.title.trim()) updatePayload.title = p.title.trim();
-        if (typeof p.icon === "string" && p.icon.trim()) updatePayload.icon = p.icon.trim();
-        if (typeof p.position === "number") updatePayload.position = p.position;
-        if (typeof p.is_enabled === "boolean") updatePayload.is_enabled = p.is_enabled;
-        if (!Object.keys(updatePayload).length) continue;
-
-        const { error: upErr } = await admin
-          .from("property_pages")
-          .update(updatePayload)
-          .eq("property_id", propertyId)
-          .eq("page_key", pageKey);
-        if (upErr) {
-          console.error(`page update failed for ${pageKey}`, upErr);
-        } else {
-          pagesUpdated++;
-        }
       }
     }
 
