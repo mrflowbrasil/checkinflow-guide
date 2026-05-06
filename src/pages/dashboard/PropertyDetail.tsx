@@ -203,6 +203,9 @@ export default function PropertyDetail() {
           <div className="flex flex-wrap gap-2">
             <Button size="sm" onClick={copyLink}><Copy className="mr-2 h-4 w-4" /> Copiar link</Button>
             <Button size="sm" variant="outline" onClick={downloadQR}><Download className="mr-2 h-4 w-4" /> Baixar QR Code</Button>
+            <Button size="sm" variant="outline" onClick={() => setWelcomeOpen(true)}>
+              <Printer className="mr-2 h-4 w-4" /> Cartão de boas-vindas (A4)
+            </Button>
             {features.slugRotation ? (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
