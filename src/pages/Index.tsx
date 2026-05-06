@@ -30,12 +30,14 @@ const Index = () => {
       </header>
 
       {/* Hero */}
-      <section className="container py-16 lg:py-24">
-        <div className="grid lg:grid-cols-2 gap-10 lg:gap-12 items-center">
+      <section className="container px-6 sm:px-8 lg:px-12 py-16 lg:py-24">
+        <div className="flex justify-center mb-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-white/90 text-xs font-medium">
+            <Sparkles className="h-3 w-3" style={{ color: "#00FFFF" }} /> Guias digitais para temporada
+          </div>
+        </div>
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           <div className="text-center lg:text-left max-w-xl mx-auto lg:mx-0">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-white/90 text-xs font-medium mb-6">
-              <Sparkles className="h-3 w-3" style={{ color: "#00FFFF" }} /> Guias digitais para temporada
-            </div>
             <h1 className="text-4xl lg:text-6xl font-bold tracking-tight mb-6 leading-[1.05] text-white">
               Hub de Boas Vindas{" "}
               <span style={{ color: "#00FFFF" }}>Inteligente</span>
@@ -44,10 +46,10 @@ const Index = () => {
               className="text-lg leading-relaxed mb-3"
               style={{ color: "#00FF00" }}
             >
-              Transforme a estadia do seu hóspede em uma experiência incrível
+              Transforme a estadia do seu hóspede em uma experiência incrível!
             </p>
-            <p className="text-base mb-8" style={{ color: "#ffffff" }}>
-              Encante desde o primeiro momento com um guia digital completo!
+            <p className="text-sm mb-8" style={{ color: "#ffffff" }}>
+              Encante desde o primeiro momento com um guia digital completo
             </p>
             <div className="flex justify-center lg:justify-start">
               <Button
@@ -62,11 +64,11 @@ const Index = () => {
             </div>
           </div>
 
-          <div className="flex justify-center lg:justify-end overflow-hidden">
+          <div className="flex justify-center lg:justify-end">
             <img
               src={mockupHome}
               alt="Mockup do Hub de Boas Vindas em smartphones"
-              className="w-full max-w-lg h-auto transition-transform duration-500 ease-out hover:scale-110"
+              className="w-full max-w-md h-auto will-change-transform transition-transform duration-500 ease-out hover:scale-105"
               loading="eager"
             />
           </div>
