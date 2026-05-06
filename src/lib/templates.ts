@@ -70,8 +70,8 @@ export const TEMPLATES: TemplateDef[] = [
     primary: "#3c5a72", secondary: "#f4f5f6",
     preview: "linear-gradient(135deg, #f4f5f6 50%, #3c5a72 50%)" },
   { key: "monochrome", name: "Monochrome", description: "Preto + branco, alto contraste.", tier: "pro",
-    primary: "#000000", secondary: "#ffffff",
-    preview: "linear-gradient(135deg, #ffffff 50%, #000000 50%)" },
+    primary: "#010101", secondary: "#ffffff",
+    preview: "linear-gradient(135deg, #ffffff 50%, #010101 50%)" },
 ];
 
 export function getTemplate(key: string | null | undefined): TemplateDef {
