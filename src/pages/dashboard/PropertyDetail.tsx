@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Copy, Download, ExternalLink, Pencil, QrCode as QrIcon, Loader2, GripVertical, RefreshCw, Lock } from "lucide-react";
+import { ArrowLeft, Copy, Download, ExternalLink, Pencil, Printer, QrCode as QrIcon, Loader2, GripVertical, RefreshCw, Lock } from "lucide-react";
+import { WelcomeCardDialog } from "@/components/property/WelcomeCardDialog";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
@@ -31,6 +32,7 @@ export default function PropertyDetail() {
   const qrCanvas = useRef<HTMLCanvasElement>(null);
   const [qrUrl, setQrUrl] = useState<string>("");
   const [editOpen, setEditOpen] = useState(false);
+  const [welcomeOpen, setWelcomeOpen] = useState(false);
 
   const { data: property, isLoading } = useQuery({
     queryKey: ["property", id],
@@ -38,7 +40,7 @@ export default function PropertyDetail() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("properties")
-        .select("*, property_pages(id, page_key, title, icon, position, is_enabled)")
+        .select("*, property_pages(id, page_key, title, icon, position, is_enabled), tenants(primary_color, logo_url)")
         .eq("id", id!)
         .single();
       if (error) throw error;
@@ -189,6 +191,15 @@ export default function PropertyDetail() {
       </Card>
 
       <EditPropertyDialog open={editOpen} onOpenChange={setEditOpen} property={property as any} />
+      <WelcomeCardDialog
+        open={welcomeOpen}
+        onOpenChange={setWelcomeOpen}
+        propertyName={property.name}
+        url={qrUrl}
+        slug={property.public_slug}
+        primaryColor={(property as any).tenants?.primary_color ?? "#0F1E3D"}
+        tenantLogoUrl={(property as any).tenants?.logo_url ?? null}
+      />
 
       {/* QR + Link */}
       <Card id="qr" className="p-6 shadow-card grid sm:grid-cols-[auto_1fr] gap-6 items-center">
@@ -201,6 +212,9 @@ export default function PropertyDetail() {
           <div className="flex flex-wrap gap-2">
             <Button size="sm" onClick={copyLink}><Copy className="mr-2 h-4 w-4" /> Copiar link</Button>
             <Button size="sm" variant="outline" onClick={downloadQR}><Download className="mr-2 h-4 w-4" /> Baixar QR Code</Button>
+            <Button size="sm" variant="outline" onClick={() => setWelcomeOpen(true)}>
+              <Printer className="mr-2 h-4 w-4" /> Cartão de boas-vindas (A4)
+            </Button>
             {features.slugRotation ? (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
