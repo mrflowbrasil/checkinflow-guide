@@ -17,7 +17,7 @@ import { getPageIcon } from "@/lib/page-icons";
 import QRCode from "qrcode";
 import { EditPropertyDialog } from "@/components/property/EditPropertyDialog";
 import {
-  DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent,
+  DndContext, closestCenter, KeyboardSensor, PointerSensor, TouchSensor, useSensor, useSensors, type DragEndEvent,
 } from "@dnd-kit/core";
 import {
   SortableContext, sortableKeyboardCoordinates, useSortable, arrayMove, rectSortingStrategy,
@@ -97,6 +97,7 @@ export default function PropertyDetail() {
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 8 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
