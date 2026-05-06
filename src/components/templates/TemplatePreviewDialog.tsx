@@ -17,7 +17,7 @@ const FAKE_PAGES = [
   { key: "food", title: "Onde Comer", icon: "UtensilsCrossed" },
 ];
 
-import COVER_IMG from "@/assets/preview-cover-vila-serena.jpg";
+import COVER_IMG from "@/assets/preview-cover-vila-serena.webp";
 
 export function TemplatePreviewDialog({
   template,
