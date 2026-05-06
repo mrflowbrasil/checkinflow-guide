@@ -312,6 +312,21 @@
     color: #509ce4 !important;
   }
 
+  /* Coastal Boho template */
+  .guide-template-coastal_boho.guide-root,
+  .guide-root.guide-template-coastal_boho {
+    background-color: #326168 !important;
+    color: #0b4253 !important;
+  }
+  .guide-template-coastal_boho .guide-card {
+    background-color: #0b4253 !important;
+    color: #0b4253 !important;
+  }
+  .guide-template-coastal_boho .guide-cta-primary {
+    background: #d2735d !important;
+    color: #ffffff !important;
+  }
+
   /* Serene Coast template */
   .guide-template-serene_coast.guide-root,
   .guide-root.guide-template-serene_coast {
