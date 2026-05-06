@@ -54,10 +54,6 @@ const Index = () => {
             </Link>
           </Button>
         </div>
-
-        <div className="mt-12 lg:mt-16 -mx-4 sm:mx-0">
-          <ImageAutoSlider />
-        </div>
       </section>
 
       {/* Features */}
