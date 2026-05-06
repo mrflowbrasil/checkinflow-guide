@@ -1,88 +1,76 @@
-# GET de páginas da Guia na `properties-api`
+## Objetivo
 
-Estender a edge function `properties-api` para expor dois novos endpoints GET, sem alterar o comportamento atual de POST/PUT.
+Permitir que o POST/PUT da `properties-api` envie conteúdo para qualquer Guia usando um par simples `{ page_key, content }`, gerando blocos auto sem mexer nos manuais.
 
-## Endpoints
+## Mudanças
 
-### 1. Catálogo global de páginas
-`GET /functions/v1/properties-api/pages-catalog`
+### 1. Aceitar `pages[]` com formato simples no payload
 
-Retorna a lista fixa das 23 páginas padrão definidas em `seed_property_pages()` (page_key, title, icon, position default). Não depende de imóvel — serve como referência para o cliente saber quais `page_key` existem.
-
-Resposta:
 ```json
 {
-  "count": 23,
-  "items": [
-    { "page_key": "checkin",     "title": "Check-in",        "icon": "Clock",    "default_position": 1 },
-    { "page_key": "lock_code",   "title": "Senha Fechadura", "icon": "KeyRound", "default_position": 2 },
-    { "page_key": "checkout",    "title": "Check-out",       "icon": "LogOut",   "default_position": 3 },
-    "... demais 20 páginas"
-  ]
-}
-```
-
-### 2. Páginas de um imóvel específico
-`GET /functions/v1/properties-api/pages?external_id=XYZ&external_provider=stays`
-
-Localiza o imóvel por `external_id` + `external_provider` (default `stays`) dentro do tenant da API key e devolve as páginas reais persistidas em `property_pages`.
-
-Resposta:
-```json
-{
-  "property_id": "uuid",
   "external_id": "STAYS-12345",
-  "count": 23,
-  "items": [
-    {
-      "id": "uuid",
-      "page_key": "checkin",
-      "title": "Check-in",
-      "icon": "Clock",
-      "position": 1,
-      "is_enabled": true
-    }
+  "name": "Imóvel X",
+  "pages": [
+    { "page_key": "rules",       "content": "Não é permitido fumar..." },
+    { "page_key": "faq",         "content": "**Tem secador?** Sim..." },
+    { "page_key": "transport",   "content": "Metrô a 200m..." },
+    { "page_key": "restaurants", "content": "..." }
   ]
 }
 ```
 
-Erros:
-- `401 invalid_api_key` — sem/má API key.
-- `400 external_id_required` — query param ausente no endpoint `/pages`.
-- `404 property_not_found` — imóvel não encontrado para o tenant.
+- `page_key` → identificador da guia (mesmos do `GET /pages-catalog`).
+- `content` → string única em markdown que vira **um bloco do tipo `text`** com `source: "auto"`.
+- Páginas com `page_key` inválido são ignoradas silenciosamente.
+- A versão atual que aceitava `title/icon/position/is_enabled` será **removida** (não era o objetivo).
 
-## Roteamento
+### 2. Geração de blocos auto adicionais
 
-Hoje a função decide pelo `req.method`. Vamos adicionar parsing do `URL.pathname` para distinguir os subcaminhos `/pages-catalog` e `/pages` em GET, mantendo `GET /` como a listagem atual de propriedades. POST/PUT continuam idênticos.
+Hoje `generateAutoBlocks` só gera para páginas mapeadas em `buildPageBlocks` (checkin, wifi, rules, etc.) usando `details`. Vamos estender:
+
+- Após gerar os blocos baseados em `details`, percorrer `pages[]` do payload.
+- Para cada item, adicionar um bloco `text` com `source: "auto"` na página correspondente.
+- Como toda a deleção de auto já acontece em bloco no início (`delete ... where source='auto'`), os blocos manuais continuam intactos.
+- Posição calculada a partir do `max(position) + 1` dos blocos manuais existentes (mesma regra atual).
+
+### 3. Mesclar com `details`
+
+Se o cliente enviar **ao mesmo tempo** `details.rules` e `pages: [{page_key:"rules", content:"..."}]`, prevalece o que vier em `pages[]` (mais explícito). Implementação: rodar `details` primeiro, depois sobrescrever os auto-blocks daquela page_key específica antes do insert final.
+
+### 4. Resposta
+
+```json
+{
+  "id": "uuid",
+  "public_slug": "...",
+  "created": false,
+  "updated": true,
+  "pages_updated": 4
+}
+```
+
+`pages_updated` = quantas páginas receberam blocos via `pages[]`.
 
 ## Detalhes técnicos
 
-- **Arquivo**: `supabase/functions/properties-api/index.ts`.
-- **Catálogo global**: array constante hardcoded no arquivo, espelhando `seed_property_pages()` (mesma ordem/títulos/ícones). Sem query no banco.
-- **Páginas por imóvel**:
-  ```ts
-  const { data: prop } = await admin
-    .from("properties")
-    .select("id")
-    .eq("tenant_id", tenantId)
-    .eq("external_provider", externalProvider)
-    .eq("external_id", externalId)
-    .maybeSingle();
-  // depois:
-  admin.from("property_pages")
-    .select("id, page_key, title, icon, position, is_enabled")
-    .eq("property_id", prop.id)
-    .order("position");
-  ```
-- **CORS**: reutiliza `corsHeaders` já importado.
-- **Autenticação**: mesma validação por `X-API-Key` → `tenant_api_keys` já presente na função.
-- **Sem mudanças** em POST/PUT, schema do banco, RLS ou no payload existente.
+- **Arquivo único**: `supabase/functions/properties-api/index.ts`.
+- Nova função `buildPagesFromPayload(pages)` retornando `Map<page_key, BlockSeed[]>`.
+- `generateAutoBlocks` recebe esse map e, para cada página com entrada no map, **substitui** os blocos auto vindos de `details` pelos do payload.
+- Validação: `page_key` precisa estar em `PAGES_CATALOG`; `content` precisa ser string não-vazia.
+- Sem mudanças em schema, RLS, GET, ou em `details`.
 
-## Como o cliente usa
+## Como o cliente usa (fluxo Stays)
 
-1. Chama uma vez `GET /pages-catalog` para conhecer todos os `page_key` possíveis.
-2. (Opcional) Chama `GET /pages?external_id=...` para inspecionar o estado atual de um imóvel.
-3. Continua enviando `POST/PUT` com o payload já documentado — nenhum campo novo é necessário.
+1. `GET /pages-catalog` → descobre os 23 `page_key` possíveis.
+2. Monta o JSON da Stays mapeando cada campo para um `page_key`:
+   ```js
+   pages: [
+     { page_key: "rules",       content: stays.houseRules },
+     { page_key: "faq",         content: stays.faq },
+     { page_key: "transport",   content: stays.transportInfo },
+   ]
+   ```
+3. Envia POST/PUT — todas as guias são atualizadas, manuais preservados.
 
 ## Arquivos afetados
-- `supabase/functions/properties-api/index.ts` — adicionar roteamento por pathname e dois handlers GET.
+- `supabase/functions/properties-api/index.ts` — remover update de metadados de páginas, adicionar processamento de `pages[].content` na geração de auto-blocks.
