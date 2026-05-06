@@ -47,9 +47,6 @@ export function TemplatePreviewDialog({
       <DialogContent className="p-0 max-w-[420px] sm:max-w-[420px] gap-0 overflow-hidden">
         <div className="flex items-center justify-between px-4 py-2 border-b bg-card">
           <div className="text-sm font-medium">Prévia: {template.name}</div>
-          <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)}>
-            <X className="h-4 w-4" />
-          </Button>
         </div>
 
         <div className={`guide-root ${tplClass} h-[78vh] overflow-y-auto`}>
