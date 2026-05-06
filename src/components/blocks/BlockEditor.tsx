@@ -42,7 +42,7 @@ export function BlockEditor({
         <button
           {...attributes}
           {...listeners}
-          className="text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing pt-1"
+          className="text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing pt-1 touch-none"
           aria-label="Reordenar"
         >
           <GripVertical className="h-5 w-5" />
