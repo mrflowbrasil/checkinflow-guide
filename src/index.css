@@ -312,6 +312,21 @@
     color: #509ce4 !important;
   }
 
+  /* Aegean template */
+  .guide-template-aegean.guide-root,
+  .guide-root.guide-template-aegean {
+    background-color: #ffffff !important;
+    color: #1f6fb2 !important;
+  }
+  .guide-template-aegean .guide-card {
+    background-color: #e0e0e0 !important;
+    color: #1f6fb2 !important;
+  }
+  .guide-template-aegean .guide-cta-primary {
+    background: #1f6fb2 !important;
+    color: #ffffff !important;
+  }
+
   /* Studio Minimal template */
   .guide-template-studio_minimal.guide-root,
   .guide-root.guide-template-studio_minimal {
