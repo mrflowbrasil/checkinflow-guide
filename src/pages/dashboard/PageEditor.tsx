@@ -80,6 +80,15 @@ export default function PageEditor() {
   const persistBlocks = async (blocks: any[]) => {
     if (!data?.page.id) return;
     setSavingState("saving");
+    // Preserve original `source` of existing blocks (so 'auto' blocks from integrations
+    // don't get re-tagged as 'manual' after the user opens/saves the page).
+    const { data: existing } = await supabase
+      .from("content_blocks")
+      .select("id, source")
+      .eq("page_id", data.page.id);
+    const sourceById = new Map<string, string>(
+      (existing ?? []).map((b: any) => [b.id, b.source ?? "manual"]),
+    );
     // Strategy: replace all blocks for this page (small data per page).
     await supabase.from("content_blocks").delete().eq("page_id", data.page.id);
     if (blocks.length > 0) {
@@ -88,6 +97,7 @@ export default function PageEditor() {
         type: b.type,
         data: b.data,
         position: i,
+        source: (b.id && sourceById.get(b.id)) || "manual",
       }));
       const { error } = await supabase.from("content_blocks").insert(payload);
       if (error) {

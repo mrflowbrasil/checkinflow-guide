@@ -124,11 +124,29 @@ async function generateAutoBlocks(admin: any, propertyId: string, details: any, 
   for (const page of pages) {
     const blocks = buildPageBlocks(page.page_key, details, address);
     if (!blocks.length) continue;
-    const rows = blocks.map((b, i) => ({
+
+    // Read remaining manual blocks on this page to avoid overlapping positions
+    // and to skip auto blocks whose `type` was already manually authored.
+    const { data: manualBlocks } = await admin
+      .from("content_blocks")
+      .select("type, position")
+      .eq("page_id", page.id)
+      .eq("source", "manual");
+
+    const manualTypes = new Set((manualBlocks ?? []).map((b: any) => b.type));
+    const startPos = (manualBlocks ?? []).reduce(
+      (m: number, b: any) => Math.max(m, (b.position ?? 0) + 1),
+      0,
+    );
+
+    const filtered = blocks.filter((b) => !manualTypes.has(b.type));
+    if (!filtered.length) continue;
+
+    const rows = filtered.map((b, i) => ({
       page_id: page.id,
       type: b.type,
       data: b.data,
-      position: i,
+      position: startPos + i,
       source: "auto",
     }));
     const { error } = await admin.from("content_blocks").insert(rows);
