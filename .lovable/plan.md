@@ -1,76 +1,27 @@
-## Objetivo
+## Problema
 
-Permitir que o POST/PUT da `properties-api` envie conteúdo para qualquer Guia usando um par simples `{ page_key, content }`, gerando blocos auto sem mexer nos manuais.
+No mobile, segurar e arrastar a alça (ícone ⋮⋮) dos blocos não funciona porque:
 
-## Mudanças
+1. O `PointerSensor` do dnd-kit, em alguns navegadores mobile, conflita com o gesto de scroll da página — o toque acaba rolando a tela em vez de iniciar o arrasto.
+2. Falta um `TouchSensor` dedicado com atraso de ativação (long-press), que é o padrão recomendado para drag-and-drop em telas touch.
+3. As alças de arrastar não definem `touch-action: none`, então o navegador interpreta o toque como pan/scroll antes do dnd-kit assumir.
 
-### 1. Aceitar `pages[]` com formato simples no payload
+## Correção
 
-```json
-{
-  "external_id": "STAYS-12345",
-  "name": "Imóvel X",
-  "pages": [
-    { "page_key": "rules",       "content": "Não é permitido fumar..." },
-    { "page_key": "faq",         "content": "**Tem secador?** Sim..." },
-    { "page_key": "transport",   "content": "Metrô a 200m..." },
-    { "page_key": "restaurants", "content": "..." }
-  ]
-}
-```
+Aplicar a mesma correção nos dois pontos onde há DnD de blocos/páginas:
 
-- `page_key` → identificador da guia (mesmos do `GET /pages-catalog`).
-- `content` → string única em markdown que vira **um bloco do tipo `text`** com `source: "auto"`.
-- Páginas com `page_key` inválido são ignoradas silenciosamente.
-- A versão atual que aceitava `title/icon/position/is_enabled` será **removida** (não era o objetivo).
+- `src/pages/dashboard/PageEditor.tsx` (arrastar blocos dentro de uma página)
+- `src/pages/dashboard/PropertyDetail.tsx` (reordenar páginas)
+- `src/components/blocks/BlockEditor.tsx` (alça do bloco)
 
-### 2. Geração de blocos auto adicionais
+### Mudanças
 
-Hoje `generateAutoBlocks` só gera para páginas mapeadas em `buildPageBlocks` (checkin, wifi, rules, etc.) usando `details`. Vamos estender:
+1. Adicionar `TouchSensor` aos `useSensors`, com `activationConstraint: { delay: 200, tolerance: 8 }` (long-press curto, tolera pequeno movimento do dedo).
+2. Manter o `PointerSensor` existente para mouse/caneta.
+3. Aplicar `touch-action: none` (classe `touch-none` do Tailwind) no botão da alça `GripVertical` em `BlockEditor.tsx` e nas alças equivalentes em `PropertyDetail.tsx`, para impedir que o navegador roube o gesto.
 
-- Após gerar os blocos baseados em `details`, percorrer `pages[]` do payload.
-- Para cada item, adicionar um bloco `text` com `source: "auto"` na página correspondente.
-- Como toda a deleção de auto já acontece em bloco no início (`delete ... where source='auto'`), os blocos manuais continuam intactos.
-- Posição calculada a partir do `max(position) + 1` dos blocos manuais existentes (mesma regra atual).
+Sem mudanças de UI/visual nem de lógica de negócio — só sensores e uma classe CSS nas alças.
 
-### 3. Mesclar com `details`
+## Resultado esperado
 
-Se o cliente enviar **ao mesmo tempo** `details.rules` e `pages: [{page_key:"rules", content:"..."}]`, prevalece o que vier em `pages[]` (mais explícito). Implementação: rodar `details` primeiro, depois sobrescrever os auto-blocks daquela page_key específica antes do insert final.
-
-### 4. Resposta
-
-```json
-{
-  "id": "uuid",
-  "public_slug": "...",
-  "created": false,
-  "updated": true,
-  "pages_updated": 4
-}
-```
-
-`pages_updated` = quantas páginas receberam blocos via `pages[]`.
-
-## Detalhes técnicos
-
-- **Arquivo único**: `supabase/functions/properties-api/index.ts`.
-- Nova função `buildPagesFromPayload(pages)` retornando `Map<page_key, BlockSeed[]>`.
-- `generateAutoBlocks` recebe esse map e, para cada página com entrada no map, **substitui** os blocos auto vindos de `details` pelos do payload.
-- Validação: `page_key` precisa estar em `PAGES_CATALOG`; `content` precisa ser string não-vazia.
-- Sem mudanças em schema, RLS, GET, ou em `details`.
-
-## Como o cliente usa (fluxo Stays)
-
-1. `GET /pages-catalog` → descobre os 23 `page_key` possíveis.
-2. Monta o JSON da Stays mapeando cada campo para um `page_key`:
-   ```js
-   pages: [
-     { page_key: "rules",       content: stays.houseRules },
-     { page_key: "faq",         content: stays.faq },
-     { page_key: "transport",   content: stays.transportInfo },
-   ]
-   ```
-3. Envia POST/PUT — todas as guias são atualizadas, manuais preservados.
-
-## Arquivos afetados
-- `supabase/functions/properties-api/index.ts` — remover update de metadados de páginas, adicionar processamento de `pages[].content` na geração de auto-blocks.
+No celular: tocar e segurar (~200ms) a alça de um bloco inicia o arrasto e permite reordenar normalmente; toques fora da alça continuam rolando a página como antes.
