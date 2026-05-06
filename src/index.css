@@ -312,6 +312,21 @@
     color: #509ce4 !important;
   }
 
+  /* Serene Coast template */
+  .guide-template-serene_coast.guide-root,
+  .guide-root.guide-template-serene_coast {
+    background-color: #f7f0df !important;
+    color: #da755e !important;
+  }
+  .guide-template-serene_coast .guide-card {
+    background-color: #fffdf8 !important;
+    color: #da755e !important;
+  }
+  .guide-template-serene_coast .guide-cta-primary {
+    background: #da755e !important;
+    color: #f7f0df !important;
+  }
+
   /* Jungle template */
   .guide-template-jungle.guide-root,
   .guide-root.guide-template-jungle {
