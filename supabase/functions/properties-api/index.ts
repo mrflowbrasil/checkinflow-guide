@@ -302,6 +302,7 @@ serve(async (req) => {
       cover_image_url,
       images,
       details,
+      pages,
       raw,
     } = body ?? {};
 
