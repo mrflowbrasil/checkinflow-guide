@@ -46,7 +46,10 @@ export default function PageEditor() {
   const { data: tenant } = useTenant();
   const features = usePlanFeatures();
   const qc = useQueryClient();
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 8 } }),
+  );
   const [savingState, setSavingState] = useState<"idle" | "saving" | "saved">("idle");
 
   const { data, isLoading } = useQuery({
