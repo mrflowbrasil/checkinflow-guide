@@ -76,6 +76,20 @@ export default function Auth() {
     setTab("signin");
   };
 
+  const handleGoogle = async () => {
+    setBusy(true);
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: `${window.location.origin}/app`,
+    });
+    if (result.error) {
+      setBusy(false);
+      return toast.error(result.error.message ?? "Falha ao entrar com Google");
+    }
+    if (result.redirected) return;
+    setBusy(false);
+    navigate("/app");
+  };
+
   return (
     <div className="min-h-screen grid lg:grid-cols-2 bg-[#020617]">
       {/* Hero side */}
