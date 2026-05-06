@@ -297,6 +297,21 @@
     color: #ffffff !important;
   }
 
+  /* Pop Vibes template */
+  .guide-template-pop_vibes.guide-root,
+  .guide-root.guide-template-pop_vibes {
+    background-color: #509ce4 !important;
+    color: #ef6a3a !important;
+  }
+  .guide-template-pop_vibes .guide-card {
+    background-color: #a5cff8 !important;
+    color: #ef6a3a !important;
+  }
+  .guide-template-pop_vibes .guide-cta-primary {
+    background: #ef6a3a !important;
+    color: #509ce4 !important;
+  }
+
   /* Boho Fun template */
   .guide-template-boho_fun.guide-root,
   .guide-root.guide-template-boho_fun {
