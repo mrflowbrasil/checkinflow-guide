@@ -302,6 +302,7 @@ serve(async (req) => {
       cover_image_url,
       images,
       details,
+      pages,
       raw,
     } = body ?? {};
 
@@ -393,7 +394,35 @@ serve(async (req) => {
       }
     }
 
-    return json({ id: propertyId, public_slug: slug, created, updated: !created });
+    // Update guide pages (title, icon, position, is_enabled) by page_key
+    let pagesUpdated = 0;
+    if (Array.isArray(pages) && pages.length) {
+      const validKeys = new Set(PAGES_CATALOG.map((p) => p.page_key));
+      for (const p of pages) {
+        const pageKey = txt(p?.page_key);
+        if (!pageKey || !validKeys.has(pageKey)) continue;
+
+        const updatePayload: any = {};
+        if (typeof p.title === "string" && p.title.trim()) updatePayload.title = p.title.trim();
+        if (typeof p.icon === "string" && p.icon.trim()) updatePayload.icon = p.icon.trim();
+        if (typeof p.position === "number") updatePayload.position = p.position;
+        if (typeof p.is_enabled === "boolean") updatePayload.is_enabled = p.is_enabled;
+        if (!Object.keys(updatePayload).length) continue;
+
+        const { error: upErr } = await admin
+          .from("property_pages")
+          .update(updatePayload)
+          .eq("property_id", propertyId)
+          .eq("page_key", pageKey);
+        if (upErr) {
+          console.error(`page update failed for ${pageKey}`, upErr);
+        } else {
+          pagesUpdated++;
+        }
+      }
+    }
+
+    return json({ id: propertyId, public_slug: slug, created, updated: !created, pages_updated: pagesUpdated });
   } catch (e: any) {
     console.error("properties-api error", e);
     return json({ error: e.message ?? "internal" }, 500);
