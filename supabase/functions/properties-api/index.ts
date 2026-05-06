@@ -181,6 +181,44 @@ serve(async (req) => {
     if (req.method === "GET") {
       const url = new URL(req.url);
       const qp = url.searchParams;
+
+      // Sub-route: catalog of all default page_keys (no DB)
+      if (/\/pages-catalog\/?$/.test(url.pathname)) {
+        return json({ count: PAGES_CATALOG.length, items: PAGES_CATALOG });
+      }
+
+      // Sub-route: pages of a specific property by external_id
+      if (/\/pages\/?$/.test(url.pathname)) {
+        const extId = qp.get("external_id");
+        const extProv = qp.get("external_provider") ?? "stays";
+        if (!extId) return json({ error: "external_id_required" }, 400);
+
+        const { data: prop } = await admin
+          .from("properties")
+          .select("id")
+          .eq("tenant_id", tenantId)
+          .eq("external_provider", extProv)
+          .eq("external_id", String(extId))
+          .maybeSingle();
+
+        if (!prop) return json({ error: "property_not_found" }, 404);
+
+        const { data: pages, error: pErr } = await admin
+          .from("property_pages")
+          .select("id, page_key, title, icon, position, is_enabled")
+          .eq("property_id", prop.id)
+          .order("position");
+        if (pErr) throw pErr;
+
+        return json({
+          property_id: prop.id,
+          external_id: String(extId),
+          external_provider: extProv,
+          count: pages?.length ?? 0,
+          items: pages ?? [],
+        });
+      }
+
       const externalId = qp.get("external_id");
       const externalProvider = qp.get("external_provider");
       const status = qp.get("status");
