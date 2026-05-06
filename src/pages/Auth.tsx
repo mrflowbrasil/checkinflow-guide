@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { MrFlowLogo } from "@/components/brand/MrFlowLogo";
+import { lovable } from "@/integrations/lovable/index";
 
 const emailSchema = z.string().trim().email("Email inválido").max(255);
 const passwordSchema = z.string().min(8, "Mínimo 8 caracteres").max(72);
@@ -75,6 +76,20 @@ export default function Auth() {
     setTab("signin");
   };
 
+  const handleGoogle = async () => {
+    setBusy(true);
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: `${window.location.origin}/app`,
+    });
+    if (result.error) {
+      setBusy(false);
+      return toast.error(result.error.message ?? "Falha ao entrar com Google");
+    }
+    if (result.redirected) return;
+    setBusy(false);
+    navigate("/app");
+  };
+
   return (
     <div className="min-h-screen grid lg:grid-cols-2 bg-[#020617]">
       {/* Hero side */}
@@ -119,6 +134,24 @@ export default function Auth() {
               <TabsTrigger value="signin">Entrar</TabsTrigger>
               <TabsTrigger value="signup">Criar conta</TabsTrigger>
             </TabsList>
+
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleGoogle}
+              disabled={busy}
+              className="w-full h-11 rounded-xl mb-4 font-medium"
+            >
+              <svg className="h-4 w-4" viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="#EA4335" d="M12 10.2v3.9h5.5c-.24 1.4-1.66 4.1-5.5 4.1-3.31 0-6-2.74-6-6.1s2.69-6.1 6-6.1c1.88 0 3.14.8 3.86 1.49l2.63-2.53C16.84 3.4 14.66 2.4 12 2.4 6.92 2.4 2.8 6.52 2.8 11.6S6.92 20.8 12 20.8c6.93 0 9.2-4.86 9.2-7.4 0-.5-.05-.88-.12-1.2H12z"/>
+              </svg>
+              Continuar com Google
+            </Button>
+
+            <div className="relative mb-4">
+              <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
+              <div className="relative flex justify-center text-xs uppercase"><span className="bg-white px-2 text-muted-foreground">ou</span></div>
+            </div>
 
             <TabsContent value="signin" className="mt-0">
               <form onSubmit={handleSignIn} className="space-y-4">
