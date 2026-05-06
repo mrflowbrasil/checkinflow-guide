@@ -16,7 +16,7 @@ const fsSource = `
   uniform vec2 iResolution;
   uniform float iTime;
 
-  const float overallSpeed = 0.18;
+  const float overallSpeed = 0.9;
   const float gridSmoothWidth = 0.024;
   const float scale = 4.4;
   const vec4 lineColor = vec4(0.0, 0.68, 0.70, 1.0);
@@ -25,7 +25,7 @@ const fsSource = `
   const float lineSpeed = 1.4 * overallSpeed;
   const float lineAmplitude = 0.48;
   const float lineFrequency = 0.2;
-  const float warpSpeed = 0.2 * overallSpeed;
+  const float warpSpeed = 0.6 * overallSpeed;
   const float warpFrequency = 0.5;
   const float warpAmplitude = 1.0;
   const float offsetFrequency = 0.5;
