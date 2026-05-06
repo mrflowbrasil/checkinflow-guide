@@ -1,27 +1,40 @@
-## Problema
+## Contexto
 
-No mobile, segurar e arrastar a alça (ícone ⋮⋮) dos blocos não funciona porque:
+Hoje a logo da plataforma **Mr Flow** (não a logo que o cliente sobe em Configurações) é fixa em todos os lugares — a versão branca é usada na landing, no Auth, no convite e no AppShell. Em telas claras (modo claro do dispositivo / fundo claro), ela some.
 
-1. O `PointerSensor` do dnd-kit, em alguns navegadores mobile, conflita com o gesto de scroll da página — o toque acaba rolando a tela em vez de iniciar o arrasto.
-2. Falta um `TouchSensor` dedicado com atraso de ativação (long-press), que é o padrão recomendado para drag-and-drop em telas touch.
-3. As alças de arrastar não definem `touch-action: none`, então o navegador interpreta o toque como pan/scroll antes do dnd-kit assumir.
+Já existem duas versões no projeto:
+- `src/assets/mrflow-logo-white.png` (para fundos escuros)
+- `src/assets/mrflow-logo.png` (versão escura, para fundos claros)
 
-## Correção
+## Proposta
 
-Aplicar a mesma correção nos dois pontos onde há DnD de blocos/páginas:
+Trocar a logo automaticamente conforme o tema do dispositivo (`prefers-color-scheme`), apenas onde isso faz sentido visual.
 
-- `src/pages/dashboard/PageEditor.tsx` (arrastar blocos dentro de uma página)
-- `src/pages/dashboard/PropertyDetail.tsx` (reordenar páginas)
-- `src/components/blocks/BlockEditor.tsx` (alça do bloco)
+### Componente novo
 
-### Mudanças
+Criar `src/components/brand/MrFlowLogo.tsx`:
+- Renderiza um `<picture>` com duas `<source>`:
+  - `media="(prefers-color-scheme: dark)"` → `mrflow-logo-white.png`
+  - fallback (claro) → `mrflow-logo.png`
+- Aceita `className` e `alt`.
+- Variante `forceLight` / `forceDark` para casos onde o fundo é fixo (ex.: hero da landing tem fundo escuro permanente, então deve sempre usar a branca).
 
-1. Adicionar `TouchSensor` aos `useSensors`, com `activationConstraint: { delay: 200, tolerance: 8 }` (long-press curto, tolera pequeno movimento do dedo).
-2. Manter o `PointerSensor` existente para mouse/caneta.
-3. Aplicar `touch-action: none` (classe `touch-none` do Tailwind) no botão da alça `GripVertical` em `BlockEditor.tsx` e nas alças equivalentes em `PropertyDetail.tsx`, para impedir que o navegador roube o gesto.
+### Onde aplicar
 
-Sem mudanças de UI/visual nem de lógica de negócio — só sensores e uma classe CSS nas alças.
+| Arquivo | Comportamento |
+|---|---|
+| `src/pages/Index.tsx` (landing) | Fundo é sempre escuro → manter `forceLight` (sempre branca). Sem mudança visual. |
+| `src/pages/Auth.tsx` | Trocar pela `MrFlowLogo` automática (segue o tema do dispositivo). |
+| `src/pages/Invite.tsx` | Trocar pela `MrFlowLogo` automática. |
+| `src/components/layout/AppShell.tsx` | Trocar pela `MrFlowLogo` automática (sidebar pode ser clara ou escura conforme o tema). |
 
-## Resultado esperado
+### O que NÃO muda
 
-No celular: tocar e segurar (~200ms) a alça de um bloco inicia o arrasto e permite reordenar normalmente; toques fora da alça continuam rolando a página como antes.
+- Logo do cliente (`tenant.logo_url`) — fora do escopo.
+- Cores/estilos do app.
+- Lógica de negócio.
+
+## Resultado
+
+Em dispositivos no modo escuro: logo branca (como hoje).
+Em dispositivos no modo claro: logo escura, legível sobre fundos claros — sem necessidade de configuração pelo usuário.
