@@ -59,8 +59,6 @@ const fsSource = `
     space.x += random(space.y * warpFrequency + iTime * warpSpeed + 2.0) * warpAmplitude * horizontalFade;
 
     vec4 lines = vec4(0.0);
-    vec4 bgColor1 = vec4(0.008, 0.024, 0.045, 1.0);
-    vec4 bgColor2 = vec4(0.024, 0.165, 0.2, 1.0);
 
     for(int l = 0; l < linesPerGroup; l++) {
       float normalizedLineIndex = float(l) / float(linesPerGroup);
@@ -80,10 +78,9 @@ const fsSource = `
       lines += line * lineColor * rand;
     }
 
-    fragColor = mix(bgColor1, bgColor2, uv.x);
-    fragColor *= verticalFade;
-    fragColor.a = 1.0;
-    fragColor += lines * 0.5;
+    float lineStrength = clamp(max(lines.g, lines.b) * 0.42, 0.0, 0.38);
+    vec3 ambientTint = vec3(0.0, 0.35, 0.36) * verticalFade * 0.16;
+    fragColor = vec4(ambientTint + lines.rgb * 0.9, clamp(0.08 * verticalFade + lineStrength, 0.0, 0.42));
 
     gl_FragColor = fragColor;
   }
