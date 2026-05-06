@@ -17,7 +17,7 @@ export type TemplateDef = {
   previewReady?: boolean; // true → "Ver" button enabled
 };
 
-export const PREVIEW_READY_TEMPLATES: TemplateKey[] = ["clean", "dark", "luxury", "boho_fun"];
+export const PREVIEW_READY_TEMPLATES: TemplateKey[] = ["clean", "dark", "luxury", "boho_fun", "pop_vibes"];
 
 export function isPreviewReady(key: TemplateKey): boolean {
   return PREVIEW_READY_TEMPLATES.includes(key);
@@ -39,9 +39,9 @@ export const TEMPLATES: TemplateDef[] = [
   { key: "boho_fun", name: "Boho Fun", description: "Verde-água + bege quente, vibe acolhedora.", tier: "pro",
     primary: "#2f6e63", secondary: "#f0e3cf",
     preview: "linear-gradient(135deg, #f0e3cf 50%, #2f6e63 50%)" },
-  { key: "pop_vibes", name: "Pop Vibes", description: "Laranja vibrante + azul, divertido.", tier: "pro",
-    primary: "#ef6a3a", secondary: "#2b78c2",
-    preview: "linear-gradient(135deg, #ef6a3a 50%, #2b78c2 50%)" },
+  { key: "pop_vibes", name: "Pop Vibes", description: "Azul céu + laranja vibrante, divertido.", tier: "pro",
+    primary: "#ef6a3a", secondary: "#509ce4",
+    preview: "linear-gradient(135deg, #509ce4 50%, #ef6a3a 50%)" },
   { key: "arcade", name: "Arcade", description: "Roxo gamer + amarelo neon.", tier: "pro",
     primary: "#5b3a9b", secondary: "#f5d24a",
     preview: "linear-gradient(135deg, #2a1d4a 50%, #f5d24a 50%)" },
