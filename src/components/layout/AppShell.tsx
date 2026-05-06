@@ -1,7 +1,7 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { LayoutDashboard, Home, Settings, LogOut, Shield, Menu, CreditCard, Plug, Sparkles } from "lucide-react";
 import { PaymentTestModeBanner } from "@/components/billing/PaymentTestModeBanner";
-import mrFlowLogo from "@/assets/mrflow-logo.png";
+import { MrFlowLogo } from "@/components/brand/MrFlowLogo";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsSuperAdmin, useTenant } from "@/hooks/useTenant";
 import { Button } from "@/components/ui/button";
@@ -64,7 +64,7 @@ function NavItems({ onClick }: { onClick?: () => void }) {
 function Brand() {
   return (
     <div className="flex flex-col items-center gap-1 px-5 py-3 border-b">
-      <img src={mrFlowLogo} alt="Mr Flow" className="h-9 w-auto" />
+      <MrFlowLogo className="h-9 w-auto" />
       <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Welcome Hub</div>
     </div>
   );
@@ -116,7 +116,7 @@ export default function AppShell() {
             </SheetContent>
           </Sheet>
           <div className="flex items-center gap-2">
-            <img src={mrFlowLogo} alt="Mr Flow" className="h-7 w-auto" />
+            <MrFlowLogo className="h-7 w-auto" />
             <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Welcome Hub</span>
           </div>
         </header>

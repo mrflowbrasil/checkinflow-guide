@@ -10,8 +10,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Home, Loader2, AlertCircle, Mail } from "lucide-react";
-import mrFlowLogoWhite from "@/assets/mrflow-logo-white.png";
-import mrFlowLogo from "@/assets/mrflow-logo.png";
+import { MrFlowLogo } from "@/components/brand/MrFlowLogo";
 
 const passwordSchema = z.string().min(8, "Mínimo 8 caracteres").max(72);
 const nameSchema = z.string().trim().min(2, "Nome muito curto").max(80);
@@ -109,7 +108,7 @@ export default function Invite() {
         }}
       >
         <Link to="/" className="flex flex-col items-start gap-1 relative">
-          <img src={mrFlowLogoWhite} alt="Mr Flow" className="h-10 w-auto" />
+          <MrFlowLogo forceDark className="h-10 w-auto" />
           <span className="text-[10px] tracking-[0.25em] text-white/70 uppercase">Welcome Hub</span>
         </Link>
         <div className="relative space-y-6">
@@ -126,7 +125,7 @@ export default function Invite() {
       <div className="flex items-center justify-center p-6 bg-[#f6f6f7]">
         <Card className="w-full max-w-md p-8 sm:p-10 rounded-3xl shadow-2xl border-0 bg-white">
           <div className="lg:hidden flex flex-col items-start gap-1 mb-8">
-            <img src={mrFlowLogo} alt="Mr Flow" className="h-9 w-auto" />
+            <MrFlowLogo className="h-9 w-auto" />
             <span className="text-[10px] tracking-[0.25em] text-muted-foreground uppercase">Welcome Hub</span>
           </div>
 
