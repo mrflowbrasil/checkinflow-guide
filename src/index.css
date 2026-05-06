@@ -296,6 +296,21 @@
     background: #c9a35b !important;
     color: #ffffff !important;
   }
+
+  /* Boho Fun template */
+  .guide-template-boho_fun.guide-root,
+  .guide-root.guide-template-boho_fun {
+    background-color: #f0e3cf !important;
+    color: #2f6e63 !important;
+  }
+  .guide-template-boho_fun .guide-card {
+    background-color: #c3b59f !important;
+    color: #2f6e63 !important;
+  }
+  .guide-template-boho_fun .guide-cta-primary {
+    background: #2f6e63 !important;
+    color: #f0e3cf !important;
+  }
 }
 
 /* Fonts for guide templates */
