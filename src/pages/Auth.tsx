@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { MrFlowLogo } from "@/components/brand/MrFlowLogo";
+import { lovable } from "@/integrations/lovable/index";
 
 const emailSchema = z.string().trim().email("Email inválido").max(255);
 const passwordSchema = z.string().min(8, "Mínimo 8 caracteres").max(72);
