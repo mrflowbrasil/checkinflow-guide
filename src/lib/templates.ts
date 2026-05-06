@@ -17,7 +17,7 @@ export type TemplateDef = {
   previewReady?: boolean; // true → "Ver" button enabled
 };
 
-export const PREVIEW_READY_TEMPLATES: TemplateKey[] = ["clean", "dark", "luxury", "boho_fun", "pop_vibes", "arcade", "jungle", "serene_coast", "coastal_boho", "studio_minimal", "aegean", "surf"];
+export const PREVIEW_READY_TEMPLATES: TemplateKey[] = ["clean", "dark", "luxury", "boho_fun", "pop_vibes", "arcade", "jungle", "serene_coast", "coastal_boho", "studio_minimal", "aegean", "surf", "urban_oasis"];
 
 export function isPreviewReady(key: TemplateKey): boolean {
   return PREVIEW_READY_TEMPLATES.includes(key);
@@ -64,8 +64,8 @@ export const TEMPLATES: TemplateDef[] = [
     primary: "#008889", secondary: "#ffffff",
     preview: "linear-gradient(135deg, #ffffff 50%, #00e8e9 50%)" },
   { key: "urban_oasis", name: "Urban Oasis", description: "Bege quente + verde sálvia, urbano-natural.", tier: "pro",
-    primary: "#6e8a6a", secondary: "#ece3d4",
-    preview: "linear-gradient(135deg, #ece3d4 50%, #6e8a6a 50%)" },
+    primary: "#6e8a6a", secondary: "#c8b8a8",
+    preview: "linear-gradient(135deg, #c8b8a8 50%, #6e8a6a 50%)" },
   { key: "modular", name: "Modular", description: "Cinza claro + azul aço, contemporâneo.", tier: "pro",
     primary: "#3c5a72", secondary: "#e8ebee",
     preview: "linear-gradient(135deg, #e8ebee 50%, #3c5a72 50%)" },
