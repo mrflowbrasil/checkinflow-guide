@@ -32,6 +32,7 @@ export default function PropertyDetail() {
   const qrCanvas = useRef<HTMLCanvasElement>(null);
   const [qrUrl, setQrUrl] = useState<string>("");
   const [editOpen, setEditOpen] = useState(false);
+  const [welcomeOpen, setWelcomeOpen] = useState(false);
 
   const { data: property, isLoading } = useQuery({
     queryKey: ["property", id],
@@ -39,7 +40,7 @@ export default function PropertyDetail() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("properties")
-        .select("*, property_pages(id, page_key, title, icon, position, is_enabled)")
+        .select("*, property_pages(id, page_key, title, icon, position, is_enabled), tenants(primary_color, logo_url)")
         .eq("id", id!)
         .single();
       if (error) throw error;
