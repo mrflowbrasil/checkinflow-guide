@@ -312,6 +312,21 @@
     color: #509ce4 !important;
   }
 
+  /* Studio Minimal template */
+  .guide-template-studio_minimal.guide-root,
+  .guide-root.guide-template-studio_minimal {
+    background-color: #f4f4f4 !important;
+    color: #535353 !important;
+  }
+  .guide-template-studio_minimal .guide-card {
+    background-color: #ffffff !important;
+    color: #535353 !important;
+  }
+  .guide-template-studio_minimal .guide-cta-primary {
+    background: #b1b1b1 !important;
+    color: #ffffff !important;
+  }
+
   /* Coastal Boho template */
   .guide-template-coastal_boho.guide-root,
   .guide-root.guide-template-coastal_boho {

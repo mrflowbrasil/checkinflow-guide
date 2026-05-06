@@ -17,7 +17,7 @@ export type TemplateDef = {
   previewReady?: boolean; // true → "Ver" button enabled
 };
 
-export const PREVIEW_READY_TEMPLATES: TemplateKey[] = ["clean", "dark", "luxury", "boho_fun", "pop_vibes", "arcade", "jungle", "serene_coast", "coastal_boho"];
+export const PREVIEW_READY_TEMPLATES: TemplateKey[] = ["clean", "dark", "luxury", "boho_fun", "pop_vibes", "arcade", "jungle", "serene_coast", "coastal_boho", "studio_minimal"];
 
 export function isPreviewReady(key: TemplateKey): boolean {
   return PREVIEW_READY_TEMPLATES.includes(key);
@@ -55,8 +55,8 @@ export const TEMPLATES: TemplateDef[] = [
     primary: "#d2735d", secondary: "#326168",
     preview: "linear-gradient(135deg, #326168 50%, #d2735d 50%)" },
   { key: "studio_minimal", name: "Studio Minimal", description: "Branco + cinza, ultra-minimalista.", tier: "pro",
-    primary: "#1a1a1a", secondary: "#f4f4f4",
-    preview: "linear-gradient(135deg, #f4f4f4 50%, #1a1a1a 50%)" },
+    primary: "#535353", secondary: "#f4f4f4",
+    preview: "linear-gradient(135deg, #f4f4f4 50%, #535353 50%)" },
   { key: "aegean", name: "Aegean", description: "Azul Egeu + branco, mediterrâneo.", tier: "pro",
     primary: "#1f6fb2", secondary: "#ffffff",
     preview: "linear-gradient(135deg, #ffffff 50%, #1f6fb2 50%)" },
