@@ -327,6 +327,21 @@
     color: #ffffff !important;
   }
 
+  /* Urban Oasis template */
+  .guide-template-urban_oasis.guide-root,
+  .guide-root.guide-template-urban_oasis {
+    background-color: #c8b8a8 !important;
+    color: #5e5851 !important;
+  }
+  .guide-template-urban_oasis .guide-card {
+    background-color: #f6f3ec !important;
+    color: #5e5851 !important;
+  }
+  .guide-template-urban_oasis .guide-cta-primary {
+    background: #6e8a6a !important;
+    color: #c8b8a8 !important;
+  }
+
   /* Aegean template */
   .guide-template-aegean.guide-root,
   .guide-root.guide-template-aegean {
