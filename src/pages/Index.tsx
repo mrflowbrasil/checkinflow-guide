@@ -41,10 +41,13 @@ const Index = () => {
               <span style={{ color: "#00FFFF" }}>Inteligente</span>
             </h1>
             <p
-              className="text-lg mb-8 leading-relaxed"
+              className="text-lg leading-relaxed mb-3"
               style={{ color: "#00FF00" }}
             >
-              Encante seu hóspede desde o primeiro momento com um guia digital completo da sua hospedagem.
+              Transforme a estadia do seu hóspede em uma experiência incrível
+            </p>
+            <p className="text-base mb-8" style={{ color: "#ffffff" }}>
+              Encante desde o primeiro momento com um guia digital completo!
             </p>
             <div className="flex justify-center lg:justify-start">
               <Button
