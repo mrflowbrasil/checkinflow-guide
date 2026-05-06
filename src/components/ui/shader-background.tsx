@@ -16,7 +16,7 @@ const fsSource = `
   uniform vec2 iResolution;
   uniform float iTime;
 
-  const float overallSpeed = 0.9;
+  const float overallSpeed = 0.3;
   const float gridSmoothWidth = 0.024;
   const float scale = 4.4;
   const vec4 lineColor = vec4(0.0, 0.68, 0.70, 1.0);
