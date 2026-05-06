@@ -17,7 +17,7 @@ export type TemplateDef = {
   previewReady?: boolean; // true → "Ver" button enabled
 };
 
-export const PREVIEW_READY_TEMPLATES: TemplateKey[] = ["clean", "dark", "luxury", "boho_fun", "pop_vibes", "arcade", "jungle", "serene_coast", "coastal_boho", "studio_minimal", "aegean", "surf", "urban_oasis"];
+export const PREVIEW_READY_TEMPLATES: TemplateKey[] = ["clean", "dark", "luxury", "boho_fun", "pop_vibes", "arcade", "jungle", "serene_coast", "coastal_boho", "studio_minimal", "aegean", "surf", "urban_oasis", "modular"];
 
 export function isPreviewReady(key: TemplateKey): boolean {
   return PREVIEW_READY_TEMPLATES.includes(key);
@@ -67,8 +67,8 @@ export const TEMPLATES: TemplateDef[] = [
     primary: "#6e8a6a", secondary: "#c8b8a8",
     preview: "linear-gradient(135deg, #c8b8a8 50%, #6e8a6a 50%)" },
   { key: "modular", name: "Modular", description: "Cinza claro + azul aço, contemporâneo.", tier: "pro",
-    primary: "#3c5a72", secondary: "#e8ebee",
-    preview: "linear-gradient(135deg, #e8ebee 50%, #3c5a72 50%)" },
+    primary: "#3c5a72", secondary: "#f4f5f6",
+    preview: "linear-gradient(135deg, #f4f5f6 50%, #3c5a72 50%)" },
   { key: "monochrome", name: "Monochrome", description: "Preto + branco, alto contraste.", tier: "pro",
     primary: "#000000", secondary: "#ffffff",
     preview: "linear-gradient(135deg, #ffffff 50%, #000000 50%)" },

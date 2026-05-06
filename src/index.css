@@ -327,6 +327,21 @@
     color: #ffffff !important;
   }
 
+  /* Modular template */
+  .guide-template-modular.guide-root,
+  .guide-root.guide-template-modular {
+    background-color: #f4f5f6 !important;
+    color: #fdfdfd !important;
+  }
+  .guide-template-modular .guide-card {
+    background-color: #cccfd1 !important;
+    color: #fdfdfd !important;
+  }
+  .guide-template-modular .guide-cta-primary {
+    background: #3c5a72 !important;
+    color: #fdfdfd !important;
+  }
+
   /* Urban Oasis template */
   .guide-template-urban_oasis.guide-root,
   .guide-root.guide-template-urban_oasis {
