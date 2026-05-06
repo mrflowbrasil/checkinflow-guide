@@ -30,30 +30,43 @@ const Index = () => {
       </header>
 
       {/* Hero */}
-      <section className="container py-20 lg:py-32 text-center max-w-3xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-white/90 text-xs font-medium mb-6">
-          <Sparkles className="h-3 w-3" style={{ color: "#00FFFF" }} /> Guias digitais para temporada
-        </div>
-        <h1 className="text-4xl lg:text-6xl font-bold tracking-tight mb-6 leading-[1.05] text-white">
-          Hub de Boas Vindas{" "}
-          <span style={{ color: "#00FFFF" }}>Inteligente</span>
-        </h1>
-        <p
-          className="text-lg mb-10 max-w-xl mx-auto leading-relaxed"
-          style={{ color: "#00FF00" }}
-        >
-          Encante seu hóspede desde o primeiro momento com um guia digital completo da sua hospedagem.
-        </p>
-        <div className="flex gap-3 justify-center">
-          <Button
-            asChild
-            size="lg"
-            className="h-12 px-8 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg"
-          >
-            <Link to="/auth">
-              Começar grátis <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
+      <section className="container py-16 lg:py-24">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-12 items-center">
+          <div className="text-center lg:text-left max-w-xl mx-auto lg:mx-0">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-white/90 text-xs font-medium mb-6">
+              <Sparkles className="h-3 w-3" style={{ color: "#00FFFF" }} /> Guias digitais para temporada
+            </div>
+            <h1 className="text-4xl lg:text-6xl font-bold tracking-tight mb-6 leading-[1.05] text-white">
+              Hub de Boas Vindas{" "}
+              <span style={{ color: "#00FFFF" }}>Inteligente</span>
+            </h1>
+            <p
+              className="text-lg mb-8 leading-relaxed"
+              style={{ color: "#00FF00" }}
+            >
+              Encante seu hóspede desde o primeiro momento com um guia digital completo da sua hospedagem.
+            </p>
+            <div className="flex justify-center lg:justify-start">
+              <Button
+                asChild
+                size="lg"
+                className="h-12 px-8 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg"
+              >
+                <Link to="/auth">
+                  Começar grátis <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+
+          <div className="flex justify-center lg:justify-end overflow-hidden">
+            <img
+              src={mockupHome}
+              alt="Mockup do Hub de Boas Vindas em smartphones"
+              className="w-full max-w-lg h-auto transition-transform duration-500 ease-out hover:scale-110"
+              loading="eager"
+            />
+          </div>
         </div>
       </section>
 
