@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Copy, Download, ExternalLink, Pencil, QrCode as QrIcon, Loader2, GripVertical, RefreshCw, Lock } from "lucide-react";
+import { ArrowLeft, Copy, Download, ExternalLink, Pencil, Printer, QrCode as QrIcon, Loader2, GripVertical, RefreshCw, Lock } from "lucide-react";
+import { WelcomeCardDialog } from "@/components/property/WelcomeCardDialog";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
