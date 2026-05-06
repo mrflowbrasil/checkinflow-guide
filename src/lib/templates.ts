@@ -17,7 +17,7 @@ export type TemplateDef = {
   previewReady?: boolean; // true → "Ver" button enabled
 };
 
-export const PREVIEW_READY_TEMPLATES: TemplateKey[] = ["clean", "dark", "luxury", "boho_fun", "pop_vibes"];
+export const PREVIEW_READY_TEMPLATES: TemplateKey[] = ["clean", "dark", "luxury", "boho_fun", "pop_vibes", "arcade"];
 
 export function isPreviewReady(key: TemplateKey): boolean {
   return PREVIEW_READY_TEMPLATES.includes(key);
@@ -43,7 +43,7 @@ export const TEMPLATES: TemplateDef[] = [
     primary: "#ef6a3a", secondary: "#509ce4",
     preview: "linear-gradient(135deg, #509ce4 50%, #ef6a3a 50%)" },
   { key: "arcade", name: "Arcade", description: "Roxo gamer + amarelo neon.", tier: "pro",
-    primary: "#5b3a9b", secondary: "#f5d24a",
+    primary: "#f5d24a", secondary: "#2a1d4a",
     preview: "linear-gradient(135deg, #2a1d4a 50%, #f5d24a 50%)" },
   { key: "jungle", name: "Jungle", description: "Verde floresta + creme, atmosfera natural.", tier: "pro",
     primary: "#3d6b3a", secondary: "#efe6cf",

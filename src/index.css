@@ -312,6 +312,21 @@
     color: #509ce4 !important;
   }
 
+  /* Arcade template */
+  .guide-template-arcade.guide-root,
+  .guide-root.guide-template-arcade {
+    background-color: #2a1d4a !important;
+    color: #f5d24a !important;
+  }
+  .guide-template-arcade .guide-card {
+    background-color: #14043d !important;
+    color: #f5d24a !important;
+  }
+  .guide-template-arcade .guide-cta-primary {
+    background: #f5d24a !important;
+    color: #14043d !important;
+  }
+
   /* Boho Fun template */
   .guide-template-boho_fun.guide-root,
   .guide-root.guide-template-boho_fun {
