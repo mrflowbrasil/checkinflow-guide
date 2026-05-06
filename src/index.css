@@ -312,6 +312,21 @@
     color: #509ce4 !important;
   }
 
+  /* Jungle template */
+  .guide-template-jungle.guide-root,
+  .guide-root.guide-template-jungle {
+    background-color: #efe6cf !important;
+    color: #2f5a2c !important;
+  }
+  .guide-template-jungle .guide-card {
+    background-color: #d2cab6 !important;
+    color: #2f5a2c !important;
+  }
+  .guide-template-jungle .guide-cta-primary {
+    background: #2f5a2c !important;
+    color: #d2cab6 !important;
+  }
+
   /* Arcade template */
   .guide-template-arcade.guide-root,
   .guide-root.guide-template-arcade {

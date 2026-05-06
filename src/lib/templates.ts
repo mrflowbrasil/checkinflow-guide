@@ -17,7 +17,7 @@ export type TemplateDef = {
   previewReady?: boolean; // true → "Ver" button enabled
 };
 
-export const PREVIEW_READY_TEMPLATES: TemplateKey[] = ["clean", "dark", "luxury", "boho_fun", "pop_vibes", "arcade"];
+export const PREVIEW_READY_TEMPLATES: TemplateKey[] = ["clean", "dark", "luxury", "boho_fun", "pop_vibes", "arcade", "jungle"];
 
 export function isPreviewReady(key: TemplateKey): boolean {
   return PREVIEW_READY_TEMPLATES.includes(key);
@@ -46,8 +46,8 @@ export const TEMPLATES: TemplateDef[] = [
     primary: "#f5d24a", secondary: "#2a1d4a",
     preview: "linear-gradient(135deg, #2a1d4a 50%, #f5d24a 50%)" },
   { key: "jungle", name: "Jungle", description: "Verde floresta + creme, atmosfera natural.", tier: "pro",
-    primary: "#3d6b3a", secondary: "#efe6cf",
-    preview: "linear-gradient(135deg, #2f5a2c 50%, #efe6cf 50%)" },
+    primary: "#2f5a2c", secondary: "#efe6cf",
+    preview: "linear-gradient(135deg, #efe6cf 50%, #2f5a2c 50%)" },
   { key: "serene_coast", name: "Serene Coast", description: "Bege areia + coral, oceânico suave.", tier: "pro",
     primary: "#e07a5f", secondary: "#f5ead4",
     preview: "linear-gradient(135deg, #f5ead4 50%, #e07a5f 50%)" },
