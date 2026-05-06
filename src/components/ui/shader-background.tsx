@@ -106,7 +106,7 @@ const ShaderBackground = ({ className }: ShaderBackgroundProps) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduced = false;
 
     const gl = canvas.getContext("webgl");
     if (!gl) return;
