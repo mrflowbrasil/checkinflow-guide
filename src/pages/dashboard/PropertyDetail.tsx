@@ -191,6 +191,15 @@ export default function PropertyDetail() {
       </Card>
 
       <EditPropertyDialog open={editOpen} onOpenChange={setEditOpen} property={property as any} />
+      <WelcomeCardDialog
+        open={welcomeOpen}
+        onOpenChange={setWelcomeOpen}
+        propertyName={property.name}
+        url={qrUrl}
+        slug={property.public_slug}
+        primaryColor={(property as any).tenants?.primary_color ?? "#0F1E3D"}
+        tenantLogoUrl={(property as any).tenants?.logo_url ?? null}
+      />
 
       {/* QR + Link */}
       <Card id="qr" className="p-6 shadow-card grid sm:grid-cols-[auto_1fr] gap-6 items-center">
