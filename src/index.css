@@ -312,6 +312,21 @@
     color: #509ce4 !important;
   }
 
+  /* Surf template */
+  .guide-template-surf.guide-root,
+  .guide-root.guide-template-surf {
+    background-color: #ffffff !important;
+    color: #008889 !important;
+  }
+  .guide-template-surf .guide-card {
+    background-color: #e7f6f6 !important;
+    color: #008889 !important;
+  }
+  .guide-template-surf .guide-cta-primary {
+    background: #00e8e9 !important;
+    color: #ffffff !important;
+  }
+
   /* Aegean template */
   .guide-template-aegean.guide-root,
   .guide-root.guide-template-aegean {
