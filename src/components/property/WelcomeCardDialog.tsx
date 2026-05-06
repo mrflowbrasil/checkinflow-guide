@@ -72,6 +72,10 @@ export function WelcomeCardDialog({ open, onOpenChange, propertyName, url, slug,
           </label>
         </RadioGroup>
 
+        <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-xs text-amber-900 dark:text-amber-200">
+          <strong>Atenção:</strong> se você gerar um novo link público para este imóvel, o QR Code deste cartão deixará de funcionar e será necessário imprimir uma nova versão.
+        </div>
+
         {tenantLogoUrl && (
           <p className="text-xs text-muted-foreground">
             ✓ Sua logo será incluída no canto superior direito do cartão.
