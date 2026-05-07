@@ -341,7 +341,7 @@ export default function Integrations() {
             <div>
               <h2 className="font-semibold text-lg">Chaves de API</h2>
               <p className="text-xs text-muted-foreground">
-                Use no header <code className="px-1 py-0.5 rounded bg-muted">X-API-Key</code> para autenticar chamadas externas (n8n, scripts).
+                Use no header <code className="px-1 py-0.5 rounded bg-muted">X-API-Key</code> para autenticar chamadas externas (make, n8n, zapier, scripts).
               </p>
             </div>
           </div>
@@ -467,15 +467,17 @@ export default function Integrations() {
           )}
 
           <div className="space-y-3">
-            <div className="space-y-1.5">
-              <Label htmlFor="sys-url">{meta?.urlLabel}</Label>
-              <Input
-                id="sys-url"
-                placeholder={meta?.urlPlaceholder}
-                value={systemUrl}
-                onChange={(e) => setSystemUrl(e.target.value)}
-              />
-            </div>
+            {openProvider !== "hostaway" && (
+              <div className="space-y-1.5">
+                <Label htmlFor="sys-url">{meta?.urlLabel}</Label>
+                <Input
+                  id="sys-url"
+                  placeholder={meta?.urlPlaceholder}
+                  value={systemUrl}
+                  onChange={(e) => setSystemUrl(e.target.value)}
+                />
+              </div>
+            )}
             <div className="space-y-1.5">
               <Label htmlFor="login">{meta?.loginLabel}</Label>
               <Input id="login" value={login} onChange={(e) => setLogin(e.target.value)} />
