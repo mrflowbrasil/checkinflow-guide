@@ -1,17 +1,84 @@
 import jsPDF from "jspdf";
 import QRCode from "qrcode";
-import mrFlowLogo from "@/assets/mrflow-logo.png";
 
 export type WelcomePdfMode = "color" | "bw";
 
 export type WelcomePdfOptions = {
   propertyName: string;
   url: string;
-  primaryColor: string; // hex
+  primaryColor: string;
   mode: WelcomePdfMode;
   tenantLogoUrl?: string | null;
   fileSlug?: string;
 };
+
+// ──────────────────────────────────────────────────────────────────────────
+// Font loading (Google Fonts → base64 → jsPDF VFS), cached per session
+// ──────────────────────────────────────────────────────────────────────────
+
+type FontDef = { family: string; style: "normal" | "bold"; weight: number; url: string };
+
+const FONTS: FontDef[] = [
+  {
+    family: "PlayfairDisplay",
+    style: "bold",
+    weight: 700,
+    url: "https://fonts.gstatic.com/s/playfairdisplay/v37/nuFvD-vYSZviVYUb_rj3ij__anPXJzDwcbmjWBN2PKdFvXDXbtY.ttf",
+  },
+  {
+    family: "Montserrat",
+    style: "normal",
+    weight: 500,
+    url: "https://fonts.gstatic.com/s/montserrat/v29/JTUSjIg1_i6t8kCHKm459WlhyyTh89Y.ttf",
+  },
+  {
+    family: "Inter",
+    style: "normal",
+    weight: 400,
+    url: "https://fonts.gstatic.com/s/inter/v19/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.ttf",
+  },
+];
+
+let fontCache: Record<string, string> | null = null;
+let fontsAvailable = false;
+
+async function ensureFontsLoaded(doc: jsPDF): Promise<boolean> {
+  if (!fontCache) {
+    fontCache = {};
+    try {
+      await Promise.all(
+        FONTS.map(async (f) => {
+          const res = await fetch(f.url);
+          if (!res.ok) throw new Error("font fetch failed");
+          const buf = await res.arrayBuffer();
+          let binary = "";
+          const bytes = new Uint8Array(buf);
+          const chunk = 0x8000;
+          for (let i = 0; i < bytes.length; i += chunk) {
+            binary += String.fromCharCode.apply(null, Array.from(bytes.subarray(i, i + chunk)));
+          }
+          fontCache![`${f.family}-${f.style}`] = btoa(binary);
+        })
+      );
+      fontsAvailable = true;
+    } catch {
+      fontsAvailable = false;
+    }
+  }
+  if (!fontsAvailable || !fontCache) return false;
+  for (const f of FONTS) {
+    const filename = `${f.family}-${f.style}.ttf`;
+    const b64 = fontCache[`${f.family}-${f.style}`];
+    if (!b64) continue;
+    doc.addFileToVFS(filename, b64);
+    doc.addFont(filename, f.family, f.style);
+  }
+  return true;
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+// Helpers
+// ──────────────────────────────────────────────────────────────────────────
 
 async function loadImageAsDataUrl(url: string): Promise<{ data: string; w: number; h: number } | null> {
   try {
@@ -42,117 +109,144 @@ function hexToRgb(hex: string): [number, number, number] {
   return [(num >> 16) & 255, (num >> 8) & 255, num & 255];
 }
 
+function drawCircularImage(
+  doc: jsPDF,
+  dataUrl: string,
+  cx: number,
+  cy: number,
+  r: number
+) {
+  // Use jsPDF clipping: draw a circular path, clip, then place image inside its bbox.
+  const anyDoc = doc as unknown as {
+    saveGraphicsState?: () => void;
+    restoreGraphicsState?: () => void;
+  };
+  const hasState = typeof anyDoc.saveGraphicsState === "function";
+  if (hasState) anyDoc.saveGraphicsState!();
+  try {
+    // jsPDF circle + clip pattern
+    (doc as any).circle(cx, cy, r, null);
+    (doc as any).clip();
+    (doc as any).discardPath?.();
+    doc.addImage(dataUrl, "PNG", cx - r, cy - r, r * 2, r * 2, undefined, "FAST");
+  } catch {
+    // Fallback: just draw image as-is
+    try {
+      doc.addImage(dataUrl, "PNG", cx - r, cy - r, r * 2, r * 2, undefined, "FAST");
+    } catch {
+      /* ignore */
+    }
+  }
+  if (hasState) anyDoc.restoreGraphicsState!();
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+// Main
+// ──────────────────────────────────────────────────────────────────────────
+
 export async function generateWelcomePdf(opts: WelcomePdfOptions) {
   const { propertyName, url, primaryColor, mode, tenantLogoUrl, fileSlug } = opts;
 
   const doc = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
   const pageW = 210;
   const pageH = 297;
-  const margin = 20;
+  const cx = pageW / 2;
 
-  const accent: [number, number, number] = mode === "color" ? hexToRgb(primaryColor) : [0, 0, 0];
-  const dark: [number, number, number] = [30, 30, 30];
-  const muted: [number, number, number] = [90, 90, 90];
+  const customFonts = await ensureFontsLoaded(doc);
+  const fTitle = customFonts ? "PlayfairDisplay" : "helvetica";
+  const fTitleStyle = customFonts ? "bold" : "bold";
+  const fSub = customFonts ? "Montserrat" : "helvetica";
+  const fBody = customFonts ? "Inter" : "helvetica";
 
-  // ── Tenant logo (top-right) ──
+  const accent: [number, number, number] = mode === "color" ? hexToRgb(primaryColor) : [20, 20, 20];
+  const titleColor: [number, number, number] = mode === "color" ? accent : [20, 20, 20];
+  const subColor: [number, number, number] = [58, 58, 58];
+  const bodyColor: [number, number, number] = [90, 90, 90];
+  const mutedColor: [number, number, number] = [154, 154, 154];
+
+  let y = 25;
+
+  // ── Tenant logo (circular, top-center) ──
   if (tenantLogoUrl) {
     const logo = await loadImageAsDataUrl(tenantLogoUrl);
     if (logo) {
-      const maxW = 30;
-      const maxH = 25;
-      const ratio = logo.w / logo.h;
-      let w = maxW;
-      let h = w / ratio;
-      if (h > maxH) {
-        h = maxH;
-        w = h * ratio;
-      }
-      const x = pageW - margin - w;
-      const y = margin - 5;
-      try {
-        doc.addImage(logo.data, "PNG", x, y, w, h, undefined, "FAST");
-      } catch {
-        try {
-          doc.addImage(logo.data, "JPEG", x, y, w, h, undefined, "FAST");
-        } catch {
-          /* skip */
-        }
-      }
+      const r = 14; // 28mm diameter
+      const cy = y + r;
+      drawCircularImage(doc, logo.data, cx, cy, r);
+      // subtle border
+      doc.setDrawColor(230, 230, 230);
+      doc.setLineWidth(0.3);
+      doc.circle(cx, cy, r, "S");
+      y = cy + r + 16;
+    } else {
+      y += 8;
     }
+  } else {
+    y += 8;
   }
 
   // ── Title ──
-  let cursorY = margin + 30;
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(34);
-  doc.setTextColor(...accent);
-  doc.text("SEJA BEM-VINDO!", pageW / 2, cursorY, { align: "center", charSpace: 1.2 });
+  doc.setFont(fTitle, fTitleStyle);
+  doc.setFontSize(32);
+  doc.setTextColor(...titleColor);
+  doc.text("Seja bem-vindo", cx, y, { align: "center", charSpace: 0.6 });
+  y += 12;
 
-  cursorY += 14;
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(20);
-  doc.setTextColor(...dark);
-  const nameLines = doc.splitTextToSize(propertyName, pageW - margin * 2);
-  doc.text(nameLines, pageW / 2, cursorY, { align: "center" });
-  cursorY += nameLines.length * 8;
+  // ── Subtitle (property name) ──
+  doc.setFont(fSub, "normal");
+  doc.setFontSize(15);
+  doc.setTextColor(...subColor);
+  const nameLines = doc.splitTextToSize(propertyName, 130);
+  doc.text(nameLines, cx, y, { align: "center" });
+  y += nameLines.length * 6 + 14;
 
-  // ── QR code ──
-  const qrSize = 75;
+  // ── QR Code ──
+  const qrSize = 80;
+  const qrPad = 4;
   const qrDarkHex = mode === "color" ? primaryColor : "#000000";
   const qrDataUrl = await QRCode.toDataURL(url, {
-    width: 1000,
+    width: 1200,
     margin: 1,
     color: { dark: qrDarkHex, light: "#FFFFFF" },
     errorCorrectionLevel: "H",
   });
-  const qrY = cursorY + 12;
-  const qrX = (pageW - qrSize) / 2;
-  doc.addImage(qrDataUrl, "PNG", qrX, qrY, qrSize, qrSize);
+  const qrX = cx - qrSize / 2;
+  const qrY = y;
 
-  // Subtle frame around QR
-  doc.setDrawColor(220, 220, 220);
+  doc.setDrawColor(232, 232, 232);
   doc.setLineWidth(0.3);
-  doc.roundedRect(qrX - 3, qrY - 3, qrSize + 6, qrSize + 6, 2, 2);
+  doc.roundedRect(qrX - qrPad, qrY - qrPad, qrSize + qrPad * 2, qrSize + qrPad * 2, 3, 3, "S");
+  doc.addImage(qrDataUrl, "PNG", qrX, qrY, qrSize, qrSize);
+  y = qrY + qrSize + qrPad + 16;
 
-  // ── Instructions ──
-  let instrY = qrY + qrSize + 18;
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(13);
+  // ── Micro-title ──
+  doc.setFont(fSub, "normal");
+  doc.setFontSize(11);
   doc.setTextColor(...accent);
-  doc.text("Como acessar o seu Hub de Boas-Vindas", pageW / 2, instrY, { align: "center" });
-  instrY += 8;
+  doc.text("COMO ACESSAR SEU HUB DE BOAS-VINDAS", cx, y, { align: "center", charSpace: 0.8 });
+  y += 7;
 
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(12);
-  doc.setTextColor(...muted);
-  const instructions =
-    "Aponte a câmera do seu celular para o QR Code acima. Você terá acesso a todas as informações sobre sua estadia: check-in, Wi-Fi, regras, dicas da região e muito mais.";
-  const instrLines = doc.splitTextToSize(instructions, pageW - margin * 2 - 20);
-  doc.text(instrLines, pageW / 2, instrY, { align: "center", lineHeightFactor: 1.5 });
+  // ── Body text ──
+  doc.setFont(fBody, "normal");
+  doc.setFontSize(11);
+  doc.setTextColor(...bodyColor);
+  const body =
+    "Aponte a câmera do seu celular para o QR Code acima e acesse todas as informações da sua estadia: check-in, Wi-Fi, regras da casa e dicas da região.";
+  const bodyLines = doc.splitTextToSize(body, 110);
+  doc.text(bodyLines, cx, y, { align: "center", lineHeightFactor: 1.6 });
 
   // ── Footer ──
-  const footerY = pageH - 18;
-  doc.setDrawColor(220, 220, 220);
+  const footerY = pageH - 14;
+  doc.setDrawColor(235, 235, 235);
   doc.setLineWidth(0.2);
-  doc.line(margin, footerY - 6, pageW - margin, footerY - 6);
+  doc.line(40, footerY - 8, pageW - 40, footerY - 8);
 
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(10);
-  doc.setTextColor(120, 120, 120);
-  const footerText = "Desenvolvido por";
-  const textW = doc.getTextWidth(footerText);
-  const logoW = 22;
-  const logoH = 6.5;
-  const gap = 3;
-  const totalW = textW + gap + logoW;
-  const startX = (pageW - totalW) / 2;
-  doc.text(footerText, startX, footerY + 1);
-  try {
-    doc.addImage(mrFlowLogo, "PNG", startX + textW + gap, footerY - logoH + 2, logoW, logoH, undefined, "FAST");
-  } catch {
-    /* ignore */
-  }
+  doc.setFont(fBody, "normal");
+  doc.setFontSize(9);
+  doc.setTextColor(...mutedColor);
+  doc.text("Desenvolvido por: www.hub.mrflow.com.br", cx, footerY, { align: "center" });
 
-  const slug = fileSlug || propertyName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  const slug =
+    fileSlug || propertyName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
   doc.save(`boas-vindas-${slug || "guia"}.pdf`);
 }
