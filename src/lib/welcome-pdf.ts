@@ -223,7 +223,10 @@ export async function generateWelcomePdf(opts: WelcomePdfOptions) {
   doc.setFont(fSub, "normal");
   doc.setFontSize(11);
   doc.setTextColor(...accent);
-  doc.text("COMO ACESSAR SEU HUB DE BOAS-VINDAS", cx, y, { align: "center", charSpace: 0.8 });
+  const microTitle = "COMO ACESSAR SEU HUB DE BOAS-VINDAS";
+  const microSpacing = 0.8;
+  const microWidth = doc.getTextWidth(microTitle) + microSpacing * (microTitle.length - 1);
+  doc.text(microTitle, cx - microWidth / 2, y, { charSpace: microSpacing });
   y += 7;
 
   // ── Body text ──
