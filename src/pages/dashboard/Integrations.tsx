@@ -467,15 +467,17 @@ export default function Integrations() {
           )}
 
           <div className="space-y-3">
-            <div className="space-y-1.5">
-              <Label htmlFor="sys-url">{meta?.urlLabel}</Label>
-              <Input
-                id="sys-url"
-                placeholder={meta?.urlPlaceholder}
-                value={systemUrl}
-                onChange={(e) => setSystemUrl(e.target.value)}
-              />
-            </div>
+            {openProvider !== "hostaway" && (
+              <div className="space-y-1.5">
+                <Label htmlFor="sys-url">{meta?.urlLabel}</Label>
+                <Input
+                  id="sys-url"
+                  placeholder={meta?.urlPlaceholder}
+                  value={systemUrl}
+                  onChange={(e) => setSystemUrl(e.target.value)}
+                />
+              </div>
+            )}
             <div className="space-y-1.5">
               <Label htmlFor="login">{meta?.loginLabel}</Label>
               <Input id="login" value={login} onChange={(e) => setLogin(e.target.value)} />
