@@ -341,7 +341,7 @@ export default function Integrations() {
             <div>
               <h2 className="font-semibold text-lg">Chaves de API</h2>
               <p className="text-xs text-muted-foreground">
-                Use no header <code className="px-1 py-0.5 rounded bg-muted">X-API-Key</code> para autenticar chamadas externas (n8n, scripts).
+                Use no header <code className="px-1 py-0.5 rounded bg-muted">X-API-Key</code> para autenticar chamadas externas (make, n8n, zapier, scripts).
               </p>
             </div>
           </div>
