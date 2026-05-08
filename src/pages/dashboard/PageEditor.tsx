@@ -79,6 +79,7 @@ export default function PageEditor() {
 
   const [rotatePromptOpen, setRotatePromptOpen] = useState(false);
   const [rotating, setRotating] = useState(false);
+  const [addBlockOpen, setAddBlockOpen] = useState(false);
 
   const persistBlocks = async (blocks: any[]) => {
     if (!data?.page.id) return;
