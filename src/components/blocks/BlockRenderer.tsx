@@ -77,7 +77,7 @@ export function BlockRenderer({ block, primaryColor }: { block: BlockBase; prima
       return (
         <div className="flex gap-3 p-4 rounded-xl" style={{ background: bg }}>
           <Icon className="h-5 w-5 shrink-0 mt-0.5" style={{ color: fg }} />
-          <p className="text-sm leading-relaxed">{block.data?.content}</p>
+          <FormattedText content={block.data?.content ?? ""} className="text-sm leading-relaxed" />
         </div>
       );
     }
