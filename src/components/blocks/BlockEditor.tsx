@@ -66,11 +66,10 @@ function BlockBody({ block, tenantId, onChange }: { block: BlockBase; tenantId: 
   switch (block.type) {
     case "text":
       return (
-        <Textarea
+        <FormattableTextarea
           value={d.content ?? ""}
-          onChange={(e) => onChange({ ...d, content: e.target.value })}
+          onChange={(v) => onChange({ ...d, content: v })}
           placeholder="Digite seu texto..."
-          rows={3}
         />
       );
     case "subtitle":
