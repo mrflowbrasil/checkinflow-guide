@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { BlockBase } from "@/lib/blocks";
@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { GripVertical, Trash2, Plus, X, Upload, Loader2 } from "lucide-react";
+import { GripVertical, Trash2, Plus, X, Upload, Loader2, Bold, Italic, Underline } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -66,11 +66,10 @@ function BlockBody({ block, tenantId, onChange }: { block: BlockBase; tenantId: 
   switch (block.type) {
     case "text":
       return (
-        <Textarea
+        <FormattableTextarea
           value={d.content ?? ""}
-          onChange={(e) => onChange({ ...d, content: e.target.value })}
+          onChange={(v) => onChange({ ...d, content: v })}
           placeholder="Digite seu texto..."
-          rows={3}
         />
       );
     case "subtitle":
@@ -338,6 +337,66 @@ export function AddBlockMenu({ onAdd }: { onAdd: (type: BlockBase["type"]) => vo
           <span className="truncate">{BLOCK_LABELS[t]}</span>
         </Button>
       ))}
+    </div>
+  );
+}
+
+function FormattableTextarea({
+  value,
+  onChange,
+  placeholder,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+}) {
+  const ref = useRef<HTMLTextAreaElement>(null);
+
+  const wrap = (before: string, after: string = before) => {
+    const ta = ref.current;
+    if (!ta) return;
+    const start = ta.selectionStart ?? 0;
+    const end = ta.selectionEnd ?? 0;
+    const selected = value.slice(start, end) || "texto";
+    const next = value.slice(0, start) + before + selected + after + value.slice(end);
+    onChange(next);
+    requestAnimationFrame(() => {
+      ta.focus();
+      const pos = start + before.length;
+      ta.setSelectionRange(pos, pos + selected.length);
+    });
+  };
+
+  const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (!(e.ctrlKey || e.metaKey)) return;
+    const k = e.key.toLowerCase();
+    if (k === "b") { e.preventDefault(); wrap("**"); }
+    else if (k === "i") { e.preventDefault(); wrap("*"); }
+    else if (k === "u") { e.preventDefault(); wrap("<u>", "</u>"); }
+  };
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-1">
+        <Button type="button" size="icon" variant="ghost" className="h-7 w-7" onClick={() => wrap("**")} title="Negrito (Ctrl+B)">
+          <Bold className="h-3.5 w-3.5" />
+        </Button>
+        <Button type="button" size="icon" variant="ghost" className="h-7 w-7" onClick={() => wrap("*")} title="Itálico (Ctrl+I)">
+          <Italic className="h-3.5 w-3.5" />
+        </Button>
+        <Button type="button" size="icon" variant="ghost" className="h-7 w-7" onClick={() => wrap("<u>", "</u>")} title="Sublinhado (Ctrl+U)">
+          <Underline className="h-3.5 w-3.5" />
+        </Button>
+        <span className="ml-1 text-[10px] text-muted-foreground">**negrito** *itálico* &lt;u&gt;sublinhado&lt;/u&gt;</span>
+      </div>
+      <Textarea
+        ref={ref}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onKeyDown={onKeyDown}
+        placeholder={placeholder}
+        rows={3}
+      />
     </div>
   );
 }

@@ -4,14 +4,16 @@ import { youtubeEmbedUrl } from "@/lib/blocks";
 import { Lightbulb, AlertTriangle, CheckCircle2, Copy, Download, ExternalLink, Eye, EyeOff, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { FormattedText } from "@/lib/inline-format";
 
 export function BlockRenderer({ block, primaryColor }: { block: BlockBase; primaryColor?: string }) {
   switch (block.type) {
     case "text":
       return (
-        <p className="text-base leading-relaxed whitespace-pre-wrap break-words text-center">
-          {block.data?.content}
-        </p>
+        <FormattedText
+          content={block.data?.content ?? ""}
+          className="text-base leading-relaxed whitespace-pre-wrap break-words text-center"
+        />
       );
 
     case "subtitle":
@@ -75,7 +77,7 @@ export function BlockRenderer({ block, primaryColor }: { block: BlockBase; prima
       return (
         <div className="flex gap-3 p-4 rounded-xl" style={{ background: bg }}>
           <Icon className="h-5 w-5 shrink-0 mt-0.5" style={{ color: fg }} />
-          <p className="text-sm leading-relaxed">{block.data?.content}</p>
+          <FormattedText content={block.data?.content ?? ""} className="text-sm leading-relaxed" />
         </div>
       );
     }

@@ -79,6 +79,7 @@ export default function PageEditor() {
 
   const [rotatePromptOpen, setRotatePromptOpen] = useState(false);
   const [rotating, setRotating] = useState(false);
+  const [addBlockOpen, setAddBlockOpen] = useState(false);
 
   const persistBlocks = async (blocks: any[]) => {
     if (!data?.page.id) return;
@@ -370,14 +371,14 @@ export default function PageEditor() {
                 )}
               </SortableContext>
             </DndContext>
-            <Popover>
+            <Popover open={addBlockOpen} onOpenChange={setAddBlockOpen}>
               <PopoverTrigger asChild>
                 <Button variant="outline" className="w-full border-dashed">
                   <Plus className="mr-2 h-4 w-4" /> Adicionar bloco
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-80 p-0" align="start">
-                <AddBlockMenu onAdd={addBlock} />
+                <AddBlockMenu onAdd={(t) => { addBlock(t); setAddBlockOpen(false); }} />
               </PopoverContent>
             </Popover>
           </div>
