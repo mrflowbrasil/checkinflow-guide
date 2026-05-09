@@ -27,6 +27,8 @@ export default function Settings() {
   const [logoUrl, setLogoUrl] = useState<string | null>(tenant?.logo_url ?? null);
   const [showLogo, setShowLogo] = useState<boolean>(tenant?.show_logo ?? true);
   const [supportWhatsapp, setSupportWhatsapp] = useState<string>((tenant as any)?.support_whatsapp ?? "");
+  const [instagramUrl, setInstagramUrl] = useState<string>((tenant as any)?.instagram_url ?? "");
+  const [facebookUrl, setFacebookUrl] = useState<string>((tenant as any)?.facebook_url ?? "");
   const [uploading, setUploading] = useState(false);
   const [cropSrc, setCropSrc] = useState<string | null>(null);
 
