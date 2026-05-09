@@ -10,6 +10,7 @@ import { GuestPagePreview } from "@/components/guest/GuestPagePreview";
 import { GuestLinkExpired } from "@/components/guest/GuestLinkExpired";
 import { InstallAppButton } from "@/components/guest/InstallAppButton";
 import { LanguageSwitcher } from "@/components/guest/LanguageSwitcher";
+import { SocialLinks } from "@/components/guest/SocialLinks";
 import { GuideI18nProvider, useGuideT, type GuideLocale } from "@/lib/i18n-guide";
 
 export default function GuestGuide() {
