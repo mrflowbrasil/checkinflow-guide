@@ -224,6 +224,38 @@ export default function Settings() {
         </div>
       </Card>
 
+      <Card className="p-6 shadow-card space-y-4">
+        <div className="flex items-center gap-2">
+          <Instagram className="h-4 w-4 text-accent-foreground" />
+          <h2 className="font-semibold">Redes sociais</h2>
+        </div>
+        <p className="text-sm text-muted-foreground -mt-2">
+          Quando preenchidos, aparecem como botões na capa do guia do hóspede. Pode ser o link completo ou apenas o usuário (ex: <code>@seuperfil</code>).
+        </p>
+        <div className="space-y-2">
+          <Label htmlFor="instagram_url" className="flex items-center gap-2">
+            <Instagram className="h-3.5 w-3.5" /> Instagram
+          </Label>
+          <Input
+            id="instagram_url"
+            value={instagramUrl}
+            onChange={(e) => setInstagramUrl(e.target.value)}
+            placeholder="@seuperfil ou https://instagram.com/seuperfil"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="facebook_url" className="flex items-center gap-2">
+            <Facebook className="h-3.5 w-3.5" /> Facebook
+          </Label>
+          <Input
+            id="facebook_url"
+            value={facebookUrl}
+            onChange={(e) => setFacebookUrl(e.target.value)}
+            placeholder="https://facebook.com/suapagina"
+          />
+        </div>
+      </Card>
+
       <div className="flex justify-end">
         <Button onClick={() => save.mutate()} disabled={save.isPending}>
           {save.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
