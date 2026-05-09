@@ -9,10 +9,24 @@ import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { GuestPagePreview } from "@/components/guest/GuestPagePreview";
 import { GuestLinkExpired } from "@/components/guest/GuestLinkExpired";
 import { InstallAppButton } from "@/components/guest/InstallAppButton";
+import { LanguageSwitcher } from "@/components/guest/LanguageSwitcher";
+import { GuideI18nProvider, useGuideT, type GuideLocale } from "@/lib/i18n-guide";
 
 export default function GuestGuide() {
   const { slug } = useParams<{ slug: string }>();
   const [activePageKey, setActivePageKey] = useState<string | null>(null);
+  const [locale, setLocale] = useState<GuideLocale>(() => {
+    if (typeof window === "undefined") return "pt";
+    const saved = localStorage.getItem(`guide-locale-${slug ?? ""}`);
+    return (saved === "en" || saved === "es" || saved === "pt") ? saved : "pt";
+  });
+
+  const handleLocaleChange = (l: GuideLocale) => {
+    setLocale(l);
+    if (typeof window !== "undefined") {
+      localStorage.setItem(`guide-locale-${slug ?? ""}`, l);
+    }
+  };
 
   const { data, isLoading } = useQuery({
     queryKey: ["guide", slug],
