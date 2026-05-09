@@ -55,6 +55,36 @@ export type Database = {
           },
         ]
       }
+      guide_translations: {
+        Row: {
+          content_hash: string
+          created_at: string
+          id: string
+          locale: string
+          payload: Json
+          property_id: string
+          updated_at: string
+        }
+        Insert: {
+          content_hash: string
+          created_at?: string
+          id?: string
+          locale: string
+          payload?: Json
+          property_id: string
+          updated_at?: string
+        }
+        Update: {
+          content_hash?: string
+          created_at?: string
+          id?: string
+          locale?: string
+          payload?: Json
+          property_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       integration_webhooks: {
         Row: {
           created_at: string

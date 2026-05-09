@@ -9,10 +9,24 @@ import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { GuestPagePreview } from "@/components/guest/GuestPagePreview";
 import { GuestLinkExpired } from "@/components/guest/GuestLinkExpired";
 import { InstallAppButton } from "@/components/guest/InstallAppButton";
+import { LanguageSwitcher } from "@/components/guest/LanguageSwitcher";
+import { GuideI18nProvider, useGuideT, type GuideLocale } from "@/lib/i18n-guide";
 
 export default function GuestGuide() {
   const { slug } = useParams<{ slug: string }>();
   const [activePageKey, setActivePageKey] = useState<string | null>(null);
+  const [locale, setLocale] = useState<GuideLocale>(() => {
+    if (typeof window === "undefined") return "pt";
+    const saved = localStorage.getItem(`guide-locale-${slug ?? ""}`);
+    return (saved === "en" || saved === "es" || saved === "pt") ? saved : "pt";
+  });
+
+  const handleLocaleChange = (l: GuideLocale) => {
+    setLocale(l);
+    if (typeof window !== "undefined") {
+      localStorage.setItem(`guide-locale-${slug ?? ""}`, l);
+    }
+  };
 
   const { data, isLoading } = useQuery({
     queryKey: ["guide", slug],
@@ -108,9 +122,32 @@ export default function GuestGuide() {
   const activePage = pages.find((p) => p.page_key === activePageKey);
 
   return (
+    <GuideI18nProvider slug={slug!} locale={locale}>
+      <GuideBody
+        data={data}
+        tenant={tenant}
+        pages={pages}
+        template={template}
+        primaryColor={primaryColor}
+        activePage={activePage}
+        activePageKey={activePageKey}
+        setActivePageKey={setActivePageKey}
+        locale={locale}
+        onLocaleChange={handleLocaleChange}
+      />
+    </GuideI18nProvider>
+  );
+}
+
+function GuideBody({
+  data, tenant, pages, template, primaryColor, activePage, activePageKey, setActivePageKey, locale, onLocaleChange,
+}: any) {
+  const { t, isLoading: tLoading } = useGuideT();
+  return (
     <div className={`guide-root guide-template-${template} min-h-screen`}>
       {/* Hero */}
       <div className="relative">
+        <LanguageSwitcher locale={locale} onChange={onLocaleChange} isLoading={tLoading} />
         <div className="aspect-[4/3] sm:aspect-[16/10] max-h-[60vh] w-full overflow-hidden">
           {data.cover_image_url ? (
             <img src={data.cover_image_url} alt={data.name} className="h-full w-full object-cover" />
@@ -135,7 +172,7 @@ export default function GuestGuide() {
 
         <div className="absolute bottom-0 left-0 right-0 p-6 text-white text-center">
           <h1 className="text-3xl sm:text-4xl font-semibold drop-shadow-lg">{data.name}</h1>
-          {data.address && <p className="text-sm sm:text-base opacity-90 mt-2 drop-shadow">{data.address}</p>}
+          {data.address && <p className="text-sm sm:text-base opacity-90 mt-2 drop-shadow">{t(data.address)}</p>}
         </div>
       </div>
 
@@ -143,13 +180,13 @@ export default function GuestGuide() {
         {/* Título da seção */}
         <div className="text-center mt-6 mb-4">
           <h2 className="text-sm font-semibold tracking-[0.25em] uppercase" style={{ color: primaryColor }}>
-            Hub de Boas Vindas
+            {t("Hub de Boas Vindas")}
           </h2>
         </div>
 
         {/* Grid */}
         <div className="grid grid-cols-3 gap-3 pb-6">
-          {pages.map((p) => {
+          {pages.map((p: any) => {
             const Icon = getPageIcon(p.icon);
             const isEmergency = p.page_key === "emergency";
             return (
@@ -163,7 +200,7 @@ export default function GuestGuide() {
                   style={{ color: isEmergency ? "hsl(var(--destructive))" : primaryColor }}
                 />
                 <span className="text-xs font-medium text-center leading-tight" style={{ color: isEmergency ? "hsl(var(--destructive))" : "hsl(var(--guide-fg))" }}>
-                  {p.title}
+                  {t(p.title)}
                 </span>
               </button>
             );
@@ -179,7 +216,7 @@ export default function GuestGuide() {
             style={{ background: primaryColor, color: "#fff" }}
           >
             <a href={data.booking_url} target="_blank" rel="noreferrer noopener">
-              <Calendar className="mr-2 h-5 w-5" /> Reservar Novamente
+              <Calendar className="mr-2 h-5 w-5" /> {t("Reservar Novamente")}
           </a>
           </Button>
         )}

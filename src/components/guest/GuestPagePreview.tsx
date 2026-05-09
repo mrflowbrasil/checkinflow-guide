@@ -3,6 +3,7 @@ import { BlocksRenderer } from "@/components/blocks/BlockRenderer";
 import type { BlockBase } from "@/lib/blocks";
 import { Button } from "@/components/ui/button";
 import { getPageIcon } from "@/lib/page-icons";
+import { useGuideT } from "@/lib/i18n-guide";
 
 export function GuestPagePreview({
   template,
@@ -20,6 +21,7 @@ export function GuestPagePreview({
   onBack?: () => void;
 }) {
   const Icon = pageIcon ? getPageIcon(pageIcon) : null;
+  const { t } = useGuideT();
   return (
     <div className={`guide-root guide-template-${template} h-full overflow-y-auto`}>
       <div
@@ -43,15 +45,15 @@ export function GuestPagePreview({
           {Icon && (
             <Icon className="h-12 w-12 mb-3" style={{ color: primaryColor ?? "hsl(var(--guide-fg))" }} />
           )}
-          <h2 className="text-2xl font-semibold">{pageTitle}</h2>
+          <h2 className="text-2xl font-semibold">{t(pageTitle)}</h2>
         </div>
 
         {blocks.length === 0 ? (
           <p className="text-center text-sm py-12" style={{ color: "hsl(var(--guide-muted))" }}>
-            Sem conteúdo ainda.
+            {t("Sem conteúdo ainda.")}
           </p>
         ) : (
-          <BlocksRenderer blocks={blocks} primaryColor={primaryColor} />
+          <BlocksRenderer blocks={blocks} primaryColor={primaryColor} translate />
         )}
       </div>
     </div>
