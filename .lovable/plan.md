@@ -1,95 +1,62 @@
-Atualização da página de Planos e Cobrança
+## Objetivo
 
-## Resumo
+Adicionar campos de **Instagram** e **Facebook** no workspace (tenant) e exibir ícones clicáveis na página pública do hóspede quando preenchidos.
 
-Atualizar a estrutura de pricing para 5 planos (Single, Starter, Pro, Business, Enterprise), mantendo visual moderno/clean atual, identidade visual, permissões e a marcação "Mais popular" no Pro. O Enterprise terá tratamento premium e CTA de contato comercial.
+## 1. Banco de dados
 
-## 1. Banco de dados (migração)
+Adicionar duas colunas na tabela `tenants`:
+- `instagram_url` (text, nullable)
+- `facebook_url` (text, nullable)
 
-Atualizar a tabela `subscription_plans`:
+Aceitar tanto URL completa (`https://instagram.com/usuario`) quanto username (`@usuario` ou `usuario`) — normalizar no frontend antes de salvar para sempre virar URL válida.
 
-- `**free` → renomear para Single (mantém o `code='free'` internamente para não quebrar FKs/lógica existente)**
-  - `name = 'Single'`
-  - `description = 'Host individual'`
-  - `price_cents = 890` (R$ 8,90/mês)
-  - `price_yearly_cents = 8900` (R$ 89,00/ano)
-  - `property_limit = 1`
-- `**starter**`
-  - `description = 'Pequenas operações'`
-  - mantém `price_cents = 2990`, `price_yearly_cents = 29900`, `property_limit = 5`
-- `**pro**`
-  - `description = 'Operação profissional'`
-  - `price_cents = 8990` (era 4990)
-  - `price_yearly_cents = 89900` (era 49900)
-  - mantém `property_limit = 20`
-- `**business**`
-  - `description = 'Administradora'`
-  - `price_cents = 19990` (era 9990)
-  - `price_yearly_cents = 199000` (era 99900)
-  - `property_limit = 50` (era 999999)
-- **Novo `enterprise**` (`position = 5`)
-  - `name = 'Enterprise'`, `description = 'Rede / grande operação'`
-  - `price_cents = 0`, `price_yearly_cents = 0`
-  - `property_limit = 999999`
-  - `is_active = true`
-  - `stripe_price_id_monthly = NULL`, `stripe_price_id_yearly = NULL` (CTA é "Falar com comercial", sem checkout)
+## 2. Tela de Configurações (`src/pages/dashboard/Settings.tsx`)
 
-Observação: como `business` deixa de ser ilimitado, qualquer tenant `business` que hoje tenha >50 imóveis continua existindo sem bloqueio retroativo (a checagem só impede novas criações). Isso é coerente com o comportamento atual de `usePlanUsage`/`UpgradePromptDialog`.
+Criar um novo card **"Redes sociais"** logo abaixo do card de "Atendimento ao hóspede", contendo:
+- Input "Instagram" com ícone do Instagram, placeholder `@seuperfil` ou URL completa
+- Input "Facebook" com ícone do Facebook, placeholder URL da página
+- Texto auxiliar: "Quando preenchidos, aparecem como botões na capa do guia do hóspede."
 
-## 2. Stripe (atualizar via Lovable Cloud)
+Estado local + persistência junto com o `save.mutate()` existente (mesmo botão "Salvar alterações"). Validação leve: se for username, prefixar com `https://instagram.com/` ou `https://facebook.com/`.
 
-Atualizar/criar prices no Stripe correspondendo aos novos valores:
+## 3. Página pública (`src/pages/GuestGuide.tsx`)
 
-- `single_monthly` (R$ 8,90), `single_yearly` (R$ 89,00) — novos
-- `pro_monthly` R$ 89,90 e `pro_yearly` R$ 899,00 — substituir
-- `business_monthly` R$ 199,90 e `business_yearly` R$ 1.990,00 — substituir
-- Starter mantém valores atuais
-- Enterprise: sem price (CTA externo)
+Buscar `instagram_url` e `facebook_url` no select do tenant.
 
-A coluna `stripe_price_id_*` da tabela `subscription_plans` será atualizada para refletir os novos `lookup_key` quando recriados. Trial de 30 dias para Single será configurado via `subscription_data.trial_period_days = 30` no `create-checkout` (apenas quando o priceId for `single_*`).
+Renderizar um pequeno cluster de **botões flutuantes circulares no canto inferior esquerdo da capa** (espelhando o `LanguageSwitcher` que fica no canto superior direito):
+- Mesma estética: pill/círculo branco semitransparente com `backdrop-blur`, sombra suave, ícone colorido com a cor da rede
+- Só aparecem se a URL correspondente estiver preenchida
+- Abrem em nova aba (`target="_blank" rel="noreferrer noopener"`)
+- `z-30`, posicionados sobre o gradiente da capa para garantir contraste
 
-## 3. Frontend — `src/pages/dashboard/Billing.tsx`
+Optei pelo **canto inferior esquerdo da capa** (sua primeira opção) porque:
+- Não compete visualmente com o grid de ícones logo abaixo
+- Mantém simetria com o seletor de idioma (sup. direito ↔ inf. esquerdo)
+- Em mobile não empurra o conteúdo principal
 
-Sem mudar a arquitetura, ajustar:
+## 4. Detalhes técnicos
 
-- **Grid responsivo para 5 planos**:
-  - mobile: 1 coluna · sm: 2 · lg: 3 · xl: 5
-  - `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4`
-- `**PLAN_FEATURES**`: adicionar entradas para `single` (mesmas features do antigo free) e `enterprise` (suporte prioritário, onboarding assistido, condições personalizadas, escalabilidade ilimitada).
-- **Texto auxiliar "R$ X por imóvel"**: calcular `price_cents / property_limit` para Starter, Pro e Business e exibir abaixo do preço, em `text-xs text-muted-foreground`.
-- **Preço mensal equivalente no anual**: quando `interval === "year"`, mostrar logo abaixo do preço grande: "Equivalente a R$ X,XX/mês" (= `price_yearly_cents/12`).
-- **Card Single**:
-  - badge `"30 dias grátis"` no topo (estilo `secondary`)
-  - CTA: `"Começar grátis"`
-- **Card Pro**: mantém badge `Sparkles "Mais popular"` (já implementado).
-- **Card Enterprise** (visual premium):
-  - borda gradiente sutil (ex: `border-primary/40 bg-gradient-to-br from-card to-primary/5`)
-  - ícone Crown/Building2 no topo
-  - preço: `"Sob consulta"` (texto, não número)
-  - descrição auxiliar: "Planos personalizados para grandes operações"
-  - CTA distinto: variante `default` com ícone, texto `"Falar com comercial"`, abrindo `mailto:comercial@mrflow.com.br` (ou WhatsApp — confirmar abaixo) em nova aba; nunca chama `setCheckoutPriceId`.
-  - lista de benefícios com ícones (Headphones, Rocket, Settings, TrendingUp).
-- **Hierarquia visual e espaçamento**:
-  - aumentar `space-y` interno do card
-  - preço em `text-3xl`/`text-4xl` com `font-bold tracking-tight`
-  - descrição em `text-sm text-muted-foreground` com `min-h` para alinhar entre cards
-  - separador sutil entre preço e lista de features
-- **Filtro do mapa de checkout**: o Enterprise é ignorado pelo botão "Assinar" (sem `priceId`), e o botão de mailto é renderizado condicionalmente quando `plan.code === 'enterprise'`.
+- Ícones: usar `Instagram` e `Facebook` do `lucide-react` (já é a stack do projeto)
+- Sem necessidade de tradução (são links externos sem texto visível, só `aria-label`)
+- Nenhuma alteração no edge function de tradução, no template ou em cores semânticas
+- Responsivo: tamanho 40x40px em mobile, 44x44px em desktop
 
-## 4. Edge function — `supabase/functions/create-checkout/index.ts`
+## Estimativa de créditos Lovable
 
-Adicionar `subscription_data.trial_period_days = 30` quando o `priceId` começar com `single_` (somente Single tem trial). Demais planos seguem fluxo atual.
+| Etapa | Créditos |
+|---|---|
+| Migração (2 colunas em `tenants`) | ~1 |
+| Card de redes sociais em Settings + normalização de URL | ~2 |
+| Componente `SocialLinks` flutuante + integração no `GuestGuide` | ~2 |
+| Ajustes visuais/QA | ~1 |
+| **Total** | **~5–6 créditos** |
 
-## 5. Webhook — `supabase/functions/payments-webhook/index.ts`
+Sem custo de runtime (sem chamadas de IA, sem novas tabelas com RLS complexa).
 
-Adicionar mapeamento `if (priceId.startsWith("single")) return "free";` mantendo `code='free'` no banco para o plano Single (já que renomeamos só o `name`). Nenhuma outra mudança de lógica.
+## Fora de escopo
 
-## Pontos fora do escopo (não serão alterados)
+- WhatsApp/TikTok/YouTube (posso adicionar depois se quiser)
+- Validação rigorosa de URL no servidor
+- Ícones de redes sociais em outros lugares (footer, link expirado, etc.)
 
-- Permissões/feature gates de Starter/Pro/Business (`has_plan_feature`, `usePlanFeatures`).
-- Estrutura da tabela `subscriptions`, `tenants`.
-- Templates, integrações, demais páginas do dashboard.
-
-## Pergunta antes de implementar
-
-1. CTA "Falar com comercial" do Enterprise:  link de WhatsApp: 5521996507509
+Posso prosseguir com a implementação?
