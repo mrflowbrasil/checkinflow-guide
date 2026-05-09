@@ -67,6 +67,8 @@ export default function Settings() {
         name, primary_color: primary, secondary_color: secondary,
         logo_url: logoUrl, show_logo: features.customLogo ? showLogo : false,
         support_whatsapp: supportWhatsapp.trim() || null,
+        instagram_url: normalizeSocialUrl(instagramUrl, "instagram"),
+        facebook_url: normalizeSocialUrl(facebookUrl, "facebook"),
       } as any).eq("id", tenant.id);
       if (error) throw error;
     },
