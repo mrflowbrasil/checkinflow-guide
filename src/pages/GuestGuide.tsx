@@ -149,6 +149,7 @@ function GuideBody({
       {/* Hero */}
       <div className="relative">
         <LanguageSwitcher locale={locale} onChange={onLocaleChange} isLoading={tLoading} />
+        <SocialLinks instagramUrl={tenant?.instagram_url} facebookUrl={tenant?.facebook_url} />
         <div className="aspect-[4/3] sm:aspect-[16/10] max-h-[60vh] w-full overflow-hidden">
           {data.cover_image_url ? (
             <img src={data.cover_image_url} alt={data.name} className="h-full w-full object-cover" />
