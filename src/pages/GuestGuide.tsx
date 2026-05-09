@@ -40,10 +40,6 @@ export default function GuestGuide() {
           tenants!inner(id, name, primary_color, secondary_color, template, is_active, logo_url, show_logo, plan_code, instagram_url, facebook_url),
           property_pages(id, page_key, title, icon, position, is_enabled)
         `)
-          id, name, address, booking_url, cover_image_url, public_slug, status,
-          tenants!inner(id, name, primary_color, secondary_color, template, is_active, logo_url, show_logo, plan_code),
-          property_pages(id, page_key, title, icon, position, is_enabled)
-        `)
         .eq("public_slug", slug!)
         .eq("status", "active")
         .maybeSingle();
