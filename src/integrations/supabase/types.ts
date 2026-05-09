@@ -621,7 +621,9 @@ export type Database = {
       tenants: {
         Row: {
           created_at: string
+          facebook_url: string | null
           id: string
+          instagram_url: string | null
           is_active: boolean
           logo_url: string | null
           name: string
@@ -640,7 +642,9 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          facebook_url?: string | null
           id?: string
+          instagram_url?: string | null
           is_active?: boolean
           logo_url?: string | null
           name: string
@@ -659,7 +663,9 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          facebook_url?: string | null
           id?: string
+          instagram_url?: string | null
           is_active?: boolean
           logo_url?: string | null
           name?: string

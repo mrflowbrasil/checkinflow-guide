@@ -10,6 +10,7 @@ import { GuestPagePreview } from "@/components/guest/GuestPagePreview";
 import { GuestLinkExpired } from "@/components/guest/GuestLinkExpired";
 import { InstallAppButton } from "@/components/guest/InstallAppButton";
 import { LanguageSwitcher } from "@/components/guest/LanguageSwitcher";
+import { SocialLinks } from "@/components/guest/SocialLinks";
 import { GuideI18nProvider, useGuideT, type GuideLocale } from "@/lib/i18n-guide";
 
 export default function GuestGuide() {
@@ -36,7 +37,7 @@ export default function GuestGuide() {
         .from("properties")
         .select(`
           id, name, address, booking_url, cover_image_url, public_slug, status,
-          tenants!inner(id, name, primary_color, secondary_color, template, is_active, logo_url, show_logo, plan_code),
+          tenants!inner(id, name, primary_color, secondary_color, template, is_active, logo_url, show_logo, plan_code, instagram_url, facebook_url),
           property_pages(id, page_key, title, icon, position, is_enabled)
         `)
         .eq("public_slug", slug!)
@@ -148,6 +149,7 @@ function GuideBody({
       {/* Hero */}
       <div className="relative">
         <LanguageSwitcher locale={locale} onChange={onLocaleChange} isLoading={tLoading} />
+        <SocialLinks instagramUrl={tenant?.instagram_url} facebookUrl={tenant?.facebook_url} />
         <div className="aspect-[4/3] sm:aspect-[16/10] max-h-[60vh] w-full overflow-hidden">
           {data.cover_image_url ? (
             <img src={data.cover_image_url} alt={data.name} className="h-full w-full object-cover" />

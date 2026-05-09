@@ -9,9 +9,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Palette, Upload, Trash2, ImageIcon, MessageCircle, Lock } from "lucide-react";
+import { Loader2, Palette, Upload, Trash2, ImageIcon, MessageCircle, Lock, Instagram, Facebook } from "lucide-react";
 import { toast } from "sonner";
 import { LogoCropDialog } from "@/components/property/LogoCropDialog";
+import { normalizeSocialUrl } from "@/components/guest/SocialLinks";
 
 
 export default function Settings() {
@@ -26,6 +27,8 @@ export default function Settings() {
   const [logoUrl, setLogoUrl] = useState<string | null>(tenant?.logo_url ?? null);
   const [showLogo, setShowLogo] = useState<boolean>(tenant?.show_logo ?? true);
   const [supportWhatsapp, setSupportWhatsapp] = useState<string>((tenant as any)?.support_whatsapp ?? "");
+  const [instagramUrl, setInstagramUrl] = useState<string>((tenant as any)?.instagram_url ?? "");
+  const [facebookUrl, setFacebookUrl] = useState<string>((tenant as any)?.facebook_url ?? "");
   const [uploading, setUploading] = useState(false);
   const [cropSrc, setCropSrc] = useState<string | null>(null);
 
@@ -64,6 +67,8 @@ export default function Settings() {
         name, primary_color: primary, secondary_color: secondary,
         logo_url: logoUrl, show_logo: features.customLogo ? showLogo : false,
         support_whatsapp: supportWhatsapp.trim() || null,
+        instagram_url: normalizeSocialUrl(instagramUrl, "instagram"),
+        facebook_url: normalizeSocialUrl(facebookUrl, "facebook"),
       } as any).eq("id", tenant.id);
       if (error) throw error;
     },
@@ -216,6 +221,38 @@ export default function Settings() {
             inputMode="numeric"
           />
           <p className="text-xs text-muted-foreground">Deixe em branco para esconder o botão de ajuda.</p>
+        </div>
+      </Card>
+
+      <Card className="p-6 shadow-card space-y-4">
+        <div className="flex items-center gap-2">
+          <Instagram className="h-4 w-4 text-accent-foreground" />
+          <h2 className="font-semibold">Redes sociais</h2>
+        </div>
+        <p className="text-sm text-muted-foreground -mt-2">
+          Quando preenchidos, aparecem como botões na capa do guia do hóspede. Pode ser o link completo ou apenas o usuário (ex: <code>@seuperfil</code>).
+        </p>
+        <div className="space-y-2">
+          <Label htmlFor="instagram_url" className="flex items-center gap-2">
+            <Instagram className="h-3.5 w-3.5" /> Instagram
+          </Label>
+          <Input
+            id="instagram_url"
+            value={instagramUrl}
+            onChange={(e) => setInstagramUrl(e.target.value)}
+            placeholder="@seuperfil ou https://instagram.com/seuperfil"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="facebook_url" className="flex items-center gap-2">
+            <Facebook className="h-3.5 w-3.5" /> Facebook
+          </Label>
+          <Input
+            id="facebook_url"
+            value={facebookUrl}
+            onChange={(e) => setFacebookUrl(e.target.value)}
+            placeholder="https://facebook.com/suapagina"
+          />
         </div>
       </Card>
 
