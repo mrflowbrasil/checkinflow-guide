@@ -5,25 +5,29 @@ import { Lightbulb, AlertTriangle, CheckCircle2, Copy, Download, ExternalLink, E
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { FormattedText } from "@/lib/inline-format";
+import { useGuideT } from "@/lib/i18n-guide";
 
-export function BlockRenderer({ block, primaryColor }: { block: BlockBase; primaryColor?: string }) {
+export function BlockRenderer({ block, primaryColor, translate }: { block: BlockBase; primaryColor?: string; translate?: boolean }) {
+  const { t } = useGuideT();
+  const tr = translate ? (s: string | undefined | null) => t(s) : (s: string | undefined | null) => s ?? "";
+
   switch (block.type) {
     case "text":
       return (
         <FormattedText
-          content={block.data?.content ?? ""}
+          content={tr(block.data?.content ?? "")}
           className="text-base leading-relaxed whitespace-pre-wrap break-words text-center"
         />
       );
 
     case "subtitle":
-      return <h3 className="text-xl font-semibold mt-4 text-center break-words">{block.data?.content}</h3>;
+      return <h3 className="text-xl font-semibold mt-4 text-center break-words">{tr(block.data?.content)}</h3>;
 
     case "image":
       return block.data?.url ? (
         <figure className="space-y-2">
-          <img src={block.data.url} alt={block.data.caption ?? ""} className="w-full rounded-xl" loading="lazy" />
-          {block.data.caption && <figcaption className="text-xs text-center" style={{ color: "hsl(var(--guide-muted))" }}>{block.data.caption}</figcaption>}
+          <img src={block.data.url} alt={tr(block.data.caption ?? "")} className="w-full rounded-xl" loading="lazy" />
+          {block.data.caption && <figcaption className="text-xs text-center" style={{ color: "hsl(var(--guide-muted))" }}>{tr(block.data.caption)}</figcaption>}
         </figure>
       ) : null;
 
@@ -61,8 +65,8 @@ export function BlockRenderer({ block, primaryColor }: { block: BlockBase; prima
               <span className="h-7 w-7 shrink-0 rounded-full grid place-items-center text-sm font-semibold"
                     style={{ background: "hsl(var(--guide-fg) / 0.08)" }}>{i + 1}</span>
               <div>
-                <div className="font-medium">{it.title}</div>
-                {it.detail && <div className="text-sm" style={{ color: "hsl(var(--guide-muted))" }}>{it.detail}</div>}
+                <div className="font-medium">{tr(it.title)}</div>
+                {it.detail && <div className="text-sm" style={{ color: "hsl(var(--guide-muted))" }}>{tr(it.detail)}</div>}
               </div>
             </li>
           ))}
@@ -77,7 +81,7 @@ export function BlockRenderer({ block, primaryColor }: { block: BlockBase; prima
       return (
         <div className="flex gap-3 p-4 rounded-xl" style={{ background: bg }}>
           <Icon className="h-5 w-5 shrink-0 mt-0.5" style={{ color: fg }} />
-          <FormattedText content={block.data?.content ?? ""} className="text-sm leading-relaxed" />
+          <FormattedText content={tr(block.data?.content ?? "")} className="text-sm leading-relaxed" />
         </div>
       );
     }
@@ -87,7 +91,7 @@ export function BlockRenderer({ block, primaryColor }: { block: BlockBase; prima
         const { action, value } = block.data ?? {};
         if (action === "copy") {
           navigator.clipboard.writeText(value ?? "");
-          toast.success("Copiado!");
+          toast.success(tr("Copiado!"));
         } else if (action === "download" || action === "link") {
           window.open(value, "_blank", "noopener,noreferrer");
         }
@@ -100,7 +104,7 @@ export function BlockRenderer({ block, primaryColor }: { block: BlockBase; prima
           size="lg"
           style={{ background: primaryColor ?? "hsl(var(--guide-fg))", color: "#fff" }}
         >
-          <Icon className="mr-2 h-4 w-4" /> {block.data?.label}
+          <Icon className="mr-2 h-4 w-4" /> {tr(block.data?.label)}
         </Button>
       );
     }
@@ -109,13 +113,13 @@ export function BlockRenderer({ block, primaryColor }: { block: BlockBase; prima
       return (
         <ul className="space-y-2">
           {(block.data?.items ?? []).map((it: any, i: number) => (
-            <li key={i} className="flex gap-2"><span className="opacity-50">•</span>{it.text}</li>
+            <li key={i} className="flex gap-2"><span className="opacity-50">•</span>{tr(it.text)}</li>
           ))}
         </ul>
       );
 
     case "password":
-      return <PasswordBlock data={block.data} primaryColor={primaryColor} />;
+      return <PasswordBlock data={block.data} primaryColor={primaryColor} translate={translate} />;
 
     case "divider":
       return (
@@ -132,17 +136,19 @@ export function BlockRenderer({ block, primaryColor }: { block: BlockBase; prima
   }
 }
 
-function PasswordBlock({ data, primaryColor }: { data: any; primaryColor?: string }) {
+function PasswordBlock({ data, primaryColor, translate }: { data: any; primaryColor?: string; translate?: boolean }) {
   const [shown, setShown] = useState(false);
+  const { t } = useGuideT();
+  const tr = translate ? (s: string) => t(s) : (s: string) => s;
   const value: string = data?.value ?? "";
   const label: string = data?.label ?? "Senha";
   const masked = "•".repeat(Math.max(value.length, 8));
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(value);
-      toast.success("Senha copiada!");
+      toast.success(tr("Senha copiada!"));
     } catch {
-      toast.error("Não foi possível copiar");
+      toast.error(tr("Não foi possível copiar"));
     }
   };
   return (
@@ -153,7 +159,7 @@ function PasswordBlock({ data, primaryColor }: { data: any; primaryColor?: strin
       <div className="flex items-center gap-2 mb-2">
         <Lock className="h-4 w-4" style={{ color: primaryColor ?? "hsl(var(--guide-fg))" }} />
         <span className="text-xs font-semibold tracking-wide uppercase" style={{ color: "hsl(var(--guide-muted))" }}>
-          {label}
+          {tr(label)}
         </span>
       </div>
       <div className="flex items-center gap-2">
@@ -188,10 +194,10 @@ function PasswordBlock({ data, primaryColor }: { data: any; primaryColor?: strin
   );
 }
 
-export function BlocksRenderer({ blocks, primaryColor }: { blocks: BlockBase[]; primaryColor?: string }) {
+export function BlocksRenderer({ blocks, primaryColor, translate }: { blocks: BlockBase[]; primaryColor?: string; translate?: boolean }) {
   return (
     <div className="space-y-5 min-w-0">
-      {blocks.map((b) => <div key={b.id} className="min-w-0"><BlockRenderer block={b} primaryColor={primaryColor} /></div>)}
+      {blocks.map((b) => <div key={b.id} className="min-w-0"><BlockRenderer block={b} primaryColor={primaryColor} translate={translate} /></div>)}
     </div>
   );
 }
