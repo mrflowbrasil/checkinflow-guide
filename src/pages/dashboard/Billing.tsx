@@ -343,7 +343,7 @@ export default function Billing() {
 
       <p className="text-xs text-muted-foreground text-center">
         Pagamentos processados com segurança via Stripe. Cancele a qualquer momento — você
-        mantém acesso até o fim do período pago. Notas fiscais são emitidas pela sua empresa.
+        mantém acesso até o fim do período pago. Notas fiscais são emitidas após o processamento do pagamento.
       </p>
 
       <Dialog open={!!checkoutPriceId} onOpenChange={(o) => !o && setCheckoutPriceId(null)}>
