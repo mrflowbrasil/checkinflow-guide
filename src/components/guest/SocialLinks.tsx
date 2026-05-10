@@ -12,7 +12,7 @@ export function SocialLinks({ instagramUrl, facebookUrl }: SocialLinksProps) {
     "h-10 w-10 sm:h-11 sm:w-11 rounded-full bg-white/90 backdrop-blur-md shadow-lg ring-1 ring-black/5 grid place-items-center transition-transform hover:scale-105 active:scale-95";
 
   return (
-    <div className="absolute left-3 sm:left-4 bottom-3 sm:bottom-4 z-30 flex items-center gap-2">
+    <div className="absolute left-3 sm:left-4 bottom-3 sm:bottom-4 z-30 flex flex-col items-center gap-2">
       {instagramUrl && (
         <a
           href={instagramUrl}
