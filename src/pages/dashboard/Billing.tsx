@@ -203,7 +203,10 @@ export default function Billing() {
           const perPropertyCents = (() => {
             if (isEnterprise || isSingle) return null;
             if (!plan.property_limit || plan.property_limit < 1) return null;
-            return Math.round(plan.price_cents / plan.property_limit);
+            const baseCents = interval === "year" && plan.price_yearly_cents > 0
+              ? plan.price_yearly_cents / 12
+              : plan.price_cents;
+            return Math.round(baseCents / plan.property_limit);
           })();
 
           // ENTERPRISE CARD (visual premium)
