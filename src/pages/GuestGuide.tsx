@@ -142,8 +142,27 @@ function GuideBody({
   data, tenant, pages, template, primaryColor, activePage, activePageKey, setActivePageKey, locale, onLocaleChange,
 }: any) {
   const { t, isLoading: tLoading } = useGuideT();
+  const seoTitle = `${data.name} — Guia do Hóspede`;
+  const seoDesc = data.address
+    ? `Guia digital do hóspede para ${data.name}, em ${data.address}. Check-in, dicas e informações da sua estadia.`
+    : `Guia digital do hóspede para ${data.name}. Check-in, dicas e informações da sua estadia.`;
+  const lodgingLd: Record<string, any> = {
+    "@context": "https://schema.org",
+    "@type": "LodgingBusiness",
+    name: data.name,
+    url: `https://hub.mrflow.com.br/g/${data.public_slug}`,
+  };
+  if (data.address) lodgingLd.address = { "@type": "PostalAddress", streetAddress: data.address };
+  if (data.cover_image_url) lodgingLd.image = data.cover_image_url;
   return (
     <div className={`guide-root guide-template-${template} min-h-screen`}>
+      <Seo
+        title={seoTitle}
+        description={seoDesc}
+        path={`/g/${data.public_slug}`}
+        image={data.cover_image_url || undefined}
+        jsonLd={lodgingLd}
+      />
       {/* Hero */}
       <div className="relative">
         <LanguageSwitcher locale={locale} onChange={onLocaleChange} isLoading={tLoading} />
