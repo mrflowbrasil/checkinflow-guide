@@ -4,6 +4,7 @@ import { Sparkles, QrCode, Smartphone, ArrowRight } from "lucide-react";
 import mrFlowLogoWhite from "@/assets/mrflow-logo-white.png";
 import mockupHome from "@/assets/mockup-home-light.webp";
 import ShaderBackground from "@/components/ui/shader-background";
+import { Seo } from "@/components/Seo";
 
 const HERO_BG = {
   background:
