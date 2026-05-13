@@ -4,6 +4,7 @@ import { Sparkles, QrCode, Smartphone, ArrowRight } from "lucide-react";
 import mrFlowLogoWhite from "@/assets/mrflow-logo-white.png";
 import mockupHome from "@/assets/mockup-home-light.webp";
 import ShaderBackground from "@/components/ui/shader-background";
+import { Seo } from "@/components/Seo";
 
 const HERO_BG = {
   background:
@@ -13,6 +14,11 @@ const HERO_BG = {
 const Index = () => {
   return (
     <div className="min-h-screen flex flex-col text-white relative" style={HERO_BG}>
+      <Seo
+        title="Mr Flow • Welcome Hub — Guia digital para anfitriões"
+        description="Crie um Hub de Boas Vindas digital para o seu imóvel de temporada. Encante hóspedes com check-in, regras, dicas locais e QR Code próprio."
+        path="/"
+      />
       <ShaderBackground className="pointer-events-none absolute inset-0 z-0 h-full w-full opacity-75" />
       {/* Header */}
       <header className="sticky top-0 z-30 backdrop-blur-md bg-[#020617]/40 border-b border-white/10">

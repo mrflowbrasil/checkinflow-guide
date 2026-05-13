@@ -1,0 +1,14 @@
+# Mr Flow • Welcome Hub
+
+> Hub de Boas Vindas Inteligente para anfitriões de aluguel por temporada. Crie um guia digital completo do imóvel para encantar hóspedes desde o primeiro momento.
+
+A Mr Flow é uma plataforma SaaS brasileira que permite a anfitriões de imóveis de temporada criarem guias digitais personalizados (Welcome Hub) para seus hóspedes, com instruções de check-in, regras da casa, dicas locais, contatos de emergência e mais. Cada imóvel ganha um link público e QR Code próprios.
+
+## Pages
+
+- [Home](/): Visão geral do produto e cadastro.
+- [Entrar](/auth): Login e cadastro de anfitriões.
+
+## Optional
+
+- [Guia do hóspede (exemplo)](/g/): Página pública de cada imóvel, acessada via slug único `/g/:slug`.

@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Home, Loader2, AlertCircle, Mail } from "lucide-react";
 import { MrFlowLogo } from "@/components/brand/MrFlowLogo";
+import { Seo } from "@/components/Seo";
 
 const passwordSchema = z.string().min(8, "Mínimo 8 caracteres").max(72);
 const nameSchema = z.string().trim().min(2, "Nome muito curto").max(80);
@@ -100,6 +101,12 @@ export default function Invite() {
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2 bg-[#020617]">
+      <Seo
+        title="Convite — Mr Flow Welcome Hub"
+        description="Aceite seu convite para fazer parte da plataforma Mr Flow."
+        path="/invite"
+        noindex
+      />
       <div
         className="hidden lg:flex p-12 flex-col justify-between relative overflow-hidden text-white"
         style={{

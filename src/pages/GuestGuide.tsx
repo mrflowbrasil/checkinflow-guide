@@ -12,6 +12,7 @@ import { InstallAppButton } from "@/components/guest/InstallAppButton";
 import { LanguageSwitcher } from "@/components/guest/LanguageSwitcher";
 import { SocialLinks } from "@/components/guest/SocialLinks";
 import { GuideI18nProvider, useGuideT, type GuideLocale } from "@/lib/i18n-guide";
+import { Seo } from "@/components/Seo";
 
 export default function GuestGuide() {
   const { slug } = useParams<{ slug: string }>();
@@ -55,11 +56,9 @@ export default function GuestGuide() {
     [data]
   );
 
-  // Update meta tags + dynamic PWA manifest per property
+  // Update dynamic PWA manifest + theme/icon per property (title/description handled by Helmet)
   useEffect(() => {
     if (!data) return;
-    const title = `${data.name} — Guia do Hóspede`;
-    document.title = title;
     const setMeta = (name: string, content: string) => {
       let el = document.querySelector(`meta[name="${name}"]`) as HTMLMetaElement | null;
       if (!el) {
@@ -69,7 +68,6 @@ export default function GuestGuide() {
       }
       el.setAttribute("content", content);
     };
-    setMeta("description", `Guia digital do hóspede para ${data.name}.`);
 
     // ---- Dynamic PWA manifest ----
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
@@ -144,8 +142,27 @@ function GuideBody({
   data, tenant, pages, template, primaryColor, activePage, activePageKey, setActivePageKey, locale, onLocaleChange,
 }: any) {
   const { t, isLoading: tLoading } = useGuideT();
+  const seoTitle = `${data.name} — Guia do Hóspede`;
+  const seoDesc = data.address
+    ? `Guia digital do hóspede para ${data.name}, em ${data.address}. Check-in, dicas e informações da sua estadia.`
+    : `Guia digital do hóspede para ${data.name}. Check-in, dicas e informações da sua estadia.`;
+  const lodgingLd: Record<string, any> = {
+    "@context": "https://schema.org",
+    "@type": "LodgingBusiness",
+    name: data.name,
+    url: `https://hub.mrflow.com.br/g/${data.public_slug}`,
+  };
+  if (data.address) lodgingLd.address = { "@type": "PostalAddress", streetAddress: data.address };
+  if (data.cover_image_url) lodgingLd.image = data.cover_image_url;
   return (
     <div className={`guide-root guide-template-${template} min-h-screen`}>
+      <Seo
+        title={seoTitle}
+        description={seoDesc}
+        path={`/g/${data.public_slug}`}
+        image={data.cover_image_url || undefined}
+        jsonLd={lodgingLd}
+      />
       {/* Hero */}
       <div className="relative">
         <LanguageSwitcher locale={locale} onChange={onLocaleChange} isLoading={tLoading} />
