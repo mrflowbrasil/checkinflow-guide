@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Home, Loader2, AlertCircle, Mail } from "lucide-react";
 import { MrFlowLogo } from "@/components/brand/MrFlowLogo";
+import { Seo } from "@/components/Seo";
 
 const passwordSchema = z.string().min(8, "Mínimo 8 caracteres").max(72);
 const nameSchema = z.string().trim().min(2, "Nome muito curto").max(80);
