@@ -12,6 +12,7 @@ import { InstallAppButton } from "@/components/guest/InstallAppButton";
 import { LanguageSwitcher } from "@/components/guest/LanguageSwitcher";
 import { SocialLinks } from "@/components/guest/SocialLinks";
 import { GuideI18nProvider, useGuideT, type GuideLocale } from "@/lib/i18n-guide";
+import { Seo } from "@/components/Seo";
 
 export default function GuestGuide() {
   const { slug } = useParams<{ slug: string }>();
