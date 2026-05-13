@@ -101,6 +101,12 @@ export default function Invite() {
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2 bg-[#020617]">
+      <Seo
+        title="Convite — Mr Flow Welcome Hub"
+        description="Aceite seu convite para fazer parte da plataforma Mr Flow."
+        path="/invite"
+        noindex
+      />
       <div
         className="hidden lg:flex p-12 flex-col justify-between relative overflow-hidden text-white"
         style={{

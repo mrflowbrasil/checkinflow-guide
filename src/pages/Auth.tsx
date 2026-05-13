@@ -93,6 +93,12 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2 bg-[#020617]">
+      <Seo
+        title="Entrar — Mr Flow Welcome Hub"
+        description="Acesse sua conta de anfitrião na Mr Flow para gerenciar guias digitais dos seus imóveis de temporada."
+        path="/auth"
+        noindex
+      />
       {/* Hero side */}
       <div
         className="hidden lg:flex p-12 flex-col justify-between relative overflow-hidden text-white"
