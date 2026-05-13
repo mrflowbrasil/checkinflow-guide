@@ -56,11 +56,9 @@ export default function GuestGuide() {
     [data]
   );
 
-  // Update meta tags + dynamic PWA manifest per property
+  // Update dynamic PWA manifest + theme/icon per property (title/description handled by Helmet)
   useEffect(() => {
     if (!data) return;
-    const title = `${data.name} — Guia do Hóspede`;
-    document.title = title;
     const setMeta = (name: string, content: string) => {
       let el = document.querySelector(`meta[name="${name}"]`) as HTMLMetaElement | null;
       if (!el) {
@@ -70,7 +68,6 @@ export default function GuestGuide() {
       }
       el.setAttribute("content", content);
     };
-    setMeta("description", `Guia digital do hóspede para ${data.name}.`);
 
     // ---- Dynamic PWA manifest ----
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
