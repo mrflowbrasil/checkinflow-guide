@@ -22,6 +22,14 @@ import Billing from "./pages/dashboard/Billing";
 import Integrations from "./pages/dashboard/Integrations";
 import Templates from "./pages/dashboard/Templates";
 import NotFound from "./pages/NotFound";
+import {
+  GuiaDigitalAirbnb,
+  ManualDigitalAirbnb,
+  AppParaAnfitriao,
+  HubDeBoasVindas,
+  GuestAppAirbnb,
+  GuiaDoHospede,
+} from "./pages/seo/landings";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 30_000, refetchOnWindowFocus: false } },
