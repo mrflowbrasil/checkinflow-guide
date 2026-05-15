@@ -21,5 +21,3 @@ verify_jwt = false
 [functions.integrations-trigger-import]
 verify_jwt = true
 
-[functions.inspect-stripe-prices]
-verify_jwt = false
