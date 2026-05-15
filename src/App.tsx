@@ -30,6 +30,16 @@ import {
   GuestAppAirbnb,
   GuiaDoHospede,
 } from "./pages/seo/landings";
+import {
+  CheckInDigitalAirbnb,
+  QrCodeParaHospedes,
+  ManualDaCasaAirbnb,
+  AppParaHospedes,
+  ExperienciaDoHospede,
+  ComoReduzirPerguntasNoWhatsApp,
+  ComoMelhorarAvaliacoesAirbnb,
+  ComoOrganizarCheckInAirbnb,
+} from "./pages/seo/clusters";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 30_000, refetchOnWindowFocus: false } },
