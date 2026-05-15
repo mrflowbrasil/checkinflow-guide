@@ -97,6 +97,13 @@ export function SeoLandingLayout({
 
       <main className="relative z-10">
         <section className="container px-6 sm:px-10 lg:px-20 xl:px-32 py-16 lg:py-24 max-w-4xl mx-auto">
+          <nav aria-label="Breadcrumb" className="mb-4 text-xs text-white/60">
+            <ol className="flex flex-wrap items-center gap-1.5">
+              <li><Link to="/" className="hover:text-white/90 underline-offset-2 hover:underline">Início</Link></li>
+              <li aria-hidden="true">›</li>
+              <li className="text-white/85">{eyebrow}</li>
+            </ol>
+          </nav>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-white/90 text-xs font-medium mb-6">
             <Sparkles className="h-3 w-3" style={{ color: "#00FFFF" }} /> {eyebrow}
           </div>
