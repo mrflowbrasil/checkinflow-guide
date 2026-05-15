@@ -1,62 +1,46 @@
-## Objetivo
+## Diagnóstico
 
-Adicionar campos de **Instagram** e **Facebook** no workspace (tenant) e exibir ícones clicáveis na página pública do hóspede quando preenchidos.
+O checkout do Stripe usa `lookup_keys` (ex: `pro_monthly`) para resolver o preço — não os valores armazenados no banco. Confirmação:
 
-## 1. Banco de dados
+- **Banco** (`subscription_plans`): Pro mensal = R$ 89,90 ✅
+- **Stripe** (lookup_key `pro_monthly`): R$ 49,90 ❌ (preço antigo)
 
-Adicionar duas colunas na tabela `tenants`:
-- `instagram_url` (text, nullable)
-- `facebook_url` (text, nullable)
+O código em `supabase/functions/create-checkout/index.ts` faz:
+```ts
+const prices = await stripe.prices.list({ lookup_keys: [priceId] });
+```
+Então o valor exibido vem 100% do Stripe. Atualizar o banco não altera o Stripe — preços no Stripe são **imutáveis em valor**, é preciso criar novos preços com o mesmo `lookup_key` (o Stripe transfere a chave automaticamente do preço antigo para o novo, e arquiva o antigo).
 
-Aceitar tanto URL completa (`https://instagram.com/usuario`) quanto username (`@usuario` ou `usuario`) — normalizar no frontend antes de salvar para sempre virar URL válida.
+Suspeito que **todos** os planos pagos estejam desatualizados no Stripe, não só o Pro. Preciso recriar todos.
 
-## 2. Tela de Configurações (`src/pages/dashboard/Settings.tsx`)
+## Plano
 
-Criar um novo card **"Redes sociais"** logo abaixo do card de "Atendimento ao hóspede", contendo:
-- Input "Instagram" com ícone do Instagram, placeholder `@seuperfil` ou URL completa
-- Input "Facebook" com ícone do Facebook, placeholder URL da página
-- Texto auxiliar: "Quando preenchidos, aparecem como botões na capa do guia do hóspede."
+1. **Inspecionar o Stripe** para listar os valores atuais de cada `lookup_key` e confirmar quais estão errados:
+   - `starter_monthly`, `starter_yearly`
+   - `pro_monthly`, `pro_yearly`
+   - `business_monthly`, `business_yearly`
+   - `free_monthly` (Single — R$ 8,90)
 
-Estado local + persistência junto com o `save.mutate()` existente (mesmo botão "Salvar alterações"). Validação leve: se for username, prefixar com `https://instagram.com/` ou `https://facebook.com/`.
+2. **Recriar os preços desatualizados** via `payments--create_price` com os valores corretos do banco. Mesmo `price_id` (lookup_key) → o Stripe transfere automaticamente a chave para o novo preço e arquiva o antigo. Assinaturas existentes não são afetadas (continuam no preço antigo até o usuário trocar).
 
-## 3. Página pública (`src/pages/GuestGuide.tsx`)
+3. **Validar** chamando `create-checkout` no preview com cada `priceId` e conferindo que o valor retornado bate com o banco.
 
-Buscar `instagram_url` e `facebook_url` no select do tenant.
+4. **Observação importante sobre assinaturas existentes**: o seu teste de upgrade Starter→Pro foi feito via abrir um novo checkout (não via Customer Portal de upgrade). Após o fix, novos checkouts mostrarão o valor correto. Usuários já assinantes do Pro a R$49,90 continuam pagando R$49,90 até cancelarem ou trocarem de plano explicitamente — se quiser migrá-los à força, é um passo adicional (atualizar `subscription.items` no Stripe).
 
-Renderizar um pequeno cluster de **botões flutuantes circulares no canto inferior esquerdo da capa** (espelhando o `LanguageSwitcher` que fica no canto superior direito):
-- Mesma estética: pill/círculo branco semitransparente com `backdrop-blur`, sombra suave, ícone colorido com a cor da rede
-- Só aparecem se a URL correspondente estiver preenchida
-- Abrem em nova aba (`target="_blank" rel="noreferrer noopener"`)
-- `z-30`, posicionados sobre o gradiente da capa para garantir contraste
+## Detalhes técnicos
 
-Optei pelo **canto inferior esquerdo da capa** (sua primeira opção) porque:
-- Não compete visualmente com o grid de ícones logo abaixo
-- Mantém simetria com o seletor de idioma (sup. direito ↔ inf. esquerdo)
-- Em mobile não empurra o conteúdo principal
+Mapeamento que vou aplicar (do banco):
 
-## 4. Detalhes técnicos
-
-- Ícones: usar `Instagram` e `Facebook` do `lucide-react` (já é a stack do projeto)
-- Sem necessidade de tradução (são links externos sem texto visível, só `aria-label`)
-- Nenhuma alteração no edge function de tradução, no template ou em cores semânticas
-- Responsivo: tamanho 40x40px em mobile, 44x44px em desktop
-
-## Estimativa de créditos Lovable
-
-| Etapa | Créditos |
+| lookup_key | valor (centavos) |
 |---|---|
-| Migração (2 colunas em `tenants`) | ~1 |
-| Card de redes sociais em Settings + normalização de URL | ~2 |
-| Componente `SocialLinks` flutuante + integração no `GuestGuide` | ~2 |
-| Ajustes visuais/QA | ~1 |
-| **Total** | **~5–6 créditos** |
+| free_monthly | 890 |
+| starter_monthly | 2990 |
+| starter_yearly | 29900 |
+| pro_monthly | 8990 |
+| pro_yearly | 89900 |
+| business_monthly | 19990 |
+| business_yearly | 199000 |
 
-Sem custo de runtime (sem chamadas de IA, sem novas tabelas com RLS complexa).
+Cada `create_price` precisa de `product_id` (o produto Stripe correspondente) — vou descobrir via inspeção no passo 1 ou usar os mesmos IDs do `batch_create_product` original.
 
-## Fora de escopo
-
-- WhatsApp/TikTok/YouTube (posso adicionar depois se quiser)
-- Validação rigorosa de URL no servidor
-- Ícones de redes sociais em outros lugares (footer, link expirado, etc.)
-
-Posso prosseguir com a implementação?
+Pergunta antes de executar: quer que eu **migre forçadamente** as assinaturas ativas existentes para os novos preços (passo extra), ou deixo só os novos checkouts corretos e os antigos assinantes seguem no preço antigo até trocarem por conta própria?
