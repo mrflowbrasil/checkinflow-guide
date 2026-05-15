@@ -80,7 +80,7 @@ export function SeoLandingLayout({
 
   return (
     <div className="min-h-screen flex flex-col text-white relative" style={HERO_BG}>
-      <Seo title={title} description={description} path={path} jsonLd={[softwareLd, faqLd]} />
+      <Seo title={title} description={description} path={path} jsonLd={[softwareLd, faqLd, breadcrumbLd, orgLd]} />
       <ShaderBackground className="pointer-events-none absolute inset-0 z-0 h-full w-full opacity-75" />
 
       <header className="sticky top-0 z-30 backdrop-blur-md bg-[#020617]/40 border-b border-white/10">
