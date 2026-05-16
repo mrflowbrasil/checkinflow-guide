@@ -11,9 +11,12 @@ interface SeoProps {
 }
 
 const ORIGIN = "https://hub.mrflow.com.br";
+const DEFAULT_OG_IMAGE =
+  "https://storage.googleapis.com/gpt-engineer-file-uploads/QOxsOCPLdoWqcZHw4rluKIZw7h52/social-images/social-1777558596702-Logo_Welcome_Hub.webp";
 
 export function Seo({ title, description, path, image, type = "website", jsonLd, noindex }: SeoProps) {
   const url = `${ORIGIN}${path}`;
+  const ogImage = image ?? DEFAULT_OG_IMAGE;
   const ldArray = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
   return (
     <Helmet>
