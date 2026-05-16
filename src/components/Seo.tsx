@@ -30,10 +30,11 @@ export function Seo({ title, description, path, image, type = "website", jsonLd,
       <meta property="og:type" content={type} />
       <meta property="og:locale" content="pt_BR" />
       <meta property="og:site_name" content="Mr Flow Welcome Hub" />
-      {image && <meta property="og:image" content={image} />}
+      <meta property="og:image" content={ogImage} />
+      <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
-      {image && <meta name="twitter:image" content={image} />}
+      <meta name="twitter:image" content={ogImage} />
       {ldArray.map((ld, i) => (
         <script key={i} type="application/ld+json">{JSON.stringify(ld)}</script>
       ))}
