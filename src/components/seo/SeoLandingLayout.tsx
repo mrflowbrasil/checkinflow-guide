@@ -69,18 +69,10 @@ export function SeoLandingLayout({
       { "@type": "ListItem", position: 2, name: eyebrow, item: `https://hub.mrflow.com.br${path}` },
     ],
   };
-  const orgLd = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: "Mr Flow",
-    url: "https://hub.mrflow.com.br/",
-    logo: "https://storage.googleapis.com/gpt-engineer-file-uploads/QOxsOCPLdoWqcZHw4rluKIZw7h52/social-images/social-1777558596702-Logo_Welcome_Hub.webp",
-    sameAs: ["https://mrflow.com.br", "https://www.instagram.com/mrflow.com.br"],
-  };
 
   return (
     <div className="min-h-screen flex flex-col text-white relative" style={HERO_BG}>
-      <Seo title={title} description={description} path={path} jsonLd={[softwareLd, faqLd, breadcrumbLd, orgLd]} />
+      <Seo title={title} description={description} path={path} jsonLd={[softwareLd, faqLd, breadcrumbLd]} />
       <ShaderBackground className="pointer-events-none absolute inset-0 z-0 h-full w-full opacity-75" />
 
       <header className="sticky top-0 z-30 backdrop-blur-md bg-[#020617]/40 border-b border-white/10">
