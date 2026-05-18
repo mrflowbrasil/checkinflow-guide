@@ -40,6 +40,18 @@ import {
   ComoMelhorarAvaliacoesAirbnb,
   ComoOrganizarCheckInAirbnb,
 } from "./pages/seo/clusters";
+import {
+  IntegracaoHostaway,
+  IntegracaoStays,
+  IntegracaoAirbnb,
+  CheckinComQrCode,
+  ManualDigitalPousada,
+  ManualDigitalParaAirbnb,
+  WifiPorQrCode,
+  CentralDoHospede,
+  CheckInAutonomoAirbnb,
+  ComoModernizarSuaHospedagem,
+} from "./pages/seo/extras";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 30_000, refetchOnWindowFocus: false } },
