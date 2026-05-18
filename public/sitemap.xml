@@ -76,6 +76,56 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://hub.mrflow.com.br/integracao-hostaway</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hub.mrflow.com.br/integracao-stays</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hub.mrflow.com.br/integracao-airbnb</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hub.mrflow.com.br/checkin-com-qr-code</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hub.mrflow.com.br/manual-digital-pousada</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hub.mrflow.com.br/manual-digital-para-airbnb</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hub.mrflow.com.br/wifi-por-qr-code</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://hub.mrflow.com.br/central-do-hospede</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hub.mrflow.com.br/check-in-autonomo-airbnb</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hub.mrflow.com.br/como-modernizar-sua-hospedagem</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://hub.mrflow.com.br/auth</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
