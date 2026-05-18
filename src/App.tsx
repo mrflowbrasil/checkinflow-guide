@@ -80,6 +80,16 @@ const App = () => (
             <Route path="/como-reduzir-perguntas-no-whatsapp" element={<ComoReduzirPerguntasNoWhatsApp />} />
             <Route path="/como-melhorar-avaliacoes-airbnb" element={<ComoMelhorarAvaliacoesAirbnb />} />
             <Route path="/como-organizar-check-in-airbnb" element={<ComoOrganizarCheckInAirbnb />} />
+            <Route path="/integracao-hostaway" element={<IntegracaoHostaway />} />
+            <Route path="/integracao-stays" element={<IntegracaoStays />} />
+            <Route path="/integracao-airbnb" element={<IntegracaoAirbnb />} />
+            <Route path="/checkin-com-qr-code" element={<CheckinComQrCode />} />
+            <Route path="/manual-digital-pousada" element={<ManualDigitalPousada />} />
+            <Route path="/manual-digital-para-airbnb" element={<ManualDigitalParaAirbnb />} />
+            <Route path="/wifi-por-qr-code" element={<WifiPorQrCode />} />
+            <Route path="/central-do-hospede" element={<CentralDoHospede />} />
+            <Route path="/check-in-autonomo-airbnb" element={<CheckInAutonomoAirbnb />} />
+            <Route path="/como-modernizar-sua-hospedagem" element={<ComoModernizarSuaHospedagem />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/invite/:token" element={<Invite />} />
             <Route path="/g/:slug" element={<GuestGuide />} />
