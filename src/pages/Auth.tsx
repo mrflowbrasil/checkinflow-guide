@@ -167,7 +167,12 @@ export default function Auth() {
                   <Input id="si-email" name="email" type="email" autoComplete="email" required className="h-11 rounded-xl" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="si-password">Senha</Label>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="si-password">Senha</Label>
+                    <Link to="/forgot-password" className="text-xs text-primary hover:underline">
+                      Esqueci minha senha
+                    </Link>
+                  </div>
                   <Input id="si-password" name="password" type="password" autoComplete="current-password" required className="h-11 rounded-xl" />
                 </div>
                 <Button type="submit" className="w-full h-11 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold" disabled={busy}>
