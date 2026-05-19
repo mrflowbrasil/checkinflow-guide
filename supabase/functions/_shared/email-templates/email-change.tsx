@@ -8,18 +8,17 @@ import {
   Container,
   Head,
   Heading,
+  Hr,
   Html,
+  Img,
   Link,
   Preview,
+  Section,
   Text,
 } from 'npm:@react-email/components@0.0.22'
 
 interface EmailChangeEmailProps {
   siteName: string
-  // oldEmail is the user's current address (HookData.OldEmail). For the
-  // NEW-recipient half of a secure email_change fanout, `email` equals the
-  // recipient (NEW), so the "from" line must render oldEmail to read
-  // "from OLD to NEW" instead of "from NEW to NEW".
   oldEmail: string
   email: string
   newEmail: string
@@ -32,32 +31,46 @@ export const EmailChangeEmail = ({
   newEmail,
   confirmationUrl,
 }: EmailChangeEmailProps) => (
-  <Html lang="en" dir="ltr">
+  <Html lang="pt-BR" dir="ltr">
     <Head />
-    <Preview>Confirm your email change for {siteName}</Preview>
+    <Preview>Confirme a troca de email no {siteName}</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Heading style={h1}>Confirm your email change</Heading>
-        <Text style={text}>
-          You requested to change your email address for {siteName} from{' '}
-          <Link href={`mailto:${oldEmail}`} style={link}>
-            {oldEmail}
-          </Link>{' '}
-          to{' '}
-          <Link href={`mailto:${newEmail}`} style={link}>
-            {newEmail}
-          </Link>
-          .
-        </Text>
-        <Text style={text}>
-          Click the button below to confirm this change:
-        </Text>
-        <Button style={button} href={confirmationUrl}>
-          Confirm Email Change
-        </Button>
+        <Section style={header}>
+          <Img
+            src="https://hub.mrflow.com.br/mrflow-logo.png"
+            alt="Mr Flow"
+            width="120"
+            height="32"
+            style={logo}
+          />
+        </Section>
+        <Section style={card}>
+          <Heading style={h1}>Confirme a troca de email</Heading>
+          <Text style={text}>
+            Você solicitou alterar o email da sua conta no {siteName} de{' '}
+            <Link href={`mailto:${oldEmail}`} style={link}>
+              {oldEmail}
+            </Link>{' '}
+            para{' '}
+            <Link href={`mailto:${newEmail}`} style={link}>
+              {newEmail}
+            </Link>
+            . Clique no botão abaixo para confirmar a alteração.
+          </Text>
+          <Section style={{ textAlign: 'center' as const, margin: '32px 0' }}>
+            <Button style={button} href={confirmationUrl}>
+              Confirmar troca de email
+            </Button>
+          </Section>
+          <Text style={textSmall}>
+            Se você não solicitou essa mudança, recomendamos que proteja sua conta
+            imediatamente alterando sua senha.
+          </Text>
+        </Section>
+        <Hr style={hr} />
         <Text style={footer}>
-          If you didn't request this change, please secure your account
-          immediately.
+          © 2026 Mr Flow Welcome Hub · Encantando hóspedes desde o primeiro momento.
         </Text>
       </Container>
     </Body>
@@ -66,27 +79,34 @@ export const EmailChangeEmail = ({
 
 export default EmailChangeEmail
 
-const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
-const container = { padding: '20px 25px' }
-const h1 = {
-  fontSize: '22px',
-  fontWeight: 'bold' as const,
-  color: '#000000',
-  margin: '0 0 20px',
+const main = {
+  backgroundColor: '#f6f6f7',
+  fontFamily:
+    "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif",
+  padding: '40px 0',
 }
-const text = {
-  fontSize: '14px',
-  color: '#55575d',
-  lineHeight: '1.5',
-  margin: '0 0 25px',
+const container = { maxWidth: '560px', margin: '0 auto', padding: '0 20px' }
+const header = { padding: '0 0 24px', textAlign: 'center' as const }
+const logo = { margin: '0 auto', height: '32px', width: 'auto' }
+const card = {
+  backgroundColor: '#ffffff',
+  borderRadius: '14px',
+  padding: '40px 32px',
+  boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
 }
-const link = { color: 'inherit', textDecoration: 'underline' }
+const h1 = { fontSize: '24px', fontWeight: '700' as const, color: '#0f172a', margin: '0 0 16px', lineHeight: '1.3' }
+const text = { fontSize: '15px', color: '#475569', lineHeight: '1.6', margin: '0 0 16px' }
+const textSmall = { fontSize: '13px', color: '#64748b', lineHeight: '1.6', margin: '24px 0 0' }
+const link = { color: '#008e8e', textDecoration: 'underline' }
 const button = {
-  backgroundColor: '#000000',
+  backgroundColor: '#008e8e',
   color: '#ffffff',
-  fontSize: '14px',
-  borderRadius: '8px',
-  padding: '12px 20px',
+  fontSize: '15px',
+  fontWeight: '600' as const,
+  borderRadius: '14px',
+  padding: '14px 28px',
   textDecoration: 'none',
+  display: 'inline-block',
 }
-const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
+const hr = { borderColor: '#e2e8f0', margin: '32px 0 20px' }
+const footer = { fontSize: '12px', color: '#94a3b8', textAlign: 'center' as const, margin: '0' }
