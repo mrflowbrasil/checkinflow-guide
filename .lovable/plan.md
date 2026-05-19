@@ -1,55 +1,42 @@
-## Auditoria SEO — Mr Flow Welcome Hub
+## Problema
 
-Fiz a varredura de `index.html`, `public/robots.txt`, `public/sitemap.xml`, `src/components/Seo.tsx`, `src/components/seo/SeoLandingLayout.tsx`, `src/App.tsx`, `src/pages/Index.tsx` e dos 14 componentes em `src/pages/seo/landings.tsx` e `src/pages/seo/clusters.tsx`.
+O domínio de envio de emails foi configurado como `notify.notify.mrflow.com.br` (duplicado). O correto seria `notify.mrflow.com.br`.
 
-### Resultado por checklist
+Isso acontece porque, no assistente de setup, foi informado `notify.mrflow.com.br` no campo "domínio" e `notify` no campo "subdomínio", e o sistema concatenou os dois.
 
-| Item | Status |
-|---|---|
-| `lang="pt-BR"` no `<html>` | OK (definido em `index.html`) |
-| `<title>` único por página | OK — 14 títulos distintos + home |
-| `<meta description>` única por página | OK — 15 descrições distintas |
-| H1 único por página | OK — cada landing tem 1 H1 só |
-| Canonical correta | OK — `Seo.tsx` injeta `https://hub.mrflow.com.br{path}` por rota; `index.html` não tem canonical estática (sem duplicação) |
-| `robots index,follow` | OK — `Seo.tsx` define explicitamente em todas as rotas públicas |
-| Open Graph (title/description/url/type/locale/site_name) | OK em todas as rotas |
-| Twitter Cards | OK — `twitter:card=summary_large_image` sitewide em `index.html`; `twitter:title/description/image` por rota |
-| JSON-LD válido | OK — cada landing: `SoftwareApplication` + `FAQPage` + `BreadcrumbList` + `Organization`. Home: `Organization` + `WebSite` |
-| `noindex` indevido | Nenhum encontrado nas páginas públicas |
-| Canonical quebrado | Nenhum |
-| Title/description duplicados | Nenhum |
-| Renderização SEO | Helmet via `HelmetProvider` em `main.tsx` — funciona para Googlebot. Limitação documentada: crawlers sem JS (LinkedIn/Slack) veem apenas `index.html` — aceitável, pois há fallback OG sitewide |
-| `sitemap.xml` | 16 URLs: home + 14 landings + `/auth`. Todas as 14 páginas auditadas estão presentes |
-| `robots.txt` | Permite tudo, bloqueia apenas `/app`, `/admin`, `/invite`; aponta para o sitemap correto |
+## Como corrigir
 
-### Validação das 14 páginas pedidas
+Essa correção precisa ser feita em parte por você (no painel) e em parte por mim (no código). Não consigo remover o domínio atual automaticamente — apenas você consegue, pela interface do Cloud.
 
-Todas as 14 (`/guia-digital-airbnb`, `/manual-digital-airbnb`, `/app-para-anfitriao`, `/hub-de-boas-vindas`, `/guest-app-airbnb`, `/guia-do-hospede`, `/check-in-digital-airbnb`, `/qr-code-para-hospedes`, `/manual-da-casa-airbnb`, `/app-para-hospedes`, `/experiencia-do-hospede`, `/como-reduzir-perguntas-no-whatsapp`, `/como-melhorar-avaliacoes-airbnb`, `/como-organizar-check-in-airbnb`):
+### Passo 1 — Você remove o domínio atual (no painel)
 
-- Indexáveis ✓
-- Estão no `sitemap.xml` ✓
-- Canonical correta apontando para `hub.mrflow.com.br` ✓
-- JSON-LD válido (4 schemas por página) ✓
+1. Vá em **Cloud → Emails → Gerenciar Domínios**
+2. Localize `notify.notify.mrflow.com.br`
+3. Clique em remover/excluir esse domínio
+4. **Importante:** vá no seu registrador DNS (Registro.br, Cloudflare, etc.) e **remova os registros NS** que foram criados para `notify.notify.mrflow.com.br` — eles ficam órfãos depois da remoção
 
-### Conclusão
+### Passo 2 — Você adiciona o domínio correto (no painel)
 
-**Nenhum problema crítico encontrado.** A base SEO está bem implementada. Identifiquei só 2 pontos de polimento opcionais:
+1. Ainda em **Cloud → Emails**, clique em **Adicionar domínio**
+2. No campo de domínio, informe apenas: `mrflow.com.br`
+3. No campo de subdomínio, informe: `notify`
+4. Isso vai gerar o FQDN correto: `notify.mrflow.com.br`
+5. Adicione os 2 novos registros NS que o sistema mostrar, no seu registrador DNS
+6. Aguarde a verificação DNS (alguns minutos, podendo levar até 72h)
 
-### Correções propostas (pequenas, opcionais)
+### Passo 3 — Eu reconfiguro a infraestrutura (automático)
 
-1. **Remover `Organization` JSON-LD duplicado nas landings** — `SeoLandingLayout` injeta `Organization` em cada rota, mas o mesmo schema já está em `index.html` sitewide. Não quebra nada (Google aceita), mas é redundante. Remover do layout deixa o HTML mais limpo.
+Depois que você adicionar o novo domínio (mesmo antes do DNS verificar), eu:
+- Rodo novamente o setup de infraestrutura de email para o novo domínio
+- Atualizo a função `process-email-queue` para usar o domínio correto
+- Sigo com a implementação do fluxo "Esqueci minha senha" (páginas `/forgot-password` e `/reset-password`) e personalização dos templates auth com a marca Mr Flow
 
-2. **Adicionar `og:image` e `twitter:image` sitewide como fallback explícito no `Seo.tsx`** — hoje as landings não passam `image`, então dependem apenas do `og:image` de `index.html`. Helmet pode acabar suprimindo isso em alguns parsers. Solução: no `Seo.tsx`, usar a imagem do logo Welcome Hub como default quando `image` não for passada — garante que toda página tenha imagem social válida.
+## Observação importante
 
-### Relatório final que entregarei
+Enquanto o domínio antigo `notify.notify.mrflow.com.br` existir, ele vai continuar tentando processar emails. Por isso o passo 1 (remoção) é necessário antes de adicionar o novo, para evitar conflito.
 
-- **O que estava errado:** nada crítico. Dois pontos de polimento (Organization duplicado, og:image default ausente nas landings).
-- **O que será corrigido:** os 2 itens acima.
-- **O que ainda precisa de atenção:** nenhum item de SEO técnico. Recomendações futuras de conteúdo/links externos ficam fora do escopo desta auditoria.
+## Detalhes técnicos
 
-### Detalhes técnicos das correções
-
-- `src/components/seo/SeoLandingLayout.tsx`: remover o objeto `orgLd` e tirar do array passado ao `<Seo jsonLd={[...]}/>`.
-- `src/components/Seo.tsx`: importar o asset `mrflow-logo-white.png` (ou usar a URL pública do GCS já presente em `index.html`) e usar como default de `image` quando não informado. Manter `image` opcional na interface, mas sempre renderizar `og:image`/`twitter:image`.
-
-Nenhuma mudança em rotas, sitemap, robots ou index.html é necessária.
+- O arquivo `supabase/config.toml` já tem o bloco `[functions.process-email-queue]` configurado e não precisa mudar
+- A função edge `process-email-queue` já está deployada — após trocar o domínio, basta um redeploy para ela apontar para o novo
+- A tabela `email_send_state`, queues pgmq (`auth_emails`, `transactional_emails`) e cron job são reaproveitados automaticamente
