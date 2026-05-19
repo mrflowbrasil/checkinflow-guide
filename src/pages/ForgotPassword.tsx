@@ -1,0 +1,134 @@
+import { useState, type FormEvent } from "react";
+import { Link } from "react-router-dom";
+import { z } from "zod";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card } from "@/components/ui/card";
+import { toast } from "sonner";
+import { Loader2, ArrowLeft, MailCheck } from "lucide-react";
+import { MrFlowLogo } from "@/components/brand/MrFlowLogo";
+import { Seo } from "@/components/Seo";
+
+const emailSchema = z.string().trim().email("Email inválido").max(255);
+
+export default function ForgotPassword() {
+  const [busy, setBusy] = useState(false);
+  const [sent, setSent] = useState(false);
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    const email = String(fd.get("email") ?? "");
+    const ev = emailSchema.safeParse(email);
+    if (!ev.success) return toast.error(ev.error.issues[0].message);
+
+    setBusy(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setBusy(false);
+    if (error) return toast.error(error.message);
+    setSent(true);
+  };
+
+  return (
+    <div className="min-h-screen grid lg:grid-cols-2 bg-[#020617]">
+      <Seo
+        title="Esqueci minha senha — Mr Flow Welcome Hub"
+        description="Recupere o acesso à sua conta de anfitrião no Mr Flow Welcome Hub."
+        path="/forgot-password"
+        noindex
+      />
+
+      <div
+        className="hidden lg:flex p-12 flex-col justify-between relative overflow-hidden text-white"
+        style={{
+          background:
+            "radial-gradient(1200px 600px at 20% 10%, rgba(0,255,255,0.15), transparent 60%), radial-gradient(900px 500px at 80% 90%, rgba(0,140,142,0.25), transparent 60%), linear-gradient(135deg, #020617 0%, #0a1f2e 50%, #062a33 100%)",
+        }}
+      >
+        <Link to="/" className="flex flex-col items-start gap-1 relative">
+          <MrFlowLogo forceDark className="h-10 w-auto" />
+          <span className="text-[10px] tracking-[0.25em] text-white/70 uppercase">Welcome Hub</span>
+        </Link>
+        <div className="relative space-y-6">
+          <h1 className="text-5xl leading-[1.05] tracking-tight text-white font-bold">
+            Recupere seu <span style={{ color: "#00FFFF" }}>acesso</span>
+          </h1>
+          <p className="text-lg max-w-md leading-relaxed" style={{ color: "#00FF00" }}>
+            Em instantes você volta a gerenciar seus guias digitais.
+          </p>
+        </div>
+        <p className="text-white/40 text-xs relative leading-relaxed max-w-md">
+          © 2026 –{" "}
+          <a href="http://mrflow.com.br" target="_blank" rel="noreferrer noopener" className="underline hover:text-white/70">
+            Mr. Flow Automações e Serviços Digitais LTDA
+          </a>{" "}
+          – CNPJ 57.466.519/0001-87 – Todos os direitos reservados.
+        </p>
+      </div>
+
+      <div className="flex flex-col items-center justify-center p-6 bg-[#f6f6f7]">
+        <Card className="w-full max-w-md p-8 sm:p-10 rounded-3xl shadow-2xl border-0 bg-white">
+          <div className="lg:hidden flex flex-col items-start gap-1 mb-8">
+            <MrFlowLogo className="h-9 w-auto" />
+            <span className="text-[10px] tracking-[0.25em] text-muted-foreground uppercase">Welcome Hub</span>
+          </div>
+
+          {sent ? (
+            <div className="space-y-5 text-center">
+              <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 grid place-items-center">
+                <MailCheck className="w-6 h-6 text-primary" />
+              </div>
+              <h2 className="text-xl font-bold text-foreground">Verifique seu email</h2>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Se houver uma conta associada a esse endereço, você receberá um link para redefinir
+                sua senha. O link expira em 1 hora.
+              </p>
+              <Link to="/auth" className="inline-flex items-center gap-2 text-sm text-primary hover:underline">
+                <ArrowLeft className="w-4 h-4" /> Voltar para o login
+              </Link>
+            </div>
+          ) : (
+            <>
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-foreground">Esqueci minha senha</h2>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Informe o email da sua conta e enviaremos um link para você criar uma nova senha.
+                </p>
+              </div>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="fp-email">Email</Label>
+                  <Input
+                    id="fp-email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    className="h-11 rounded-xl"
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  className="w-full h-11 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+                  disabled={busy}
+                >
+                  {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Enviar link de redefinição
+                </Button>
+              </form>
+              <div className="mt-6 text-center">
+                <Link to="/auth" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+                  <ArrowLeft className="w-4 h-4" /> Voltar para o login
+                </Link>
+              </div>
+            </>
+          )}
+        </Card>
+      </div>
+    </div>
+  );
+}
