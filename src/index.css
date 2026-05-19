@@ -257,6 +257,13 @@
     background-color: hsl(var(--guide-bg));
     color: hsl(var(--guide-fg));
     font-family: var(--guide-font);
+    color-scheme: light;
+  }
+  .guide-template-dark,
+  .guide-template-arcade,
+  .guide-template-coastal_boho,
+  .guide-template-jungle {
+    color-scheme: dark;
   }
   .guide-root h1,
   .guide-root h2,
