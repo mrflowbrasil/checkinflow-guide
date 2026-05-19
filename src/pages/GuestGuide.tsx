@@ -117,6 +117,10 @@ export default function GuestGuide() {
       if (themeMeta && prevTheme !== null) themeMeta.setAttribute("content", prevTheme);
       if (appleIcon && prevAppleIcon !== null) appleIcon.setAttribute("href", prevAppleIcon);
       if (appleTitle && prevAppleTitle !== null) appleTitle.setAttribute("content", prevAppleTitle);
+      if (colorSchemeMeta) {
+        if (createdColorScheme) colorSchemeMeta.remove();
+        else if (prevColorScheme !== null) colorSchemeMeta.setAttribute("content", prevColorScheme);
+      }
     };
   }, [data]);
 
