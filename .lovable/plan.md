@@ -1,42 +1,36 @@
 ## Problema
 
-O domínio de envio de emails foi configurado como `notify.notify.mrflow.com.br` (duplicado). O correto seria `notify.mrflow.com.br`.
+No screenshot, o template **Surf** aparece com fundo escuro/cinza, mas no CSS ele está definido como branco (`--guide-bg: 0 0% 100%`). A causa é o **"Forçar modo escuro" do Chrome no Android** (e comportamento similar em alguns WebViews), que reescreve as cores da página automaticamente quando o usuário tem o tema escuro do sistema ativo.
 
-Isso acontece porque, no assistente de setup, foi informado `notify.mrflow.com.br` no campo "domínio" e `notify` no campo "subdomínio", e o sistema concatenou os dois.
+A solução padrão é declarar explicitamente que a página opera em light mode — o Chrome respeita isso e desativa o auto-dark.
 
-## Como corrigir
+## Mudanças
 
-Essa correção precisa ser feita em parte por você (no painel) e em parte por mim (no código). Não consigo remover o domínio atual automaticamente — apenas você consegue, pela interface do Cloud.
+### 1. `src/index.css` — fixar color-scheme no guide-root
 
-### Passo 1 — Você remove o domínio atual (no painel)
+Na regra `.guide-root` (linha 256), adicionar:
 
-1. Vá em **Cloud → Emails → Gerenciar Domínios**
-2. Localize `notify.notify.mrflow.com.br`
-3. Clique em remover/excluir esse domínio
-4. **Importante:** vá no seu registrador DNS (Registro.br, Cloudflare, etc.) e **remova os registros NS** que foram criados para `notify.notify.mrflow.com.br` — eles ficam órfãos depois da remoção
+```css
+.guide-root {
+  color-scheme: light;
+  ...
+}
+```
 
-### Passo 2 — Você adiciona o domínio correto (no painel)
+E para o template `dark` (e `arcade`, `coastal_boho`, `jungle` que têm fundo escuro intencional), sobrescrever para `color-scheme: dark` — assim o navegador continua respeitando o design intencional desses.
 
-1. Ainda em **Cloud → Emails**, clique em **Adicionar domínio**
-2. No campo de domínio, informe apenas: `mrflow.com.br`
-3. No campo de subdomínio, informe: `notify`
-4. Isso vai gerar o FQDN correto: `notify.mrflow.com.br`
-5. Adicione os 2 novos registros NS que o sistema mostrar, no seu registrador DNS
-6. Aguarde a verificação DNS (alguns minutos, podendo levar até 72h)
+Resultado: templates claros (Surf, Clean, Luxury, Aegean, Monochrome, etc.) ficam sempre claros, independente do tema do sistema/navegador do hóspede. Templates escuros continuam escuros como projetados.
 
-### Passo 3 — Eu reconfiguro a infraestrutura (automático)
+### 2. `src/pages/GuestGuide.tsx` — meta tag dinâmica
 
-Depois que você adicionar o novo domínio (mesmo antes do DNS verificar), eu:
-- Rodo novamente o setup de infraestrutura de email para o novo domínio
-- Atualizo a função `process-email-queue` para usar o domínio correto
-- Sigo com a implementação do fluxo "Esqueci minha senha" (páginas `/forgot-password` e `/reset-password`) e personalização dos templates auth com a marca Mr Flow
+No `useEffect` que já gerencia meta tags por propriedade, adicionar/atualizar um `<meta name="color-scheme" content="light">` (ou `dark` conforme o template) ao montar a página `/g/:slug`, e restaurar ao desmontar. Isso reforça o sinal antes mesmo do CSS carregar e cobre o caso do Chrome para Android, que lê essa meta para decidir se aplica o auto-dark.
 
-## Observação importante
+Mapeamento template → color-scheme:
+- `dark`, `arcade`, `coastal_boho`, `jungle` → `dark`
+- todos os demais → `light`
 
-Enquanto o domínio antigo `notify.notify.mrflow.com.br` existir, ele vai continuar tentando processar emails. Por isso o passo 1 (remoção) é necessário antes de adicionar o novo, para evitar conflito.
+## Notas técnicas
 
-## Detalhes técnicos
-
-- O arquivo `supabase/config.toml` já tem o bloco `[functions.process-email-queue]` configurado e não precisa mudar
-- A função edge `process-email-queue` já está deployada — após trocar o domínio, basta um redeploy para ela apontar para o novo
-- A tabela `email_send_state`, queues pgmq (`auth_emails`, `transactional_emails`) e cron job são reaproveitados automaticamente
+- Nenhuma mudança em lógica de negócio, dados ou backend. Apenas CSS + uma meta tag.
+- Não afeta o dashboard (que continua respeitando o tema do sistema), só a rota pública `/g/:slug`.
+- Em iOS Safari não há "forçar modo escuro" automático, então o comportamento lá já está correto e não muda.
