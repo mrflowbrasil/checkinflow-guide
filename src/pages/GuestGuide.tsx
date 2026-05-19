@@ -98,6 +98,19 @@ export default function GuestGuide() {
     const prevAppleTitle = appleTitle?.getAttribute("content") ?? null;
     if (appleTitle) appleTitle.setAttribute("content", data.name);
 
+    // Color-scheme: prevent Chrome Android auto-dark from inverting light templates
+    const darkTemplates = ["dark", "arcade", "coastal_boho", "jungle"];
+    const scheme = darkTemplates.includes(data.tenants?.template) ? "dark" : "light";
+    let colorSchemeMeta = document.querySelector('meta[name="color-scheme"]') as HTMLMetaElement | null;
+    const createdColorScheme = !colorSchemeMeta;
+    const prevColorScheme = colorSchemeMeta?.getAttribute("content") ?? null;
+    if (!colorSchemeMeta) {
+      colorSchemeMeta = document.createElement("meta");
+      colorSchemeMeta.setAttribute("name", "color-scheme");
+      document.head.appendChild(colorSchemeMeta);
+    }
+    colorSchemeMeta.setAttribute("content", scheme);
+
     return () => {
       // Restore defaults when leaving the guide
       if (staticManifest && prevHref !== null) staticManifest.setAttribute("href", prevHref);
