@@ -9,6 +9,8 @@ import AppShell from "@/components/layout/AppShell";
 
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import Invite from "./pages/Invite";
 import GuestGuide from "./pages/GuestGuide";
 import SuperAdmin from "./pages/SuperAdmin";
