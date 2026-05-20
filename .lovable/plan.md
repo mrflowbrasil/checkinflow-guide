@@ -1,36 +1,26 @@
-## Problema
+## Situação atual
 
-No screenshot, o template **Surf** aparece com fundo escuro/cinza, mas no CSS ele está definido como branco (`--guide-bg: 0 0% 100%`). A causa é o **"Forçar modo escuro" do Chrome no Android** (e comportamento similar em alguns WebViews), que reescreve as cores da página automaticamente quando o usuário tem o tema escuro do sistema ativo.
+Boa notícia: o fluxo de recuperação de senha **já está totalmente implementado** no código. Só precisamos validar que está ativo agora que o DNS foi verificado.
 
-A solução padrão é declarar explicitamente que a página opera em light mode — o Chrome respeita isso e desativa o auto-dark.
+O que já existe:
 
-## Mudanças
+- **Tela de login** (`/auth`) com o link "Esqueci minha senha" apontando para `/forgot-password`
+- **Página `/forgot-password`** — formulário que envia o e-mail de recuperação via Supabase Auth, com `redirectTo` apontando para `/reset-password`
+- **Página `/reset-password`** — detecta o token de recuperação e permite definir uma nova senha (mínimo 8 caracteres, com confirmação)
+- **Template de e-mail `recovery.tsx`** — já com a identidade do Mr Flow (logo no Supabase Storage, cor `#008e8e`, copy em português)
+- **Edge function `auth-email-hook`** — já deployada, roteando os e-mails de auth pelo template customizado
 
-### 1. `src/index.css` — fixar color-scheme no guide-root
+## Plano
 
-Na regra `.guide-root` (linha 256), adicionar:
+1. **Redeploy do `auth-email-hook`** para garantir que está rodando a última versão (com a URL nova do logo no Storage)
+2. **Teste prático**: solicitar um e-mail real de recuperação para validar que:
+   - O e-mail chega vindo de `notify.mrflow.com.br`
+   - O logo aparece corretamente
+   - O link `/reset-password` funciona e permite trocar a senha
+3. Caso o e-mail não chegue, checar `Cloud → Emails` para status do domínio e logs da fila
 
-```css
-.guide-root {
-  color-scheme: light;
-  ...
-}
-```
+## Observações técnicas
 
-E para o template `dark` (e `arcade`, `coastal_boho`, `jungle` que têm fundo escuro intencional), sobrescrever para `color-scheme: dark` — assim o navegador continua respeitando o design intencional desses.
-
-Resultado: templates claros (Surf, Clean, Luxury, Aegean, Monochrome, etc.) ficam sempre claros, independente do tema do sistema/navegador do hóspede. Templates escuros continuam escuros como projetados.
-
-### 2. `src/pages/GuestGuide.tsx` — meta tag dinâmica
-
-No `useEffect` que já gerencia meta tags por propriedade, adicionar/atualizar um `<meta name="color-scheme" content="light">` (ou `dark` conforme o template) ao montar a página `/g/:slug`, e restaurar ao desmontar. Isso reforça o sinal antes mesmo do CSS carregar e cobre o caso do Chrome para Android, que lê essa meta para decidir se aplica o auto-dark.
-
-Mapeamento template → color-scheme:
-- `dark`, `arcade`, `coastal_boho`, `jungle` → `dark`
-- todos os demais → `light`
-
-## Notas técnicas
-
-- Nenhuma mudança em lógica de negócio, dados ou backend. Apenas CSS + uma meta tag.
-- Não afeta o dashboard (que continua respeitando o tema do sistema), só a rota pública `/g/:slug`.
-- Em iOS Safari não há "forçar modo escuro" automático, então o comportamento lá já está correto e não muda.
+- Nenhuma mudança de código é necessária — o fluxo está pronto
+- O template `recovery.tsx` já usa o logo via URL pública do Storage (não precisa redeploy do app)
+- Se quiser, posso ajustar o copy, cores ou adicionar elementos extras no e-mail de recuperação antes do teste
