@@ -243,6 +243,45 @@ export type Database = {
           },
         ]
       }
+      onboarding_profiles: {
+        Row: {
+          completed_at: string
+          created_at: string
+          pms: string
+          pms_other: string | null
+          properties_count: string
+          state: string
+          tenant_id: string
+          updated_at: string
+          user_id: string
+          whatsapp: string
+        }
+        Insert: {
+          completed_at?: string
+          created_at?: string
+          pms: string
+          pms_other?: string | null
+          properties_count: string
+          state: string
+          tenant_id: string
+          updated_at?: string
+          user_id: string
+          whatsapp: string
+        }
+        Update: {
+          completed_at?: string
+          created_at?: string
+          pms?: string
+          pms_other?: string | null
+          properties_count?: string
+          state?: string
+          tenant_id?: string
+          updated_at?: string
+          user_id?: string
+          whatsapp?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
