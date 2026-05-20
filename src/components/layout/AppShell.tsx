@@ -77,6 +77,12 @@ export default function AppShell() {
   const { data: tenant } = useTenant();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const { data: onboarding } = useOnboardingStatus();
+  const [onboardOpen, setOnboardOpen] = useState(false);
+
+  useEffect(() => {
+    if (onboarding && !onboarding.completed) setOnboardOpen(true);
+  }, [onboarding]);
 
   const handleSignOut = async () => {
     await signOut();
