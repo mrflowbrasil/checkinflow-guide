@@ -1,16 +1,18 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Home, Settings, LogOut, Shield, Menu, CreditCard, Plug, Sparkles } from "lucide-react";
+import { LayoutDashboard, Home, Settings, LogOut, Shield, Menu, CreditCard, Plug, Sparkles, UserCog } from "lucide-react";
 import { PaymentTestModeBanner } from "@/components/billing/PaymentTestModeBanner";
 import { MrFlowLogo } from "@/components/brand/MrFlowLogo";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsSuperAdmin, useTenant } from "@/hooks/useTenant";
+import { useOnboardingStatus } from "@/hooks/useOnboardingStatus";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import CompleteProfileDialog from "@/components/onboarding/CompleteProfileDialog";
 
 const NAV = [
   { to: "/app", label: "Dashboard", icon: LayoutDashboard, end: true },
@@ -75,6 +77,12 @@ export default function AppShell() {
   const { data: tenant } = useTenant();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const { data: onboarding } = useOnboardingStatus();
+  const [onboardOpen, setOnboardOpen] = useState(false);
+
+  useEffect(() => {
+    if (onboarding && !onboarding.completed) setOnboardOpen(true);
+  }, [onboarding]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -122,8 +130,20 @@ export default function AppShell() {
         </header>
 
         <PaymentTestModeBanner />
+        {onboarding && !onboarding.completed && (
+          <div className="bg-accent-soft border-b border-accent/20 px-4 py-2 flex items-center justify-between gap-3 text-sm">
+            <div className="flex items-center gap-2 text-accent-foreground">
+              <UserCog className="h-4 w-4" />
+              <span>Complete seu cadastro para personalizarmos sua experiência.</span>
+            </div>
+            <Button size="sm" variant="outline" onClick={() => setOnboardOpen(true)}>
+              Completar
+            </Button>
+          </div>
+        )}
         <main className="flex-1 overflow-x-hidden bg-[#f7f7f8]"><Outlet /></main>
       </div>
+      <CompleteProfileDialog open={onboardOpen} onOpenChange={setOnboardOpen} />
     </div>
   );
 }
