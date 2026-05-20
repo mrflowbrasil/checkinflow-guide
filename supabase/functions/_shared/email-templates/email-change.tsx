@@ -38,7 +38,7 @@ export const EmailChangeEmail = ({
       <Container style={container}>
         <Section style={header}>
           <Img
-            src="https://hub.mrflow.com.br/mrflow-logo.png"
+            src="https://pgdfcufjdyhmaqikwbdq.supabase.co/storage/v1/object/public/email-assets/mrflow-logo.png"
             alt="Mr Flow"
             width="120"
             height="32"
