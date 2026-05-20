@@ -1,16 +1,18 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Home, Settings, LogOut, Shield, Menu, CreditCard, Plug, Sparkles } from "lucide-react";
+import { LayoutDashboard, Home, Settings, LogOut, Shield, Menu, CreditCard, Plug, Sparkles, UserCog } from "lucide-react";
 import { PaymentTestModeBanner } from "@/components/billing/PaymentTestModeBanner";
 import { MrFlowLogo } from "@/components/brand/MrFlowLogo";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsSuperAdmin, useTenant } from "@/hooks/useTenant";
+import { useOnboardingStatus } from "@/hooks/useOnboardingStatus";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import CompleteProfileDialog from "@/components/onboarding/CompleteProfileDialog";
 
 const NAV = [
   { to: "/app", label: "Dashboard", icon: LayoutDashboard, end: true },
