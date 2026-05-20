@@ -42,8 +42,9 @@ export const RecoveryEmail = ({
         <Section style={card}>
           <Heading style={h1}>Redefinir sua senha</Heading>
           <Text style={text}>
-            Recebemos um pedido para redefinir a senha da sua conta no {siteName}.
-            Clique no botão abaixo para escolher uma nova senha.
+            Recebemos um pedido para redefinir a senha da sua conta no{' '}
+            <span style={brandHighlight}>Mr Flow Welcome Hub</span>. Clique no
+            botão abaixo para escolher uma nova senha.
           </Text>
           <Section style={{ textAlign: 'center' as const, margin: '32px 0' }}>
             <Button style={button} href={confirmationUrl}>
@@ -94,6 +95,10 @@ const text = {
   color: '#475569',
   lineHeight: '1.6',
   margin: '0 0 16px',
+}
+const brandHighlight = {
+  color: '#008e8e',
+  fontWeight: '700' as const,
 }
 const textSmall = {
   fontSize: '13px',

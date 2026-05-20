@@ -20,7 +20,7 @@ const EMAIL_SUBJECTS: Record<string, string> = {
   signup: 'Confirm your email',
   invite: "You've been invited",
   magiclink: 'Your login link',
-  recovery: 'Reset your password',
+  recovery: 'Redefina sua senha',
   email_change: 'Confirm your new email',
   reauthentication: 'Your verification code',
 }
@@ -36,7 +36,7 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 }
 
 // Configuration
-const SITE_NAME = "checkinflow-guide"
+const SITE_NAME = "Mr Flow Welcome Hub"
 const SENDER_DOMAIN = "notify.mrflow.com.br"
 const ROOT_DOMAIN = "mrflow.com.br"
 const FROM_DOMAIN = "mrflow.com.br" // Domain shown in From address (may be root or sender subdomain)
