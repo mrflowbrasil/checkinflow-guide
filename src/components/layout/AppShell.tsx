@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Home, Settings, LogOut, Shield, Menu, CreditCard, Plug, Sparkles, UserCog } from "lucide-react";
+import { LayoutDashboard, Home, Settings, LogOut, Shield, Menu, CreditCard, Plug, Sparkles, UserCog, HelpCircle } from "lucide-react";
 import { PaymentTestModeBanner } from "@/components/billing/PaymentTestModeBanner";
 import { MrFlowLogo } from "@/components/brand/MrFlowLogo";
 import { useAuth } from "@/hooks/useAuth";
@@ -20,6 +20,7 @@ const NAV = [
   { to: "/app/templates", label: "Templates", icon: Sparkles },
   { to: "/app/integrations", label: "Integrações", icon: Plug },
   { to: "/app/billing", label: "Planos", icon: CreditCard },
+  { to: "/app/help", label: "Ajuda", icon: HelpCircle },
   { to: "/app/settings", label: "Configurações", icon: Settings },
 ];
 

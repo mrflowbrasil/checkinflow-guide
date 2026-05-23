@@ -23,6 +23,7 @@ import Settings from "./pages/dashboard/Settings";
 import Billing from "./pages/dashboard/Billing";
 import Integrations from "./pages/dashboard/Integrations";
 import Templates from "./pages/dashboard/Templates";
+import Help from "./pages/dashboard/Help";
 import NotFound from "./pages/NotFound";
 import {
   GuiaDigitalAirbnb,
@@ -108,6 +109,7 @@ const App = () => (
               <Route path="billing" element={<Billing />} />
               <Route path="integrations" element={<Integrations />} />
               <Route path="templates" element={<Templates />} />
+              <Route path="help" element={<Help />} />
             </Route>
 
             <Route path="/admin" element={<RequireAuth><AppShell /></RequireAuth>}>
