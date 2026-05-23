@@ -28,6 +28,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import ApiReference from "@/components/integrations/ApiReference";
 
 type Provider = "stays" | "hostaway";
 
@@ -381,6 +382,9 @@ export default function Integrations() {
           </ul>
         )}
       </Card>
+
+      <ApiReference />
+
 
       <Dialog open={createKeyOpen} onOpenChange={setCreateKeyOpen}>
         <DialogContent>
