@@ -383,6 +383,9 @@ export default function Integrations() {
         )}
       </Card>
 
+      <ApiReference />
+
+
       <Dialog open={createKeyOpen} onOpenChange={setCreateKeyOpen}>
         <DialogContent>
           <DialogHeader>
