@@ -35,16 +35,13 @@ serve(async (req) => {
 
   try {
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) return json({ error: "missing_auth" }, 401);
-
-    const userClient = createClient(SUPABASE_URL, ANON, {
-      global: { headers: { Authorization: authHeader } },
-    });
-    const { data: userData, error: userErr } = await userClient.auth.getUser();
-    if (userErr || !userData.user) return json({ error: "unauthorized" }, 401);
-    const userId = userData.user.id;
+    const token = authHeader?.replace(/^Bearer\s+/i, "");
+    if (!token) return json({ error: "missing_auth" }, 401);
 
     const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
+    const { data: userData, error: userErr } = await admin.auth.getUser(token);
+    if (userErr || !userData.user) return json({ error: "unauthorized" }, 401);
+    const userId = userData.user.id;
     const { data: profile } = await admin
       .from("profiles")
       .select("tenant_id")
