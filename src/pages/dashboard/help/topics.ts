@@ -273,4 +273,110 @@ export const HELP_TOPICS: HelpTopic[] = [
       },
     ],
   },
+  {
+    id: "cartao-boas-vindas",
+    title: "Imprimir cartão de boas-vindas A4",
+    description: "Gere um PDF pronto para impressão com o QR Code do guia.",
+    keywords: ["cartão", "boas-vindas", "pdf", "imprimir", "a4", "qr"],
+    sections: [
+      {
+        body: [
+          "O cartão de boas-vindas é um PDF A4 com o QR Code do guia, o nome do imóvel e (opcionalmente) sua logo. Ideal para deixar impresso e visível na chegada do hóspede.",
+        ],
+        steps: [
+          "Acesse o imóvel desejado em Imóveis.",
+          "Clique em Cartão de boas-vindas (ou no botão de impressão ao lado do QR Code).",
+          "Escolha o estilo de cores: usar a cor da sua marca ou preto e branco (mais econômico).",
+          "Clique em Baixar PDF e imprima em folha A4.",
+        ],
+      },
+      {
+        heading: "Recomendações",
+        body: [
+          "Adicione a logo da sua empresa nas configurações do workspace antes de gerar — ela aparece no canto superior do cartão.",
+          "Use o modo preto e branco quando for imprimir em grande quantidade.",
+        ],
+        tip: "Se você gerar um novo QR Code para o imóvel, o cartão antigo deixa de funcionar. Reimprima sempre que regerar.",
+      },
+    ],
+  },
+  {
+    id: "integracoes-credenciais",
+    title: "Integrações: obter credenciais Stays / Hostaway",
+    description: "Como gerar os dados de acesso necessários para conectar seu PMS.",
+    keywords: ["integração", "integrações", "stays", "hostaway", "credenciais", "api", "pms"],
+    sections: [
+      {
+        body: [
+          "Para importar imóveis automaticamente, você precisa conectar sua conta do PMS (Stays ou Hostaway) em Integrações. Cada provedor gera as credenciais de forma diferente.",
+        ],
+      },
+      {
+        heading: "Stays",
+        body: [
+          "A Stays cobra uma taxa mensal (atualmente R$ 95,00) para liberar a API Externa. As credenciais usadas aqui são geradas no ato dessa ativação — não use seu login normal da plataforma.",
+        ],
+        steps: [
+          "Acesse sua conta Stays e abra App Center > API Stays.",
+          "Ative a API Externa (aceite a cobrança mensal informada pela Stays).",
+          "Copie o login e a senha que aparecem após a ativação.",
+          "Anote também a URL do seu sistema (ex.: https://suaempresa.stays.net).",
+          "Volte ao Mr Flow > Integrações > Stays > Conectar e cole os 3 valores.",
+        ],
+        tip: "Se a API Externa não estiver ativa na Stays, a conexão falhará com erro de autenticação.",
+      },
+      {
+        heading: "Hostaway",
+        body: [
+          "A Hostaway usa OAuth client credentials. Você gera um Client ID e um Client Secret no painel administrativo.",
+        ],
+        steps: [
+          "Faça login no painel da Hostaway.",
+          "Vá em Settings (Configurações) > API.",
+          "Clique em Create new (Criar novo) e dê um nome ao app (ex.: Mr Flow).",
+          "Copie o Client ID e o Client Secret exibidos.",
+          "Volte ao Mr Flow > Integrações > Hostaway > Conectar.",
+          "Cole o Client ID no campo Login e o Client Secret no campo Senha. A URL padrão da API já vem preenchida.",
+        ],
+        tip: "Guarde o Client Secret em local seguro — a Hostaway não mostra o valor novamente após fechar a tela.",
+      },
+    ],
+  },
+  {
+    id: "importar-imoveis",
+    title: "Importando imóveis do PMS",
+    description: "Como trazer seus imóveis da Stays ou Hostaway para o Mr Flow.",
+    keywords: ["importar", "importação", "sincronizar", "stays", "hostaway", "imóveis", "pms"],
+    sections: [
+      {
+        body: [
+          "Depois que a integração estiver conectada, o Mr Flow consegue importar automaticamente todos os imóveis cadastrados no seu PMS, com fotos, endereço, descrições e mais.",
+        ],
+        steps: [
+          "Confirme em Integrações que o status do provedor está como Conectado (badge verde).",
+          "Clique em Importar imóveis no card do provedor.",
+          "Aguarde o status mudar para Sincronizando — o processo é executado em segundo plano.",
+          "Quando terminar, o status volta para Conectado e os imóveis aparecem na lista de Imóveis.",
+        ],
+      },
+      {
+        heading: "O que é importado",
+        body: [
+          "Nome, descrição, endereço e coordenadas (quando disponíveis).",
+          "Imagens (capa e galeria).",
+          "Horários de check-in/check-out, regras, Wi-Fi e demais campos quando preenchidos no PMS.",
+          "Cada imóvel já vem com um link público e QR Code prontos para uso.",
+        ],
+        tip: "Imóveis importados podem ser editados normalmente. Reimportar atualiza dados do PMS sem apagar suas edições manuais.",
+      },
+      {
+        heading: "Problemas comuns",
+        body: [
+          "Status Erro: clique em Reconectar para revalidar suas credenciais.",
+          "Imóveis sem foto: confira se as imagens estão publicadas no PMS.",
+          "Importação travada em Sincronizando: aguarde alguns minutos; processos grandes podem levar tempo. Se persistir, contate o suporte.",
+        ],
+      },
+    ],
+  },
 ];

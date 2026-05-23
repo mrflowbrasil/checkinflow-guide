@@ -28,6 +28,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import ApiReference from "@/components/integrations/ApiReference";
 
 type Provider = "stays" | "hostaway";
 
