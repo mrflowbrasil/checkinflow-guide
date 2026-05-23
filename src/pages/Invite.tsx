@@ -39,9 +39,7 @@ export default function Invite() {
     if (!token) return;
     (async () => {
       const { data, error } = await supabase
-        .from("invitations")
-        .select("id, email, plan_code, expires_at, accepted_at, revoked_at")
-        .eq("token", token)
+        .rpc("get_invitation_by_token", { _token: token })
         .maybeSingle();
       if (error || !data) {
         setError("Convite não encontrado.");
