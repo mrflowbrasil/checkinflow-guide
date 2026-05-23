@@ -1,29 +1,33 @@
-# Correção do erro 401/RLS ao criar propriedade
+# Causa raiz definitiva
 
-## Causa raiz
-As funções `enforce_property_limit()` e `seed_property_pages()` são executadas por triggers durante o INSERT em `properties`. Uma migration anterior revogou `EXECUTE` dessas funções do role `authenticated`, fazendo os triggers falharem e o insert ser rejeitado como violação de RLS.
+A migration `20260523203136` removeu **todas** as políticas `SELECT` em `storage.objects` (Public read storage, tenant logos, email-assets) e nunca criou substituta para `authenticated`.
 
-## Passos
+O Supabase SDK chama upload como `INSERT ... ON CONFLICT DO UPDATE RETURNING *`. O `RETURNING *` exige permissão de `SELECT` via RLS sobre a linha recém-inserida. Sem nenhuma política SELECT que cubra o objeto, o Postgres aborta com `42501 / new row violates row-level security policy` — mesmo a INSERT WITH CHECK passando.
 
-1. **Migration corretiva** (`supabase/migrations/...`)
-   - Recriar `enforce_property_limit()` e `seed_property_pages()` como `SECURITY DEFINER` com `SET search_path = public`.
-   - `GRANT EXECUTE ... TO authenticated` nas duas funções.
-   - Garantir que os triggers `enforce_property_limit_trg` (BEFORE INSERT) e `on_property_created` (AFTER INSERT) existam em `public.properties`.
-   - Reafirmar `GRANT EXECUTE` em `current_tenant_id()` e `has_role()` para `authenticated`.
+Por isso o erro só surgiu agora, e por isso aparece como se fosse falha de upload — o objeto até seria gravado, mas o `RETURNING` é bloqueado.
 
-2. **Melhorar mensagens em `src/pages/dashboard/PropertyNew.tsx`**
-   - Tratar erros específicos do Supabase e exibir toasts claros:
-     - `property_limit_reached` → "Você atingiu o limite de imóveis do seu plano."
-     - código `42501` / mensagem RLS → "Sem permissão para criar imóvel. Verifique seu workspace."
-     - falha de upload da capa → "Falha ao enviar imagem de capa."
-     - tenant/workspace não carregado → bloquear submit com mensagem.
-   - Sem mudanças de layout.
+Confirmado nos logs do storage:
+```
+"code":"42501", "originalError":{"routine":"ExecWithCheckOptions"},
+"query":"insert into \"objects\" ... on conflict ... do update ... returning *"
+```
 
-3. **Validação**
-   - Criar uma propriedade de teste com capa.
-   - Confirmar que as 24 páginas padrão são criadas pelo trigger.
-   - Confirmar ausência do erro de RLS.
+E em `pg_policies`: zero policies com `cmd='SELECT'` em `storage.objects`.
+
+# Plano
+
+## 1. Migration corretiva
+Restaurar políticas SELECT em `storage.objects` cobrindo os buckets de tenant e os públicos, sem reabrir listagem indevida:
+
+- **SELECT autenticado tenant-scoped** (`property-covers`, `property-gallery`, `block-media`, `tenant-logos`) — permite ler quando o primeiro segmento do path é o `current_tenant_id()` do usuário, ou quando o usuário é `super_admin`. Cobre o `RETURNING *` do upload.
+- **SELECT público em `email-assets`** — bucket de assets de e-mail, precisa ser legível por anon para os templates.
+- Manter buckets `property-covers` e `property-gallery` como `public:true` (já são); URLs públicas continuam funcionando via endpoint `/object/public/*` sem depender de RLS.
+
+## 2. Validação
+- Criar uma nova propriedade com imagem de capa.
+- Confirmar `status 200` no `POST /storage/v1/object/property-covers/...`.
+- Confirmar criação do registro em `properties` + 24 páginas padrão.
 
 ## Arquivos
-- novo: `supabase/migrations/<timestamp>_restore_property_trigger_grants.sql`
-- editar: `src/pages/dashboard/PropertyNew.tsx`
+- novo: `supabase/migrations/<timestamp>_restore_storage_select_policies.sql`
+- nenhuma alteração no frontend.
