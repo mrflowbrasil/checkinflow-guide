@@ -65,7 +65,11 @@ export default function PropertyNew() {
         const ext = coverFile.name.split(".").pop()?.toLowerCase() ?? "jpg";
         const path = `${tenant.id}/${slug}.${ext}`;
         const { error: upErr } = await supabase.storage.from("property-covers").upload(path, coverFile, { upsert: true });
-        if (upErr) throw upErr;
+        if (upErr) {
+          toast.error("Falha ao enviar imagem de capa. Tente outra imagem ou pule essa etapa.");
+          setBusy(false);
+          return;
+        }
         coverUrl = supabase.storage.from("property-covers").getPublicUrl(path).data.publicUrl;
       }
 
@@ -88,15 +92,22 @@ export default function PropertyNew() {
       toast.success("Imóvel criado!");
       navigate(`/app/properties/${data.id}`);
     } catch (err: any) {
-      if (err?.message?.includes("property_limit_reached")) {
+      const msg = String(err?.message ?? "");
+      const code = err?.code;
+      if (msg.includes("property_limit_reached")) {
         setShowUpgrade(true);
+      } else if (code === "42501" || msg.toLowerCase().includes("row-level security") || msg.toLowerCase().includes("permission denied")) {
+        toast.error("Sem permissão para criar imóvel. Verifique se seu workspace está ativo e tente novamente.");
+      } else if (code === "23505" || msg.toLowerCase().includes("duplicate")) {
+        toast.error("Já existe um imóvel com esse identificador. Tente novamente.");
       } else {
-        toast.error(err.message ?? "Erro ao criar imóvel");
+        toast.error(msg || "Erro ao criar imóvel");
       }
     } finally {
       setBusy(false);
     }
   };
+
 
   return (
     <div className="container py-8 max-w-3xl animate-fade-in">
