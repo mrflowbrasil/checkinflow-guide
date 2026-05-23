@@ -908,6 +908,17 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      get_invitation_by_token: {
+        Args: { _token: string }
+        Returns: {
+          accepted_at: string
+          email: string
+          expires_at: string
+          id: string
+          plan_code: string
+          revoked_at: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
