@@ -1,56 +1,47 @@
 ## Objetivo
 
-Adicionar dois botões na página `/app/properties` para publicar ou despublicar todos os imóveis do tenant de uma vez, cada um com seu diálogo de confirmação.
+Adicionar uma nova aba **Usuários** no Super Admin que lista todos os usuários da plataforma e permite ao super admin enviar um link de redefinição de senha (por e-mail) para qualquer um deles. Útil para o caso do `alexandrebarbosamaciel@hotmail.com` e qualquer cliente que peça ajuda no futuro.
 
-## Mudanças na UI (`src/pages/dashboard/PropertiesList.tsx`)
+## Como funciona
 
-No header, ao lado de "Importar imóveis" e "Novo imóvel", adicionar um menu dropdown "Ações em massa" contendo:
-- **Publicar todos** — habilitado apenas se existir ao menos 1 imóvel com `status = 'inactive'`
-- **Despublicar todos** — habilitado apenas se existir ao menos 1 imóvel com `status = 'active'`
+A senha nunca é definida diretamente pelo admin (mesmo em Supabase isso exige Service Role e expõe risco de segurança). Em vez disso, o admin clica em **"Enviar link de redefinição"** e o usuário recebe um e-mail com link para escolher a nova senha — fluxo padrão e seguro.
 
-Mantém o layout limpo no viewport atual (1070px) sem quebrar a linha.
+## Mudanças
 
-### Diálogo "Publicar todos"
+### 1. Edge Function `admin-list-users` (nova)
+- `supabase/functions/admin-list-users/index.ts`
+- Valida JWT do chamador, busca o user_id, confere se tem role `super_admin` via `has_role`.
+- Se autorizado: usa `supabase.auth.admin.listUsers()` (Service Role) e retorna `[{ id, email, created_at, last_sign_in_at, tenant_name }]`.
+- Faz join com `profiles` + `tenants` para incluir o nome do workspace de cada usuário.
+- Suporta busca por e-mail via query param `?q=`.
 
-`AlertDialog` com:
-- Título: "Publicar todos os imóveis?"
-- Descrição: aviso de que é uma alteração em massa que tornará públicos N imóveis atualmente em rascunho.
-- Checkbox obrigatório: "Confirmo que revisei todas as páginas e conteúdos dos imóveis antes de publicar."
-- Botão "Publicar todos" desabilitado até o checkbox ser marcado.
+### 2. Edge Function `admin-send-password-reset` (nova)
+- `supabase/functions/admin-send-password-reset/index.ts`
+- Valida JWT + role `super_admin`.
+- Recebe `{ email }` no body.
+- Chama `supabase.auth.admin.generateLink({ type: 'recovery', email, options: { redirectTo: '<APP_URL>/reset-password' } })` — isso dispara o e-mail de recovery pelo hook de auth-email já configurado, usando o template `recovery.tsx` existente.
+- Retorna `{ ok: true }` ou erro.
 
-### Diálogo "Despublicar todos"
+### 3. UI: nova aba "Usuários" em `src/pages/SuperAdmin.tsx`
+- Adiciona `<TabsTrigger value="users">Usuários</TabsTrigger>` na lista de tabs.
+- Novo `TabsContent value="users"` com:
+  - Campo de busca por e-mail (debounce 300ms).
+  - Tabela: Email · Workspace · Criado em · Último acesso · Ações.
+  - Botão por linha: **"Enviar link de redefinição"** (ícone `KeyRound`).
+  - Ao clicar: `AlertDialog` de confirmação ("Enviar e-mail de redefinição de senha para X?") → invoca `admin-send-password-reset`.
+  - Toast de sucesso/erro. Loader inline no botão durante o envio.
+- Usa `useQuery` para carregar `supabase.functions.invoke('admin-list-users', { body: { q } })`.
 
-`AlertDialog` com:
-- Título: "Despublicar todos os imóveis?"
-- Descrição: aviso de que N imóveis ficarão inativos e os links públicos / QR Codes deixarão de funcionar até serem republicados.
-- Botão de confirmação destrutivo (`bg-destructive`).
-
-## Lógica
-
-Ambas as ações executam um `UPDATE` em massa via Supabase client:
-
-```ts
-// Publicar
-supabase.from("properties")
-  .update({ status: "active" })
-  .eq("tenant_id", tenant.id)
-  .eq("status", "inactive");
-
-// Despublicar
-supabase.from("properties")
-  .update({ status: "inactive" })
-  .eq("tenant_id", tenant.id)
-  .eq("status", "active");
-```
-
-Em seguida: `qc.invalidateQueries({ queryKey: ["properties"] })` + `toast.success`.
-
-As RLS atuais (`Tenant members manage own properties`) já cobrem `UPDATE` filtrado por `tenant_id`, então **não há mudanças de banco de dados**.
-
-## Estados de loading
-
-Loader inline no item do dropdown e nos botões dos diálogos enquanto a mutação roda; desabilitar ambas as ações simultaneamente para evitar duplo clique.
+### 4. Sem mudanças de banco
+- Não precisa migration. As policies de `profiles` e `tenants` já permitem leitura para super_admin, e a edge function usa Service Role para listar `auth.users`.
+- O template de e-mail `recovery` já existe em `supabase/functions/_shared/email-templates/recovery.tsx` e é disparado automaticamente pelo `auth-email-hook`.
 
 ## Arquivos afetados
 
-- `src/pages/dashboard/PropertiesList.tsx` (única alteração)
+- `supabase/functions/admin-list-users/index.ts` (novo)
+- `supabase/functions/admin-send-password-reset/index.ts` (novo)
+- `src/pages/SuperAdmin.tsx` (nova aba + lógica)
+
+## Observação para o caso atual
+
+Após implementado, no Super Admin → Usuários, basta buscar `alexandrebarbosamaciel@hotmail.com` e clicar em "Enviar link de redefinição". Ele recebe o e-mail e define `Abm@2026` (ou qualquer outra senha) pessoalmente — o que é o caminho correto e seguro.

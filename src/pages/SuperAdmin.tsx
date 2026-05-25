@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsSuperAdmin } from "@/hooks/useTenant";
 import { useAuth } from "@/hooks/useAuth";
@@ -18,9 +18,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Shield, Copy, X, Mail, Check } from "lucide-react";
+import { Loader2, Shield, Copy, X, Mail, Check, KeyRound, Search } from "lucide-react";
 import WebhooksAdmin from "@/components/admin/WebhooksAdmin";
 import { toast } from "sonner";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function SuperAdmin() {
   const { user, loading } = useAuth();
@@ -69,6 +73,28 @@ export default function SuperAdmin() {
   const [inviteEmail, setInviteEmail] = useState("");
   const [invitePlan, setInvitePlan] = useState("free");
   const [creating, setCreating] = useState(false);
+
+  const [userSearch, setUserSearch] = useState("");
+  const [userQuery, setUserQuery] = useState("");
+  const [resetTarget, setResetTarget] = useState<{ id: string; email: string } | null>(null);
+  const [resetting, setResetting] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setUserQuery(userSearch.trim().toLowerCase()), 300);
+    return () => clearTimeout(t);
+  }, [userSearch]);
+
+  const { data: usersData, isLoading: usersLoading } = useQuery({
+    queryKey: ["admin_users", userQuery],
+    enabled: !!isAdmin,
+    queryFn: async () => {
+      const { data, error } = await supabase.functions.invoke("admin-list-users", {
+        body: { q: userQuery },
+      });
+      if (error) throw error;
+      return data?.users ?? [];
+    },
+  });
 
   if (loading || roleLoading) {
     return (
@@ -136,6 +162,23 @@ export default function SuperAdmin() {
     return { label: "Pendente", variant: "outline" as const };
   };
 
+  const sendPasswordReset = async () => {
+    if (!resetTarget) return;
+    setResetting(true);
+    try {
+      const { error } = await supabase.functions.invoke("admin-send-password-reset", {
+        body: { email: resetTarget.email },
+      });
+      if (error) throw error;
+      toast.success(`Link de redefinição enviado para ${resetTarget.email}`);
+      setResetTarget(null);
+    } catch (err: any) {
+      toast.error(err.message ?? "Erro ao enviar link de redefinição");
+    } finally {
+      setResetting(false);
+    }
+  };
+
   return (
     <div className="container py-8 max-w-6xl space-y-6 animate-fade-in">
       <header className="flex items-center gap-2">
@@ -149,6 +192,7 @@ export default function SuperAdmin() {
       <Tabs defaultValue="workspaces" className="space-y-4">
         <TabsList>
           <TabsTrigger value="workspaces">Workspaces</TabsTrigger>
+          <TabsTrigger value="users">Usuários</TabsTrigger>
           <TabsTrigger value="invitations">Convites</TabsTrigger>
           <TabsTrigger value="webhooks">Webhooks</TabsTrigger>
         </TabsList>
@@ -198,6 +242,90 @@ export default function SuperAdmin() {
               </div>
             )}
           </Card>
+        </TabsContent>
+
+        <TabsContent value="users" className="space-y-4">
+          <Card className="p-5 shadow-card">
+            <div className="flex items-center gap-2 mb-3">
+              <Search className="h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Buscar por e-mail..."
+                value={userSearch}
+                onChange={(e) => setUserSearch(e.target.value)}
+                className="max-w-sm"
+              />
+              {usersLoading && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Envie um link seguro para o usuário definir uma nova senha. Por segurança, nunca
+              definimos a senha diretamente — o usuário receberá um e-mail e escolherá a nova senha.
+            </p>
+          </Card>
+
+          <Card className="shadow-card overflow-hidden">
+            <div className="hidden sm:grid grid-cols-[1fr_1fr_auto_auto_auto] gap-4 px-5 py-3 border-b bg-muted/40 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              <div>E-mail</div>
+              <div>Workspace</div>
+              <div>Criado</div>
+              <div>Último acesso</div>
+              <div>Ações</div>
+            </div>
+            {(usersData ?? []).map((u: any) => (
+              <div
+                key={u.id}
+                className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_auto_auto_auto] gap-3 px-5 py-3 border-b last:border-0 items-center text-sm"
+              >
+                <div className="min-w-0">
+                  <div className="font-medium truncate">{u.email}</div>
+                  {u.full_name && (
+                    <div className="text-xs text-muted-foreground truncate">{u.full_name}</div>
+                  )}
+                </div>
+                <div className="text-xs text-muted-foreground truncate">
+                  {u.tenant_name ?? "—"}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {u.created_at ? new Date(u.created_at).toLocaleDateString("pt-BR") : "—"}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleDateString("pt-BR") : "Nunca"}
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setResetTarget({ id: u.id, email: u.email })}
+                  title="Enviar link de redefinição de senha"
+                >
+                  <KeyRound className="h-3.5 w-3.5 mr-1.5" />
+                  Redefinir senha
+                </Button>
+              </div>
+            ))}
+            {!usersLoading && (usersData ?? []).length === 0 && (
+              <div className="py-12 text-center text-sm text-muted-foreground">
+                Nenhum usuário encontrado.
+              </div>
+            )}
+          </Card>
+
+          <AlertDialog open={!!resetTarget} onOpenChange={(o) => !o && setResetTarget(null)}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Enviar link de redefinição de senha?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Um e-mail será enviado para <strong>{resetTarget?.email}</strong> com um link
+                  seguro para definir uma nova senha. O link tem validade limitada.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel disabled={resetting}>Cancelar</AlertDialogCancel>
+                <AlertDialogAction onClick={sendPasswordReset} disabled={resetting}>
+                  {resetting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Enviar e-mail
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </TabsContent>
 
         <TabsContent value="invitations" className="space-y-4">
