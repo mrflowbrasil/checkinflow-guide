@@ -240,6 +240,32 @@ export default function PropertiesList() {
     }
   };
 
+  const inactiveCount = properties?.filter((p) => p.status !== "active").length ?? 0;
+  const activeCount = properties?.filter((p) => p.status === "active").length ?? 0;
+
+  const runBulk = async () => {
+    if (!tenant?.id || !bulkAction) return;
+    setBulkLoading(true);
+    try {
+      const newStatus = bulkAction === "publish" ? "active" : "inactive";
+      const fromStatus = bulkAction === "publish" ? "inactive" : "active";
+      const { error } = await supabase
+        .from("properties")
+        .update({ status: newStatus })
+        .eq("tenant_id", tenant.id)
+        .eq("status", fromStatus);
+      if (error) throw error;
+      toast.success(bulkAction === "publish" ? "Todos os imóveis foram publicados!" : "Todos os imóveis foram despublicados.");
+      qc.invalidateQueries({ queryKey: ["properties"] });
+      setBulkAction(null);
+      setBulkConfirmed(false);
+    } catch (e: any) {
+      toast.error(e.message ?? "Erro ao atualizar imóveis");
+    } finally {
+      setBulkLoading(false);
+    }
+  };
+
   return (
     <div className="container py-8 max-w-6xl space-y-6 animate-fade-in">
       <header className="flex items-center justify-between gap-4 flex-wrap">
