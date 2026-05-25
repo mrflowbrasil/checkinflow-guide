@@ -18,13 +18,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Shield, Copy, X, Mail, Check, KeyRound, Search } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Loader2, Shield, Copy, X, Mail, Check, KeyRound, Search, Lock, RefreshCw, Eye, EyeOff } from "lucide-react";
 import WebhooksAdmin from "@/components/admin/WebhooksAdmin";
 import { toast } from "sonner";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function SuperAdmin() {
   const { user, loading } = useAuth();
@@ -78,6 +83,15 @@ export default function SuperAdmin() {
   const [userQuery, setUserQuery] = useState("");
   const [resetTarget, setResetTarget] = useState<{ id: string; email: string } | null>(null);
   const [resetting, setResetting] = useState(false);
+
+  // Set-password (LGPD fallback) state
+  const [setPwTarget, setSetPwTarget] = useState<{ id: string; email: string } | null>(null);
+  const [setPwValue, setSetPwValue] = useState("");
+  const [setPwReason, setSetPwReason] = useState("");
+  const [setPwConfirm, setSetPwConfirm] = useState(false);
+  const [setPwShow, setSetPwShow] = useState(false);
+  const [setPwSubmitting, setSetPwSubmitting] = useState(false);
+  const [setPwResult, setSetPwResult] = useState<{ email: string; password: string } | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setUserQuery(userSearch.trim().toLowerCase()), 300);
@@ -179,6 +193,65 @@ export default function SuperAdmin() {
     }
   };
 
+  const generateRandomPassword = () => {
+    const upper = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+    const lower = "abcdefghijkmnopqrstuvwxyz";
+    const digits = "23456789";
+    const symbols = "!@#$%&*";
+    const all = upper + lower + digits + symbols;
+    const arr = new Uint32Array(12);
+    crypto.getRandomValues(arr);
+    let out = "";
+    out += upper[arr[0] % upper.length];
+    out += lower[arr[1] % lower.length];
+    out += digits[arr[2] % digits.length];
+    out += symbols[arr[3] % symbols.length];
+    for (let i = 4; i < arr.length; i++) out += all[arr[i] % all.length];
+    return out.split("").sort(() => Math.random() - 0.5).join("");
+  };
+
+  const openSetPassword = (u: { id: string; email: string }) => {
+    setSetPwTarget(u);
+    setSetPwValue("");
+    setSetPwReason("");
+    setSetPwConfirm(false);
+    setSetPwShow(false);
+  };
+
+  const submitSetPassword = async () => {
+    if (!setPwTarget) return;
+    if (setPwValue.length < 8 || !/[A-Za-z]/.test(setPwValue) || !/[0-9]/.test(setPwValue)) {
+      return toast.error("Senha fraca: mínimo 8 caracteres, letras e números.");
+    }
+    if (setPwReason.trim().length < 10) {
+      return toast.error("Informe um motivo (mín. 10 caracteres) para auditoria.");
+    }
+    if (!setPwConfirm) {
+      return toast.error("Confirme que tentou o fluxo de redefinição padrão antes.");
+    }
+    setSetPwSubmitting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("admin-set-user-password", {
+        body: {
+          userId: setPwTarget.id,
+          email: setPwTarget.email,
+          password: setPwValue,
+          reason: setPwReason.trim(),
+        },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).message ?? (data as any).error);
+      const result = { email: setPwTarget.email, password: setPwValue };
+      setSetPwTarget(null);
+      setSetPwResult(result);
+      toast.success("Senha definida e usuário notificado por e-mail.");
+    } catch (err: any) {
+      toast.error(err.message ?? "Erro ao definir senha");
+    } finally {
+      setSetPwSubmitting(false);
+    }
+  };
+
   return (
     <div className="container py-8 max-w-6xl space-y-6 animate-fade-in">
       <header className="flex items-center gap-2">
@@ -257,8 +330,8 @@ export default function SuperAdmin() {
               {usersLoading && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
             </div>
             <p className="text-xs text-muted-foreground">
-              Envie um link seguro para o usuário definir uma nova senha. Por segurança, nunca
-              definimos a senha diretamente — o usuário receberá um e-mail e escolherá a nova senha.
+              Por padrão, envie um <strong>link de redefinição</strong> — o usuário escolhe a nova senha (fluxo seguro e em conformidade com a LGPD).
+              Use <strong>"Definir senha"</strong> apenas como fallback (ex.: o cliente não recebe o e-mail). Toda ação é registrada em auditoria e o titular é notificado por e-mail.
             </p>
           </Card>
 
@@ -290,15 +363,27 @@ export default function SuperAdmin() {
                 <div className="text-xs text-muted-foreground">
                   {u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleDateString("pt-BR") : "Nunca"}
                 </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => setResetTarget({ id: u.id, email: u.email })}
-                  title="Enviar link de redefinição de senha"
-                >
-                  <KeyRound className="h-3.5 w-3.5 mr-1.5" />
-                  Redefinir senha
-                </Button>
+                <div className="flex gap-2 flex-wrap">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setResetTarget({ id: u.id, email: u.email })}
+                    title="Enviar link de redefinição de senha"
+                  >
+                    <KeyRound className="h-3.5 w-3.5 mr-1.5" />
+                    Redefinir
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => openSetPassword({ id: u.id, email: u.email })}
+                    title="Definir senha diretamente (fallback)"
+                    className="border-destructive/30 text-destructive hover:bg-destructive/5 hover:text-destructive"
+                  >
+                    <Lock className="h-3.5 w-3.5 mr-1.5" />
+                    Definir senha
+                  </Button>
+                </div>
               </div>
             ))}
             {!usersLoading && (usersData ?? []).length === 0 && (
@@ -326,7 +411,119 @@ export default function SuperAdmin() {
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
+
+          {/* Set password (LGPD fallback) */}
+          <Dialog open={!!setPwTarget} onOpenChange={(o) => !o && setSetPwTarget(null)}>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>Definir senha diretamente</DialogTitle>
+                <DialogDescription>
+                  Use apenas como fallback quando o e-mail de redefinição não chegar.
+                  O titular será <strong>notificado por e-mail</strong> e a ação ficará registrada em auditoria (LGPD).
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-3">
+                <div className="text-xs text-muted-foreground">
+                  Usuário: <strong>{setPwTarget?.email}</strong>
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="new-pw">Nova senha</Label>
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Input
+                        id="new-pw"
+                        type={setPwShow ? "text" : "password"}
+                        value={setPwValue}
+                        onChange={(e) => setSetPwValue(e.target.value)}
+                        placeholder="Mín. 8 caracteres, letras e números"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setSetPwShow((s) => !s)}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        aria-label="Mostrar/ocultar senha"
+                      >
+                        {setPwShow ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => { setSetPwValue(generateRandomPassword()); setSetPwShow(true); }}
+                      title="Gerar senha aleatória"
+                    >
+                      <RefreshCw className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="pw-reason">Motivo (auditoria)</Label>
+                  <Textarea
+                    id="pw-reason"
+                    value={setPwReason}
+                    onChange={(e) => setSetPwReason(e.target.value)}
+                    placeholder="Ex.: Cliente não recebe o e-mail de redefinição (verificado spam e contato seguro)."
+                    rows={3}
+                  />
+                </div>
+                <label className="flex items-start gap-2 text-xs text-muted-foreground cursor-pointer">
+                  <Checkbox
+                    checked={setPwConfirm}
+                    onCheckedChange={(v) => setSetPwConfirm(!!v)}
+                    className="mt-0.5"
+                  />
+                  <span>Confirmo que tentei o fluxo de redefinição padrão (e-mail) antes desta ação.</span>
+                </label>
+              </div>
+              <DialogFooter>
+                <Button variant="ghost" onClick={() => setSetPwTarget(null)} disabled={setPwSubmitting}>
+                  Cancelar
+                </Button>
+                <Button onClick={submitSetPassword} disabled={setPwSubmitting}>
+                  {setPwSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Definir senha
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          {/* Show password once after success */}
+          <Dialog open={!!setPwResult} onOpenChange={(o) => !o && setSetPwResult(null)}>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>Senha definida com sucesso</DialogTitle>
+                <DialogDescription>
+                  Copie a senha abaixo e envie por <strong>canal seguro</strong> ao titular.
+                  Esta senha <strong>não será exibida novamente</strong>.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-2">
+                <div className="text-xs text-muted-foreground">Usuário: <strong>{setPwResult?.email}</strong></div>
+                <div className="flex gap-2">
+                  <Input readOnly value={setPwResult?.password ?? ""} className="font-mono" />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      navigator.clipboard.writeText(setPwResult?.password ?? "");
+                      toast.success("Senha copiada!");
+                    }}
+                  >
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  O usuário também foi notificado por e-mail de que a senha foi alterada por um administrador.
+                </p>
+              </div>
+              <DialogFooter>
+                <Button onClick={() => setSetPwResult(null)}>Fechar</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </TabsContent>
+
 
         <TabsContent value="invitations" className="space-y-4">
           <Card className="p-5 shadow-card">

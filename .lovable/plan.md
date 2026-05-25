@@ -1,67 +1,90 @@
-## Objetivo
 
-Evitar que clientes fiquem presos a versões antigas do Mr Flow por causa de cache do navegador (caso ABMnb). Detectar automaticamente quando uma nova versão foi publicada e oferecer recarregar a página.
+## Diagnóstico do caso (alexandrebarbosamaciel@hotmail.com)
 
-## Contexto
+Verifiquei o `email_send_log` e os logs de auth:
 
-O projeto **não usa service worker / PWA com cache** (apenas `manifest.json` para instalabilidade — sem `vite-plugin-pwa`). Então o problema é puramente cache de bundle do navegador. A solução é leve: um `version.json` gerado no build + um watcher no frontend.
+- **3 e-mails de recovery enviados com sucesso** nas últimas horas (status `sent`, sem erros).
+- **Sem registro na lista de supressão** (`suppressed_emails` vazio).
+- O hook Lovable Emails respondeu `200` em todas as tentativas.
 
-## Mudanças
+**Conclusão:** o problema **não está no nosso sistema** — os e-mails saíram normalmente. O Hotmail/Outlook está classificando como spam ou bloqueando na entrada. Causas comuns:
+1. Cliente não checou **Lixo Eletrônico / Spam / Outros**.
+2. Hotmail/Outlook bloqueia agressivamente domínios novos sem reputação.
+3. Filtro corporativo / antivírus do cliente.
 
-### 1. Geração de versão no build
+## LGPD — pode o admin alterar a senha?
 
-- `scripts/generate-version.mjs` (novo): escreve `public/version.json` com `{ "version": "<timestamp ms>", "builtAt": "<ISO>" }`.
-- `package.json`: adicionar `"prebuild": "node scripts/generate-version.mjs"` e `"predev": "node scripts/generate-version.mjs"`.
-- O arquivo `public/version.json` já é servido com `Cache-Control: no-store` pelo proxy da Lovable.
+**Pode**, desde que com salvaguardas:
 
-### 2. Snapshot da versão dentro do bundle
+| Requisito LGPD | Implementação |
+|---|---|
+| Base legal | Execução de contrato / suporte ao titular |
+| Finalidade específica | Restrita a casos de falha de entrega de e-mail |
+| Registro/auditoria | Tabela `admin_action_log` (quem, quando, qual usuário, motivo) |
+| Comunicação ao titular | E-mail automático informando que a senha foi alterada pelo suporte |
+| Princípio da segurança | Senha temporária + força troca no próximo login |
 
-- `vite.config.ts`: injetar `define: { __APP_VERSION__: JSON.stringify(process.env.APP_VERSION || Date.now().toString()) }`.
-- O script `generate-version.mjs` define `process.env.APP_VERSION` (na verdade escreve um arquivo que o vite.config.ts lê em paralelo via `fs.readFileSync('public/version.json')` antes de declarar `define`).
-- `src/vite-env.d.ts`: declarar `declare const __APP_VERSION__: string;`.
+A prática é aceitável como **fallback excepcional**, não como rotina.
 
-### 3. Componente `VersionWatcher`
+## Plano de implementação
 
-- `src/components/VersionWatcher.tsx` (novo):
-  - A cada 60s + em `visibilitychange` (quando a aba volta ao foco), faz `fetch('/version.json?t=' + Date.now(), { cache: 'no-store' })`.
-  - Se `remote.version !== __APP_VERSION__`, exibe um toast persistente (sonner):
-    > "Nova versão disponível. Atualize para ver as últimas melhorias."
-    > Botão: **Atualizar agora**
-  - Ao clicar: limpa `caches` (`if ('caches' in window) await caches.keys().then(ks => ks.forEach(k => caches.delete(k)))`) e faz `window.location.reload()`.
-  - Desativado em `import.meta.env.DEV`.
-  - Só dispara o toast uma vez por sessão (flag em memória).
+### 1. Diagnóstico (orientação imediata ao cliente)
+Pedir ao cliente para:
+- Checar pastas **Lixo Eletrônico**, **Outros** e **Promoções** no Outlook/Hotmail
+- Adicionar `notify@hub.mrflow.com.br` (ou domínio remetente atual) aos **Contatos Seguros**
+- Tentar redefinir novamente
 
-### 4. Limpeza defensiva de service workers órfãos
+### 2. Auditoria no banco
 
-- `src/main.tsx`: ao carregar, executar uma vez:
-  ```ts
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.unregister()));
-  }
-  ```
-- Garante que dispositivos que algum dia tiveram SW registrado (mesmo por engano) não sirvam mais bundle antigo.
+Nova tabela `admin_action_log` para registrar toda ação sensível do Super Admin:
 
-### 5. Montagem global
+```
+id, admin_user_id, action ('password_set' | 'password_reset_sent' | ...),
+target_user_id, target_email, reason, metadata jsonb, created_at
+```
 
-- `src/App.tsx`: renderizar `<VersionWatcher />` próximo ao `<Toaster />`, dentro do provider raiz — assim funciona tanto no dashboard quanto nas páginas de guia (`/g/:slug`).
+Com RLS: somente `super_admin` pode ler/inserir.
+
+### 3. Edge function `admin-set-user-password`
+
+Nova função em `supabase/functions/admin-set-user-password/index.ts`:
+
+- Valida que o caller é `super_admin` (mesmo padrão de `admin-send-password-reset`).
+- Recebe `{ userId, email, password, reason }`.
+- Valida senha: mínimo 8 caracteres, com pelo menos 1 letra e 1 número.
+- **Exige `reason` obrigatório** (mínimo 10 caracteres).
+- Chama `admin.auth.admin.updateUserById(userId, { password })`.
+- **Notifica o titular**: dispara um e-mail "Sua senha foi alterada pelo suporte" via `enqueue_email` (queue `transactional_emails`) ou, na ausência, via `resetPasswordForEmail` como fallback informativo.
+- Registra em `admin_action_log` com `action='password_set'`, `reason`, IP do admin.
+- Retorna `{ ok: true }`.
+
+### 4. UI no Super Admin → aba Usuários
+
+Para cada usuário, ao lado de "Redefinir senha" (atual), adicionar botão **"Definir senha temporária"** (ícone `KeyRound` ou `Lock`, variante `outline` com tom destrutivo sutil).
+
+Ao clicar, abre `AlertDialog` com:
+- Aviso LGPD explícito ("Use somente como fallback. O titular será notificado por e-mail.").
+- Campo **Nova senha** (com botão "Gerar senha aleatória").
+- Campo **Motivo** (obrigatório, textarea — ex.: "Cliente não recebe e-mail de redefinição").
+- Confirmação dupla: checkbox "Confirmo que tentei o fluxo de redefinição padrão antes".
+- Botão "Definir senha" só habilita com todos os campos preenchidos.
+
+Após sucesso: toast "Senha definida e usuário notificado por e-mail" + a senha temporária é mostrada **uma única vez** com botão "Copiar" e aviso "Esta senha não será exibida novamente — envie por canal seguro".
+
+### 5. (Opcional) Log visível no Super Admin
+
+Pequena seção "Ações administrativas recentes" exibindo as últimas 20 entradas de `admin_action_log` — útil para auditoria interna.
 
 ## Detalhes técnicos
 
-- Sem novas dependências (usa `sonner` já presente).
-- Sem mudanças de banco, RLS, edge functions ou auth.
-- `version.json` é `{ "version": "1779733527000", "builtAt": "2026-05-25T18:25:27Z" }`.
-- Polling de 60s é leve (~200 bytes por request) e respeita `visibilitychange` (não roda em aba inativa).
+- **Senha gerada**: 12 caracteres, mix de maiúsculas/minúsculas/dígitos/símbolos (`crypto.getRandomValues`).
+- **Não armazenamos a senha em lugar nenhum** — vai direto para o Supabase Auth e é exibida apenas no momento da criação.
+- **Edge function** segue o mesmo padrão de `admin-send-password-reset` (validação JWT + `has_role` + service role para `auth.admin`).
+- **E-mail de notificação ao titular**: assunto "Sua senha foi alterada por um administrador", corpo informando data/hora e instruindo a contatar suporte se não reconhecer a ação. Usa o template transacional Lovable Emails.
 
-## Arquivos afetados
+## Arquivos a alterar/criar
 
-- `scripts/generate-version.mjs` (novo)
-- `package.json` (scripts `prebuild` + `predev`)
-- `vite.config.ts` (`define: __APP_VERSION__`)
-- `src/vite-env.d.ts` (declaração de tipo)
-- `src/components/VersionWatcher.tsx` (novo)
-- `src/main.tsx` (unregister de SW legados)
-- `src/App.tsx` (monta `<VersionWatcher />`)
-
-## Resultado para o cliente ABMnb
-
-Após o deploy desta mudança, basta que ele faça **um único hard refresh** (`Ctrl+Shift+R`). A partir daí, qualquer nova publicação será detectada automaticamente em até 60s — ele verá o aviso "Nova versão disponível" e basta clicar em "Atualizar agora". Não precisará mais limpar cache manualmente.
+- **Migração**: criar `admin_action_log` + RLS
+- **Nova edge function**: `supabase/functions/admin-set-user-password/index.ts`
+- **UI**: editar `src/pages/SuperAdmin.tsx` (aba Usuários, novo dialog)
+- **(Opcional)** template transacional de "senha alterada pelo suporte"
