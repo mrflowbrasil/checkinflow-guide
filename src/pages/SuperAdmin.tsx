@@ -193,6 +193,65 @@ export default function SuperAdmin() {
     }
   };
 
+  const generateRandomPassword = () => {
+    const upper = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+    const lower = "abcdefghijkmnopqrstuvwxyz";
+    const digits = "23456789";
+    const symbols = "!@#$%&*";
+    const all = upper + lower + digits + symbols;
+    const arr = new Uint32Array(12);
+    crypto.getRandomValues(arr);
+    let out = "";
+    out += upper[arr[0] % upper.length];
+    out += lower[arr[1] % lower.length];
+    out += digits[arr[2] % digits.length];
+    out += symbols[arr[3] % symbols.length];
+    for (let i = 4; i < arr.length; i++) out += all[arr[i] % all.length];
+    return out.split("").sort(() => Math.random() - 0.5).join("");
+  };
+
+  const openSetPassword = (u: { id: string; email: string }) => {
+    setSetPwTarget(u);
+    setSetPwValue("");
+    setSetPwReason("");
+    setSetPwConfirm(false);
+    setSetPwShow(false);
+  };
+
+  const submitSetPassword = async () => {
+    if (!setPwTarget) return;
+    if (setPwValue.length < 8 || !/[A-Za-z]/.test(setPwValue) || !/[0-9]/.test(setPwValue)) {
+      return toast.error("Senha fraca: mínimo 8 caracteres, letras e números.");
+    }
+    if (setPwReason.trim().length < 10) {
+      return toast.error("Informe um motivo (mín. 10 caracteres) para auditoria.");
+    }
+    if (!setPwConfirm) {
+      return toast.error("Confirme que tentou o fluxo de redefinição padrão antes.");
+    }
+    setSetPwSubmitting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("admin-set-user-password", {
+        body: {
+          userId: setPwTarget.id,
+          email: setPwTarget.email,
+          password: setPwValue,
+          reason: setPwReason.trim(),
+        },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).message ?? (data as any).error);
+      const result = { email: setPwTarget.email, password: setPwValue };
+      setSetPwTarget(null);
+      setSetPwResult(result);
+      toast.success("Senha definida e usuário notificado por e-mail.");
+    } catch (err: any) {
+      toast.error(err.message ?? "Erro ao definir senha");
+    } finally {
+      setSetPwSubmitting(false);
+    }
+  };
+
   return (
     <div className="container py-8 max-w-6xl space-y-6 animate-fade-in">
       <header className="flex items-center gap-2">
