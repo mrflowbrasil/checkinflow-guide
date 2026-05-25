@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/useAuth";
 import RequireAuth from "@/components/auth/RequireAuth";
 import AppShell from "@/components/layout/AppShell";
+import VersionWatcher from "@/components/VersionWatcher";
 
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -65,6 +66,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <VersionWatcher />
       <BrowserRouter>
         <AuthProvider>
           <Routes>
