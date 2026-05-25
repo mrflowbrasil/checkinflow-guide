@@ -84,6 +84,15 @@ export default function SuperAdmin() {
   const [resetTarget, setResetTarget] = useState<{ id: string; email: string } | null>(null);
   const [resetting, setResetting] = useState(false);
 
+  // Set-password (LGPD fallback) state
+  const [setPwTarget, setSetPwTarget] = useState<{ id: string; email: string } | null>(null);
+  const [setPwValue, setSetPwValue] = useState("");
+  const [setPwReason, setSetPwReason] = useState("");
+  const [setPwConfirm, setSetPwConfirm] = useState(false);
+  const [setPwShow, setSetPwShow] = useState(false);
+  const [setPwSubmitting, setSetPwSubmitting] = useState(false);
+  const [setPwResult, setSetPwResult] = useState<{ email: string; password: string } | null>(null);
+
   useEffect(() => {
     const t = setTimeout(() => setUserQuery(userSearch.trim().toLowerCase()), 300);
     return () => clearTimeout(t);
