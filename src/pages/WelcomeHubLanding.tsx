@@ -42,9 +42,9 @@ function Header() {
   return (
     <header className="sticky top-0 z-50 backdrop-blur-xl bg-[#020617]/70 border-b border-[rgba(148,163,184,0.20)]">
       <div className="container px-4 sm:px-6 lg:px-12 h-16 flex items-center justify-between">
-        <a href="#top" className="flex items-center gap-3 group">
+        <a href="#top" className="flex flex-col items-start leading-none group">
           <MrFlowLogo forceDark className="h-9 w-auto" />
-          <span className="text-[9px] tracking-[0.25em] text-[#CBD5E1] uppercase hidden sm:inline">Welcome Hub</span>
+          <span className="mt-1 text-[9px] tracking-[0.25em] text-[#CBD5E1] uppercase">Welcome Hub</span>
         </a>
 
         <nav className="hidden lg:flex items-center gap-7">
