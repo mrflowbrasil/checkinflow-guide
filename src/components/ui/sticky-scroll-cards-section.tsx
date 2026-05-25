@@ -74,7 +74,7 @@ const AnimatedHeader: React.FC = () => {
           headerInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
         }`}
       >
-        Tudo que seu hóspede precisa, num só lugar
+        Tudo que o hóspede precisa, organizado em uma experiência digital
       </h2>
       <p
         ref={pRef}
@@ -82,7 +82,7 @@ const AnimatedHeader: React.FC = () => {
           pInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
         }`}
       >
-        Recursos pensados para anfitriões que querem encantar sem precisar responder o mesmo WhatsApp cinco vezes por dia.
+        Recursos pensados para anfitriões, pousadas e gestores que querem reduzir perguntas repetidas, padronizar informações e encantar o hóspede desde antes do check-in.
       </p>
     </div>
   );
