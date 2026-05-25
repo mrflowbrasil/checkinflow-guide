@@ -363,15 +363,27 @@ export default function SuperAdmin() {
                 <div className="text-xs text-muted-foreground">
                   {u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleDateString("pt-BR") : "Nunca"}
                 </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => setResetTarget({ id: u.id, email: u.email })}
-                  title="Enviar link de redefinição de senha"
-                >
-                  <KeyRound className="h-3.5 w-3.5 mr-1.5" />
-                  Redefinir senha
-                </Button>
+                <div className="flex gap-2 flex-wrap">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setResetTarget({ id: u.id, email: u.email })}
+                    title="Enviar link de redefinição de senha"
+                  >
+                    <KeyRound className="h-3.5 w-3.5 mr-1.5" />
+                    Redefinir
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => openSetPassword({ id: u.id, email: u.email })}
+                    title="Definir senha diretamente (fallback)"
+                    className="border-destructive/30 text-destructive hover:bg-destructive/5 hover:text-destructive"
+                  >
+                    <Lock className="h-3.5 w-3.5 mr-1.5" />
+                    Definir senha
+                  </Button>
+                </div>
               </div>
             ))}
             {!usersLoading && (usersData ?? []).length === 0 && (
