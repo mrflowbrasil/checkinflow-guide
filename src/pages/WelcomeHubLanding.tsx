@@ -17,6 +17,9 @@ import {
   ChevronRight, Phone, Star as StarIcon, Settings2, Globe, Users,
 } from "lucide-react";
 import { Seo } from "@/components/Seo";
+import { MrFlowLogo } from "@/components/brand/MrFlowLogo";
+import ShaderBackground from "@/components/ui/shader-background";
+import phoneMockup from "@/assets/welcome-hub-phone-mockup.png";
 
 const DEMO_URL = "https://hub.mrflow.com.br/g/suite-premium-vila-serena-23515a";
 
@@ -39,14 +42,9 @@ function Header() {
   return (
     <header className="sticky top-0 z-50 backdrop-blur-xl bg-[#020617]/70 border-b border-[rgba(148,163,184,0.20)]">
       <div className="container px-4 sm:px-6 lg:px-12 h-16 flex items-center justify-between">
-        <a href="#top" className="flex items-center gap-2 group">
-          <div className="h-8 w-8 rounded-lg grid place-items-center bg-gradient-to-br from-[#00FFFF] to-[#00FF00] text-[#020617] font-bold">
-            M
-          </div>
-          <div className="flex flex-col leading-none">
-            <span className="text-sm font-semibold text-[#F8FAFC]">Mr Flow</span>
-            <span className="text-[9px] tracking-[0.25em] text-[#CBD5E1] uppercase">Welcome Hub</span>
-          </div>
+        <a href="#top" className="flex items-center gap-3 group">
+          <MrFlowLogo forceDark className="h-9 w-auto" />
+          <span className="text-[9px] tracking-[0.25em] text-[#CBD5E1] uppercase hidden sm:inline">Welcome Hub</span>
         </a>
 
         <nav className="hidden lg:flex items-center gap-7">
@@ -61,7 +59,7 @@ function Header() {
           <Button asChild variant="ghost" className="text-[#CBD5E1] hover:text-white hover:bg-white/5">
             <a href="#demo">Ver demo</a>
           </Button>
-          <Button asChild className="bg-gradient-to-r from-[#00FFFF] to-[#00FF00] text-[#020617] hover:opacity-90 font-semibold rounded-xl">
+          <Button asChild className="bg-[#00FFFF] text-[#020617] hover:bg-[#00FFFF]/90 font-semibold rounded-xl">
             <Link to="/auth">Criar meu hub grátis</Link>
           </Button>
         </div>
@@ -90,7 +88,7 @@ function Header() {
             <Button asChild variant="outline" className="border-white/20 bg-white/5 text-white">
               <a href="#demo" onClick={() => setOpen(false)}>Ver demo</a>
             </Button>
-            <Button asChild className="bg-gradient-to-r from-[#00FFFF] to-[#00FF00] text-[#020617] font-semibold">
+            <Button asChild className="bg-[#00FFFF] text-[#020617] hover:bg-[#00FFFF]/90 font-semibold">
               <Link to="/auth">Criar meu hub grátis</Link>
             </Button>
           </div>
@@ -169,7 +167,7 @@ function Hero() {
           </div>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05] text-[#F8FAFC]">
             Transforme cada estadia em uma{" "}
-            <span className="bg-gradient-to-r from-[#00FFFF] to-[#00FF00] bg-clip-text text-transparent">
+            <span className="text-[#00FFFF]">
               experiência digital
             </span>{" "}
             de boas-vindas
@@ -178,7 +176,7 @@ function Hero() {
             Crie um hub personalizado para seus hóspedes acessarem pelo celular, com QR Code, link, instruções da hospedagem, dicas locais e tudo que eles precisam saber — sem depender de PDFs ou mensagens repetidas no WhatsApp.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
-            <Button asChild size="lg" className="h-12 px-8 rounded-xl bg-gradient-to-r from-[#00FFFF] to-[#00FF00] text-[#020617] hover:opacity-90 font-semibold shadow-lg shadow-[#00FFFF]/20">
+            <Button asChild size="lg" className="h-12 px-8 rounded-xl bg-[#00FFFF] text-[#020617] hover:bg-[#00FFFF]/90 font-semibold shadow-lg shadow-[#00FFFF]/20">
               <Link to="/auth">Criar meu primeiro hub grátis <ArrowRight className="ml-2 h-4 w-4" /></Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="h-12 px-8 rounded-xl bg-white/5 border-[rgba(148,163,184,0.30)] text-white hover:bg-white/10">
@@ -187,14 +185,18 @@ function Hero() {
           </div>
         </div>
 
-        <div className="relative">
-          <PhoneMockup>
-            <HeroMockupContent />
-          </PhoneMockup>
-          <FloatingChip icon={MessageSquare} label="Menos dúvidas repetidas" className="top-6 -left-4" />
-          <FloatingChip icon={Smartphone} label="Mais autonomia para o hóspede" className="top-1/3 -right-2" />
-          <FloatingChip icon={Sparkles} label="Experiência profissional" className="bottom-24 -left-6" />
-          <FloatingChip icon={QrCode} label="QR Code pronto para impressão" className="bottom-6 -right-4" />
+        <div className="relative flex justify-center items-center min-h-[480px]">
+          <div className="absolute -inset-10 bg-gradient-to-tr from-[#00FFFF]/25 via-transparent to-[#00FFFF]/10 blur-3xl rounded-full pointer-events-none" />
+          <img
+            src={phoneMockup}
+            alt="Mockup do celular exibindo um hub de boas-vindas Mr Flow"
+            className="relative w-full max-w-[520px] h-auto drop-shadow-[0_30px_60px_rgba(0,255,255,0.25)]"
+            loading="eager"
+          />
+          <FloatingChip icon={MessageSquare} label="Menos dúvidas repetidas" className="top-6 -left-2 z-10" />
+          <FloatingChip icon={Smartphone} label="Mais autonomia para o hóspede" className="top-1/3 -right-2 z-10" />
+          <FloatingChip icon={Sparkles} label="Experiência profissional" className="bottom-20 -left-4 z-10" />
+          <FloatingChip icon={QrCode} label="QR Code pronto para impressão" className="bottom-6 -right-2 z-10" />
         </div>
       </div>
     </section>
@@ -345,7 +347,7 @@ function RealDemoPreview() {
               ))}
             </ul>
             <div className="flex flex-col sm:flex-row gap-3">
-              <Button asChild size="lg" className="rounded-xl bg-gradient-to-r from-[#00FFFF] to-[#00FF00] text-[#020617] font-semibold">
+              <Button asChild size="lg" className="rounded-xl bg-[#00FFFF] text-[#020617] hover:bg-[#00FFFF]/90 font-semibold">
                 <a href={DEMO_URL} target="_blank" rel="noopener noreferrer">
                   Abrir demo completa <ExternalLink className="ml-2 h-4 w-4" />
                 </a>
@@ -657,7 +659,7 @@ function PricingSection() {
                 asChild
                 className={`w-full rounded-xl ${
                   p.featured
-                    ? "bg-gradient-to-r from-[#00FFFF] to-[#00FF00] text-[#020617] font-semibold"
+                    ? "bg-[#00FFFF] text-[#020617] hover:bg-[#00FFFF]/90 font-semibold"
                     : "bg-white/10 hover:bg-white/15 text-white border border-[rgba(148,163,184,0.30)]"
                 }`}
               >
@@ -725,7 +727,7 @@ function FinalCTA() {
               Crie uma experiência digital simples, bonita e profissional para cada imóvel da sua operação.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center mb-8">
-              <Button asChild size="lg" className="h-12 px-8 rounded-xl bg-gradient-to-r from-[#00FFFF] to-[#00FF00] text-[#020617] font-semibold">
+              <Button asChild size="lg" className="h-12 px-8 rounded-xl bg-[#00FFFF] text-[#020617] hover:bg-[#00FFFF]/90 font-semibold">
                 <Link to="/auth">Criar meu hub grátis <ArrowRight className="ml-2 h-4 w-4" /></Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="h-12 px-8 rounded-xl bg-white/5 border-[rgba(148,163,184,0.30)] text-white hover:bg-white/10">
@@ -750,12 +752,9 @@ function Footer() {
       <div className="container px-4 sm:px-6 lg:px-12 max-w-6xl mx-auto">
         <div className="grid md:grid-cols-3 gap-8 mb-8">
           <div>
-            <div className="flex items-center gap-2 mb-3">
-              <div className="h-8 w-8 rounded-lg grid place-items-center bg-gradient-to-br from-[#00FFFF] to-[#00FF00] text-[#020617] font-bold">M</div>
-              <div className="flex flex-col leading-none">
-                <span className="text-sm font-semibold text-[#F8FAFC]">Mr Flow</span>
-                <span className="text-[9px] tracking-[0.25em] text-[#CBD5E1] uppercase">Welcome Hub</span>
-              </div>
+            <div className="flex items-center gap-3 mb-3">
+              <MrFlowLogo forceDark className="h-9 w-auto" />
+              <span className="text-[9px] tracking-[0.25em] text-[#CBD5E1] uppercase">Welcome Hub</span>
             </div>
             <p className="text-sm text-[#CBD5E1] leading-relaxed">
               O hub digital de boas-vindas para anfitriões, pousadas e operações de aluguel por temporada.
@@ -790,28 +789,31 @@ function Footer() {
 
 export default function WelcomeHubLanding() {
   return (
-    <div className="min-h-screen text-[#F8FAFC]" style={PAGE_BG}>
+    <div className="relative min-h-screen text-[#F8FAFC]" style={PAGE_BG}>
       <Seo
         title="Mr Flow Welcome Hub | Guia Digital para Hóspedes e Anfitriões"
         description="Crie um hub digital de boas-vindas para seus hóspedes com QR Code, link personalizado, instruções de check-in, Wi-Fi, regras da casa e dicas locais."
         path="/welcome-hub"
       />
-      <Header />
-      <main>
-        <Hero />
-        <ProblemSection />
-        <SolutionSection />
-        <RealDemoPreview />
-        <HowItWorksSection />
-        <FeaturesSection />
-        <IntegrationsSection />
-        <AudienceSection />
-        <ValueSection />
-        <PricingSection />
-        <FAQSection />
-        <FinalCTA />
-      </main>
-      <Footer />
+      <ShaderBackground className="pointer-events-none fixed inset-0 z-0 h-full w-full opacity-75" />
+      <div className="relative z-10">
+        <Header />
+        <main>
+          <Hero />
+          <ProblemSection />
+          <SolutionSection />
+          <RealDemoPreview />
+          <HowItWorksSection />
+          <FeaturesSection />
+          <IntegrationsSection />
+          <AudienceSection />
+          <ValueSection />
+          <PricingSection />
+          <FAQSection />
+          <FinalCTA />
+        </main>
+        <Footer />
+      </div>
     </div>
   );
 }
