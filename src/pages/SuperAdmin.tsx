@@ -74,6 +74,25 @@ export default function SuperAdmin() {
   const [invitePlan, setInvitePlan] = useState("free");
   const [creating, setCreating] = useState(false);
 
+  const [userSearch, setUserSearch] = useState("");
+  const [userQuery, setUserQuery] = useState("");
+  const [resetTarget, setResetTarget] = useState<{ id: string; email: string } | null>(null);
+  const [resetting, setResetting] = useState(false);
+
+  // debounce search
+  useState(() => {});
+  const { data: usersData, isLoading: usersLoading } = useQuery({
+    queryKey: ["admin_users", userQuery],
+    enabled: !!isAdmin,
+    queryFn: async () => {
+      const { data, error } = await supabase.functions.invoke("admin-list-users", {
+        body: { q: userQuery },
+      });
+      if (error) throw error;
+      return data?.users ?? [];
+    },
+  });
+
   if (loading || roleLoading) {
     return (
       <div className="container py-12 grid place-items-center">
