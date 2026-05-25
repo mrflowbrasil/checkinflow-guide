@@ -146,7 +146,7 @@ function HeroMockupContent() {
 
 function FloatingChip({ icon: Icon, label, className = "" }: { icon: any; label: string; className?: string }) {
   return (
-    <div className={`hidden lg:flex absolute items-center gap-2 px-3 py-2 rounded-2xl bg-[#111827]/80 border border-[rgba(148,163,184,0.20)] backdrop-blur-md shadow-xl text-xs text-[#F8FAFC] ${className}`}>
+    <div className={`hidden md:flex absolute items-center gap-2 px-3 py-2 rounded-2xl bg-[#111827]/80 border border-[rgba(148,163,184,0.20)] backdrop-blur-md shadow-xl text-xs text-[#F8FAFC] ${className}`}>
       <Icon className="h-3.5 w-3.5 text-[#00FFFF]" />
       {label}
     </div>
