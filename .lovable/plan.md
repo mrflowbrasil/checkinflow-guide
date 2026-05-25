@@ -1,90 +1,24 @@
+# Ajustes na landing /welcome-hub
 
-## Diagnóstico do caso (alexandrebarbosamaciel@hotmail.com)
+## 1. Cor sólida #00FFFF no lugar do degradê
+Em `src/pages/WelcomeHubLanding.tsx`, substituir todas as ocorrências de `bg-gradient-to-r from-[#00FFFF] to-[#00FF00]` (e variações `to-br`) por cor sólida `bg-[#00FFFF]` nos seguintes elementos:
+- Texto destacado "experiência digital" do H1 do hero (trocar `bg-clip-text text-transparent` por `text-[#00FFFF]`).
+- Botões CTA: "Criar meu hub grátis" (header desktop + menu mobile), "Começar grátis" do hero, CTA do bloco demo, CTA do plano destacado e CTA final.
+- Demais usos decorativos (glows, badges, ícones, blobs do mockup, gradiente do número de passos, etc.) permanecem como estão para não achatar a identidade visual.
 
-Verifiquei o `email_send_log` e os logs de auth:
+## 2. Logo no cabeçalho
+Substituir o quadradinho "M" + textinho do header (linhas ~42–50) pelo componente `<MrFlowLogo forceDark className="h-8 w-auto" />` de `@/components/brand/MrFlowLogo`. Aplicar a mesma troca no logo do rodapé (linha ~754) e no logo do menu mobile, se houver.
 
-- **3 e-mails de recovery enviados com sucesso** nas últimas horas (status `sent`, sem erros).
-- **Sem registro na lista de supressão** (`suppressed_emails` vazio).
-- O hook Lovable Emails respondeu `200` em todas as tentativas.
+## 3. Mockup do celular (imagem real) no hero
+- Copiar `user-uploads://download.png` para `src/assets/welcome-hub-phone-mockup.png` (já vem com o celular em perspectiva sobre fundo xadrez de transparência — precisamos remover o fundo).
+- Usar `imagegen--edit_image` com `transparent_background: true` para gerar `src/assets/welcome-hub-phone-mockup.png` limpo (PNG transparente, mantendo apenas o celular).
+- No hero (seção que hoje renderiza `<PhoneMockup><HeroMockupContent/></PhoneMockup>`, ~linha 190), substituir por um `<img>` da nova imagem, preservando o glow externo cyan/verde já existente atrás dele. O componente `PhoneMockup`/`HeroMockupContent` continua sendo usado nas outras seções (bloco "Solução") — não remover.
 
-**Conclusão:** o problema **não está no nosso sistema** — os e-mails saíram normalmente. O Hotmail/Outlook está classificando como spam ou bloqueando na entrada. Causas comuns:
-1. Cliente não checou **Lixo Eletrônico / Spam / Outros**.
-2. Hotmail/Outlook bloqueia agressivamente domínios novos sem reputação.
-3. Filtro corporativo / antivírus do cliente.
-
-## LGPD — pode o admin alterar a senha?
-
-**Pode**, desde que com salvaguardas:
-
-| Requisito LGPD | Implementação |
-|---|---|
-| Base legal | Execução de contrato / suporte ao titular |
-| Finalidade específica | Restrita a casos de falha de entrega de e-mail |
-| Registro/auditoria | Tabela `admin_action_log` (quem, quando, qual usuário, motivo) |
-| Comunicação ao titular | E-mail automático informando que a senha foi alterada pelo suporte |
-| Princípio da segurança | Senha temporária + força troca no próximo login |
-
-A prática é aceitável como **fallback excepcional**, não como rotina.
-
-## Plano de implementação
-
-### 1. Diagnóstico (orientação imediata ao cliente)
-Pedir ao cliente para:
-- Checar pastas **Lixo Eletrônico**, **Outros** e **Promoções** no Outlook/Hotmail
-- Adicionar `notify@hub.mrflow.com.br` (ou domínio remetente atual) aos **Contatos Seguros**
-- Tentar redefinir novamente
-
-### 2. Auditoria no banco
-
-Nova tabela `admin_action_log` para registrar toda ação sensível do Super Admin:
-
-```
-id, admin_user_id, action ('password_set' | 'password_reset_sent' | ...),
-target_user_id, target_email, reason, metadata jsonb, created_at
-```
-
-Com RLS: somente `super_admin` pode ler/inserir.
-
-### 3. Edge function `admin-set-user-password`
-
-Nova função em `supabase/functions/admin-set-user-password/index.ts`:
-
-- Valida que o caller é `super_admin` (mesmo padrão de `admin-send-password-reset`).
-- Recebe `{ userId, email, password, reason }`.
-- Valida senha: mínimo 8 caracteres, com pelo menos 1 letra e 1 número.
-- **Exige `reason` obrigatório** (mínimo 10 caracteres).
-- Chama `admin.auth.admin.updateUserById(userId, { password })`.
-- **Notifica o titular**: dispara um e-mail "Sua senha foi alterada pelo suporte" via `enqueue_email` (queue `transactional_emails`) ou, na ausência, via `resetPasswordForEmail` como fallback informativo.
-- Registra em `admin_action_log` com `action='password_set'`, `reason`, IP do admin.
-- Retorna `{ ok: true }`.
-
-### 4. UI no Super Admin → aba Usuários
-
-Para cada usuário, ao lado de "Redefinir senha" (atual), adicionar botão **"Definir senha temporária"** (ícone `KeyRound` ou `Lock`, variante `outline` com tom destrutivo sutil).
-
-Ao clicar, abre `AlertDialog` com:
-- Aviso LGPD explícito ("Use somente como fallback. O titular será notificado por e-mail.").
-- Campo **Nova senha** (com botão "Gerar senha aleatória").
-- Campo **Motivo** (obrigatório, textarea — ex.: "Cliente não recebe e-mail de redefinição").
-- Confirmação dupla: checkbox "Confirmo que tentei o fluxo de redefinição padrão antes".
-- Botão "Definir senha" só habilita com todos os campos preenchidos.
-
-Após sucesso: toast "Senha definida e usuário notificado por e-mail" + a senha temporária é mostrada **uma única vez** com botão "Copiar" e aviso "Esta senha não será exibida novamente — envie por canal seguro".
-
-### 5. (Opcional) Log visível no Super Admin
-
-Pequena seção "Ações administrativas recentes" exibindo as últimas 20 entradas de `admin_action_log` — útil para auditoria interna.
+## 4. Shader animado de fundo
+- Importar `ShaderBackground from "@/components/ui/shader-background"` em `WelcomeHubLanding.tsx`.
+- Envolver o conteúdo da página num wrapper `relative` e adicionar `<ShaderBackground className="pointer-events-none fixed inset-0 -z-0 h-full w-full opacity-60" />` logo após o `<Seo />`, com `z-10` no conteúdo principal, igual ao padrão de `Index.tsx` e `SeoLandingLayout.tsx`. Manter o `PAGE_BG` radial atual por baixo para preservar o tom escuro.
 
 ## Detalhes técnicos
-
-- **Senha gerada**: 12 caracteres, mix de maiúsculas/minúsculas/dígitos/símbolos (`crypto.getRandomValues`).
-- **Não armazenamos a senha em lugar nenhum** — vai direto para o Supabase Auth e é exibida apenas no momento da criação.
-- **Edge function** segue o mesmo padrão de `admin-send-password-reset` (validação JWT + `has_role` + service role para `auth.admin`).
-- **E-mail de notificação ao titular**: assunto "Sua senha foi alterada por um administrador", corpo informando data/hora e instruindo a contatar suporte se não reconhecer a ação. Usa o template transacional Lovable Emails.
-
-## Arquivos a alterar/criar
-
-- **Migração**: criar `admin_action_log` + RLS
-- **Nova edge function**: `supabase/functions/admin-set-user-password/index.ts`
-- **UI**: editar `src/pages/SuperAdmin.tsx` (aba Usuários, novo dialog)
-- **(Opcional)** template transacional de "senha alterada pelo suporte"
+- Sem mudanças em rotas, dados ou backend.
+- Sem alteração no design system global (tokens em `index.css`/`tailwind.config.ts`).
+- Arquivos tocados: `src/pages/WelcomeHubLanding.tsx`, `src/assets/welcome-hub-phone-mockup.png` (novo).
