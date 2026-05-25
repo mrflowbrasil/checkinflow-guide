@@ -435,6 +435,56 @@ export default function PropertiesList() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <AlertDialog
+        open={!!bulkAction}
+        onOpenChange={(o) => { if (!o) { setBulkAction(null); setBulkConfirmed(false); } }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {bulkAction === "publish" ? "Publicar todos os imóveis?" : "Despublicar todos os imóveis?"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {bulkAction === "publish" ? (
+                <>
+                  Esta é uma <strong>alteração em massa</strong>. {inactiveCount} {inactiveCount === 1 ? "imóvel atualmente em rascunho será publicado" : "imóveis atualmente em rascunho serão publicados"} e ficarão acessíveis publicamente pelos seus links e QR Codes.
+                </>
+              ) : (
+                <>
+                  Esta é uma <strong>alteração em massa</strong>. {activeCount} {activeCount === 1 ? "imóvel publicado será desativado" : "imóveis publicados serão desativados"}. Os links públicos e QR Codes deixarão de funcionar até que sejam republicados.
+                </>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          {bulkAction === "publish" && (
+            <label htmlFor="bulk-confirm" className="flex items-start gap-3 rounded-lg border p-3 cursor-pointer hover:bg-accent transition-colors">
+              <Checkbox
+                id="bulk-confirm"
+                checked={bulkConfirmed}
+                onCheckedChange={(v) => setBulkConfirmed(v === true)}
+                className="mt-0.5"
+              />
+              <span className="text-sm">
+                Confirmo que revisei todas as páginas e conteúdos dos imóveis antes de publicar.
+              </span>
+            </label>
+          )}
+
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={bulkLoading}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => { e.preventDefault(); runBulk(); }}
+              disabled={bulkLoading || (bulkAction === "publish" && !bulkConfirmed)}
+              className={bulkAction === "unpublish" ? "bg-destructive text-destructive-foreground hover:bg-destructive/90" : ""}
+            >
+              {bulkLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {bulkAction === "publish" ? "Publicar todos" : "Despublicar todos"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
