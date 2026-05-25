@@ -42,9 +42,9 @@ function Header() {
   return (
     <header className="sticky top-0 z-50 backdrop-blur-xl bg-[#020617]/70 border-b border-[rgba(148,163,184,0.20)]">
       <div className="container px-4 sm:px-6 lg:px-12 h-16 flex items-center justify-between">
-        <a href="#top" className="flex items-center gap-3 group">
+        <a href="#top" className="flex flex-col items-start leading-none group">
           <MrFlowLogo forceDark className="h-9 w-auto" />
-          <span className="text-[9px] tracking-[0.25em] text-[#CBD5E1] uppercase hidden sm:inline">Welcome Hub</span>
+          <span className="mt-1 text-[9px] tracking-[0.25em] text-[#CBD5E1] uppercase">Welcome Hub</span>
         </a>
 
         <nav className="hidden lg:flex items-center gap-7">
@@ -146,7 +146,7 @@ function HeroMockupContent() {
 
 function FloatingChip({ icon: Icon, label, className = "" }: { icon: any; label: string; className?: string }) {
   return (
-    <div className={`hidden lg:flex absolute items-center gap-2 px-3 py-2 rounded-2xl bg-[#111827]/80 border border-[rgba(148,163,184,0.20)] backdrop-blur-md shadow-xl text-xs text-[#F8FAFC] ${className}`}>
+    <div className={`hidden md:flex absolute items-center gap-2 px-3 py-2 rounded-2xl bg-[#111827]/80 border border-[rgba(148,163,184,0.20)] backdrop-blur-md shadow-xl text-xs text-[#F8FAFC] ${className}`}>
       <Icon className="h-3.5 w-3.5 text-[#00FFFF]" />
       {label}
     </div>
@@ -167,7 +167,7 @@ function Hero() {
           </div>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05] text-[#F8FAFC]">
             Transforme cada estadia em uma{" "}
-            <span className="text-[#00FFFF]">
+            <span className="text-[#00FF00]">
               experiência digital
             </span>{" "}
             de boas-vindas
@@ -185,18 +185,18 @@ function Hero() {
           </div>
         </div>
 
-        <div className="relative flex justify-center items-center min-h-[480px]">
+        <div className="relative flex justify-center items-center min-h-[560px]">
           <div className="absolute -inset-10 bg-gradient-to-tr from-[#00FFFF]/25 via-transparent to-[#00FFFF]/10 blur-3xl rounded-full pointer-events-none" />
           <img
             src={phoneMockup}
             alt="Mockup do celular exibindo um hub de boas-vindas Mr Flow"
-            className="relative w-full max-w-[520px] h-auto drop-shadow-[0_30px_60px_rgba(0,255,255,0.25)]"
+            className="relative z-0 w-full h-auto drop-shadow-[0_30px_60px_rgba(0,255,255,0.25)]"
             loading="eager"
           />
-          <FloatingChip icon={MessageSquare} label="Menos dúvidas repetidas" className="top-6 -left-2 z-10" />
-          <FloatingChip icon={Smartphone} label="Mais autonomia para o hóspede" className="top-1/3 -right-2 z-10" />
-          <FloatingChip icon={Sparkles} label="Experiência profissional" className="bottom-20 -left-4 z-10" />
-          <FloatingChip icon={QrCode} label="QR Code pronto para impressão" className="bottom-6 -right-2 z-10" />
+          <FloatingChip icon={MessageSquare} label="Menos dúvidas repetidas" className="top-10 left-4 z-10" />
+          <FloatingChip icon={Smartphone} label="Mais autonomia para o hóspede" className="top-1/4 right-2 z-10" />
+          <FloatingChip icon={Sparkles} label="Experiência profissional" className="bottom-24 left-2 z-10" />
+          <FloatingChip icon={QrCode} label="QR Code pronto para impressão" className="bottom-10 right-6 z-10" />
         </div>
       </div>
     </section>
