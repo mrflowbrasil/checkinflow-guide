@@ -330,8 +330,8 @@ export default function SuperAdmin() {
               {usersLoading && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
             </div>
             <p className="text-xs text-muted-foreground">
-              Envie um link seguro para o usuário definir uma nova senha. Por segurança, nunca
-              definimos a senha diretamente — o usuário receberá um e-mail e escolherá a nova senha.
+              Por padrão, envie um <strong>link de redefinição</strong> — o usuário escolhe a nova senha (fluxo seguro e em conformidade com a LGPD).
+              Use <strong>"Definir senha"</strong> apenas como fallback (ex.: o cliente não recebe o e-mail). Toda ação é registrada em auditoria e o titular é notificado por e-mail.
             </p>
           </Card>
 
