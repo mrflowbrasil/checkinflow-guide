@@ -1,33 +1,56 @@
-# Causa raiz definitiva
+## Objetivo
 
-A migration `20260523203136` removeu **todas** as políticas `SELECT` em `storage.objects` (Public read storage, tenant logos, email-assets) e nunca criou substituta para `authenticated`.
+Adicionar dois botões na página `/app/properties` para publicar ou despublicar todos os imóveis do tenant de uma vez, cada um com seu diálogo de confirmação.
 
-O Supabase SDK chama upload como `INSERT ... ON CONFLICT DO UPDATE RETURNING *`. O `RETURNING *` exige permissão de `SELECT` via RLS sobre a linha recém-inserida. Sem nenhuma política SELECT que cubra o objeto, o Postgres aborta com `42501 / new row violates row-level security policy` — mesmo a INSERT WITH CHECK passando.
+## Mudanças na UI (`src/pages/dashboard/PropertiesList.tsx`)
 
-Por isso o erro só surgiu agora, e por isso aparece como se fosse falha de upload — o objeto até seria gravado, mas o `RETURNING` é bloqueado.
+No header, ao lado de "Importar imóveis" e "Novo imóvel", adicionar um menu dropdown "Ações em massa" contendo:
+- **Publicar todos** — habilitado apenas se existir ao menos 1 imóvel com `status = 'inactive'`
+- **Despublicar todos** — habilitado apenas se existir ao menos 1 imóvel com `status = 'active'`
 
-Confirmado nos logs do storage:
+Mantém o layout limpo no viewport atual (1070px) sem quebrar a linha.
+
+### Diálogo "Publicar todos"
+
+`AlertDialog` com:
+- Título: "Publicar todos os imóveis?"
+- Descrição: aviso de que é uma alteração em massa que tornará públicos N imóveis atualmente em rascunho.
+- Checkbox obrigatório: "Confirmo que revisei todas as páginas e conteúdos dos imóveis antes de publicar."
+- Botão "Publicar todos" desabilitado até o checkbox ser marcado.
+
+### Diálogo "Despublicar todos"
+
+`AlertDialog` com:
+- Título: "Despublicar todos os imóveis?"
+- Descrição: aviso de que N imóveis ficarão inativos e os links públicos / QR Codes deixarão de funcionar até serem republicados.
+- Botão de confirmação destrutivo (`bg-destructive`).
+
+## Lógica
+
+Ambas as ações executam um `UPDATE` em massa via Supabase client:
+
+```ts
+// Publicar
+supabase.from("properties")
+  .update({ status: "active" })
+  .eq("tenant_id", tenant.id)
+  .eq("status", "inactive");
+
+// Despublicar
+supabase.from("properties")
+  .update({ status: "inactive" })
+  .eq("tenant_id", tenant.id)
+  .eq("status", "active");
 ```
-"code":"42501", "originalError":{"routine":"ExecWithCheckOptions"},
-"query":"insert into \"objects\" ... on conflict ... do update ... returning *"
-```
 
-E em `pg_policies`: zero policies com `cmd='SELECT'` em `storage.objects`.
+Em seguida: `qc.invalidateQueries({ queryKey: ["properties"] })` + `toast.success`.
 
-# Plano
+As RLS atuais (`Tenant members manage own properties`) já cobrem `UPDATE` filtrado por `tenant_id`, então **não há mudanças de banco de dados**.
 
-## 1. Migration corretiva
-Restaurar políticas SELECT em `storage.objects` cobrindo os buckets de tenant e os públicos, sem reabrir listagem indevida:
+## Estados de loading
 
-- **SELECT autenticado tenant-scoped** (`property-covers`, `property-gallery`, `block-media`, `tenant-logos`) — permite ler quando o primeiro segmento do path é o `current_tenant_id()` do usuário, ou quando o usuário é `super_admin`. Cobre o `RETURNING *` do upload.
-- **SELECT público em `email-assets`** — bucket de assets de e-mail, precisa ser legível por anon para os templates.
-- Manter buckets `property-covers` e `property-gallery` como `public:true` (já são); URLs públicas continuam funcionando via endpoint `/object/public/*` sem depender de RLS.
+Loader inline no item do dropdown e nos botões dos diálogos enquanto a mutação roda; desabilitar ambas as ações simultaneamente para evitar duplo clique.
 
-## 2. Validação
-- Criar uma nova propriedade com imagem de capa.
-- Confirmar `status 200` no `POST /storage/v1/object/property-covers/...`.
-- Confirmar criação do registro em `properties` + 24 páginas padrão.
+## Arquivos afetados
 
-## Arquivos
-- novo: `supabase/migrations/<timestamp>_restore_storage_select_policies.sql`
-- nenhuma alteração no frontend.
+- `src/pages/dashboard/PropertiesList.tsx` (única alteração)

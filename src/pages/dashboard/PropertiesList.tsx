@@ -6,7 +6,8 @@ import { usePlanUsage, useTenant } from "@/hooks/useTenant";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Home, ArrowRight, Copy, QrCode, Files, Loader2, Trash2, Sparkles, Download } from "lucide-react";
+import { Plus, Home, ArrowRight, Copy, QrCode, Files, Loader2, Trash2, Sparkles, Download, MoreHorizontal, Eye, EyeOff } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { slugify, randomSuffix } from "@/lib/slug";
 import {
@@ -44,6 +45,9 @@ export default function PropertiesList() {
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [importing, setImporting] = useState<string | null>(null);
+  const [bulkAction, setBulkAction] = useState<"publish" | "unpublish" | null>(null);
+  const [bulkLoading, setBulkLoading] = useState(false);
+  const [bulkConfirmed, setBulkConfirmed] = useState(false);
 
   const { data: integrations } = useQuery<IntegrationRow[]>({
     queryKey: ["tenant_integrations", tenant?.id],
@@ -236,6 +240,32 @@ export default function PropertiesList() {
     }
   };
 
+  const inactiveCount = properties?.filter((p) => p.status !== "active").length ?? 0;
+  const activeCount = properties?.filter((p) => p.status === "active").length ?? 0;
+
+  const runBulk = async () => {
+    if (!tenant?.id || !bulkAction) return;
+    setBulkLoading(true);
+    try {
+      const newStatus = bulkAction === "publish" ? "active" : "inactive";
+      const fromStatus = bulkAction === "publish" ? "inactive" : "active";
+      const { error } = await supabase
+        .from("properties")
+        .update({ status: newStatus })
+        .eq("tenant_id", tenant.id)
+        .eq("status", fromStatus);
+      if (error) throw error;
+      toast.success(bulkAction === "publish" ? "Todos os imóveis foram publicados!" : "Todos os imóveis foram despublicados.");
+      qc.invalidateQueries({ queryKey: ["properties"] });
+      setBulkAction(null);
+      setBulkConfirmed(false);
+    } catch (e: any) {
+      toast.error(e.message ?? "Erro ao atualizar imóveis");
+    } finally {
+      setBulkLoading(false);
+    }
+  };
+
   return (
     <div className="container py-8 max-w-6xl space-y-6 animate-fade-in">
       <header className="flex items-center justify-between gap-4 flex-wrap">
@@ -258,6 +288,30 @@ export default function PropertiesList() {
             importing={importing}
             onImport={triggerImport}
           />
+          {(properties?.length ?? 0) > 0 && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon" title="Ações em massa" disabled={bulkLoading}>
+                  {bulkLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MoreHorizontal className="h-4 w-4" />}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  disabled={inactiveCount === 0}
+                  onClick={() => { setBulkConfirmed(false); setBulkAction("publish"); }}
+                >
+                  <Eye className="mr-2 h-4 w-4" /> Publicar todos {inactiveCount > 0 && `(${inactiveCount})`}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  disabled={activeCount === 0}
+                  onClick={() => setBulkAction("unpublish")}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <EyeOff className="mr-2 h-4 w-4" /> Despublicar todos {activeCount > 0 && `(${activeCount})`}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
           {usage?.atLimit ? (
             <Button asChild variant="default">
               <Link to="/app/billing"><Sparkles className="mr-2 h-4 w-4" /> Fazer upgrade</Link>
@@ -377,6 +431,56 @@ export default function PropertiesList() {
             >
               {deleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={!!bulkAction}
+        onOpenChange={(o) => { if (!o) { setBulkAction(null); setBulkConfirmed(false); } }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {bulkAction === "publish" ? "Publicar todos os imóveis?" : "Despublicar todos os imóveis?"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {bulkAction === "publish" ? (
+                <>
+                  Esta é uma <strong>alteração em massa</strong>. {inactiveCount} {inactiveCount === 1 ? "imóvel atualmente em rascunho será publicado" : "imóveis atualmente em rascunho serão publicados"} e ficarão acessíveis publicamente pelos seus links e QR Codes.
+                </>
+              ) : (
+                <>
+                  Esta é uma <strong>alteração em massa</strong>. {activeCount} {activeCount === 1 ? "imóvel publicado será desativado" : "imóveis publicados serão desativados"}. Os links públicos e QR Codes deixarão de funcionar até que sejam republicados.
+                </>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          {bulkAction === "publish" && (
+            <label htmlFor="bulk-confirm" className="flex items-start gap-3 rounded-lg border p-3 cursor-pointer hover:bg-accent transition-colors">
+              <Checkbox
+                id="bulk-confirm"
+                checked={bulkConfirmed}
+                onCheckedChange={(v) => setBulkConfirmed(v === true)}
+                className="mt-0.5"
+              />
+              <span className="text-sm">
+                Confirmo que revisei todas as páginas e conteúdos dos imóveis antes de publicar.
+              </span>
+            </label>
+          )}
+
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={bulkLoading}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => { e.preventDefault(); runBulk(); }}
+              disabled={bulkLoading || (bulkAction === "publish" && !bulkConfirmed)}
+              className={bulkAction === "unpublish" ? "bg-destructive text-destructive-foreground hover:bg-destructive/90" : ""}
+            >
+              {bulkLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {bulkAction === "publish" ? "Publicar todos" : "Despublicar todos"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
