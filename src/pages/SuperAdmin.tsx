@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsSuperAdmin } from "@/hooks/useTenant";
 import { useAuth } from "@/hooks/useAuth";
@@ -79,8 +79,11 @@ export default function SuperAdmin() {
   const [resetTarget, setResetTarget] = useState<{ id: string; email: string } | null>(null);
   const [resetting, setResetting] = useState(false);
 
-  // debounce search
-  useState(() => {});
+  useEffect(() => {
+    const t = setTimeout(() => setUserQuery(userSearch.trim().toLowerCase()), 300);
+    return () => clearTimeout(t);
+  }, [userSearch]);
+
   const { data: usersData, isLoading: usersLoading } = useQuery({
     queryKey: ["admin_users", userQuery],
     enabled: !!isAdmin,
