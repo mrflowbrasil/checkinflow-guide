@@ -20,6 +20,7 @@ import { Seo } from "@/components/Seo";
 import { MrFlowLogo } from "@/components/brand/MrFlowLogo";
 import ShaderBackground from "@/components/ui/shader-background";
 import phoneMockup from "@/assets/welcome-hub-phone-mockup.png";
+import { StickyFeatureSection } from "@/components/ui/sticky-scroll-cards-section";
 
 const DEMO_URL = "https://hub.mrflow.com.br/g/suite-premium-vila-serena-23515a";
 
@@ -804,6 +805,7 @@ export default function WelcomeHubLanding() {
         <Header />
         <main>
           <Hero />
+          <StickyFeatureSection />
           <ProblemSection />
           <SolutionSection />
           <RealDemoPreview />
