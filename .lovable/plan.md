@@ -1,47 +1,67 @@
 ## Objetivo
 
-Adicionar uma nova aba **Usuários** no Super Admin que lista todos os usuários da plataforma e permite ao super admin enviar um link de redefinição de senha (por e-mail) para qualquer um deles. Útil para o caso do `alexandrebarbosamaciel@hotmail.com` e qualquer cliente que peça ajuda no futuro.
+Evitar que clientes fiquem presos a versões antigas do Mr Flow por causa de cache do navegador (caso ABMnb). Detectar automaticamente quando uma nova versão foi publicada e oferecer recarregar a página.
 
-## Como funciona
+## Contexto
 
-A senha nunca é definida diretamente pelo admin (mesmo em Supabase isso exige Service Role e expõe risco de segurança). Em vez disso, o admin clica em **"Enviar link de redefinição"** e o usuário recebe um e-mail com link para escolher a nova senha — fluxo padrão e seguro.
+O projeto **não usa service worker / PWA com cache** (apenas `manifest.json` para instalabilidade — sem `vite-plugin-pwa`). Então o problema é puramente cache de bundle do navegador. A solução é leve: um `version.json` gerado no build + um watcher no frontend.
 
 ## Mudanças
 
-### 1. Edge Function `admin-list-users` (nova)
-- `supabase/functions/admin-list-users/index.ts`
-- Valida JWT do chamador, busca o user_id, confere se tem role `super_admin` via `has_role`.
-- Se autorizado: usa `supabase.auth.admin.listUsers()` (Service Role) e retorna `[{ id, email, created_at, last_sign_in_at, tenant_name }]`.
-- Faz join com `profiles` + `tenants` para incluir o nome do workspace de cada usuário.
-- Suporta busca por e-mail via query param `?q=`.
+### 1. Geração de versão no build
 
-### 2. Edge Function `admin-send-password-reset` (nova)
-- `supabase/functions/admin-send-password-reset/index.ts`
-- Valida JWT + role `super_admin`.
-- Recebe `{ email }` no body.
-- Chama `supabase.auth.admin.generateLink({ type: 'recovery', email, options: { redirectTo: '<APP_URL>/reset-password' } })` — isso dispara o e-mail de recovery pelo hook de auth-email já configurado, usando o template `recovery.tsx` existente.
-- Retorna `{ ok: true }` ou erro.
+- `scripts/generate-version.mjs` (novo): escreve `public/version.json` com `{ "version": "<timestamp ms>", "builtAt": "<ISO>" }`.
+- `package.json`: adicionar `"prebuild": "node scripts/generate-version.mjs"` e `"predev": "node scripts/generate-version.mjs"`.
+- O arquivo `public/version.json` já é servido com `Cache-Control: no-store` pelo proxy da Lovable.
 
-### 3. UI: nova aba "Usuários" em `src/pages/SuperAdmin.tsx`
-- Adiciona `<TabsTrigger value="users">Usuários</TabsTrigger>` na lista de tabs.
-- Novo `TabsContent value="users"` com:
-  - Campo de busca por e-mail (debounce 300ms).
-  - Tabela: Email · Workspace · Criado em · Último acesso · Ações.
-  - Botão por linha: **"Enviar link de redefinição"** (ícone `KeyRound`).
-  - Ao clicar: `AlertDialog` de confirmação ("Enviar e-mail de redefinição de senha para X?") → invoca `admin-send-password-reset`.
-  - Toast de sucesso/erro. Loader inline no botão durante o envio.
-- Usa `useQuery` para carregar `supabase.functions.invoke('admin-list-users', { body: { q } })`.
+### 2. Snapshot da versão dentro do bundle
 
-### 4. Sem mudanças de banco
-- Não precisa migration. As policies de `profiles` e `tenants` já permitem leitura para super_admin, e a edge function usa Service Role para listar `auth.users`.
-- O template de e-mail `recovery` já existe em `supabase/functions/_shared/email-templates/recovery.tsx` e é disparado automaticamente pelo `auth-email-hook`.
+- `vite.config.ts`: injetar `define: { __APP_VERSION__: JSON.stringify(process.env.APP_VERSION || Date.now().toString()) }`.
+- O script `generate-version.mjs` define `process.env.APP_VERSION` (na verdade escreve um arquivo que o vite.config.ts lê em paralelo via `fs.readFileSync('public/version.json')` antes de declarar `define`).
+- `src/vite-env.d.ts`: declarar `declare const __APP_VERSION__: string;`.
+
+### 3. Componente `VersionWatcher`
+
+- `src/components/VersionWatcher.tsx` (novo):
+  - A cada 60s + em `visibilitychange` (quando a aba volta ao foco), faz `fetch('/version.json?t=' + Date.now(), { cache: 'no-store' })`.
+  - Se `remote.version !== __APP_VERSION__`, exibe um toast persistente (sonner):
+    > "Nova versão disponível. Atualize para ver as últimas melhorias."
+    > Botão: **Atualizar agora**
+  - Ao clicar: limpa `caches` (`if ('caches' in window) await caches.keys().then(ks => ks.forEach(k => caches.delete(k)))`) e faz `window.location.reload()`.
+  - Desativado em `import.meta.env.DEV`.
+  - Só dispara o toast uma vez por sessão (flag em memória).
+
+### 4. Limpeza defensiva de service workers órfãos
+
+- `src/main.tsx`: ao carregar, executar uma vez:
+  ```ts
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.unregister()));
+  }
+  ```
+- Garante que dispositivos que algum dia tiveram SW registrado (mesmo por engano) não sirvam mais bundle antigo.
+
+### 5. Montagem global
+
+- `src/App.tsx`: renderizar `<VersionWatcher />` próximo ao `<Toaster />`, dentro do provider raiz — assim funciona tanto no dashboard quanto nas páginas de guia (`/g/:slug`).
+
+## Detalhes técnicos
+
+- Sem novas dependências (usa `sonner` já presente).
+- Sem mudanças de banco, RLS, edge functions ou auth.
+- `version.json` é `{ "version": "1779733527000", "builtAt": "2026-05-25T18:25:27Z" }`.
+- Polling de 60s é leve (~200 bytes por request) e respeita `visibilitychange` (não roda em aba inativa).
 
 ## Arquivos afetados
 
-- `supabase/functions/admin-list-users/index.ts` (novo)
-- `supabase/functions/admin-send-password-reset/index.ts` (novo)
-- `src/pages/SuperAdmin.tsx` (nova aba + lógica)
+- `scripts/generate-version.mjs` (novo)
+- `package.json` (scripts `prebuild` + `predev`)
+- `vite.config.ts` (`define: __APP_VERSION__`)
+- `src/vite-env.d.ts` (declaração de tipo)
+- `src/components/VersionWatcher.tsx` (novo)
+- `src/main.tsx` (unregister de SW legados)
+- `src/App.tsx` (monta `<VersionWatcher />`)
 
-## Observação para o caso atual
+## Resultado para o cliente ABMnb
 
-Após implementado, no Super Admin → Usuários, basta buscar `alexandrebarbosamaciel@hotmail.com` e clicar em "Enviar link de redefinição". Ele recebe o e-mail e define `Abm@2026` (ou qualquer outra senha) pessoalmente — o que é o caminho correto e seguro.
+Após o deploy desta mudança, basta que ele faça **um único hard refresh** (`Ctrl+Shift+R`). A partir daí, qualquer nova publicação será detectada automaticamente em até 60s — ele verá o aviso "Nova versão disponível" e basta clicar em "Atualizar agora". Não precisará mais limpar cache manualmente.
