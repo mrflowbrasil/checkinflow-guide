@@ -162,6 +162,23 @@ export default function SuperAdmin() {
     return { label: "Pendente", variant: "outline" as const };
   };
 
+  const sendPasswordReset = async () => {
+    if (!resetTarget) return;
+    setResetting(true);
+    try {
+      const { error } = await supabase.functions.invoke("admin-send-password-reset", {
+        body: { email: resetTarget.email },
+      });
+      if (error) throw error;
+      toast.success(`Link de redefinição enviado para ${resetTarget.email}`);
+      setResetTarget(null);
+    } catch (err: any) {
+      toast.error(err.message ?? "Erro ao enviar link de redefinição");
+    } finally {
+      setResetting(false);
+    }
+  };
+
   return (
     <div className="container py-8 max-w-6xl space-y-6 animate-fade-in">
       <header className="flex items-center gap-2">
@@ -175,6 +192,7 @@ export default function SuperAdmin() {
       <Tabs defaultValue="workspaces" className="space-y-4">
         <TabsList>
           <TabsTrigger value="workspaces">Workspaces</TabsTrigger>
+          <TabsTrigger value="users">Usuários</TabsTrigger>
           <TabsTrigger value="invitations">Convites</TabsTrigger>
           <TabsTrigger value="webhooks">Webhooks</TabsTrigger>
         </TabsList>
