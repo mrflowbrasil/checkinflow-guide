@@ -45,6 +45,9 @@ export default function PropertiesList() {
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [importing, setImporting] = useState<string | null>(null);
+  const [bulkAction, setBulkAction] = useState<"publish" | "unpublish" | null>(null);
+  const [bulkLoading, setBulkLoading] = useState(false);
+  const [bulkConfirmed, setBulkConfirmed] = useState(false);
 
   const { data: integrations } = useQuery<IntegrationRow[]>({
     queryKey: ["tenant_integrations", tenant?.id],
