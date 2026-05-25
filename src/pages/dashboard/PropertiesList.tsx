@@ -288,6 +288,30 @@ export default function PropertiesList() {
             importing={importing}
             onImport={triggerImport}
           />
+          {(properties?.length ?? 0) > 0 && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon" title="Ações em massa" disabled={bulkLoading}>
+                  {bulkLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <MoreHorizontal className="h-4 w-4" />}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  disabled={inactiveCount === 0}
+                  onClick={() => { setBulkConfirmed(false); setBulkAction("publish"); }}
+                >
+                  <Eye className="mr-2 h-4 w-4" /> Publicar todos {inactiveCount > 0 && `(${inactiveCount})`}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  disabled={activeCount === 0}
+                  onClick={() => setBulkAction("unpublish")}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <EyeOff className="mr-2 h-4 w-4" /> Despublicar todos {activeCount > 0 && `(${activeCount})`}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
           {usage?.atLimit ? (
             <Button asChild variant="default">
               <Link to="/app/billing"><Sparkles className="mr-2 h-4 w-4" /> Fazer upgrade</Link>
