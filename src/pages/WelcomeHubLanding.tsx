@@ -185,18 +185,18 @@ function Hero() {
           </div>
         </div>
 
-        <div className="relative flex justify-center items-center min-h-[480px]">
+        <div className="relative flex justify-center items-center min-h-[560px]">
           <div className="absolute -inset-10 bg-gradient-to-tr from-[#00FFFF]/25 via-transparent to-[#00FFFF]/10 blur-3xl rounded-full pointer-events-none" />
           <img
             src={phoneMockup}
             alt="Mockup do celular exibindo um hub de boas-vindas Mr Flow"
-            className="relative w-full max-w-[520px] h-auto drop-shadow-[0_30px_60px_rgba(0,255,255,0.25)]"
+            className="relative z-0 w-full h-auto drop-shadow-[0_30px_60px_rgba(0,255,255,0.25)]"
             loading="eager"
           />
-          <FloatingChip icon={MessageSquare} label="Menos dúvidas repetidas" className="top-6 -left-2 z-10" />
-          <FloatingChip icon={Smartphone} label="Mais autonomia para o hóspede" className="top-1/3 -right-2 z-10" />
-          <FloatingChip icon={Sparkles} label="Experiência profissional" className="bottom-20 -left-4 z-10" />
-          <FloatingChip icon={QrCode} label="QR Code pronto para impressão" className="bottom-6 -right-2 z-10" />
+          <FloatingChip icon={MessageSquare} label="Menos dúvidas repetidas" className="top-10 left-4 z-10" />
+          <FloatingChip icon={Smartphone} label="Mais autonomia para o hóspede" className="top-1/4 right-2 z-10" />
+          <FloatingChip icon={Sparkles} label="Experiência profissional" className="bottom-24 left-2 z-10" />
+          <FloatingChip icon={QrCode} label="QR Code pronto para impressão" className="bottom-10 right-6 z-10" />
         </div>
       </div>
     </section>
