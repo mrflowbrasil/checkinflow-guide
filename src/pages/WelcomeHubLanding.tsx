@@ -24,7 +24,7 @@ import phoneMockup from "@/assets/welcome-hub-phone-mockup.png";
 const DEMO_URL = "https://hub.mrflow.com.br/g/suite-premium-vila-serena-23515a";
 
 // Ajuste manual: largura máxima do mockup do celular no hero (ex.: "360px", "420px", "80%")
-const PHONE_MOCKUP_MAX_WIDTH = "420px";
+const PHONE_MOCKUP_MAX_WIDTH = "360px";
 
 const PAGE_BG = {
   background:
