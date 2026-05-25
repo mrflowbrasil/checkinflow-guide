@@ -1,0 +1,145 @@
+import React, { useState, useEffect, useRef, RefObject } from "react";
+
+// --- Data for the feature cards (PT-BR / WelcomeHub) ---
+const features = [
+  {
+    title: "Link único para hóspedes",
+    description:
+      "Um único link inteligente que abre o guia digital da sua propriedade em qualquer celular — sem app, sem download, sem fricção.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=2070&auto=format&fit=crop",
+    bgColor: "bg-cyan-100 dark:bg-cyan-900",
+    textColor: "text-cyan-950 dark:text-cyan-50",
+  },
+  {
+    title: "Multi-idioma automático",
+    description:
+      "Traduza o guia inteiro para o idioma do hóspede com um clique. Inglês, espanhol, francês e mais — sempre na voz da sua marca.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1526495124232-a04e1849168c?q=80&w=2070&auto=format&fit=crop",
+    bgColor: "bg-cyan-200 dark:bg-cyan-800",
+    textColor: "text-cyan-950 dark:text-cyan-50",
+  },
+  {
+    title: "Check-in digital sem fricção",
+    description:
+      "Envie boas-vindas, regras da casa e instruções de acesso antes da chegada. Reduza mensagens repetidas no WhatsApp e ganhe tempo.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?q=80&w=2070&auto=format&fit=crop",
+    bgColor: "bg-sky-200 dark:bg-sky-800",
+    textColor: "text-cyan-950 dark:text-cyan-50",
+  },
+  {
+    title: "PWA instalável + PDF offline",
+    description:
+      "Hóspedes salvam seu guia como app no celular ou baixam em PDF para consultar sem internet, em qualquer lugar da viagem.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1551632436-cbf8dd35adfa?q=80&w=2070&auto=format&fit=crop",
+    bgColor: "bg-cyan-300 dark:bg-cyan-900",
+    textColor: "text-cyan-950 dark:text-cyan-50",
+  },
+];
+
+// --- Custom Hook for Scroll Animation ---
+function useScrollAnimation<T extends HTMLElement>(): [RefObject<T>, boolean] {
+  const [inView, setInView] = useState(false);
+  const ref = useRef<T>(null);
+
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { root: null, rootMargin: "0px", threshold: 0.1 },
+    );
+
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
+  return [ref, inView];
+}
+
+// --- Header Component ---
+const AnimatedHeader: React.FC = () => {
+  const [headerRef, headerInView] = useScrollAnimation<HTMLHeadingElement>();
+  const [pRef, pInView] = useScrollAnimation<HTMLParagraphElement>();
+
+  return (
+    <div className="mx-auto max-w-3xl text-center mb-16">
+      <h2
+        ref={headerRef}
+        className={`text-4xl md:text-5xl font-bold tracking-tight text-cyan-950 dark:text-cyan-50 transition-all duration-700 ${
+          headerInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+        }`}
+      >
+        Tudo que seu hóspede precisa, num só lugar
+      </h2>
+      <p
+        ref={pRef}
+        className={`mt-6 text-lg text-cyan-900/70 dark:text-cyan-100/70 transition-all duration-700 delay-150 ${
+          pInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+        }`}
+      >
+        Recursos pensados para anfitriões que querem encantar sem precisar responder o mesmo WhatsApp cinco vezes por dia.
+      </p>
+    </div>
+  );
+};
+
+// --- Main sticky feature section ---
+export function StickyFeatureSection() {
+  return (
+    <section className="w-full bg-white dark:bg-slate-950 py-24 px-4 md:px-8">
+      <div className="max-w-6xl mx-auto">
+        <AnimatedHeader />
+
+        <div className="relative">
+          {features.map((feature, index) => (
+            <div
+              key={index}
+              className="sticky"
+              style={{ top: `${80 + index * 24}px` }}
+            >
+              <div
+                className={`${feature.bgColor} ${feature.textColor} rounded-3xl shadow-xl overflow-hidden grid grid-cols-1 md:grid-cols-2 gap-8 p-8 md:p-12 mb-8`}
+              >
+                {/* Card Content */}
+                <div className="flex flex-col justify-center">
+                  <span className="text-sm font-mono opacity-60 mb-3">
+                    0{index + 1}
+                  </span>
+                  <h3 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">
+                    {feature.title}
+                  </h3>
+                  <p className="text-lg opacity-90 leading-relaxed">
+                    {feature.description}
+                  </p>
+                </div>
+
+                {/* Card Image */}
+                <div className="rounded-2xl overflow-hidden aspect-video md:aspect-auto md:min-h-[320px] bg-black/5">
+                  <img
+                    src={feature.imageUrl}
+                    alt={feature.title}
+                    loading="lazy"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.onerror = null;
+                      target.src =
+                        "https://placehold.co/600x400/cccccc/ffffff?text=Imagem+indisponivel";
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default StickyFeatureSection;
