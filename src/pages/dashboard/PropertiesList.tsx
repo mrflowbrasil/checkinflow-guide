@@ -6,7 +6,8 @@ import { usePlanUsage, useTenant } from "@/hooks/useTenant";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Home, ArrowRight, Copy, QrCode, Files, Loader2, Trash2, Sparkles, Download } from "lucide-react";
+import { Plus, Home, ArrowRight, Copy, QrCode, Files, Loader2, Trash2, Sparkles, Download, MoreHorizontal, Eye, EyeOff } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { slugify, randomSuffix } from "@/lib/slug";
 import {
