@@ -9,6 +9,7 @@ import AppShell from "@/components/layout/AppShell";
 import VersionWatcher from "@/components/VersionWatcher";
 
 import Index from "./pages/Index";
+import WelcomeHubLanding from "./pages/WelcomeHubLanding";
 import Auth from "./pages/Auth";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
@@ -71,6 +72,7 @@ const App = () => (
         <AuthProvider>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/welcome-hub" element={<WelcomeHubLanding />} />
             <Route path="/guia-digital-airbnb" element={<GuiaDigitalAirbnb />} />
             <Route path="/manual-digital-airbnb" element={<ManualDigitalAirbnb />} />
             <Route path="/app-para-anfitriao" element={<AppParaAnfitriao />} />
