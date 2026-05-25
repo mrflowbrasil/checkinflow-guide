@@ -167,7 +167,7 @@ function Hero() {
           </div>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05] text-[#F8FAFC]">
             Transforme cada estadia em uma{" "}
-            <span className="text-[#00FFFF]">
+            <span className="text-[#00FF00]">
               experiência digital
             </span>{" "}
             de boas-vindas
