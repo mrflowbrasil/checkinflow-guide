@@ -23,6 +23,9 @@ import phoneMockup from "@/assets/welcome-hub-phone-mockup.png";
 
 const DEMO_URL = "https://hub.mrflow.com.br/g/suite-premium-vila-serena-23515a";
 
+// Ajuste manual: largura máxima do mockup do celular no hero (ex.: "360px", "420px", "80%")
+const PHONE_MOCKUP_MAX_WIDTH = "420px";
+
 const PAGE_BG = {
   background:
     "radial-gradient(1200px 600px at 15% 5%, rgba(0,255,255,0.10), transparent 60%), radial-gradient(900px 500px at 85% 95%, rgba(0,255,0,0.08), transparent 60%), linear-gradient(180deg, #020617 0%, #0F172A 100%)",
@@ -190,7 +193,8 @@ function Hero() {
           <img
             src={phoneMockup}
             alt="Mockup do celular exibindo um hub de boas-vindas Mr Flow"
-            className="relative z-0 w-full h-auto drop-shadow-[0_30px_60px_rgba(0,255,255,0.25)]"
+            className="relative z-0 w-full h-auto mx-auto drop-shadow-[0_30px_60px_rgba(0,255,255,0.25)]"
+            style={{ maxWidth: PHONE_MOCKUP_MAX_WIDTH }}
             loading="eager"
           />
           <FloatingChip icon={MessageSquare} label="Menos dúvidas repetidas" className="top-10 left-4 z-10" />
