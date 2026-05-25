@@ -193,7 +193,8 @@ function Hero() {
           <img
             src={phoneMockup}
             alt="Mockup do celular exibindo um hub de boas-vindas Mr Flow"
-            className="relative z-0 w-full h-auto drop-shadow-[0_30px_60px_rgba(0,255,255,0.25)]"
+            className="relative z-0 w-full h-auto mx-auto drop-shadow-[0_30px_60px_rgba(0,255,255,0.25)]"
+            style={{ maxWidth: PHONE_MOCKUP_MAX_WIDTH }}
             loading="eager"
           />
           <FloatingChip icon={MessageSquare} label="Menos dúvidas repetidas" className="top-10 left-4 z-10" />
