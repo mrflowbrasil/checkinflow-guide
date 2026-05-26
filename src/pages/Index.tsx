@@ -17,7 +17,7 @@ const Index = () => {
       <Seo
         title="Mr Flow • Welcome Hub — Guia digital para anfitriões"
         description="Crie um Hub de Boas Vindas digital para o seu imóvel de temporada. Encante hóspedes com check-in, regras, dicas locais e QR Code próprio."
-        path="/"
+        path="/welcome-hub"
       />
       <ShaderBackground className="pointer-events-none absolute inset-0 z-0 h-full w-full opacity-75" />
       {/* Header */}
