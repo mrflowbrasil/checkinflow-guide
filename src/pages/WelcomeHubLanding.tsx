@@ -34,7 +34,6 @@ const PAGE_BG = {
 
 const navItems = [
   { label: "Benefícios", href: "#beneficios" },
-  { label: "Demo", href: "#demo" },
   { label: "Como funciona", href: "#como-funciona" },
   { label: "Recursos", href: "#recursos" },
   { label: "Planos", href: "#planos" },
@@ -317,24 +316,24 @@ function SolutionSection() {
 
 function RealDemoPreview() {
   return (
-    <section id="demo" className="py-20 lg:py-28 bg-[#0F172A] border-y border-[rgba(148,163,184,0.20)]">
+    <section id="demo" className="py-20 lg:py-28 bg-[#E6FBFC]/90 backdrop-blur-sm border-y border-[#00FFFF]/30">
       <div className="container px-4 sm:px-6 lg:px-12 max-w-6xl mx-auto">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-[#00FFFF]/10 text-[#00FFFF] border-[#00FFFF]/30 rounded-full">Demo real</Badge>
-          <h2 className="text-3xl lg:text-4xl font-bold tracking-tight text-[#F8FAFC] mb-3">
+          <Badge className="mb-4 bg-[#0E7490]/10 text-[#0E7490] border-[#0E7490]/30 rounded-full">Demo real</Badge>
+          <h2 className="text-3xl lg:text-4xl font-bold tracking-tight text-slate-900 mb-3">
             Experimente como seu hóspede verá o Welcome Hub
           </h2>
-          <p className="text-[#CBD5E1] text-lg max-w-2xl mx-auto leading-relaxed">
+          <p className="text-slate-700 text-lg max-w-2xl mx-auto leading-relaxed">
             Veja uma propriedade demonstrativa criada na Mr Flow Welcome Hub e navegue como se fosse um hóspede acessando pelo celular.
           </p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
-            <h3 className="text-2xl font-semibold text-[#F8FAFC] mb-3">
+            <h3 className="text-2xl font-semibold text-slate-900 mb-3">
               Uma experiência real, direto no celular do hóspede
             </h3>
-            <p className="text-[#CBD5E1] mb-6 leading-relaxed">
+            <p className="text-slate-700 mb-6 leading-relaxed">
               Seu cliente pode acessar informações como Wi-Fi, check-in, checkout, regras da casa, localização, dicas locais e contatos úteis em uma página simples, bonita e sempre atualizada.
             </p>
             <ul className="space-y-3 mb-8">
@@ -346,18 +345,18 @@ function RealDemoPreview() {
                 "Ideal para enviar antes da chegada ou deixar impresso no imóvel",
               ].map((b) => (
                 <li key={b} className="flex items-start gap-3">
-                  <Check className="h-5 w-5 text-[#00FF00] shrink-0 mt-0.5" />
-                  <span className="text-[#F8FAFC]">{b}</span>
+                  <Check className="h-5 w-5 text-[#0E7490] shrink-0 mt-0.5" />
+                  <span className="text-slate-800">{b}</span>
                 </li>
               ))}
             </ul>
             <div className="flex flex-col sm:flex-row gap-3">
-              <Button asChild size="lg" className="rounded-xl bg-[#00FFFF] text-[#020617] hover:bg-[#00FFFF]/90 font-semibold">
+              <Button asChild size="lg" className="rounded-xl bg-[#0E7490] text-white hover:bg-[#0E7490]/90 font-semibold">
                 <a href={DEMO_URL} target="_blank" rel="noopener noreferrer">
                   Abrir demo completa <ExternalLink className="ml-2 h-4 w-4" />
                 </a>
               </Button>
-              <Button asChild size="lg" variant="outline" className="rounded-xl bg-white/5 border-[rgba(148,163,184,0.30)] text-white hover:bg-white/10">
+              <Button asChild size="lg" variant="outline" className="rounded-xl bg-white border-[#0E7490]/30 text-[#0E7490] hover:bg-[#0E7490]/5">
                 <Link to="/auth">Criar meu hub grátis</Link>
               </Button>
             </div>
@@ -445,24 +444,24 @@ const features = [
 
 function FeaturesSection() {
   return (
-    <section id="recursos" className="py-20 lg:py-28 bg-[#0F172A] border-y border-[rgba(148,163,184,0.20)]">
+    <section id="recursos" className="py-20 lg:py-28 bg-[#E6FBFC]/90 backdrop-blur-sm border-y border-[#00FFFF]/30">
       <div className="container px-4 sm:px-6 lg:px-12 max-w-6xl mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <h2 className="text-3xl lg:text-4xl font-bold text-[#F8FAFC] mb-4">
+          <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">
             Recursos para profissionalizar sua hospedagem
           </h2>
-          <p className="text-[#CBD5E1] text-lg leading-relaxed">
+          <p className="text-slate-700 text-lg leading-relaxed">
             Tudo que sua operação precisa para entregar informações com clareza e criar uma experiência mais organizada para o hóspede.
           </p>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {features.map((f) => (
-            <Card key={f.t} className="p-6 bg-[#111827] border-[rgba(148,163,184,0.20)] rounded-2xl hover:border-[#00FFFF]/40 transition-colors">
-              <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-[#00FFFF]/15 to-[#00FF00]/15 grid place-items-center mb-4">
-                <f.icon className="h-5 w-5 text-[#00FFFF]" />
+            <Card key={f.t} className="p-6 bg-white border-[#0E7490]/15 rounded-2xl hover:border-[#0E7490]/40 transition-colors shadow-sm">
+              <div className="h-11 w-11 rounded-xl bg-[#0E7490]/10 grid place-items-center mb-4">
+                <f.icon className="h-5 w-5 text-[#0E7490]" />
               </div>
-              <h3 className="font-semibold text-[#F8FAFC] mb-2">{f.t}</h3>
-              <p className="text-sm text-[#CBD5E1] leading-relaxed">{f.d}</p>
+              <h3 className="font-semibold text-slate-900 mb-2">{f.t}</h3>
+              <p className="text-sm text-slate-600 leading-relaxed">{f.d}</p>
             </Card>
           ))}
         </div>
@@ -520,22 +519,22 @@ const audiences = [
 
 function AudienceSection() {
   return (
-    <section className="py-20 lg:py-28 bg-[#0F172A] border-y border-[rgba(148,163,184,0.20)]">
+    <section className="py-20 lg:py-28 bg-[#E6FBFC]/90 backdrop-blur-sm border-y border-[#00FFFF]/30">
       <div className="container px-4 sm:px-6 lg:px-12 max-w-6xl mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <h2 className="text-3xl lg:text-4xl font-bold text-[#F8FAFC] mb-4">Feito para quem vive de hospedagem</h2>
-          <p className="text-[#CBD5E1] text-lg leading-relaxed">
+          <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">Feito para quem vive de hospedagem</h2>
+          <p className="text-slate-700 text-lg leading-relaxed">
             Do anfitrião individual à administradora com dezenas de imóveis, o Welcome Hub ajuda a entregar uma comunicação mais clara e profissional.
           </p>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {audiences.map((a) => (
-            <Card key={a.t} className="p-6 bg-[#111827] border-[rgba(148,163,184,0.20)] rounded-2xl">
-              <div className="h-11 w-11 rounded-xl bg-[#00FF00]/10 grid place-items-center mb-4">
-                <a.icon className="h-5 w-5 text-[#00FF00]" />
+            <Card key={a.t} className="p-6 bg-white border-[#0E7490]/15 rounded-2xl shadow-sm">
+              <div className="h-11 w-11 rounded-xl bg-[#0E7490]/10 grid place-items-center mb-4">
+                <a.icon className="h-5 w-5 text-[#0E7490]" />
               </div>
-              <h3 className="font-semibold text-[#F8FAFC] mb-2">{a.t}</h3>
-              <p className="text-sm text-[#CBD5E1] leading-relaxed">{a.d}</p>
+              <h3 className="font-semibold text-slate-900 mb-2">{a.t}</h3>
+              <p className="text-sm text-slate-600 leading-relaxed">{a.d}</p>
             </Card>
           ))}
         </div>
@@ -621,20 +620,22 @@ const plans = [
 
 function PricingSection() {
   return (
-    <section id="planos" className="py-20 lg:py-28 bg-[#0F172A] border-y border-[rgba(148,163,184,0.20)]">
+    <section id="planos" className="py-20 lg:py-28 bg-[#E6FBFC]/90 backdrop-blur-sm border-y border-[#00FFFF]/30">
       <div className="container px-4 sm:px-6 lg:px-12 max-w-7xl mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <h2 className="text-3xl lg:text-4xl font-bold text-[#F8FAFC] mb-4">Planos para cada fase da sua operação</h2>
-          <p className="text-[#CBD5E1] text-lg">Comece com um imóvel e evolua conforme sua operação cresce.</p>
+          <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">Planos para cada fase da sua operação</h2>
+          <p className="text-slate-700 text-lg">Comece com um imóvel e evolua conforme sua operação cresce.</p>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-5">
-          {plans.map((p) => (
+          {plans.map((p) => {
+            const isDark = p.featured;
+            return (
             <Card
               key={p.name}
-              className={`relative p-6 rounded-2xl flex flex-col bg-[#111827] ${
-                p.featured
-                  ? "border-[#00FFFF]/60 shadow-[0_0_40px_-10px_rgba(0,255,255,0.5)]"
-                  : "border-[rgba(148,163,184,0.20)]"
+              className={`relative p-6 rounded-2xl flex flex-col ${
+                isDark
+                  ? "bg-[#111827] border-[#00FFFF]/60 shadow-[0_0_40px_-10px_rgba(0,255,255,0.5)]"
+                  : "bg-white border-[#0E7490]/15 shadow-sm"
               }`}
             >
               {p.badge && (
@@ -643,24 +644,24 @@ function PricingSection() {
                   {p.badge}
                 </div>
               )}
-              <h3 className="font-bold text-[#F8FAFC] text-xl">{p.name}</h3>
-              <p className="text-xs text-[#CBD5E1] mb-1">{p.sub}</p>
-              <p className="text-xs text-[#38BDF8] mb-4">{p.limit}</p>
+              <h3 className={`font-bold text-xl ${isDark ? "text-[#F8FAFC]" : "text-slate-900"}`}>{p.name}</h3>
+              <p className={`text-xs mb-1 ${isDark ? "text-[#CBD5E1]" : "text-slate-600"}`}>{p.sub}</p>
+              <p className={`text-xs mb-4 ${isDark ? "text-[#38BDF8]" : "text-[#0E7490]"}`}>{p.limit}</p>
               <div className="mb-1">
                 {p.custom ? (
-                  <div className="text-2xl font-bold text-[#F8FAFC]">{p.custom}</div>
+                  <div className={`text-2xl font-bold ${isDark ? "text-[#F8FAFC]" : "text-slate-900"}`}>{p.custom}</div>
                 ) : (
                   <>
-                    <div className="text-2xl font-bold text-[#F8FAFC]">{p.monthly}<span className="text-xs font-normal text-[#CBD5E1]">/mês</span></div>
-                    <div className="text-xs text-[#CBD5E1]">ou {p.yearly}/ano</div>
+                    <div className={`text-2xl font-bold ${isDark ? "text-[#F8FAFC]" : "text-slate-900"}`}>{p.monthly}<span className={`text-xs font-normal ${isDark ? "text-[#CBD5E1]" : "text-slate-600"}`}>/mês</span></div>
+                    <div className={`text-xs ${isDark ? "text-[#CBD5E1]" : "text-slate-600"}`}>ou {p.yearly}/ano</div>
                   </>
                 )}
               </div>
-              {p.trial && <div className="text-[10px] text-[#00FF00] font-medium mb-3">{p.trial}</div>}
+              {p.trial && <div className={`text-[10px] font-medium mb-3 ${isDark ? "text-[#00FF00]" : "text-[#0E7490]"}`}>{p.trial}</div>}
               <ul className="space-y-2 my-5 flex-1">
                 {p.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-xs text-[#CBD5E1]">
-                    <Check className="h-3.5 w-3.5 text-[#00FF00] shrink-0 mt-0.5" />
+                  <li key={f} className={`flex items-start gap-2 text-xs ${isDark ? "text-[#CBD5E1]" : "text-slate-700"}`}>
+                    <Check className={`h-3.5 w-3.5 shrink-0 mt-0.5 ${isDark ? "text-[#00FF00]" : "text-[#0E7490]"}`} />
                     {f}
                   </li>
                 ))}
@@ -668,9 +669,9 @@ function PricingSection() {
               <Button
                 asChild
                 className={`w-full rounded-xl ${
-                  p.featured
+                  isDark
                     ? "bg-[#00FFFF] text-[#020617] hover:bg-[#00FFFF]/90 font-semibold"
-                    : "bg-white/10 hover:bg-white/15 text-white border border-[rgba(148,163,184,0.30)]"
+                    : "bg-[#0E7490] text-white hover:bg-[#0E7490]/90 font-semibold"
                 }`}
               >
                 {p.external ? (
@@ -680,7 +681,8 @@ function PricingSection() {
                 )}
               </Button>
             </Card>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
@@ -779,7 +781,7 @@ function Footer() {
             <ul className="space-y-2 text-sm text-[#CBD5E1]">
               <li><a href="#top" className="hover:text-[#00FFFF]">Início</a></li>
               <li><a href="#beneficios" className="hover:text-[#00FFFF]">Benefícios</a></li>
-              <li><a href="#demo" className="hover:text-[#00FFFF]">Demo</a></li>
+              
               <li><a href="#como-funciona" className="hover:text-[#00FFFF]">Como funciona</a></li>
               <li><a href="#planos" className="hover:text-[#00FFFF]">Planos</a></li>
               <li><a href="#faq" className="hover:text-[#00FFFF]">FAQ</a></li>
@@ -815,7 +817,6 @@ export default function WelcomeHubLanding() {
         <main>
           <Hero />
           <StickyFeatureSection />
-          <ProblemSection />
           <SolutionSection />
           <RealDemoPreview />
           <HowItWorksSection />
