@@ -778,7 +778,7 @@ function Footer() {
             <ul className="space-y-2 text-sm text-[#CBD5E1]">
               <li><a href="#top" className="hover:text-[#00FFFF]">Início</a></li>
               <li><a href="#beneficios" className="hover:text-[#00FFFF]">Benefícios</a></li>
-              <li><a href="#demo" className="hover:text-[#00FFFF]">Demo</a></li>
+              
               <li><a href="#como-funciona" className="hover:text-[#00FFFF]">Como funciona</a></li>
               <li><a href="#planos" className="hover:text-[#00FFFF]">Planos</a></li>
               <li><a href="#faq" className="hover:text-[#00FFFF]">FAQ</a></li>
