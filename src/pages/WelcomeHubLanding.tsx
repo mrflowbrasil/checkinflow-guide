@@ -475,7 +475,7 @@ const integrations = [
   { icon: Network, t: "Stays" },
   { icon: Workflow, t: "Hostaway" },
   { icon: Database, t: "API própria" },
-  { icon: Zap, t: "n8n / automações" },
+  { icon: Zap, t: "Automações" },
   { icon: Building2, t: "Importação de propriedades" },
   { icon: Layers, t: "Padronização por imóvel" },
 ];
