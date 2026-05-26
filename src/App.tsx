@@ -71,8 +71,8 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/welcome-hub" element={<WelcomeHubLanding />} />
+            <Route path="/" element={<WelcomeHubLanding />} />
+            <Route path="/welcome-hub" element={<Index />} />
             <Route path="/guia-digital-airbnb" element={<GuiaDigitalAirbnb />} />
             <Route path="/manual-digital-airbnb" element={<ManualDigitalAirbnb />} />
             <Route path="/app-para-anfitriao" element={<AppParaAnfitriao />} />

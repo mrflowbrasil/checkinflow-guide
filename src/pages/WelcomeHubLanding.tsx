@@ -798,7 +798,7 @@ export default function WelcomeHubLanding() {
       <Seo
         title="Mr Flow Welcome Hub | Guia Digital para Hóspedes e Anfitriões"
         description="Crie um hub digital de boas-vindas para seus hóspedes com QR Code, link personalizado, instruções de check-in, Wi-Fi, regras da casa e dicas locais."
-        path="/welcome-hub"
+        path="/"
       />
       <ShaderBackground className="pointer-events-none fixed inset-0 z-0 h-full w-full opacity-75" />
       <div className="relative z-10">
