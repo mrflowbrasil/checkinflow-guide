@@ -444,24 +444,24 @@ const features = [
 
 function FeaturesSection() {
   return (
-    <section id="recursos" className="py-20 lg:py-28 bg-[#0F172A] border-y border-[rgba(148,163,184,0.20)]">
+    <section id="recursos" className="py-20 lg:py-28 bg-[#E6FBFC]/90 backdrop-blur-sm border-y border-[#00FFFF]/30">
       <div className="container px-4 sm:px-6 lg:px-12 max-w-6xl mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <h2 className="text-3xl lg:text-4xl font-bold text-[#F8FAFC] mb-4">
+          <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">
             Recursos para profissionalizar sua hospedagem
           </h2>
-          <p className="text-[#CBD5E1] text-lg leading-relaxed">
+          <p className="text-slate-700 text-lg leading-relaxed">
             Tudo que sua operação precisa para entregar informações com clareza e criar uma experiência mais organizada para o hóspede.
           </p>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {features.map((f) => (
-            <Card key={f.t} className="p-6 bg-[#111827] border-[rgba(148,163,184,0.20)] rounded-2xl hover:border-[#00FFFF]/40 transition-colors">
-              <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-[#00FFFF]/15 to-[#00FF00]/15 grid place-items-center mb-4">
-                <f.icon className="h-5 w-5 text-[#00FFFF]" />
+            <Card key={f.t} className="p-6 bg-white border-[#0E7490]/15 rounded-2xl hover:border-[#0E7490]/40 transition-colors shadow-sm">
+              <div className="h-11 w-11 rounded-xl bg-[#0E7490]/10 grid place-items-center mb-4">
+                <f.icon className="h-5 w-5 text-[#0E7490]" />
               </div>
-              <h3 className="font-semibold text-[#F8FAFC] mb-2">{f.t}</h3>
-              <p className="text-sm text-[#CBD5E1] leading-relaxed">{f.d}</p>
+              <h3 className="font-semibold text-slate-900 mb-2">{f.t}</h3>
+              <p className="text-sm text-slate-600 leading-relaxed">{f.d}</p>
             </Card>
           ))}
         </div>
