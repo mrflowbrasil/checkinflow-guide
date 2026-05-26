@@ -814,7 +814,6 @@ export default function WelcomeHubLanding() {
         <main>
           <Hero />
           <StickyFeatureSection />
-          <ProblemSection />
           <SolutionSection />
           <RealDemoPreview />
           <HowItWorksSection />
