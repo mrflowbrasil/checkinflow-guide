@@ -7,6 +7,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import RequireAuth from "@/components/auth/RequireAuth";
 import AppShell from "@/components/layout/AppShell";
 import VersionWatcher from "@/components/VersionWatcher";
+import GoogleAnalyticsTracker from "@/components/analytics/GoogleAnalyticsTracker";
 
 import Index from "./pages/Index";
 import WelcomeHubLanding from "./pages/WelcomeHubLanding";
@@ -69,6 +70,7 @@ const App = () => (
       <Sonner />
       <VersionWatcher />
       <BrowserRouter>
+        <GoogleAnalyticsTracker />
         <AuthProvider>
           <Routes>
             <Route path="/" element={<WelcomeHubLanding />} />
