@@ -620,20 +620,22 @@ const plans = [
 
 function PricingSection() {
   return (
-    <section id="planos" className="py-20 lg:py-28 bg-[#0F172A] border-y border-[rgba(148,163,184,0.20)]">
+    <section id="planos" className="py-20 lg:py-28 bg-[#E6FBFC]/90 backdrop-blur-sm border-y border-[#00FFFF]/30">
       <div className="container px-4 sm:px-6 lg:px-12 max-w-7xl mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <h2 className="text-3xl lg:text-4xl font-bold text-[#F8FAFC] mb-4">Planos para cada fase da sua operação</h2>
-          <p className="text-[#CBD5E1] text-lg">Comece com um imóvel e evolua conforme sua operação cresce.</p>
+          <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">Planos para cada fase da sua operação</h2>
+          <p className="text-slate-700 text-lg">Comece com um imóvel e evolua conforme sua operação cresce.</p>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-5">
-          {plans.map((p) => (
+          {plans.map((p) => {
+            const isDark = p.featured;
+            return (
             <Card
               key={p.name}
-              className={`relative p-6 rounded-2xl flex flex-col bg-[#111827] ${
-                p.featured
-                  ? "border-[#00FFFF]/60 shadow-[0_0_40px_-10px_rgba(0,255,255,0.5)]"
-                  : "border-[rgba(148,163,184,0.20)]"
+              className={`relative p-6 rounded-2xl flex flex-col ${
+                isDark
+                  ? "bg-[#111827] border-[#00FFFF]/60 shadow-[0_0_40px_-10px_rgba(0,255,255,0.5)]"
+                  : "bg-white border-[#0E7490]/15 shadow-sm"
               }`}
             >
               {p.badge && (
@@ -642,24 +644,24 @@ function PricingSection() {
                   {p.badge}
                 </div>
               )}
-              <h3 className="font-bold text-[#F8FAFC] text-xl">{p.name}</h3>
-              <p className="text-xs text-[#CBD5E1] mb-1">{p.sub}</p>
-              <p className="text-xs text-[#38BDF8] mb-4">{p.limit}</p>
+              <h3 className={`font-bold text-xl ${isDark ? "text-[#F8FAFC]" : "text-slate-900"}`}>{p.name}</h3>
+              <p className={`text-xs mb-1 ${isDark ? "text-[#CBD5E1]" : "text-slate-600"}`}>{p.sub}</p>
+              <p className={`text-xs mb-4 ${isDark ? "text-[#38BDF8]" : "text-[#0E7490]"}`}>{p.limit}</p>
               <div className="mb-1">
                 {p.custom ? (
-                  <div className="text-2xl font-bold text-[#F8FAFC]">{p.custom}</div>
+                  <div className={`text-2xl font-bold ${isDark ? "text-[#F8FAFC]" : "text-slate-900"}`}>{p.custom}</div>
                 ) : (
                   <>
-                    <div className="text-2xl font-bold text-[#F8FAFC]">{p.monthly}<span className="text-xs font-normal text-[#CBD5E1]">/mês</span></div>
-                    <div className="text-xs text-[#CBD5E1]">ou {p.yearly}/ano</div>
+                    <div className={`text-2xl font-bold ${isDark ? "text-[#F8FAFC]" : "text-slate-900"}`}>{p.monthly}<span className={`text-xs font-normal ${isDark ? "text-[#CBD5E1]" : "text-slate-600"}`}>/mês</span></div>
+                    <div className={`text-xs ${isDark ? "text-[#CBD5E1]" : "text-slate-600"}`}>ou {p.yearly}/ano</div>
                   </>
                 )}
               </div>
-              {p.trial && <div className="text-[10px] text-[#00FF00] font-medium mb-3">{p.trial}</div>}
+              {p.trial && <div className={`text-[10px] font-medium mb-3 ${isDark ? "text-[#00FF00]" : "text-[#0E7490]"}`}>{p.trial}</div>}
               <ul className="space-y-2 my-5 flex-1">
                 {p.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-xs text-[#CBD5E1]">
-                    <Check className="h-3.5 w-3.5 text-[#00FF00] shrink-0 mt-0.5" />
+                  <li key={f} className={`flex items-start gap-2 text-xs ${isDark ? "text-[#CBD5E1]" : "text-slate-700"}`}>
+                    <Check className={`h-3.5 w-3.5 shrink-0 mt-0.5 ${isDark ? "text-[#00FF00]" : "text-[#0E7490]"}`} />
                     {f}
                   </li>
                 ))}
@@ -667,9 +669,9 @@ function PricingSection() {
               <Button
                 asChild
                 className={`w-full rounded-xl ${
-                  p.featured
+                  isDark
                     ? "bg-[#00FFFF] text-[#020617] hover:bg-[#00FFFF]/90 font-semibold"
-                    : "bg-white/10 hover:bg-white/15 text-white border border-[rgba(148,163,184,0.30)]"
+                    : "bg-[#0E7490] text-white hover:bg-[#0E7490]/90 font-semibold"
                 }`}
               >
                 {p.external ? (
@@ -679,7 +681,8 @@ function PricingSection() {
                 )}
               </Button>
             </Card>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
