@@ -582,36 +582,40 @@ function ValueSection() {
   );
 }
 
+const ENTERPRISE_WA_HREF = `https://wa.me/5521996507509?text=${encodeURIComponent(
+  "Olá! Tenho interesse no plano Enterprise do MrFlow."
+)}`;
+
 const plans = [
   {
     name: "Single", sub: "Para host individual", limit: "1 imóvel", trial: "30 dias grátis",
     monthly: "R$ 8,90", yearly: "R$ 89,00",
     features: ["1 imóvel", "Hub digital personalizado", "QR Code", "Link compartilhável", "Páginas essenciais", "Cartão de boas-vindas"],
-    cta: "Começar agora", href: "/auth", featured: false,
+    cta: "Começar agora", href: "/app/billing", featured: false,
   },
   {
     name: "Starter", sub: "Para pequenas operações", limit: "Até 5 imóveis",
     monthly: "R$ 29,90", yearly: "R$ 299,00",
     features: ["Até 5 imóveis", "Tudo do Single", "Gestão multi-imóveis", "Personalização visual", "Páginas avançadas", "Suporte padrão"],
-    cta: "Começar agora", href: "/auth", featured: false,
+    cta: "Começar agora", href: "/app/billing", featured: false,
   },
   {
     name: "Pro", sub: "Para operações em crescimento", limit: "Até 20 imóveis",
-    monthly: "R$ 89,90", yearly: "R$ 899,00", badge: "Mais escolhido",
+    monthly: "R$ 89,90", yearly: "R$ 899,00", badge: "Mais popular",
     features: ["Até 20 imóveis", "Tudo do Starter", "Integrações", "Importação de dados", "Templates premium", "Suporte prioritário"],
-    cta: "Começar agora", href: "/auth", featured: true,
+    cta: "Começar agora", href: "/app/billing", featured: true,
   },
   {
     name: "Business", sub: "Para administradoras", limit: "Até 50 imóveis",
     monthly: "R$ 199,90", yearly: "R$ 1.990,00",
     features: ["Até 50 imóveis", "Tudo do Pro", "API e automações", "Gestão em escala", "Suporte avançado", "Configuração assistida"],
-    cta: "Começar agora", href: "/auth", featured: false,
+    cta: "Começar agora", href: "/app/billing", featured: false,
   },
   {
     name: "Enterprise", sub: "Para grandes operações", limit: "Acima de 50 imóveis",
     custom: "Sob consulta",
     features: ["Implantação personalizada", "Integrações sob medida", "Suporte consultivo", "Condições comerciais personalizadas"],
-    cta: "Falar com especialista", href: "/contato", featured: false,
+    cta: "Falar com especialista", href: ENTERPRISE_WA_HREF, featured: false, external: true,
   },
 ];
 
@@ -627,14 +631,15 @@ function PricingSection() {
           {plans.map((p) => (
             <Card
               key={p.name}
-              className={`relative p-6 rounded-2xl flex flex-col ${
+              className={`relative p-6 rounded-2xl flex flex-col bg-[#111827] ${
                 p.featured
-                  ? "bg-gradient-to-b from-[#00FFFF]/10 to-[#00FF00]/5 border-[#00FFFF]/40 shadow-[0_0_40px_-10px_rgba(0,255,255,0.4)]"
-                  : "bg-[#111827] border-[rgba(148,163,184,0.20)]"
+                  ? "border-[#00FFFF]/60 shadow-[0_0_40px_-10px_rgba(0,255,255,0.5)]"
+                  : "border-[rgba(148,163,184,0.20)]"
               }`}
             >
               {p.badge && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-gradient-to-r from-[#00FFFF] to-[#00FF00] text-[#020617] text-[10px] font-bold uppercase tracking-wider">
+                <div className="absolute -top-3 right-4 px-3 py-1 rounded-full bg-[#00FFFF] text-[#020617] text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-lg">
+                  <Sparkles className="h-3 w-3" />
                   {p.badge}
                 </div>
               )}
@@ -668,7 +673,11 @@ function PricingSection() {
                     : "bg-white/10 hover:bg-white/15 text-white border border-[rgba(148,163,184,0.30)]"
                 }`}
               >
-                <Link to={p.href}>{p.cta}</Link>
+                {p.external ? (
+                  <a href={p.href} target="_blank" rel="noopener noreferrer">{p.cta}</a>
+                ) : (
+                  <Link to={p.href}>{p.cta}</Link>
+                )}
               </Button>
             </Card>
           ))}
