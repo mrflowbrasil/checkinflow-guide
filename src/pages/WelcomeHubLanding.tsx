@@ -34,7 +34,6 @@ const PAGE_BG = {
 
 const navItems = [
   { label: "Benefícios", href: "#beneficios" },
-  { label: "Demo", href: "#demo" },
   { label: "Como funciona", href: "#como-funciona" },
   { label: "Recursos", href: "#recursos" },
   { label: "Planos", href: "#planos" },
