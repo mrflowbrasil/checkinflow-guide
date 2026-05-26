@@ -316,24 +316,24 @@ function SolutionSection() {
 
 function RealDemoPreview() {
   return (
-    <section id="demo" className="py-20 lg:py-28 bg-[#0F172A] border-y border-[rgba(148,163,184,0.20)]">
+    <section id="demo" className="py-20 lg:py-28 bg-[#E6FBFC]/90 backdrop-blur-sm border-y border-[#00FFFF]/30">
       <div className="container px-4 sm:px-6 lg:px-12 max-w-6xl mx-auto">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-[#00FFFF]/10 text-[#00FFFF] border-[#00FFFF]/30 rounded-full">Demo real</Badge>
-          <h2 className="text-3xl lg:text-4xl font-bold tracking-tight text-[#F8FAFC] mb-3">
+          <Badge className="mb-4 bg-[#0E7490]/10 text-[#0E7490] border-[#0E7490]/30 rounded-full">Demo real</Badge>
+          <h2 className="text-3xl lg:text-4xl font-bold tracking-tight text-slate-900 mb-3">
             Experimente como seu hóspede verá o Welcome Hub
           </h2>
-          <p className="text-[#CBD5E1] text-lg max-w-2xl mx-auto leading-relaxed">
+          <p className="text-slate-700 text-lg max-w-2xl mx-auto leading-relaxed">
             Veja uma propriedade demonstrativa criada na Mr Flow Welcome Hub e navegue como se fosse um hóspede acessando pelo celular.
           </p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
-            <h3 className="text-2xl font-semibold text-[#F8FAFC] mb-3">
+            <h3 className="text-2xl font-semibold text-slate-900 mb-3">
               Uma experiência real, direto no celular do hóspede
             </h3>
-            <p className="text-[#CBD5E1] mb-6 leading-relaxed">
+            <p className="text-slate-700 mb-6 leading-relaxed">
               Seu cliente pode acessar informações como Wi-Fi, check-in, checkout, regras da casa, localização, dicas locais e contatos úteis em uma página simples, bonita e sempre atualizada.
             </p>
             <ul className="space-y-3 mb-8">
@@ -345,18 +345,18 @@ function RealDemoPreview() {
                 "Ideal para enviar antes da chegada ou deixar impresso no imóvel",
               ].map((b) => (
                 <li key={b} className="flex items-start gap-3">
-                  <Check className="h-5 w-5 text-[#00FF00] shrink-0 mt-0.5" />
-                  <span className="text-[#F8FAFC]">{b}</span>
+                  <Check className="h-5 w-5 text-[#0E7490] shrink-0 mt-0.5" />
+                  <span className="text-slate-800">{b}</span>
                 </li>
               ))}
             </ul>
             <div className="flex flex-col sm:flex-row gap-3">
-              <Button asChild size="lg" className="rounded-xl bg-[#00FFFF] text-[#020617] hover:bg-[#00FFFF]/90 font-semibold">
+              <Button asChild size="lg" className="rounded-xl bg-[#0E7490] text-white hover:bg-[#0E7490]/90 font-semibold">
                 <a href={DEMO_URL} target="_blank" rel="noopener noreferrer">
                   Abrir demo completa <ExternalLink className="ml-2 h-4 w-4" />
                 </a>
               </Button>
-              <Button asChild size="lg" variant="outline" className="rounded-xl bg-white/5 border-[rgba(148,163,184,0.30)] text-white hover:bg-white/10">
+              <Button asChild size="lg" variant="outline" className="rounded-xl bg-white border-[#0E7490]/30 text-[#0E7490] hover:bg-[#0E7490]/5">
                 <Link to="/auth">Criar meu hub grátis</Link>
               </Button>
             </div>
