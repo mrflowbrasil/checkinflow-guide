@@ -5,36 +5,32 @@ const features = [
   {
     title: "Link único para hóspedes",
     description:
-      "Um único link inteligente que abre o guia digital da sua propriedade em qualquer celular — sem app, sem download, sem fricção.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=2070&auto=format&fit=crop",
+      "Um único link inteligente reúne todas as informações da propriedade e pode ser enviado por WhatsApp, e-mail ou mensagem automática.",
+    imageUrl: "/1cf79061-ac95-49bc-975f-509bfc357da5.jpg",
     bgColor: "bg-cyan-100 dark:bg-cyan-900",
     textColor: "text-cyan-950 dark:text-cyan-50",
   },
   {
-    title: "Multi-idioma automático",
+    title: "Cartão de Boas Vindas pronto para impressão",
     description:
-      "Traduza o guia inteiro para o idioma do hóspede com um clique. Inglês, espanhol, francês e mais — sempre na voz da sua marca.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1526495124232-a04e1849168c?q=80&w=2070&auto=format&fit=crop",
+      "Gere um Cartão de Boas Vindas A4 com QR Code para deixar no imóvel ou na recepção, facilitando o acesso às informações.",
+    imageUrl: "/2b8b8106-ed26-409d-a624-60882db9fe80.jpg",
     bgColor: "bg-cyan-200 dark:bg-cyan-800",
     textColor: "text-cyan-950 dark:text-cyan-50",
   },
   {
-    title: "Check-in digital sem fricção",
+    title: "Wi-Fi, check-in e checkout sem confusão",
     description:
-      "Envie boas-vindas, regras da casa e instruções de acesso antes da chegada. Reduza mensagens repetidas no WhatsApp e ganhe tempo.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?q=80&w=2070&auto=format&fit=crop",
+      "Envie boas-vindas, regras da casa, wi-fi, horários, senhas e muito mais, em páginas simples e fáceis de acessar e editar. Reduza mensagens repetidas no WhatsApp e ganhe tempo para cuidar do que importa.",
+    imageUrl: "/4f67f9e6-9ac6-4147-bfc3-24da30575b55.jpg",
     bgColor: "bg-sky-200 dark:bg-sky-800",
     textColor: "text-cyan-950 dark:text-cyan-50",
   },
   {
-    title: "PWA instalável + PDF offline",
+    title: "Dicas locais e pontos turísticos",
     description:
-      "Hóspedes salvam seu guia como app no celular ou baixam em PDF para consultar sem internet, em qualquer lugar da viagem.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1551632436-cbf8dd35adfa?q=80&w=2070&auto=format&fit=crop",
+      "Indique restaurantes, mercados, praias, pontos turísticos, transporte e experiências próximas ao imóvel.",
+    imageUrl: "/393a68b5-5299-4846-944b-802044708993.jpg",
     bgColor: "bg-cyan-300 dark:bg-cyan-900",
     textColor: "text-cyan-950 dark:text-cyan-50",
   },
