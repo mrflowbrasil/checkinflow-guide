@@ -19,6 +19,11 @@
     <meta name="apple-mobile-web-app-title" content="Mr Flow" />
     <meta name="application-name" content="Mr Flow Welcome Hub" />
 
+    <!-- Performance: preconnect to third-party origins used early -->
+    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+    <link rel="preconnect" href="https://connect.facebook.net" crossorigin>
+    <link rel="dns-prefetch" href="https://www.facebook.com">
+
     <!-- Google Analytics 4 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-C0F1061BBE"></script>
     <script>
@@ -29,18 +34,28 @@
       gtag('config', 'G-C0F1061BBE', { send_page_view: false });
     </script>
 
-    <!-- Meta Pixel Code -->
+    <!-- Meta Pixel Code (queue immediately, load script after page load) -->
     <script>
       !function(f,b,e,v,n,t,s)
       {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
       n.callMethod.apply(n,arguments):n.queue.push(arguments)};
       if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-      n.queue=[];t=b.createElement(e);t.async=!0;
-      t.src=v;s=b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      n.queue=[];}(window, document,'script',
       'https://connect.facebook.net/en_US/fbevents.js');
       fbq('init', '1411641184313501');
       fbq('track', 'PageView');
+      // Defer script download until after the page has loaded to free the critical path.
+      (function(){
+        function loadFbq(){
+          var t=document.createElement('script');
+          t.async=true;
+          t.src='https://connect.facebook.net/en_US/fbevents.js';
+          var s=document.getElementsByTagName('script')[0];
+          s.parentNode.insertBefore(t,s);
+        }
+        if (document.readyState === 'complete') loadFbq();
+        else window.addEventListener('load', loadFbq, { once: true });
+      })();
     </script>
     <!-- End Meta Pixel Code -->
 

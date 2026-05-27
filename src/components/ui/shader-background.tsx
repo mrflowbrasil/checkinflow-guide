@@ -106,9 +106,12 @@ const ShaderBackground = ({ className }: ShaderBackgroundProps) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const reduced = false;
+    const reduced =
+      typeof window !== "undefined" &&
+      window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    const gl = canvas.getContext("webgl");
+    const gl = canvas.getContext("webgl", { antialias: false, premultipliedAlpha: true });
     if (!gl) return;
 
     const vs = loadShader(gl, gl.VERTEX_SHADER, vsSource);

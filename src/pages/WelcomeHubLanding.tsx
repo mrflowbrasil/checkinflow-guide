@@ -19,7 +19,7 @@ import {
 import { Seo } from "@/components/Seo";
 import { MrFlowLogo } from "@/components/brand/MrFlowLogo";
 import ShaderBackground from "@/components/ui/shader-background";
-import phoneMockup from "@/assets/welcome-hub-phone-mockup.png";
+import phoneMockup from "@/assets/welcome-hub-phone-mockup.webp";
 import { StickyFeatureSection } from "@/components/ui/sticky-scroll-cards-section";
 
 const DEMO_URL = "https://hub.mrflow.com.br/g/suite-premium-vila-serena-23515a";
@@ -195,7 +195,11 @@ function Hero() {
             alt="Mockup do celular exibindo um hub de boas-vindas Mr Flow"
             className="relative z-0 w-full h-auto mx-auto drop-shadow-[0_30px_60px_rgba(0,255,255,0.25)]"
             style={{ maxWidth: PHONE_MOCKUP_MAX_WIDTH }}
+            width={362}
+            height={622}
             loading="eager"
+            fetchPriority="high"
+            decoding="async"
           />
           <FloatingChip icon={MessageSquare} label="Menos dúvidas repetidas" className="top-10 left-4 z-10" />
           <FloatingChip icon={Smartphone} label="Mais autonomia para o hóspede" className="top-1/4 right-2 z-10" />
