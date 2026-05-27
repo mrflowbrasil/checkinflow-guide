@@ -1,27 +1,25 @@
 ## Objetivo
-Injetar a tag GA4 `G-C0F1061BBE` no projeto e garantir rastreamento de pageviews em todas as rotas (incluindo navegação SPA do react-router-dom).
+Instalar o Meta Pixel (Facebook) com ID `1411641184313501` no projeto e garantir rastreamento de PageView em todas as rotas SPA.
 
 ## Alterações propostas
 
-### 1. Injetar script gtag.js no `index.html`
-No `<head>`, adicionar:
-- Script `async` para `https://www.googletagmanager.com/gtag/js?id=G-C0F1061BBE`
-- Bloco inline `gtag('js', new Date())` + `gtag('config', 'G-C0F1061BBE')`
+### 1. Injetar script Meta Pixel no `index.html`
+No `<head>`, adicionar o script base do `fbevents.js` e chamada `fbq('init', '1411641184313501')`.
+No `<body>`, adicionar a tag `<noscript><img ... /></noscript>` de fallback.
 
-### 2. Declarar tipos globais do gtag
-Adicionar em `src/vite-env.d.ts` (ou `src/types/gtag.d.ts`) as declarações `Window.dataLayer` e `Window.gtag` para evitar erros de TypeScript.
+### 2. Declarar tipos globais do fbq
+Adicionar em `src/vite-env.d.ts` a declaração `Window.fbq` para evitar erros de TypeScript.
 
-### 3. Criar componente `GoogleAnalyticsTracker`
-Novo arquivo `src/components/analytics/GoogleAnalyticsTracker.tsx`:
+### 3. Criar componente `MetaPixelTracker`
+Novo arquivo `src/components/analytics/MetaPixelTracker.tsx`:
 - Usa `useLocation` do react-router-dom.
-- Em `useEffect`, dispara `gtag('event', 'page_view', ...)` sempre que `location.pathname` muda.
-- Envia `page_path`, `page_location` e `page_title`.
+- Em `useEffect`, dispara `fbq('track', 'PageView')` sempre que `location.pathname` muda.
 
 ### 4. Integrar no `App.tsx`
-Montar `<GoogleAnalyticsTracker />` dentro do `<BrowserRouter>` (antes ou junto às rotas) para que `useLocation` funcione corretamente.
+Montar `<MetaPixelTracker />` junto ao `<GoogleAnalyticsTracker />` dentro do `<BrowserRouter>`.
 
 ## Resultado esperado
-- Tag GA4 carregada em todas as páginas via `index.html`.
-- Pageviews automáticos em navegações SPA.
+- Meta Pixel carregado em todas as páginas via `index.html`.
+- PageViews automáticos em navegações SPA.
 - Sem erros de TypeScript.
 - Sem dependências externas adicionais.

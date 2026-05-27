@@ -8,6 +8,7 @@ import RequireAuth from "@/components/auth/RequireAuth";
 import AppShell from "@/components/layout/AppShell";
 import VersionWatcher from "@/components/VersionWatcher";
 import GoogleAnalyticsTracker from "@/components/analytics/GoogleAnalyticsTracker";
+import MetaPixelTracker from "@/components/analytics/MetaPixelTracker";
 
 import Index from "./pages/Index";
 import WelcomeHubLanding from "./pages/WelcomeHubLanding";
@@ -71,6 +72,7 @@ const App = () => (
       <VersionWatcher />
       <BrowserRouter>
         <GoogleAnalyticsTracker />
+        <MetaPixelTracker />
         <AuthProvider>
           <Routes>
             <Route path="/" element={<WelcomeHubLanding />} />
