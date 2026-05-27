@@ -14,7 +14,7 @@ import {
   Menu, X, ArrowRight, ExternalLink, MessageSquare, Layers, Palette,
   Languages, Building2, Hotel, Home, Briefcase, Network, Zap, Database,
   Workflow, ShieldCheck, RefreshCw, Image as ImageIcon, FileText, Check,
-  ChevronRight, Phone, Star as StarIcon, Settings2, Globe, Users,
+  ChevronRight, Phone, Star as StarIcon, Settings2, Globe, Users, Edit3,
 } from "lucide-react";
 import { Seo } from "@/components/Seo";
 import { MrFlowLogo } from "@/components/brand/MrFlowLogo";
@@ -246,32 +246,56 @@ function ProblemSection() {
   );
 }
 
-const solutionBenefits = [
-  { icon: Globe, t: "Link exclusivo para cada propriedade" },
-  { icon: QrCode, t: "QR Code para imprimir no cartão de boas-vindas" },
-  { icon: Wifi, t: "Informações de Wi-Fi, check-in e checkout" },
-  { icon: BookOpen, t: "Regras da casa e contatos úteis" },
-  { icon: MapPin, t: "Dicas de turismo, restaurantes e transporte" },
-  { icon: ImageIcon, t: "Fotos, vídeos e orientações personalizadas" },
-  { icon: Phone, t: "Botões para WhatsApp, localização e avaliação" },
-  { icon: RefreshCw, t: "Conteúdo atualizado em tempo real" },
+const hostBuilderBenefits = [
+  { icon: Edit3, t: "Edite informações da hospedagem sem depender de suporte técnico" },
+  { icon: Layers, t: "Adicione páginas essenciais como Wi-Fi, check-in, regras e localização" },
+  { icon: Smartphone, t: "Visualize como o hóspede verá o guia no celular" },
+  { icon: RefreshCw, t: "Atualize conteúdos em tempo real sempre que precisar" },
+  { icon: QrCode, t: "Publique e compartilhe por link ou QR Code" },
 ];
 
-function SolutionSection() {
+function LaptopMockup({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="relative mx-auto w-full max-w-[640px]">
+      <div className="absolute -inset-10 bg-gradient-to-tr from-[#00FFFF]/25 via-transparent to-[#00FF00]/15 blur-3xl rounded-full pointer-events-none" />
+      {/* Screen */}
+      <div className="relative rounded-t-2xl bg-[#1a2236] p-[10px] pb-3 shadow-[0_30px_80px_-20px_rgba(0,255,255,0.30)]">
+        <div className="absolute top-1.5 left-1/2 -translate-x-1/2 h-1 w-16 rounded-full bg-[#0a0f1c]/80 z-10" />
+        <div className="relative aspect-[16/10] w-full overflow-hidden rounded-lg bg-[#0a0f1c]">
+          {children}
+        </div>
+      </div>
+      {/* Hinge */}
+      <div className="relative mx-auto h-2 w-[106%] -translate-x-[3%] bg-gradient-to-b from-[#2a3346] to-[#1a2236]" />
+      {/* Base with trackpad notch */}
+      <div
+        className="relative mx-auto h-3 w-[108%] -translate-x-[4%] bg-gradient-to-b from-[#1a2236] to-[#0f1626] rounded-b-2xl shadow-[0_20px_30px_-10px_rgba(0,0,0,0.6)]"
+        style={{
+          clipPath:
+            "polygon(0 0, 42% 0, 44% 55%, 56% 55%, 58% 0, 100% 0, 100% 100%, 0 100%)",
+        }}
+      />
+    </div>
+  );
+}
+
+function HostBuilderSection() {
   return (
     <section className="py-20 lg:py-28">
       <div className="container px-4 sm:px-6 lg:px-12 max-w-6xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           <div>
-            <Badge className="mb-4 bg-[#00FF00]/10 text-[#00FF00] border-[#00FF00]/30 rounded-full">Solução</Badge>
+            <Badge className="mb-4 bg-[#00FF00]/10 text-[#00FF00] border-[#00FF00]/30 rounded-full">
+              Para o anfitrião
+            </Badge>
             <h2 className="text-3xl lg:text-4xl font-bold tracking-tight text-[#F8FAFC] mb-4">
-              Um hub digital completo para cada imóvel
+              Monte o guia do seu imóvel em poucos minutos
             </h2>
             <p className="text-[#CBD5E1] text-lg mb-8 leading-relaxed">
-              Centralize as principais informações da hospedagem em uma página personalizada, responsiva e compartilhável por QR Code ou link.
+              Crie páginas como Wi-Fi, check-in, checkout, regras da casa e dicas locais em um painel simples, com preview em tempo real e publicação instantânea.
             </p>
-            <ul className="space-y-3">
-              {solutionBenefits.map((b) => (
+            <ul className="space-y-3 mb-8">
+              {hostBuilderBenefits.map((b) => (
                 <li key={b.t} className="flex items-start gap-3">
                   <div className="mt-0.5 h-8 w-8 rounded-lg bg-gradient-to-br from-[#00FFFF]/15 to-[#00FF00]/15 grid place-items-center shrink-0">
                     <b.icon className="h-4 w-4 text-[#00FFFF]" />
@@ -280,37 +304,32 @@ function SolutionSection() {
                 </li>
               ))}
             </ul>
+            <p className="text-sm text-[#CBD5E1] italic border-l-2 border-[#00FFFF]/50 pl-4 mb-8">
+              O anfitrião cria no painel. O hóspede acessa no celular. Tudo atualizado em tempo real.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button asChild size="lg" className="rounded-xl bg-[#00FFFF] text-[#020617] hover:bg-[#00FFFF]/90 font-semibold">
+                <Link to="/auth">Criar meu hub grátis</Link>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="rounded-xl bg-transparent border-[#00FFFF]/40 text-[#00FFFF] hover:bg-[#00FFFF]/10 hover:text-[#00FFFF]">
+                <a href="#demo">Ver demo real</a>
+              </Button>
+            </div>
           </div>
-          <div className="relative">
-            <PhoneMockup>
-              <div className="h-full w-full bg-gradient-to-b from-[#0F172A] to-[#020617] text-white flex flex-col">
-                <div className="p-4 border-b border-white/10">
-                  <div className="text-[10px] uppercase tracking-widest text-[#00FFFF]">Bem-vindo(a)</div>
-                  <div className="text-base font-semibold">Apto Mirante 802</div>
-                  <div className="text-[10px] text-[#CBD5E1]">São Paulo · SP</div>
-                </div>
-                <div className="p-3 space-y-2 flex-1 overflow-hidden">
-                  {[
-                    { i: KeyRound, t: "Como fazer o check-in", s: "Instruções passo a passo" },
-                    { i: Wifi, t: "Conectar no Wi-Fi", s: "Rede e senha" },
-                    { i: BookOpen, t: "Regras da casa", s: "Horários e cuidados" },
-                    { i: MapPin, t: "Restaurantes e dicas", s: "Selecionados pela gestão" },
-                    { i: Star, t: "Avaliar a estadia", s: "Compartilhe sua experiência" },
-                  ].map((r) => (
-                    <div key={r.t} className="flex items-center gap-3 p-2.5 rounded-xl bg-white/5 border border-white/10">
-                      <div className="h-8 w-8 rounded-lg bg-[#00FFFF]/10 grid place-items-center">
-                        <r.i className="h-4 w-4 text-[#00FFFF]" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-[11px] font-semibold truncate">{r.t}</div>
-                        <div className="text-[9px] text-[#CBD5E1] truncate">{r.s}</div>
-                      </div>
-                      <ChevronRight className="h-3 w-3 text-[#CBD5E1]" />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </PhoneMockup>
+
+          <div className="order-first lg:order-last">
+            <LaptopMockup>
+              <video
+                src="/videos/hub-rapido2.mp4"
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                aria-hidden="true"
+                className="h-full w-full object-cover"
+              />
+            </LaptopMockup>
           </div>
         </div>
       </div>
@@ -821,7 +840,7 @@ export default function WelcomeHubLanding() {
         <main>
           <Hero />
           <StickyFeatureSection />
-          <SolutionSection />
+          <HostBuilderSection />
           <RealDemoPreview />
           <HowItWorksSection />
           <FeaturesSection />
