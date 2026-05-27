@@ -32,6 +32,7 @@ const Billing = lazy(() => import("./pages/dashboard/Billing"));
 const Integrations = lazy(() => import("./pages/dashboard/Integrations"));
 const Templates = lazy(() => import("./pages/dashboard/Templates"));
 const Help = lazy(() => import("./pages/dashboard/Help"));
+const Terms = lazy(() => import("./pages/Terms"));
 
 const SeoLandings = {
   GuiaDigitalAirbnb: lazy(() => import("./pages/seo/landings").then(m => ({ default: m.GuiaDigitalAirbnb }))),
@@ -111,6 +112,7 @@ const App = () => (
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/invite/:token" element={<Invite />} />
               <Route path="/g/:slug" element={<GuestGuide />} />
+              <Route path="/termos" element={<Terms />} />
 
               <Route path="/app" element={<RequireAuth><AppShell /></RequireAuth>}>
                 <Route index element={<DashboardHome />} />

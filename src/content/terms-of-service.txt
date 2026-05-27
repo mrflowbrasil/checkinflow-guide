@@ -1,0 +1,512 @@
+TERMOS DE SERVIÇO — MR FLOW WELCOME HUB
+
+Estes Termos e Condições de Uso (“Termos”) regulam a relação comercial e o licenciamento de uso entre a empresa MR FLOW AUTOMAÇÕES E SERVIÇOS DIGITAIS LTDA, pessoa jurídica de direito privado, inscrita no CNPJ sob o nº 57.466.519/0001-87, doravante denominada “MR FLOW”, “MR FLOW WELCOME HUB”, “PLATAFORMA” ou “LICENCIANTE”, e a pessoa física ou jurídica que contrata, acessa ou utiliza a plataforma, doravante denominada “CLIENTE”, “USUÁRIO” ou “LICENCIADO”.
+
+O objeto deste instrumento é regulamentar a utilização da plataforma digital denominada MR FLOW WELCOME HUB, fornecida na modalidade SaaS — Software como Serviço, destinada à criação, personalização, gestão e disponibilização de guias digitais, hubs de boas-vindas, páginas informativas, QR Codes e experiências digitais para hóspedes, clientes finais, visitantes ou usuários de imóveis de temporada, pousadas, hospedagens, locações, acomodações, condomínios ou operações similares.
+
+AO CONTRATAR, ACESSAR OU UTILIZAR O MR FLOW WELCOME HUB, O CLIENTE DECLARA TER LIDO, COMPREENDIDO E ACEITO INTEGRALMENTE ESTES TERMOS.
+
+1. CONCEITOS IMPORTANTES NESTES TERMOS
+
+Para facilitar a leitura e interpretação deste documento, adotam-se as seguintes definições:
+
+Cliente ou Licenciado: pessoa física ou jurídica que contrata a Plataforma, realiza o pagamento da assinatura e administra os imóveis, páginas, conteúdos, links, QR Codes e informações disponibilizadas aos seus hóspedes ou clientes finais.
+
+MR Flow Welcome Hub ou Plataforma: sistema digital desenvolvido e/ou disponibilizado pela MR Flow, voltado à criação de hubs de boas-vindas, guias digitais, manuais de hospedagem, páginas informativas, cartões digitais, QR Codes e experiências digitais para hóspedes.
+
+Hóspede ou Cliente Final: pessoa que acessa o hub, guia digital, link, QR Code ou página criada pelo Cliente. O Hóspede não possui relação contratual direta com a MR Flow, sendo atendido e gerenciado exclusivamente pelo Cliente.
+
+Imóvel ou Propriedade: unidade cadastrada pelo Cliente na Plataforma, podendo representar casa, apartamento, pousada, quarto, suíte, unidade de temporada, hospedagem, acomodação ou qualquer outro espaço administrado pelo Cliente.
+
+Hub de Boas-Vindas: página digital personalizada de uma propriedade, contendo informações como instruções de check-in, checkout, Wi-Fi, localização, regras da casa, dicas locais, contatos, transporte, vídeos, fotos, senhas, links e outras informações inseridas pelo Cliente.
+
+Plano de Assinatura: modalidade de contratação que concede ao Cliente o direito de uso da Plataforma, conforme limites e recursos definidos no plano contratado.
+
+Conteúdo do Cliente: textos, imagens, vídeos, links, instruções, senhas, dados de imóveis, informações de hóspedes, regras, orientações, materiais e demais informações inseridas, importadas ou publicadas pelo Cliente na Plataforma.
+
+Integrações de Terceiros: conexões com plataformas externas, tais como Stays, Hostaway, Airbnb, Booking, Stripe, Asaas, Google Maps, WhatsApp, ferramentas de pagamento, automação, hospedagem, análise ou quaisquer outros serviços utilizados em conjunto com a Plataforma.
+
+2. NATUREZA E EFICÁCIA DOS TERMOS
+
+2.1. Ao contratar, acessar ou utilizar o MR Flow Welcome Hub, o Cliente concorda integralmente com estes Termos.
+
+2.2. A aceitação destes Termos é condição indispensável para a liberação, manutenção e utilização da Plataforma.
+
+2.3. A realização do pagamento, o início do período gratuito, a criação de conta, o cadastro de imóveis ou o simples uso da Plataforma implicam, para todos os fins de direito, na aceitação plena, inequívoca e irrevogável de todas as condições aqui estabelecidas.
+
+2.4. O Cliente reconhece que estes Termos possuem força de contrato vinculante, substituindo quaisquer acordos verbais, propostas comerciais, trocas de mensagens ou entendimentos anteriores, salvo quando houver contrato escrito específico assinado entre as partes.
+
+2.5. Pela teoria da aparência, a MR Flow considerará válida a contratação realizada mediante fornecimento de dados cadastrais, criação de conta, aceite eletrônico ou pagamento, declarando o Cliente que a pessoa responsável pela contratação possui poderes para representá-lo.
+
+2.6. A MR Flow poderá alterar estes Termos a qualquer momento, especialmente para adequação legal, operacional, técnica, comercial ou regulatória. A continuidade de uso da Plataforma após a publicação ou comunicação das alterações confirmará a aceitação dos novos Termos.
+
+3. OBJETO DA PLATAFORMA
+
+3.1. O MR Flow Welcome Hub tem como objetivo disponibilizar ao Cliente uma plataforma digital para criação, edição, publicação e gestão de hubs de boas-vindas e guias digitais para imóveis, hospedagens e operações similares.
+
+3.2. A Plataforma poderá permitir, conforme o plano contratado:
+
+I. Cadastro e gestão de propriedades;
+II. Criação de páginas digitais por imóvel;
+III. Geração de links públicos ou privados;
+IV. Geração de QR Codes;
+V. Personalização visual de páginas;
+VI. Inclusão de fotos, vídeos, textos, links e orientações;
+VII. Cadastro de informações de Wi-Fi, check-in, checkout, localização, regras e recomendações;
+VIII. Criação ou download de cartões de boas-vindas;
+IX. Integração com plataformas externas, quando disponível;
+X. Importação automática ou manual de informações de imóveis;
+XI. Gestão de conteúdos por página;
+XII. Outras funcionalidades que venham a ser disponibilizadas pela MR Flow.
+
+3.3. A contratação da Plataforma concede ao Cliente apenas o direito de uso do sistema, conforme o plano contratado, não havendo transferência de propriedade intelectual, código-fonte, banco de dados, marca, tecnologia ou qualquer ativo da MR Flow.
+
+3.4. A Plataforma é fornecida no modelo SaaS, acessível via internet, não se tratando de software self-hosted, instalação local, venda de código-fonte ou transferência de arquivos de instalação.
+
+4. CADASTRO, CONTA E VERACIDADE DAS INFORMAÇÕES
+
+4.1. Para utilizar a Plataforma, o Cliente deverá fornecer informações verdadeiras, completas, atualizadas e compatíveis com sua identidade ou representação empresarial.
+
+4.2. O Cliente é responsável por manter atualizados seus dados cadastrais, fiscais, de pagamento e contato.
+
+4.3. A MR Flow poderá recusar, suspender ou cancelar cadastros que contenham dados falsos, incompletos, fraudulentos, inconsistentes ou que violem estes Termos.
+
+4.4. O Cliente é responsável pela guarda de suas credenciais de acesso, senhas, e-mails, usuários administrativos e permissões concedidas à sua equipe.
+
+4.5. Qualquer uso realizado mediante as credenciais do Cliente será presumido como realizado pelo próprio Cliente ou por pessoa autorizada por ele.
+
+4.6. A MR Flow não se responsabiliza por acessos indevidos decorrentes de vazamento de senha, compartilhamento de credenciais, ausência de autenticação adequada, falhas de segurança do dispositivo do Cliente ou engenharia social.
+
+5. PLANOS, LIMITES DE USO E ASSINATURA
+
+5.1. O MR Flow Welcome Hub poderá ser comercializado por planos de assinatura, com limites e funcionalidades definidos conforme a modalidade contratada.
+
+5.2. Os planos poderão considerar, entre outros critérios:
+
+I. Quantidade de imóveis cadastrados;
+II. Quantidade de hubs ativos;
+III. Recursos de personalização;
+IV. Uso de QR Code;
+V. Integrações disponíveis;
+VI. Recursos de importação automática;
+VII. Funcionalidades administrativas;
+VIII. Suporte e atendimento;
+IX. Recursos futuros ou adicionais.
+
+5.3. Os planos, valores, limites e recursos disponíveis poderão ser exibidos no site oficial da MR Flow, na página comercial, no painel administrativo ou em proposta específica enviada ao Cliente.
+
+5.4. A MR Flow poderá oferecer planos como Single, Starter, Pro, Business e Enterprise, ou outros nomes comerciais que venham a substituí-los.
+
+5.5. A contratação de um plano não garante acesso automático a funcionalidades futuras, experimentais, em desenvolvimento, beta, premium ou disponibilizadas em planos superiores.
+
+5.6. O Cliente não poderá exceder os limites do plano contratado. Caso exceda, poderá ser solicitado upgrade, contratação adicional ou regularização do uso.
+
+5.7. A MR Flow poderá, a seu critério, bloquear a criação de novos imóveis, hubs ou recursos quando o Cliente atingir o limite do plano contratado.
+
+6. TESTE GRATUITO, PAGAMENTO, RENOVAÇÃO E CANCELAMENTO
+
+6.1. A MR Flow poderá oferecer período gratuito de teste, conforme campanha, plano ou condição comercial vigente.
+
+6.2. O período gratuito, quando oferecido, tem caráter promocional, temporário e não obrigatório, podendo ser alterado, limitado ou encerrado pela MR Flow a qualquer momento para novas contratações.
+
+6.3. Após o término do período gratuito, o uso da Plataforma poderá depender da contratação de um plano pago.
+
+6.4. As cobranças poderão ser realizadas de forma recorrente, mensal, anual ou conforme condição contratada pelo Cliente.
+
+6.5. A renovação poderá ocorrer automaticamente no método de pagamento cadastrado, quando a contratação tiver natureza recorrente.
+
+6.6. O Cliente poderá cancelar a renovação automática antes da próxima cobrança, observadas as regras da plataforma de pagamento utilizada.
+
+6.7. O cancelamento da assinatura impede novas cobranças futuras, mas não implica, por si só, reembolso de valores já pagos, salvo nos casos previstos em lei ou expressamente descritos nestes Termos.
+
+6.8. Em conformidade com o art. 49 do Código de Defesa do Consumidor, quando aplicável, o Cliente consumidor poderá exercer o direito de arrependimento no prazo de até 7 dias corridos a contar da contratação realizada fora do estabelecimento comercial.
+
+6.9. Decorrido o prazo legal de arrependimento, os valores pagos não serão reembolsados proporcionalmente caso o Cliente decida cancelar, deixar de usar ou abandonar a Plataforma antes do fim do ciclo contratado.
+
+6.10. Em caso de inadimplência, falha de pagamento, chargeback, contestação indevida ou impossibilidade de cobrança, a MR Flow poderá suspender ou bloquear o acesso do Cliente à Plataforma até a regularização.
+
+6.11. A suspensão por inadimplência poderá impactar a disponibilidade dos hubs, links, QR Codes, páginas e conteúdos vinculados à conta do Cliente.
+
+6.12. A MR Flow não se responsabiliza por prejuízos decorrentes da suspensão motivada por inadimplência, falha de pagamento, chargeback ou ausência de regularização financeira.
+
+7. REAJUSTE DE PREÇOS
+
+7.1. A MR Flow poderá reajustar os valores dos planos, licenças, assinaturas ou serviços adicionais, visando preservar o equilíbrio econômico da operação, cobrir custos técnicos, inflação, variações de mercado ou evolução do produto.
+
+7.2. Para Clientes com assinatura ativa, eventuais reajustes serão aplicados preferencialmente na renovação do ciclo seguinte, salvo em caso de alteração de plano, contratação adicional ou condição específica.
+
+7.3. A MR Flow poderá comunicar alterações de preço por e-mail, painel administrativo, site oficial ou outro canal cadastrado pelo Cliente.
+
+7.4. Caso o Cliente não concorde com o novo valor, poderá cancelar a renovação antes da próxima cobrança.
+
+8. CUSTOS DE TERCEIROS E SERVIÇOS EXTERNOS
+
+8.1. Os valores pagos à MR Flow referem-se exclusivamente ao uso da Plataforma, salvo quando expressamente informado de forma diferente.
+
+8.2. Custos de terceiros não estão incluídos na assinatura, tais como:
+
+I. Plataformas de gestão de imóveis, como Stays, Hostaway ou similares;
+II. Gateways de pagamento, como Stripe, Asaas ou similares;
+III. Serviços de hospedagem, domínio, e-mail, SMS, WhatsApp ou comunicação externa;
+IV. Ferramentas de automação, APIs, IA, mapas, analytics ou integrações externas;
+V. Taxas de marketplaces, OTAs, plataformas de reserva ou canais de venda;
+VI. Custos operacionais do próprio Cliente.
+
+8.3. A MR Flow não controla preços, políticas, disponibilidade, limites, mudanças técnicas ou decisões comerciais de serviços externos.
+
+8.4. A indisponibilidade, alteração, bloqueio, limitação ou encerramento de serviços de terceiros não gera, por si só, direito a reembolso, indenização ou suspensão de pagamento da assinatura da MR Flow.
+
+9. INTEGRAÇÕES COM TERCEIROS
+
+9.1. A Plataforma poderá oferecer integrações com serviços externos, como Stays, Hostaway, plataformas de reserva, gateways de pagamento, mapas, ferramentas de automação, análise e outros sistemas.
+
+9.2. O funcionamento das integrações depende da disponibilidade, estabilidade, documentação, permissões, credenciais, limites de API e políticas dos respectivos terceiros.
+
+9.3. O Cliente é responsável por obter, manter e configurar corretamente suas credenciais, tokens, chaves de API, permissões e autorizações necessárias.
+
+9.4. A MR Flow poderá alterar, limitar, suspender ou descontinuar integrações quando houver mudanças técnicas, comerciais, jurídicas ou operacionais nos serviços de terceiros.
+
+9.5. A MR Flow não garante funcionamento ininterrupto de integrações externas e não se responsabiliza por falhas causadas por:
+
+I. Mudanças em APIs de terceiros;
+II. Tokens expirados ou inválidos;
+III. Permissões insuficientes;
+IV. Instabilidade da plataforma externa;
+V. Dados incompletos ou inconsistentes enviados por terceiros;
+VI. Bloqueios, limites ou suspensões aplicados por terceiros;
+VII. Erros de configuração realizados pelo Cliente.
+
+9.6. A importação automática de dados de imóveis, quando disponível, poderá depender da qualidade e padronização dos dados existentes na plataforma de origem.
+
+9.7. O Cliente reconhece que informações importadas automaticamente podem exigir revisão manual antes de serem publicadas para hóspedes ou clientes finais.
+
+10. CONTEÚDO DO CLIENTE E RESPONSABILIDADE PELAS INFORMAÇÕES PUBLICADAS
+
+10.1. O Cliente é o único responsável por todo Conteúdo inserido, importado, publicado ou disponibilizado na Plataforma.
+
+10.2. A MR Flow não revisa previamente, valida, audita ou garante a veracidade das informações publicadas pelo Cliente.
+
+10.3. O Cliente é responsável por garantir que as informações disponibilizadas aos hóspedes sejam corretas, atualizadas, completas, lícitas e adequadas à realidade do imóvel.
+
+10.4. O Cliente deve revisar cuidadosamente informações sensíveis antes de publicá-las, incluindo, mas não se limitando a:
+
+I. Senhas de Wi-Fi;
+II. Códigos de porta, fechaduras, cofres ou portarias;
+III. Dados de localização;
+IV. Instruções de acesso;
+V. Contatos pessoais;
+VI. Informações sobre segurança;
+VII. Regras internas do imóvel ou condomínio.
+
+10.5. Caso o Cliente decida publicar informações sensíveis, como códigos de acesso, senhas ou instruções de entrada, tal decisão será de sua exclusiva responsabilidade.
+
+10.6. A MR Flow não será responsável por acessos indevidos, uso inadequado de informações, falhas de segurança no imóvel, compartilhamento não autorizado de links ou QR Codes, ou danos causados por informações publicadas pelo próprio Cliente.
+
+10.7. O Cliente deve remover ou atualizar imediatamente informações desatualizadas, incorretas ou que possam colocar em risco a segurança do imóvel, dos hóspedes, do condomínio ou de terceiros.
+
+10.8. É vedado ao Cliente utilizar a Plataforma para publicar conteúdo:
+
+I. Ilegal, ofensivo, discriminatório, racista, pornográfico, difamatório ou abusivo;
+II. Que viole direitos autorais, marcas, imagem, privacidade ou propriedade intelectual de terceiros;
+III. Que contenha vírus, malware, phishing ou links maliciosos;
+IV. Que incentive práticas ilegais ou inseguras;
+V. Que viole regras de condomínios, plataformas de reserva, órgãos públicos ou legislação aplicável.
+
+10.9. A MR Flow poderá remover, bloquear ou suspender conteúdos e contas que violem estes Termos, a legislação vigente ou direitos de terceiros.
+
+11. LINKS, QR CODES E ACESSO DOS HÓSPEDES
+
+11.1. A Plataforma poderá gerar links e QR Codes para acesso aos hubs digitais criados pelo Cliente.
+
+11.2. O Cliente é responsável por decidir onde, como e para quem os links e QR Codes serão compartilhados.
+
+11.3. O acesso ao hub por meio de link ou QR Code poderá permitir que terceiros visualizem as informações publicadas, conforme configuração da Plataforma.
+
+11.4. O Cliente reconhece que QR Codes impressos, enviados por mensagem, compartilhados em plataformas externas ou fixados em imóveis podem ser acessados por pessoas que tenham contato com o material.
+
+11.5. A MR Flow não se responsabiliza por acessos realizados por pessoas que receberam o link, QR Code ou qualquer forma de compartilhamento feita pelo Cliente, sua equipe, hóspedes ou terceiros.
+
+11.6. Cabe ao Cliente substituir, atualizar ou remover materiais impressos, cartões, QR Codes ou links caso altere informações relevantes ou sensíveis.
+
+12. RELAÇÃO COM HÓSPEDES E CLIENTES FINAIS
+
+12.1. A MR Flow atua exclusivamente como fornecedora de tecnologia para o Cliente.
+
+12.2. A MR Flow não é parte da relação comercial, contratual, locatícia, turística, hoteleira ou de hospedagem entre o Cliente e seus hóspedes, visitantes ou clientes finais.
+
+12.3. O Cliente é o único responsável por:
+
+I. Atendimento aos hóspedes;
+II. Reserva, hospedagem, check-in e checkout;
+III. Regras do imóvel;
+IV. Segurança física do imóvel;
+V. Cumprimento de obrigações condominiais, fiscais, turísticas ou regulatórias;
+VI. Informações fornecidas aos hóspedes;
+VII. Solução de conflitos, reclamações, reembolsos ou problemas operacionais.
+
+12.4. A MR Flow não presta serviço de hospedagem, locação, hotelaria, intermediação imobiliária, administração de imóveis ou atendimento direto ao hóspede, salvo se houver contrato específico em separado.
+
+13. REQUISITOS TÉCNICOS E CONDIÇÕES DE USO
+
+13.1. Para melhor utilização da Plataforma, recomenda-se que o Cliente utilize navegador atualizado, conexão estável com a internet e dispositivo compatível.
+
+13.2. A Plataforma poderá ser acessada por computadores, tablets ou celulares, observadas as limitações de tela, navegador e sistema operacional.
+
+13.3. A MR Flow não se responsabiliza por falhas decorrentes de:
+
+I. Internet instável;
+II. Dispositivos desatualizados;
+III. Navegadores incompatíveis;
+IV. Bloqueios de rede, firewall, proxy ou antivírus;
+V. Falhas em DNS, domínio, hospedagem externa ou serviços de terceiros;
+VI. Configurações realizadas incorretamente pelo Cliente.
+
+13.4. A MR Flow poderá realizar manutenções programadas ou emergenciais para melhoria, correção, segurança ou evolução da Plataforma.
+
+13.5. Sempre que possível, manutenções programadas serão realizadas em horários de menor impacto operacional.
+
+14. DISPONIBILIDADE, ESTABILIDADE E LIMITAÇÕES DA PLATAFORMA
+
+14.1. A MR Flow empregará esforços comercialmente razoáveis para manter a Plataforma disponível, segura e funcional.
+
+14.2. O Cliente reconhece que nenhum sistema conectado à internet é imune a instabilidades, indisponibilidades, ataques, falhas técnicas, interrupções de terceiros ou eventos de força maior.
+
+14.3. A MR Flow não garante disponibilidade ininterrupta, ausência absoluta de erros ou funcionamento contínuo da Plataforma em todos os momentos.
+
+14.4. A Plataforma poderá ficar temporariamente indisponível por motivos como:
+
+I. Manutenção técnica;
+II. Atualizações de segurança;
+III. Falhas de infraestrutura;
+IV. Ataques cibernéticos;
+V. Indisponibilidade de provedores de nuvem;
+VI. Problemas de terceiros;
+VII. Caso fortuito ou força maior.
+
+14.5. Falhas temporárias, lentidão, instabilidade ou indisponibilidade não gerarão automaticamente direito a indenização, reembolso ou abatimento, salvo previsão legal obrigatória ou condição contratual específica.
+
+15. SUPORTE TÉCNICO
+
+15.1. O suporte técnico será prestado pelos canais oficiais informados pela MR Flow, podendo incluir WhatsApp, e-mail, painel administrativo ou outro canal indicado.
+
+15.2. O horário padrão de atendimento é de segunda a sexta-feira, das 08h às 18h, horário de Brasília, exceto feriados nacionais, salvo contratação específica de suporte diferenciado.
+
+15.3. O suporte técnico padrão compreende:
+
+I. Dúvidas sobre uso da Plataforma;
+II. Orientações sobre funcionalidades nativas;
+III. Investigação de bugs;
+IV. Correção de falhas atribuíveis à Plataforma;
+V. Apoio em configurações básicas do sistema.
+
+15.4. Não estão incluídos no suporte técnico padrão:
+
+I. Criação de conteúdo para imóveis;
+II. Revisão de textos, fotos, vídeos ou materiais do Cliente;
+III. Gestão operacional de hospedagens;
+IV. Configuração de contas em plataformas de terceiros;
+V. Suporte a Stays, Hostaway, Airbnb, Booking ou sistemas externos;
+VI. Criação de automações personalizadas;
+VII. Consultoria de marketing, vendas, tráfego pago ou SEO;
+VIII. Tratamento direto com hóspedes;
+IX. Customizações exclusivas de código, layout ou funcionalidades;
+X. Acesso remoto a dispositivos do Cliente;
+XI. Problemas de internet, navegador, dispositivo ou rede local do Cliente.
+
+15.5. Serviços fora do escopo de suporte poderão ser oferecidos mediante orçamento específico, a critério da MR Flow.
+
+16. OBRIGAÇÕES DA MR FLOW
+
+16.1. São obrigações da MR Flow:
+
+I. Disponibilizar acesso à Plataforma conforme o plano contratado;
+II. Manter a Plataforma em funcionamento, observadas as limitações técnicas destes Termos;
+III. Corrigir bugs identificados e confirmados, conforme prioridade técnica;
+IV. Prestar suporte dentro do escopo definido;
+V. Proteger os dados pessoais tratados sob sua responsabilidade, nos termos da legislação aplicável;
+VI. Manter a evolução e manutenção da Plataforma conforme sua estratégia técnica e comercial.
+
+16.2. A MR Flow poderá modificar, melhorar, substituir, remover ou reorganizar funcionalidades da Plataforma, desde que preserve a finalidade geral do serviço contratado.
+
+16.3. Funcionalidades beta, experimentais ou em teste poderão ser modificadas ou removidas sem aviso prévio.
+
+17. OBRIGAÇÕES DO CLIENTE
+
+17.1. São obrigações do Cliente:
+
+I. Utilizar a Plataforma de acordo com estes Termos;
+II. Manter seus pagamentos em dia;
+III. Fornecer informações verdadeiras e atualizadas;
+IV. Gerenciar corretamente seus imóveis, conteúdos, links e QR Codes;
+V. Revisar as informações antes de disponibilizá-las aos hóspedes;
+VI. Manter a segurança de suas credenciais de acesso;
+VII. Obter autorizações necessárias para uso de imagens, marcas, textos e dados de terceiros;
+VIII. Cumprir leis, normas, regulamentos, regras condominiais e obrigações aplicáveis à sua operação;
+IX. Responder por reclamações, danos ou conflitos com hóspedes e terceiros;
+X. Não utilizar a Plataforma para fins ilícitos, abusivos ou contrários à boa-fé.
+
+17.2. O Cliente é responsável por garantir que o uso da Plataforma esteja adequado à sua atividade, modelo de negócio e obrigações legais.
+
+17.3. O Cliente deverá manter cópias próprias de conteúdos, imagens, instruções e informações relevantes, não devendo utilizar a Plataforma como único local de armazenamento permanente de dados críticos.
+
+18. PROPRIEDADE INTELECTUAL
+
+18.1. A Plataforma, seu código-fonte, banco de dados, arquitetura, layout, design, marca, identidade visual, logotipos, fluxos, funcionalidades, documentação, integrações, APIs e demais elementos tecnológicos pertencem exclusivamente à MR Flow ou a seus licenciadores.
+
+18.2. A contratação da Plataforma não transfere ao Cliente qualquer direito de propriedade intelectual, titularidade, código-fonte, marca, tecnologia ou ativo da MR Flow.
+
+18.3. É vedado ao Cliente:
+
+I. Copiar, vender, sublicenciar, alugar ou distribuir a Plataforma;
+II. Realizar engenharia reversa, descompilação ou tentativa de acesso ao código-fonte;
+III. Remover avisos de marca, copyright ou identificação da MR Flow;
+IV. Criar produto concorrente mediante cópia substancial da Plataforma;
+V. Explorar a Plataforma de forma não autorizada.
+
+18.4. O Cliente mantém a titularidade sobre os conteúdos que inserir na Plataforma, desde que possua os respectivos direitos de uso.
+
+18.5. Ao inserir conteúdo na Plataforma, o Cliente concede à MR Flow autorização limitada, gratuita e necessária para hospedar, processar, exibir, armazenar e disponibilizar tais conteúdos dentro da finalidade da Plataforma.
+
+19. USO DE MARCA, DIVULGAÇÃO E PORTFÓLIO
+
+19.1. A MR Flow poderá utilizar o nome comercial, marca ou logotipo do Cliente em materiais institucionais, comerciais ou de portfólio, salvo manifestação contrária por escrito do Cliente.
+
+19.2. A MR Flow não divulgará dados estratégicos, conteúdos sensíveis ou informações internas do Cliente sem autorização.
+
+19.3. O Cliente não poderá utilizar a marca MR Flow de forma que sugira parceria, representação, revenda, certificação ou endosso oficial sem autorização prévia e expressa.
+
+20. PRIVACIDADE E PROTEÇÃO DE DADOS — LGPD
+
+20.1. As Partes comprometem-se a cumprir a Lei Geral de Proteção de Dados Pessoais — LGPD, Lei nº 13.709/2018, quando aplicável ao tratamento de dados pessoais realizado no contexto destes Termos.
+
+20.2. Para os dados cadastrais, comerciais, financeiros e de suporte do Cliente, a MR Flow atuará como Controladora, tratando dados como nome, e-mail, telefone, CPF/CNPJ, endereço, dados de pagamento, plano contratado, histórico de suporte e informações necessárias para faturamento, suporte, segurança e operação da conta.
+
+20.3. Para dados pessoais de hóspedes, visitantes, clientes finais, colaboradores, proprietários, prestadores ou terceiros inseridos pelo Cliente na Plataforma, o Cliente será o Controlador, e a MR Flow atuará, quando aplicável, como Operadora, tratando tais dados conforme as instruções do Cliente e para viabilizar o funcionamento da Plataforma.
+
+20.4. O Cliente declara possuir base legal adequada para inserir, armazenar, publicar ou compartilhar dados pessoais na Plataforma.
+
+20.5. O Cliente é responsável por informar seus hóspedes, clientes finais e terceiros sobre o tratamento de dados realizado em sua operação, incluindo o uso de guias digitais, links, QR Codes e páginas informativas.
+
+20.6. O Cliente deve evitar inserir dados pessoais excessivos, sensíveis ou desnecessários nos hubs digitais.
+
+20.7. Caso o Cliente publique dados pessoais em páginas acessíveis por link ou QR Code, será responsável por avaliar os riscos, obter consentimentos quando necessário e limitar o acesso às informações.
+
+20.8. A MR Flow poderá adotar medidas técnicas e administrativas razoáveis para proteger os dados tratados na Plataforma, mas não se responsabiliza por incidentes decorrentes de culpa exclusiva do Cliente, compartilhamento indevido de links, vazamento de senha, dispositivos comprometidos ou uso inadequado da Plataforma.
+
+20.9. Em caso de solicitação de titular de dados relacionada a informações controladas pelo Cliente, a responsabilidade primária pelo atendimento será do próprio Cliente.
+
+20.10. A MR Flow poderá auxiliar o Cliente, dentro de limites técnicos e razoáveis, no atendimento de solicitações relacionadas a dados tratados na Plataforma.
+
+21. SEGURANÇA DA INFORMAÇÃO
+
+21.1. A MR Flow poderá adotar práticas de segurança compatíveis com a natureza da Plataforma, incluindo controles de acesso, monitoramento, backups, logs, atualizações e medidas de proteção técnica.
+
+21.2. O Cliente é responsável por:
+
+I. Usar senhas fortes;
+II. Proteger seus dispositivos;
+III. Evitar compartilhamento indevido de acessos;
+IV. Remover usuários que não devam mais acessar a conta;
+V. Revisar informações sensíveis publicadas;
+VI. Controlar a distribuição de links e QR Codes.
+
+21.3. A MR Flow não se responsabiliza por falhas de segurança decorrentes de má gestão de credenciais, acesso indevido por usuários autorizados pelo Cliente, compartilhamento de links ou publicação voluntária de informações sensíveis.
+
+22. BACKUPS, EXPORTAÇÃO E RETENÇÃO DE DADOS
+
+22.1. A MR Flow poderá manter rotinas internas de backup para segurança operacional da Plataforma.
+
+22.2. Backups internos não representam garantia de restauração individual, exportação personalizada ou recuperação específica de conteúdos excluídos pelo Cliente.
+
+22.3. O Cliente deve manter cópias próprias de informações críticas, como textos, fotos, vídeos, instruções e dados operacionais relevantes.
+
+22.4. Após cancelamento, inadimplência prolongada ou encerramento da conta, a MR Flow poderá excluir, anonimizar ou restringir o acesso aos dados do Cliente, conforme política interna, obrigação legal ou necessidade operacional.
+
+22.5. A MR Flow poderá manter determinados registros pelo prazo necessário ao cumprimento de obrigações legais, fiscais, regulatórias, segurança, prevenção à fraude ou exercício regular de direitos.
+
+23. SUSPENSÃO E RESCISÃO
+
+23.1. A MR Flow poderá suspender ou encerrar o acesso do Cliente à Plataforma nas seguintes hipóteses:
+
+I. Inadimplência;
+II. Violação destes Termos;
+III. Uso ilícito ou abusivo da Plataforma;
+IV. Publicação de conteúdo proibido;
+V. Tentativa de fraude, engenharia reversa ou acesso indevido;
+VI. Risco à segurança da Plataforma ou de terceiros;
+VII. Solicitação de autoridade competente;
+VIII. Conduta ofensiva, abusiva ou desrespeitosa contra a equipe da MR Flow.
+
+23.2. A suspensão ou rescisão por culpa do Cliente não gera direito a reembolso, indenização ou compensação.
+
+23.3. O Cliente poderá cancelar sua assinatura conforme as regras do plano contratado e da plataforma de pagamento utilizada.
+
+23.4. O cancelamento não elimina obrigações pendentes, valores em aberto, responsabilidades por uso anterior ou deveres de confidencialidade e respeito à propriedade intelectual.
+
+24. LIMITAÇÃO DE RESPONSABILIDADE
+
+24.1. A MR Flow não será responsável por danos indiretos, lucros cessantes, perda de receita, perda de reservas, queda de avaliação, reclamações de hóspedes, falhas operacionais do imóvel, danos morais, perda de oportunidade ou prejuízos decorrentes do uso ou impossibilidade de uso da Plataforma.
+
+24.2. A MR Flow não se responsabiliza por:
+
+I. Informações incorretas inseridas pelo Cliente;
+II. Conteúdos desatualizados;
+III. Falhas de comunicação com hóspedes;
+IV. Problemas no imóvel;
+V. Descumprimento de regras condominiais;
+VI. Cancelamentos, reclamações ou disputas com hóspedes;
+VII. Problemas causados por terceiros;
+VIII. Acessos indevidos decorrentes de links ou QR Codes compartilhados;
+IX. Uso inadequado de senhas, códigos de acesso ou informações sensíveis publicadas pelo Cliente.
+
+24.3. A responsabilidade total da MR Flow, quando legalmente aplicável e comprovada, ficará limitada ao valor pago pelo Cliente à MR Flow nos últimos 3 meses anteriores ao evento que originou a reclamação, salvo disposição legal obrigatória em contrário.
+
+25. CONDUTA E RESPEITO
+
+25.1. A MR Flow preza por uma relação profissional, respeitosa e colaborativa.
+
+25.2. A MR Flow poderá suspender atendimento, suporte ou, em casos graves, rescindir a conta de Cliente que pratique ofensas, ameaças, racismo, assédio, discriminação, agressividade, abuso verbal ou qualquer conduta inadequada contra sua equipe, parceiros ou representantes.
+
+25.3. A rescisão por conduta inadequada não gera direito a reembolso.
+
+26. COMUNICAÇÕES
+
+26.1. Todas as comunicações, notificações e avisos poderão ser enviados por e-mail, WhatsApp, painel administrativo, site oficial ou outros canais informados pelo Cliente.
+
+26.2. O Cliente é responsável por manter seus dados de contato atualizados.
+
+26.3. Comunicações enviadas aos contatos cadastrados serão consideradas válidas, ainda que o Cliente não as leia por erro de cadastro, caixa cheia, bloqueio, filtro de spam ou desatualização de dados.
+
+27. ALTERAÇÕES NA PLATAFORMA
+
+27.1. A MR Flow poderá alterar, melhorar, remover, substituir ou reorganizar funcionalidades da Plataforma a qualquer momento.
+
+27.2. Alterações poderão ocorrer por motivos técnicos, comerciais, legais, regulatórios, estratégicos ou de segurança.
+
+27.3. A MR Flow poderá lançar novas funcionalidades em planos específicos, como recursos premium, add-ons ou módulos pagos.
+
+27.4. O Cliente reconhece que a Plataforma está em constante evolução e que a aparência, fluxos, telas e recursos podem ser modificados ao longo do tempo.
+
+28. DISPOSIÇÕES GERAIS
+
+28.1. A eventual tolerância da MR Flow quanto ao descumprimento de qualquer cláusula destes Termos não constituirá renúncia, novação ou perdão, podendo a obrigação ser exigida posteriormente.
+
+28.2. Caso qualquer disposição destes Termos seja considerada inválida ou inexequível, as demais cláusulas permanecerão válidas e eficazes.
+
+28.3. O Cliente não poderá ceder, transferir ou sublicenciar sua conta, plano ou direitos decorrentes destes Termos sem autorização prévia da MR Flow.
+
+28.4. A MR Flow poderá ceder ou transferir estes Termos em caso de reorganização societária, fusão, aquisição, venda de ativos ou alteração operacional.
+
+28.5. Estes Termos constituem o acordo integral entre as partes em relação ao uso da Plataforma.
+
+29. FORO E LEGISLAÇÃO APLICÁVEL
+
+29.1. Estes Termos são regidos pelas leis da República Federativa do Brasil, incluindo, quando aplicáveis, o Código Civil, o Código de Defesa do Consumidor, a Lei Geral de Proteção de Dados, o Marco Civil da Internet e a legislação de propriedade intelectual e software.
+
+29.2. Fica eleito o foro da Comarca de São Gonçalo/RJ como o competente para dirimir dúvidas ou litígios oriundos destes Termos, com renúncia expressa a qualquer outro, por mais privilegiado que seja, salvo quando houver regra legal obrigatória em sentido diverso.
+
+30. ACEITE
+
+Ao criar uma conta, contratar um plano, iniciar período gratuito, realizar pagamento, cadastrar imóveis, gerar hubs, publicar links, utilizar QR Codes ou acessar qualquer funcionalidade do MR Flow Welcome Hub, o Cliente declara que leu, compreendeu e aceitou integralmente estes Termos de Serviço.
+
+Última atualização: 27 de maio de 2026.

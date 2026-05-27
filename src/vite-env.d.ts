@@ -8,3 +8,8 @@ interface Window {
   fbq: (...args: any[]) => void;
   _fbq: any;
 }
+
+declare module "*.txt?raw" {
+  const content: string;
+  export default content;
+}
