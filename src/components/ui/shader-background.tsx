@@ -154,6 +154,9 @@ const ShaderBackground = ({ className }: ShaderBackgroundProps) => {
     resize();
 
     let raf = 0;
+    let running = false;
+    let visible = true;
+    let inView = true;
     const start = performance.now();
     const render = () => {
       const t = reduced ? 0 : (performance.now() - start) / 1000;
@@ -166,15 +169,39 @@ const ShaderBackground = ({ className }: ShaderBackgroundProps) => {
       gl.vertexAttribPointer(aVertex, 2, gl.FLOAT, false, 0, 0);
       gl.enableVertexAttribArray(aVertex);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-      if (!reduced) {
+      if (!reduced && visible && inView) {
         raf = requestAnimationFrame(render);
+      } else {
+        running = false;
       }
     };
-    raf = requestAnimationFrame(render);
+    const startLoop = () => {
+      if (running) return;
+      running = true;
+      raf = requestAnimationFrame(render);
+    };
+    startLoop();
+
+    const onVis = () => {
+      visible = document.visibilityState !== "hidden";
+      if (visible && inView && !reduced) startLoop();
+    };
+    document.addEventListener("visibilitychange", onVis);
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        inView = entries[0]?.isIntersecting ?? true;
+        if (visible && inView && !reduced) startLoop();
+      },
+      { threshold: 0 },
+    );
+    io.observe(canvas);
 
     return () => {
       cancelAnimationFrame(raf);
       ro.disconnect();
+      io.disconnect();
+      document.removeEventListener("visibilitychange", onVis);
       gl.deleteBuffer(positionBuffer);
       gl.deleteProgram(program);
       gl.deleteShader(vs);
