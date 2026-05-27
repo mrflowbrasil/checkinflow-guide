@@ -1,0 +1,454 @@
+POLÍTICA DE PRIVACIDADE — MR FLOW WELCOME HUB
+
+Última atualização: 27 de maio de 2026.
+
+A presente Política de Privacidade descreve como a MR FLOW AUTOMAÇÕES E SERVIÇOS DIGITAIS LTDA, pessoa jurídica de direito privado, inscrita no CNPJ sob o nº 57.466.519/0001-87, doravante denominada “MR FLOW”, “MR FLOW WELCOME HUB”, “nós” ou “Plataforma”, coleta, utiliza, armazena, compartilha e protege os dados pessoais relacionados ao uso do Mr Flow Welcome Hub.
+
+O Mr Flow Welcome Hub é uma plataforma digital destinada à criação, personalização e disponibilização de hubs de boas-vindas, guias digitais, páginas informativas, QR Codes e experiências digitais para hóspedes, visitantes e clientes finais de imóveis de temporada, pousadas, hospedagens, locações e operações similares.
+
+Esta Política foi elaborada em conformidade com a Lei Geral de Proteção de Dados Pessoais — LGPD, Lei nº 13.709/2018, e com o Marco Civil da Internet, Lei nº 12.965/2014, que estabelece princípios, garantias, direitos e deveres para o uso da internet no Brasil.
+
+Ao acessar, criar conta, contratar plano, cadastrar imóveis, gerar hubs, utilizar QR Codes ou navegar pelas páginas do Mr Flow Welcome Hub, o usuário declara estar ciente desta Política de Privacidade.
+
+1. DEFINIÇÕES IMPORTANTES
+
+Para facilitar a compreensão desta Política, adotamos as seguintes definições:
+
+Cliente, Usuário Administrador ou Anfitrião: pessoa física ou jurídica que cria conta, contrata plano, cadastra imóveis e administra conteúdos dentro do Mr Flow Welcome Hub.
+
+Hóspede, Visitante ou Cliente Final: pessoa que acessa um hub digital, página pública, link, QR Code ou guia criado pelo Cliente.
+
+Imóvel ou Propriedade: unidade cadastrada pelo Cliente na Plataforma, como casa, apartamento, pousada, quarto, suíte, acomodação, hospedagem ou espaço similar.
+
+Hub Digital ou Guia Digital: página criada pelo Cliente contendo informações sobre o imóvel, como Wi-Fi, check-in, checkout, localização, regras, dicas locais, vídeos, fotos, contatos, links e demais orientações.
+
+Dados Pessoais: informações relacionadas a pessoa natural identificada ou identificável.
+
+Dados Sensíveis: dados sobre origem racial ou étnica, convicção religiosa, opinião política, filiação sindical, dados genéticos, biométricos, saúde, vida sexual ou outros definidos pela LGPD.
+
+Controlador: pessoa física ou jurídica que decide sobre o tratamento de dados pessoais.
+
+Operador: pessoa física ou jurídica que trata dados pessoais em nome do Controlador.
+
+Tratamento: toda operação realizada com dados pessoais, como coleta, armazenamento, uso, compartilhamento, acesso, exclusão, classificação, transmissão ou processamento.
+
+2. QUEM É O CONTROLADOR DOS DADOS
+
+Para os dados pessoais de cadastro, contratação, pagamento, suporte, comunicação e uso da Plataforma pelo Cliente, a MR Flow atua como Controladora.
+
+Para os dados pessoais de hóspedes, visitantes, proprietários, colaboradores, prestadores de serviço ou terceiros inseridos pelo Cliente dentro dos hubs, a MR Flow poderá atuar como Operadora, tratando essas informações em nome do Cliente e conforme as instruções dele.
+
+Nesses casos, o Cliente é o Controlador dos dados publicados, cadastrados ou importados por ele na Plataforma.
+
+3. DADOS QUE PODEMOS COLETAR
+
+A coleta de dados varia conforme a forma de uso da Plataforma.
+
+3.1. Dados de cadastro do Cliente
+
+Podemos coletar:
+
+I. Nome completo ou razão social;
+II. Nome fantasia;
+III. CPF ou CNPJ;
+IV. E-mail;
+V. Telefone ou WhatsApp;
+VI. Endereço comercial ou fiscal;
+VII. Dados de login e autenticação;
+VIII. Dados de cobrança, plano contratado e histórico de pagamentos;
+IX. Informações necessárias para emissão de nota fiscal, quando aplicável.
+
+3.2. Dados de uso da Plataforma
+
+Podemos coletar informações relacionadas ao uso da conta e da Plataforma, como:
+
+I. Data e hora de acesso;
+II. Endereço IP;
+III. Tipo de dispositivo;
+IV. Sistema operacional;
+V. Navegador utilizado;
+VI. Páginas acessadas;
+VII. Eventos de uso dentro da Plataforma;
+VIII. Imóveis cadastrados;
+IX. Hubs criados;
+X. QR Codes gerados;
+XI. Configurações realizadas pelo Cliente;
+XII. Logs técnicos e registros de segurança.
+
+3.3. Dados de imóveis e conteúdos cadastrados pelo Cliente
+
+O Cliente poderá inserir dados relacionados aos imóveis, tais como:
+
+I. Nome da propriedade;
+II. Endereço ou localização aproximada;
+III. Fotos, vídeos e descrições;
+IV. Instruções de check-in e checkout;
+V. Regras da casa;
+VI. Informações de Wi-Fi;
+VII. Códigos de acesso, quando inseridos pelo Cliente;
+VIII. Dicas de turismo, transporte e serviços locais;
+IX. Contatos de suporte, emergência ou atendimento;
+X. Links externos;
+XI. Informações personalizadas do imóvel.
+
+O Cliente é o único responsável por avaliar quais informações devem ser publicadas, principalmente quando envolverem senhas, códigos de acesso, dados de localização ou qualquer informação sensível à segurança do imóvel.
+
+3.4. Dados de hóspedes ou visitantes
+
+Dependendo da configuração da Plataforma e do conteúdo publicado pelo Cliente, poderemos tratar dados relacionados a hóspedes ou visitantes, tais como:
+
+I. Nome;
+II. E-mail;
+III. Telefone;
+IV. Dados preenchidos em formulários;
+V. Informações de reserva, quando integradas ou cadastradas;
+VI. Dados de acesso ao hub, como IP, dispositivo, navegador, data e horário de visita;
+VII. Interações com páginas, botões, links ou recursos do hub.
+
+A coleta desses dados dependerá das funcionalidades utilizadas pelo Cliente e das informações que ele decidir solicitar, importar ou disponibilizar.
+
+3.5. Dados recebidos por integrações
+
+Quando o Cliente conecta a Plataforma a sistemas externos, podemos receber dados desses sistemas, conforme as permissões concedidas.
+
+Exemplos de integrações:
+
+I. Stays;
+II. Hostaway;
+III. Plataformas de hospedagem ou gestão de imóveis;
+IV. Gateways de pagamento, como Stripe ou Asaas;
+V. Google Analytics, Google Tag Manager ou ferramentas similares;
+VI. Serviços de automação, CRM ou APIs externas.
+
+Os dados recebidos por integração podem incluir informações de imóveis, reservas, calendários, descrições, imagens, identificadores externos, campos personalizados e demais informações disponibilizadas pela plataforma integrada.
+
+3.6. Dados de pagamento
+
+Os pagamentos podem ser processados por plataformas terceiras, como Stripe, Asaas ou outros provedores.
+
+Podemos armazenar dados relacionados à assinatura, como:
+
+I. Plano contratado;
+II. Status de pagamento;
+III. ID da transação;
+IV. Data da cobrança;
+V. Valor pago;
+VI. Histórico de faturas;
+VII. Situação da assinatura.
+
+Dados completos de cartão de crédito ou meios de pagamento sensíveis geralmente são processados diretamente pelo provedor de pagamento e não armazenados integralmente pela MR Flow.
+
+3.7. Dados de suporte e atendimento
+
+Quando o Cliente entra em contato com a MR Flow, podemos tratar:
+
+I. Nome;
+II. E-mail;
+III. Telefone;
+IV. Mensagens enviadas;
+V. Prints, vídeos ou arquivos encaminhados;
+VI. Histórico de atendimento;
+VII. Informações técnicas necessárias para diagnóstico;
+VIII. Dados de acesso temporário, quando fornecidos voluntariamente pelo Cliente.
+
+4. DADOS SENSÍVEIS
+
+A MR Flow não solicita, como regra, o fornecimento de dados sensíveis.
+
+O Cliente deve evitar inserir na Plataforma dados sensíveis de hóspedes, visitantes, colaboradores ou terceiros, salvo quando houver base legal adequada e real necessidade operacional.
+
+Caso o Cliente insira dados sensíveis por conta própria, ele será responsável por garantir a legalidade do tratamento, obtenção de consentimento quando necessário e adoção de medidas adicionais de segurança.
+
+5. FINALIDADES DO TRATAMENTO DOS DADOS
+
+Tratamos dados pessoais para as seguintes finalidades:
+
+I. Criar e administrar contas de usuários;
+II. Liberar acesso à Plataforma;
+III. Permitir a criação e gestão de hubs digitais;
+IV. Gerar links e QR Codes;
+V. Cadastrar e organizar imóveis;
+VI. Exibir conteúdos aos hóspedes ou visitantes;
+VII. Processar pagamentos e assinaturas;
+VIII. Emitir notas fiscais, quando aplicável;
+IX. Prestar suporte técnico;
+X. Enviar comunicações operacionais;
+XI. Enviar avisos sobre planos, cobranças, alterações e atualizações;
+XII. Melhorar a experiência do usuário;
+XIII. Analisar uso, desempenho e estabilidade da Plataforma;
+XIV. Prevenir fraudes, abusos e acessos indevidos;
+XV. Cumprir obrigações legais, fiscais, regulatórias ou judiciais;
+XVI. Proteger direitos da MR Flow, dos Clientes e de terceiros;
+XVII. Realizar comunicações comerciais, quando permitido por lei ou consentido pelo usuário.
+
+6. BASES LEGAIS PARA O TRATAMENTO
+
+Tratamos dados pessoais com base nas hipóteses legais previstas na LGPD, especialmente:
+
+I. Execução de contrato: para fornecer a Plataforma, administrar planos, liberar acesso e prestar suporte;
+II. Cumprimento de obrigação legal ou regulatória: para emissão de documentos fiscais, guarda de registros e atendimento a autoridades;
+III. Legítimo interesse: para segurança, prevenção a fraudes, melhoria da Plataforma e comunicação com Clientes;
+IV. Consentimento: para finalidades específicas, como comunicações promocionais, cookies não essenciais ou integrações autorizadas;
+V. Exercício regular de direitos: para defesa em processos judiciais, administrativos ou arbitrais;
+VI. Proteção do crédito: quando aplicável a cobranças, inadimplência ou prevenção de fraude.
+
+7. COMPARTILHAMENTO DE DADOS
+
+Podemos compartilhar dados pessoais com terceiros quando necessário para operação da Plataforma, cumprimento legal ou prestação dos serviços contratados.
+
+Os dados poderão ser compartilhados com:
+
+I. Provedores de hospedagem e infraestrutura em nuvem;
+II. Plataformas de pagamento;
+III. Sistemas de emissão fiscal;
+IV. Ferramentas de analytics e monitoramento;
+V. Serviços de comunicação, e-mail e atendimento;
+VI. Plataformas integradas autorizadas pelo Cliente;
+VII. Prestadores de suporte técnico e tecnologia;
+VIII. Autoridades públicas, judiciais ou regulatórias, quando exigido por lei;
+IX. Consultores jurídicos, contábeis ou financeiros, quando necessário.
+
+Não vendemos dados pessoais.
+
+8. INTEGRAÇÕES COM TERCEIROS
+
+A Plataforma poderá permitir conexões com sistemas de terceiros, como Stays, Hostaway, plataformas de reserva, ferramentas de pagamento, analytics, automação e outros serviços.
+
+Ao conectar uma integração, o Cliente autoriza a MR Flow a acessar, receber, transmitir e processar os dados necessários para funcionamento da integração.
+
+A MR Flow não controla as práticas de privacidade, segurança ou tratamento de dados dessas plataformas externas. O Cliente deve consultar as respectivas políticas de privacidade e termos de uso dos serviços conectados.
+
+A revogação de acesso, remoção de tokens ou desconexão de integrações poderá limitar funcionalidades da Plataforma.
+
+9. COOKIES E TECNOLOGIAS DE RASTREAMENTO
+
+A Plataforma e seus sites podem utilizar cookies, pixels, tags e tecnologias semelhantes para funcionamento, segurança, análise de desempenho e personalização da experiência.
+
+Cookies podem ser utilizados para:
+
+I. Manter o usuário logado;
+II. Lembrar preferências;
+III. Melhorar a navegação;
+IV. Medir acessos e interações;
+V. Identificar erros técnicos;
+VI. Analisar desempenho de páginas e campanhas;
+VII. Apoiar ações de marketing e remarketing, quando aplicável.
+
+10. TIPOS DE COOKIES UTILIZADOS
+
+Podemos utilizar:
+
+Cookies essenciais: necessários para funcionamento da Plataforma, login, segurança e recursos básicos.
+
+Cookies de desempenho e analytics: usados para entender como os usuários interagem com o site e a Plataforma.
+
+Cookies funcionais: usados para lembrar preferências e melhorar a experiência.
+
+Cookies de marketing: usados para mensuração de campanhas, remarketing, conversões e personalização de comunicações, quando aplicável.
+
+O usuário pode configurar seu navegador para bloquear ou excluir cookies. No entanto, a desativação de cookies essenciais pode comprometer o funcionamento da Plataforma.
+
+11. FERRAMENTAS DE ANÁLISE, MARKETING E PIXELS
+
+Podemos utilizar ferramentas como Google Analytics, Google Tag Manager, Meta Pixel, Search Console, plataformas de anúncios, ferramentas de mapa de calor, CRM, automação e outras tecnologias similares.
+
+Essas ferramentas podem coletar dados como IP, navegador, dispositivo, páginas acessadas, origem do tráfego, eventos de conversão e interações.
+
+O uso dessas ferramentas tem como finalidade:
+
+I. Medir desempenho do site e da Plataforma;
+II. Melhorar páginas e funcionalidades;
+III. Entender a origem dos acessos;
+IV. Otimizar campanhas;
+V. Mensurar conversões;
+VI. Melhorar a comunicação com usuários interessados.
+
+12. REGISTROS DE ACESSO
+
+Em conformidade com o Marco Civil da Internet, podemos armazenar registros de acesso, como endereço IP, data e hora de uso, por prazo legal aplicável. O Marco Civil estabelece princípios, garantias, direitos e deveres para o uso da internet no Brasil.
+
+Esses registros podem ser utilizados para segurança, auditoria, prevenção a fraudes, cumprimento legal e apuração de uso indevido da Plataforma.
+
+13. TRANSFERÊNCIA INTERNACIONAL DE DADOS
+
+Alguns fornecedores de tecnologia, hospedagem, analytics, pagamento, atendimento ou infraestrutura podem armazenar ou processar dados fora do Brasil.
+
+Quando houver transferência internacional de dados, a MR Flow adotará medidas razoáveis para garantir que o tratamento observe padrões adequados de segurança e proteção, conforme a legislação aplicável.
+
+Ao utilizar a Plataforma, o Cliente reconhece que alguns serviços essenciais podem depender de provedores internacionais.
+
+14. ARMAZENAMENTO E PRAZO DE RETENÇÃO
+
+Os dados pessoais serão armazenados pelo tempo necessário para cumprir as finalidades descritas nesta Política, incluindo fornecimento da Plataforma, execução contratual, suporte, obrigações legais, fiscais, contábeis, segurança e exercício regular de direitos.
+
+Os dados poderão ser mantidos enquanto:
+
+I. A conta estiver ativa;
+II. Houver assinatura vigente;
+III. Existirem obrigações legais ou fiscais;
+IV. For necessário para segurança, prevenção a fraudes ou auditoria;
+V. Houver necessidade de defesa em processos judiciais, administrativos ou arbitrais;
+VI. O titular não solicitar exclusão, quando aplicável e juridicamente possível.
+
+Após o encerramento da conta, os dados poderão ser excluídos, anonimizados ou mantidos pelo prazo necessário ao cumprimento de obrigações legais e proteção de direitos.
+
+15. SEGURANÇA DOS DADOS
+
+A MR Flow adota medidas técnicas e administrativas razoáveis para proteger os dados pessoais contra acessos não autorizados, perda, alteração, destruição, divulgação indevida ou tratamento inadequado.
+
+Entre as medidas que podem ser adotadas estão:
+
+I. Uso de conexão segura;
+II. Controle de acesso;
+III. Logs de segurança;
+IV. Backups operacionais;
+V. Monitoramento técnico;
+VI. Boas práticas de desenvolvimento;
+VII. Restrição de acesso a dados conforme necessidade operacional.
+
+Apesar dos esforços de segurança, nenhum sistema é totalmente imune a falhas, ataques, incidentes ou acessos indevidos.
+
+A MR Flow não se responsabiliza por incidentes causados por culpa exclusiva do Cliente ou de terceiros, como compartilhamento de senha, dispositivos comprometidos, engenharia social, links públicos compartilhados indevidamente, uso de redes inseguras ou publicação voluntária de informações sensíveis.
+
+16. RESPONSABILIDADE DO CLIENTE SOBRE CONTEÚDOS PUBLICADOS
+
+O Cliente é o único responsável pelas informações que insere, importa, publica ou disponibiliza nos hubs digitais.
+
+Isso inclui, especialmente:
+
+I. Informações de endereço e localização;
+II. Instruções de check-in;
+III. Senhas de Wi-Fi;
+IV. Códigos de fechadura, porta, cofre, portaria ou condomínio;
+V. Contatos pessoais;
+VI. Dados de hóspedes;
+VII. Fotos, vídeos e documentos;
+VIII. Links externos;
+IX. Informações de segurança e acesso.
+
+O Cliente deve avaliar cuidadosamente se determinada informação deve ser publicada, restringida, atualizada ou removida.
+
+A MR Flow não se responsabiliza por danos causados pela publicação de informações incorretas, desatualizadas, excessivas, sensíveis ou compartilhadas indevidamente pelo Cliente.
+
+17. DIREITOS DOS TITULARES DE DADOS
+
+Nos termos da LGPD, o titular de dados pode solicitar:
+
+I. Confirmação da existência de tratamento;
+II. Acesso aos dados;
+III. Correção de dados incompletos, inexatos ou desatualizados;
+IV. Anonimização, bloqueio ou eliminação de dados desnecessários, excessivos ou tratados em desconformidade;
+V. Portabilidade dos dados, quando aplicável;
+VI. Informação sobre compartilhamento de dados;
+VII. Revogação do consentimento;
+VIII. Eliminação de dados tratados com base no consentimento;
+IX. Revisão de decisões automatizadas, quando aplicável.
+
+A LGPD dispõe sobre o tratamento de dados pessoais, inclusive nos meios digitais, por pessoa natural ou jurídica de direito público ou privado.
+
+18. COMO EXERCER SEUS DIREITOS
+
+O titular poderá exercer seus direitos entrando em contato pelo e-mail:
+
+contato@mrflow.com.br
+
+O pedido deverá conter, sempre que possível:
+
+I. Nome completo ou razão social;
+II. CPF ou CNPJ, quando aplicável;
+III. E-mail utilizado na conta;
+IV. Direito que deseja exercer;
+V. Descrição clara da solicitação;
+VI. Documento ou informação que permita validar a identidade do solicitante, quando necessário.
+
+Endereço para contato:
+
+MR FLOW AUTOMAÇÕES E SERVIÇOS DIGITAIS LTDA
+Rua Inconfidência, 396 – Mutondo
+São Gonçalo – RJ
+CEP 24.450-340
+
+Quando o pedido envolver dados de hóspedes ou clientes finais inseridos por um Cliente da Plataforma, a MR Flow poderá orientar o titular a contatar diretamente o Cliente responsável, quando este for o Controlador dos dados.
+
+19. ENCARREGADO DE DADOS
+
+O Encarregado pelo tratamento de dados pessoais poderá ser contatado pelo e-mail:
+
+contato@mrflow.com.br
+
+Responsável indicado:
+
+Vitor Ferreira Pacheco
+MR FLOW AUTOMAÇÕES E SERVIÇOS DIGITAIS LTDA
+
+20. COMUNICAÇÕES COMERCIAIS
+
+A MR Flow poderá enviar comunicações comerciais, promocionais, educativas ou informativas para usuários que tenham demonstrado interesse, criado conta, contratado plano, solicitado contato ou autorizado o recebimento.
+
+Essas comunicações podem incluir:
+
+I. Novidades da Plataforma;
+II. Conteúdos educativos;
+III. Avisos sobre funcionalidades;
+IV. Ofertas e planos;
+V. Materiais sobre hospitalidade digital, guias digitais e gestão de imóveis;
+VI. Convites para demonstrações, eventos ou treinamentos.
+
+O usuário poderá solicitar o descadastramento de comunicações promocionais a qualquer momento.
+
+Comunicações operacionais, técnicas, legais, financeiras ou relacionadas à conta poderão continuar sendo enviadas mesmo após o descadastramento de marketing.
+
+21. DADOS DE CRIANÇAS E ADOLESCENTES
+
+A Plataforma é destinada a Clientes maiores de idade e pessoas jurídicas.
+
+A MR Flow não tem como objetivo coletar dados de crianças ou adolescentes diretamente.
+
+Caso o Cliente insira dados de menores de idade em seus hubs, formulários ou conteúdos, será responsável por garantir que tal tratamento esteja amparado por base legal adequada e pelo consentimento dos responsáveis, quando necessário.
+
+22. EXCLUSÃO DE CONTA E DADOS
+
+O Cliente poderá solicitar a exclusão de sua conta e dados pessoais, observadas as obrigações legais, fiscais, contratuais e de segurança aplicáveis.
+
+A exclusão poderá resultar na perda de acesso a:
+
+I. Imóveis cadastrados;
+II. Hubs digitais;
+III. QR Codes;
+IV. Conteúdos publicados;
+V. Configurações;
+VI. Histórico de uso;
+VII. Integrações conectadas.
+
+Alguns dados poderão ser mantidos por prazo adicional para cumprimento de obrigação legal, prevenção a fraudes, auditoria, cobrança, exercício regular de direitos ou defesa em processos.
+
+23. RECLAMAÇÕES À AUTORIDADE COMPETENTE
+
+O titular de dados pode apresentar reclamação à autoridade competente em matéria de proteção de dados, quando entender que seus direitos não foram respeitados.
+
+No Brasil, a autoridade competente é a Autoridade Nacional de Proteção de Dados — ANPD.
+
+24. ALTERAÇÕES NESTA POLÍTICA
+
+A MR Flow poderá alterar esta Política de Privacidade a qualquer momento para refletir mudanças legais, técnicas, comerciais ou operacionais.
+
+Quando houver alteração relevante, poderemos comunicar o usuário por e-mail, painel administrativo, site oficial ou outro canal disponível.
+
+O uso continuado da Plataforma após a atualização desta Política indica ciência da nova versão.
+
+25. LEGISLAÇÃO APLICÁVEL E FORO
+
+Esta Política será interpretada de acordo com a legislação brasileira.
+
+Eventuais controvérsias relacionadas a esta Política serão submetidas ao foro da Comarca de São Gonçalo/RJ, salvo quando houver regra legal obrigatória em sentido diverso.
+
+26. CONTATO
+
+Em caso de dúvidas sobre esta Política de Privacidade, tratamento de dados pessoais ou exercício de direitos, entre em contato:
+
+MR FLOW AUTOMAÇÕES E SERVIÇOS DIGITAIS LTDA
+CNPJ: 57.466.519/0001-87
+E-mail: contato@mrflow.com.br
+Endereço: Rua Inconfidência, 396 – Mutondo
+São Gonçalo – RJ
+CEP 24.450-340
