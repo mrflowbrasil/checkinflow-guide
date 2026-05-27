@@ -840,7 +840,7 @@ export default function WelcomeHubLanding() {
         <main>
           <Hero />
           <StickyFeatureSection />
-          <SolutionSection />
+          <HostBuilderSection />
           <RealDemoPreview />
           <HowItWorksSection />
           <FeaturesSection />
