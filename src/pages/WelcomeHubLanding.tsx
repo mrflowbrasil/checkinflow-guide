@@ -327,7 +327,7 @@ function HostBuilderSection() {
                 playsInline
                 preload="metadata"
                 aria-hidden="true"
-                className="h-full w-full object-cover"
+                className="h-full w-full object-contain"
               />
             </LaptopMockup>
           </div>
