@@ -106,11 +106,6 @@ const ShaderBackground = ({ className }: ShaderBackgroundProps) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const reduced =
-      typeof window !== "undefined" &&
-      window.matchMedia &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
     const gl = canvas.getContext("webgl", { antialias: false, premultipliedAlpha: true });
     if (!gl) return;
 
@@ -159,7 +154,7 @@ const ShaderBackground = ({ className }: ShaderBackgroundProps) => {
     let inView = true;
     const start = performance.now();
     const render = () => {
-      const t = reduced ? 0 : (performance.now() - start) / 1000;
+      const t = (performance.now() - start) / 1000;
       gl.clearColor(0, 0, 0, 0);
       gl.clear(gl.COLOR_BUFFER_BIT);
       gl.useProgram(program);
@@ -169,7 +164,7 @@ const ShaderBackground = ({ className }: ShaderBackgroundProps) => {
       gl.vertexAttribPointer(aVertex, 2, gl.FLOAT, false, 0, 0);
       gl.enableVertexAttribArray(aVertex);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-      if (!reduced && visible && inView) {
+      if (visible && inView) {
         raf = requestAnimationFrame(render);
       } else {
         running = false;
@@ -184,14 +179,14 @@ const ShaderBackground = ({ className }: ShaderBackgroundProps) => {
 
     const onVis = () => {
       visible = document.visibilityState !== "hidden";
-      if (visible && inView && !reduced) startLoop();
+      if (visible && inView) startLoop();
     };
     document.addEventListener("visibilitychange", onVis);
 
     const io = new IntersectionObserver(
       (entries) => {
         inView = entries[0]?.isIntersecting ?? true;
-        if (visible && inView && !reduced) startLoop();
+        if (visible && inView) startLoop();
       },
       { threshold: 0 },
     );
