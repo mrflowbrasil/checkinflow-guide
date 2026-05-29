@@ -53,6 +53,8 @@ export function CheckInDigitalAirbnb() {
         { q: "Substitui o app da plataforma?", a: "Não substitui, complementa. O hóspede continua usando o Airbnb/Booking para se comunicar, mas tem todas as informações no seu hub." },
       ]}
       internalLinks={linksFor(path, ["/como-organizar-check-in-airbnb", "/qr-code-para-hospedes", "/manual-da-casa-airbnb", "/app-para-hospedes"])}
+      datePublished="2026-01-15"
+      dateModified="2026-05-29"
     />
   );
 }
@@ -84,6 +86,8 @@ export function QrCodeParaHospedes() {
         { q: "Posso baixar em alta resolução?", a: "Sim. O Mr Flow disponibiliza o QR Code em PNG e PDF prontos para impressão." },
       ]}
       internalLinks={linksFor(path, ["/check-in-digital-airbnb", "/hub-de-boas-vindas", "/manual-da-casa-airbnb", "/app-para-hospedes"])}
+      datePublished="2026-01-15"
+      dateModified="2026-05-29"
     />
   );
 }
@@ -115,6 +119,8 @@ export function ManualDaCasaAirbnb() {
         { q: "Posso esconder seções de hóspedes específicos?", a: "Você publica um manual padrão por imóvel; mensagens privadas continuam pelo canal de reserva." },
       ]}
       internalLinks={linksFor(path, ["/manual-digital-airbnb", "/guia-do-hospede", "/qr-code-para-hospedes", "/check-in-digital-airbnb"])}
+      datePublished="2026-01-15"
+      dateModified="2026-05-29"
     />
   );
 }
@@ -146,6 +152,8 @@ export function AppParaHospedes() {
         { q: "É seguro?", a: "Sim. Você controla o conteúdo e pode desativar o link a qualquer momento." },
       ]}
       internalLinks={linksFor(path, ["/guest-app-airbnb", "/qr-code-para-hospedes", "/check-in-digital-airbnb", "/experiencia-do-hospede"])}
+      datePublished="2026-01-15"
+      dateModified="2026-05-29"
     />
   );
 }
@@ -177,6 +185,8 @@ export function ExperienciaDoHospede() {
         { q: "Existe uma experiência ideal padrão?", a: "Existem boas práticas (clareza, antecipação, autonomia). Mas a experiência ideal é a que reflete a sua marca." },
       ]}
       internalLinks={linksFor(path, ["/hub-de-boas-vindas", "/como-melhorar-avaliacoes-airbnb", "/como-reduzir-perguntas-no-whatsapp", "/check-in-digital-airbnb"])}
+      datePublished="2026-01-15"
+      dateModified="2026-05-29"
     />
   );
 }
@@ -207,6 +217,8 @@ export function ComoReduzirPerguntasNoWhatsApp() {
         { q: "Vou parar de receber qualquer mensagem?", a: "Não. Mensagens importantes continuam — você se livra apenas das repetitivas e operacionais." },
       ]}
       internalLinks={linksFor(path, ["/manual-da-casa-airbnb", "/qr-code-para-hospedes", "/experiencia-do-hospede", "/como-melhorar-avaliacoes-airbnb"])}
+      datePublished="2026-01-15"
+      dateModified="2026-05-29"
     />
   );
 }
@@ -239,6 +251,8 @@ export function ComoMelhorarAvaliacoesAirbnb() {
         { q: "Avaliação ruim afeta meu Superhost?", a: "Sim. Por isso, o foco deve ser sempre prevenir, com clareza e antecipação." },
       ]}
       internalLinks={linksFor(path, ["/experiencia-do-hospede", "/check-in-digital-airbnb", "/como-reduzir-perguntas-no-whatsapp", "/manual-da-casa-airbnb"])}
+      datePublished="2026-01-15"
+      dateModified="2026-05-29"
     />
   );
 }
@@ -269,6 +283,8 @@ export function ComoOrganizarCheckInAirbnb() {
         { q: "Devo cobrar early check-in?", a: "É uma escolha de gestão. Se cobrar, deixe a regra clara no anúncio e no hub." },
       ]}
       internalLinks={linksFor(path, ["/check-in-digital-airbnb", "/como-melhorar-avaliacoes-airbnb", "/como-reduzir-perguntas-no-whatsapp", "/manual-da-casa-airbnb"])}
+      datePublished="2026-01-15"
+      dateModified="2026-05-29"
     />
   );
 }
