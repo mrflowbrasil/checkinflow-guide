@@ -1,5 +1,6 @@
 import { SeoLandingLayout } from "@/components/seo/SeoLandingLayout";
 import { Link } from "react-router-dom";
+import { Star } from "lucide-react";
 
 const REQUIRED_LINKS = [
   { to: "/guia-digital-airbnb", label: "Guia digital para Airbnb", desc: "Tudo que o hóspede precisa, em um link." },
