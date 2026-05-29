@@ -363,3 +363,165 @@ export function ComoModernizarSuaHospedagem() {
     />
   );
 }
+
+export function ChecklistInspecao5EstrelasAirbnb() {
+  const path = "/checklist-inspecao-5-estrelas-airbnb";
+  const gammaUrl = "https://gamma.app/docs/A-Inspecao-de-5-Estrelas-para-Aluguel-de-Temporada-kuztc01fc70npz6";
+
+  const ChecklistMockup = () => (
+    <div className="mt-6 p-5 rounded-2xl bg-white/[0.06] border border-cyan-300/20 backdrop-blur-md shadow-[0_0_40px_-10px_rgba(0,255,255,0.25)] max-w-md">
+      <div className="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
+        <div>
+          <div className="text-[10px] tracking-[0.2em] uppercase text-cyan-300/80">Mr Flow</div>
+          <div className="text-sm font-semibold text-white">Checklist 5 Estrelas</div>
+        </div>
+        <div className="text-[10px] text-white/50">PDF · 9 áreas</div>
+      </div>
+      <ul className="space-y-2.5 text-sm">
+        {[
+          "Internet e Wi-Fi",
+          "Fechaduras e acessos",
+          "Limpeza final",
+          "Informações da hospedagem",
+          "Itens essenciais do hóspede",
+        ].map((item) => (
+          <li key={item} className="flex items-center gap-2.5">
+            <span className="h-5 w-5 rounded-md bg-cyan-400/15 border border-cyan-300/40 flex items-center justify-center text-cyan-300 text-xs">✓</span>
+            <span className="text-white/85">{item}</span>
+          </li>
+        ))}
+        <li className="flex items-center gap-2.5 opacity-60">
+          <span className="h-5 w-5 rounded-md bg-white/5 border border-white/15" />
+          <span className="text-white/50 text-xs">+ 4 áreas adicionais no PDF…</span>
+        </li>
+      </ul>
+    </div>
+  );
+
+  return (
+    <SeoLandingLayout
+      path={path}
+      title="Checklist Gratuito de Inspeção 5 Estrelas para Airbnb | Mr Flow Welcome Hub"
+      description="Baixe gratuitamente o checklist de inspeção utilizado por anfitriões profissionais para evitar avaliações negativas e oferecer uma experiência 5 estrelas aos hóspedes."
+      eyebrow="Checklist gratuito"
+      h1={<>Checklist Gratuito de Inspeção <span style={{ color: "#00FFFF" }}>5 Estrelas</span> para Airbnb</>}
+      intro={
+        <>
+          <p>Descubra os principais itens que anfitriões profissionais verificam antes do check-in para evitar reclamações, melhorar avaliações e proporcionar uma experiência impecável aos hóspedes.</p>
+          <p className="text-white/70 text-sm">Material em PDF, gratuito, sem cadastro — pronto para imprimir e usar na próxima reserva.</p>
+          <ChecklistMockup />
+        </>
+      }
+      ctaPrimary="Baixar Checklist Gratuitamente"
+      ctaHref={gammaUrl}
+      sections={[
+        {
+          title: "Por que avaliações negativas acontecem?",
+          body: (
+            <>
+              <p>A maioria das avaliações abaixo de 5 estrelas não vem do imóvel em si — vem de detalhes operacionais que poderiam ser evitados com uma inspeção consistente antes da chegada do hóspede.</p>
+              <div className="grid sm:grid-cols-2 gap-3 mt-4">
+                {[
+                  { t: "Problemas com Wi-Fi", d: "Senha errada, sinal fraco ou roteador desligado." },
+                  { t: "Limpeza insuficiente", d: "Detalhes esquecidos que parecem amadorismo." },
+                  { t: "Falta de informações", d: "Hóspede sem saber como ligar o ar, abrir o portão ou usar a TV." },
+                  { t: "Check-in confuso", d: "Endereço errado, chave que não funciona, instruções ambíguas." },
+                  { t: "Falhas de comunicação", d: "Respostas demoradas e perguntas que se repetem toda reserva." },
+                ].map((c) => (
+                  <div key={c.t} className="p-4 rounded-xl bg-white/[0.04] border border-white/10">
+                    <div className="font-semibold text-white mb-1">{c.t}</div>
+                    <div className="text-sm text-white/70">{c.d}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-5 p-4 rounded-xl bg-cyan-500/10 border border-cyan-300/20 text-sm">
+                <span className="font-semibold text-cyan-300">+70%</span>{" "}
+                <span className="text-white/80">das reclamações em plataformas de hospedagem estão ligadas a Wi-Fi, limpeza e falta de informações claras.</span>
+              </div>
+            </>
+          ),
+        },
+        {
+          title: "O que você encontrará neste checklist",
+          body: (
+            <ul className="grid sm:grid-cols-2 gap-2.5">
+              {[
+                "Internet e Wi-Fi",
+                "Fechaduras e acessos",
+                "Limpeza final",
+                "Informações da hospedagem",
+                "Regras da casa",
+                "Itens essenciais do hóspede",
+                "Recomendações locais",
+                "Segurança",
+                "Comunicação pré check-in",
+              ].map((item) => (
+                <li key={item} className="flex items-center gap-2.5 p-3 rounded-lg bg-white/[0.04] border border-white/10">
+                  <span className="h-5 w-5 rounded-md bg-cyan-400/15 border border-cyan-300/40 flex items-center justify-center text-cyan-300 text-xs shrink-0">✓</span>
+                  <span className="text-white/90 text-sm">{item}</span>
+                </li>
+              ))}
+            </ul>
+          ),
+        },
+        {
+          title: "Ideal para",
+          body: (
+            <div className="grid sm:grid-cols-3 gap-3">
+              {["Airbnb", "Booking.com", "Casas de temporada", "Pousadas", "Flats", "Imóveis administrados"].map((p) => (
+                <div key={p} className="p-4 rounded-xl bg-white/[0.04] border border-white/10 text-center">
+                  <div className="font-semibold text-white">{p}</div>
+                </div>
+              ))}
+            </div>
+          ),
+        },
+        {
+          title: "Conheça o Mr Flow Welcome Hub",
+          body: (
+            <>
+              <p>Este checklist faz parte da metodologia usada pelo <strong className="text-white">Mr Flow Welcome Hub</strong> — a plataforma que transforma a hospitalidade digital de anfitriões profissionais em um padrão consistente, propriedade após propriedade.</p>
+              <div className="grid sm:grid-cols-2 gap-2.5 mt-4">
+                {[
+                  "Guia Digital do hóspede",
+                  "QR Code para hóspedes",
+                  "Check-in digital",
+                  "Wi-Fi centralizado",
+                  "Regras da casa",
+                  "Recomendações locais",
+                  "Avaliações",
+                ].map((r) => (
+                  <div key={r} className="flex items-center gap-2 p-3 rounded-lg bg-white/[0.04] border border-white/10">
+                    <span className="h-1.5 w-1.5 rounded-full" style={{ background: "#00FFFF" }} />
+                    <span className="text-white/85 text-sm">{r}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-5">
+                <Link to="/" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-white text-sm font-semibold transition-colors">
+                  Conhecer o Welcome Hub →
+                </Link>
+              </div>
+            </>
+          ),
+        },
+      ]}
+      faq={[
+        { q: "O checklist é gratuito?", a: "Sim, 100% gratuito. Você baixa em PDF, sem cadastro, e pode imprimir ou usar no celular durante a inspeção." },
+        { q: "Serve para Airbnb?", a: "Sim. O checklist foi desenhado a partir das principais causas de avaliações abaixo de 5 estrelas no Airbnb e cobre todos os pontos que o hóspede observa nas primeiras horas." },
+        { q: "Funciona para pousadas?", a: "Funciona. Os mesmos princípios de hospitalidade se aplicam a pousadas, flats e casas de temporada — apenas adapte a lista de itens essenciais ao seu padrão." },
+        { q: "Como melhorar avaliações dos hóspedes?", a: "Padronize a inspeção antes de cada check-in, antecipe dúvidas com um guia digital e responda rapidamente nas primeiras horas. O checklist cobre os 9 pontos com maior impacto na nota final." },
+        { q: "O que verificar antes do check-in?", a: "Wi-Fi funcionando, fechaduras/acessos testados, limpeza revisada, informações da hospedagem disponíveis, regras da casa visíveis e itens essenciais repostos. O PDF detalha cada item." },
+        { q: "Como evitar reclamações dos hóspedes?", a: "Reclamações vêm quase sempre de surpresas. Inspecione com checklist, ofereça um guia digital com tudo que o hóspede precisa saber e mantenha o canal de comunicação aberto desde a reserva." },
+      ]}
+      internalLinks={[
+        { to: "/guia-digital-airbnb", label: "Guia digital para Airbnb", desc: "Tudo que o hóspede precisa, em um link." },
+        { to: "/manual-digital-airbnb", label: "Manual digital do Airbnb", desc: "Substitua o caderno impresso." },
+        { to: "/guest-app-airbnb", label: "Guest app para Airbnb", desc: "PWA sem download obrigatório." },
+        { to: "/guia-do-hospede", label: "Guia do hóspede", desc: "Modelo pronto, comprovado." },
+      ]}
+      datePublished="2026-05-29"
+      dateModified="2026-05-29"
+    />
+  );
+}
