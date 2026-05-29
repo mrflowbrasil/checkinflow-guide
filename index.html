@@ -2,12 +2,12 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    <!-- Google Tag Manager (only on official production hostname) -->
+    <script>(function(){if(window.location.hostname!=="hub.mrflow.com.br")return;(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-MS9GKCKW');</script>
+    })(window,document,'script','dataLayer','GTM-MS9GKCKW');})();</script>
     <!-- End Google Tag Manager -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="robots" content="index, follow" />
@@ -31,14 +31,20 @@
     <link rel="preconnect" href="https://connect.facebook.net" crossorigin>
     <link rel="dns-prefetch" href="https://www.facebook.com">
 
-    <!-- Google Analytics 4 -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-C0F1061BBE"></script>
+    <!-- Google Analytics 4 (only on official production hostname) -->
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      window.gtag = gtag;
-      gtag('js', new Date());
-      gtag('config', 'G-C0F1061BBE', { send_page_view: false });
+      (function(){
+        if (window.location.hostname !== "hub.mrflow.com.br") return;
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-C0F1061BBE';
+        document.head.appendChild(s);
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', 'G-C0F1061BBE', { send_page_view: false });
+      })();
     </script>
 
     <!-- Meta Pixel Code (queue immediately, load script after page load) -->
@@ -95,9 +101,15 @@
 </head>
 
   <body>
-    <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MS9GKCKW"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- Google Tag Manager (noscript) — injected only on official hostname -->
+    <script>
+      (function(){
+        if (window.location.hostname !== "hub.mrflow.com.br") return;
+        var ns = document.createElement('noscript');
+        ns.innerHTML = '<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MS9GKCKW" height="0" width="0" style="display:none;visibility:hidden"></iframe>';
+        document.body.appendChild(ns);
+      })();
+    </script>
     <!-- End Google Tag Manager (noscript) -->
     <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1411641184313501&ev=PageView&noscript=1" /></noscript>
     <div id="root"></div>
