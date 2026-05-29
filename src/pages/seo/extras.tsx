@@ -519,6 +519,7 @@ export function ChecklistInspecao5EstrelasAirbnb() {
         { to: "/manual-digital-airbnb", label: "Manual digital do Airbnb", desc: "Substitua o caderno impresso." },
         { to: "/guest-app-airbnb", label: "Guest app para Airbnb", desc: "PWA sem download obrigatório." },
         { to: "/guia-do-hospede", label: "Guia do hóspede", desc: "Modelo pronto, comprovado." },
+        { to: "/hub-de-boas-vindas", label: "Hub de Boas Vindas", desc: "A primeira impressão digital do imóvel." },
       ]}
       datePublished="2026-05-29"
       dateModified="2026-05-29"
