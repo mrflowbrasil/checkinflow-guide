@@ -64,6 +64,7 @@ const SeoExtras = {
   CentralDoHospede: lazy(() => import("./pages/seo/extras").then(m => ({ default: m.CentralDoHospede }))),
   CheckInAutonomoAirbnb: lazy(() => import("./pages/seo/extras").then(m => ({ default: m.CheckInAutonomoAirbnb }))),
   ComoModernizarSuaHospedagem: lazy(() => import("./pages/seo/extras").then(m => ({ default: m.ComoModernizarSuaHospedagem }))),
+  ChecklistInspecao5EstrelasAirbnb: lazy(() => import("./pages/seo/extras").then(m => ({ default: m.ChecklistInspecao5EstrelasAirbnb }))),
 };
 
 const queryClient = new QueryClient({
