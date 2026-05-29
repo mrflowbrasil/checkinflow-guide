@@ -92,7 +92,7 @@ function Header() {
               <a href="#demo" onClick={() => setOpen(false)}>Ver demo</a>
             </Button>
             <Button asChild className="bg-[#00FFFF] text-[#020617] hover:bg-[#00FFFF]/90 font-semibold">
-              <Link to="/auth">Criar meu hub grátis</Link>
+              <Link to="/auth">Entrar</Link>
             </Button>
           </div>
         </div>
