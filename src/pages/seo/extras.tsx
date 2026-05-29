@@ -366,7 +366,7 @@ export function ComoModernizarSuaHospedagem() {
 
 export function ChecklistInspecao5EstrelasAirbnb() {
   const path = "/checklist-inspecao-5-estrelas-airbnb";
-  const gammaUrl = "https://gamma.app/docs/A-Inspecao-de-5-Estrelas-para-Aluguel-de-Temporada-kuztc01fc70npz6";
+  const gammaUrl = "https://checklist-pre-checkin-tqdem3q.gamma.site/";
 
   const ChecklistMockup = () => (
     <div className="mt-6 p-5 rounded-2xl bg-white/[0.06] border border-cyan-300/20 backdrop-blur-md shadow-[0_0_40px_-10px_rgba(0,255,255,0.25)] max-w-md">
