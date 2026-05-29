@@ -1,95 +1,69 @@
-## Contexto
+# Nova landing: Checklist 5 Estrelas para Airbnb
 
-As "páginas de blog" do projeto são as landing pages SEO em `src/pages/seo/{landings,clusters,extras}.tsx`. Todas renderizam através de `src/components/seo/SeoLandingLayout.tsx`, que já cuida de:
+Criar uma landing page de captura para o "Checklist Gratuito de Inspeção 5 Estrelas para Airbnb", reaproveitando 100% o layout, header, footer, tipografia, cores e componentes já usados nas demais páginas SEO do Welcome Hub (`SeoLandingLayout`).
 
-- `<title>`, `<meta description>`, `<link rel="canonical">` (via `Seo.tsx`)
-- Open Graph completo (`og:title`, `og:description`, `og:url`, `og:type`, `og:image`, `og:locale`, `og:site_name`) + Twitter Card
-- JSON-LD: `SoftwareApplication`, `FAQPage`, `BreadcrumbList`
+## Rota
 
-**Faltando** para performance editorial: `Article` (com `author`, `datePublished`, `dateModified`) e padronizar `og:type="article"` + `article:published_time` / `article:modified_time`.
+- URL: `/checklist-inspecao-5-estrelas-airbnb`
+- Registrada em `src/App.tsx` com `lazy()` no mesmo padrão das outras (provavelmente em `extras.tsx` como `ChecklistInspecao5Estrelas`).
 
-## O que vou implementar
+## Arquivo
 
-### 1. Estender `SeoLandingLayout` com metadados de artigo
+Adicionar novo export em `src/pages/seo/extras.tsx` (mesmo padrão dos outros 10 posts do arquivo) usando `<SeoLandingLayout>`. Isso já garante automaticamente, sem código extra:
 
-Adicionar props opcionais com defaults sensatos:
+- Schema Article + FAQPage + BreadcrumbList + SoftwareApplication
+- Open Graph article completo + Twitter Card
+- Canonical `https://hub.mrflow.com.br/checklist-inspecao-5-estrelas-airbnb`
+- robots index,follow (default)
+- Header com logo Mr Flow + botão Entrar
+- Footer institucional
+- Fundo escuro com ShaderBackground + ciano da marca
+- `datePublished="2026-01-15"` e `dateModified="2026-05-29"` (convenção do projeto)
 
-- `datePublished: string` (ISO 8601) — obrigatório por convenção, com fallback `"2026-01-01"` caso não informado para posts legados
-- `dateModified?: string` — default = `datePublished`
-- `author?: { name: string; url?: string }` — default = `{ name: "Mr Flow", url: "https://hub.mrflow.com.br" }`
-- `articleType?: "Article" | "BlogPosting"` — default `"Article"`
+## Conteúdo passado ao layout
 
-Comportamento dentro do layout:
+- `title`: "Checklist Gratuito de Inspeção 5 Estrelas para Airbnb | Mr Flow Welcome Hub"
+- `description`: texto da meta fornecido pelo usuário
+- `eyebrow`: "Checklist gratuito"
+- `h1`: "Checklist Gratuito de Inspeção 5 Estrelas para Airbnb"
+- `intro`: subtítulo fornecido
+- `sections`: 4 seções com o conteúdo solicitado
+  1. "Por que avaliações negativas acontecem?" — 5 cards (Wi-Fi, limpeza, informações, check-in, comunicação) + estatística destacada
+  2. "O que você encontrará neste checklist" — lista visual com 9 itens marcados com ✓
+  3. "Ideal para" — 6 cards (Airbnb, Booking, casas de temporada, pousadas, flats, imóveis administrados)
+  4. "Conheça o Mr Flow Welcome Hub" — explicação + grid de 7 recursos + botão "Conhecer o Welcome Hub" linkando para `/`
+- `faq`: 6 perguntas fornecidas
+- `internalLinks`: 5 links (`/guia-digital-airbnb`, `/manual-digital-airbnb`, `/guest-app-airbnb`, `/guia-do-hospede`, `/hub-de-boas-vindas`)
 
-- Trocar `type="website"` por `type="article"` na chamada do `<Seo>` (Open Graph)
-- Injetar JSON-LD adicional `Article` no array passado ao `<Seo>`:
-  ```json
-  {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": "<title>",
-    "description": "<description>",
-    "mainEntityOfPage": "https://hub.mrflow.com.br<path>",
-    "url": "https://hub.mrflow.com.br<path>",
-    "datePublished": "...",
-    "dateModified": "...",
-    "author": { "@type": "Organization", "name": "Mr Flow", "url": "https://hub.mrflow.com.br" },
-    "publisher": {
-      "@type": "Organization",
-      "name": "Mr. Flow Automações e Serviços Digitais LTDA",
-      "logo": { "@type": "ImageObject", "url": "<DEFAULT_OG_IMAGE>" }
-    },
-    "image": "<og image>"
-  }
-  ```
-- Manter `SoftwareApplication`, `FAQPage` e `BreadcrumbList` já existentes.
+## CTA externo (diferencial desta página)
 
-### 2. Estender `Seo.tsx` com tags de artigo
+Diferente dos outros posts SEO, o CTA principal precisa apontar para o Gamma:
+`https://gamma.app/docs/A-Inspecao-de-5-Estrelas-para-Aluguel-de-Temporada-kuztc01fc70npz6`
 
-Quando `type === "article"` e props `datePublished` / `dateModified` / `author` forem passadas, emitir:
+O `SeoLandingLayout` atual usa internamente `<Link to="/auth">` no botão do hero e no CTA final, sem prop para customizar. Para não quebrar as outras 24 páginas:
 
-- `<meta property="article:published_time" content="..." />`
-- `<meta property="article:modified_time" content="..." />`
-- `<meta property="article:author" content="Mr Flow" />`
+- **Mudança mínima em `SeoLandingLayout.tsx`**: adicionar duas props opcionais — `ctaHref?: string` e `ctaPrimary` já existe. Quando `ctaHref` for passado, renderizar `<a href={ctaHref} target="_blank" rel="noopener">` no botão do hero e no CTA final em vez de `<Link to="/auth">`. Comportamento atual permanece idêntico quando a prop não é informada.
 
-(canonical e og:* já existem; só adicionamos os campos de artigo)
+Nesta página passamos `ctaPrimary="Baixar Checklist Gratuitamente"` e `ctaHref="https://gamma.app/docs/..."`.
 
-### 3. Preencher datas para os posts atuais
+## Mockup visual do checklist
 
-Os 26 posts existentes em `landings.tsx`, `clusters.tsx`, `extras.tsx` recebem `datePublished` e `dateModified` na chamada de `<SeoLandingLayout>`. Vou usar `datePublished="2026-01-15"` e `dateModified="2026-05-29"` (hoje) como baseline uniforme — assim o Google vê data válida e o autor pode evoluir caso a caso depois.
+Como hero visual, adicionar abaixo do botão um card decorativo (puro CSS, sem nova imagem) simulando uma prévia do checklist — cabeçalho, 4-5 linhas com checkbox ✓ e barras de texto, sombra/glow ciano — alinhado à estética glass + ciano já usada. Implementado dentro do `intro` (ReactNode) ou via prop opcional `heroAside` se necessário; preferência por embutir no `intro` para não tocar no layout compartilhado.
 
-### 4. Regra para novos posts (documentação no projeto)
+Reavaliando: o `intro` aparece acima do botão. Para colocar o mockup ao lado/abaixo sem mexer no layout, embutimos um `<div>` decorativo dentro do `intro` (ReactNode permite isso) ou aceitamos uma segunda alteração mínima no layout: prop opcional `heroAside?: ReactNode` renderizada à direita em `lg:`. Escolha: **embutir no `intro`** (zero impacto nas outras páginas).
 
-Criar `src/pages/seo/README.md` com checklist obrigatório para qualquer novo post:
+## Sitemap
 
-```
-Todo novo post SEO em src/pages/seo/* deve usar <SeoLandingLayout> e informar:
-- path, title (≤60), description (≤160)
-- eyebrow, h1, intro, sections, faq, internalLinks
-- datePublished (ISO, ex: "2026-05-29")
-- dateModified (ISO, atualizar sempre que editar conteúdo)
-- author opcional — default Mr Flow
+Adicionar `<url><loc>https://hub.mrflow.com.br/checklist-inspecao-5-estrelas-airbnb</loc></url>` em `public/sitemap.xml`.
 
-Schemas garantidos automaticamente pelo layout:
-Article + Author + Published/Modified, FAQPage, BreadcrumbList,
-SoftwareApplication, Open Graph article, Twitter Card, canonical.
-```
+## Versão
 
-E salvar como memória do projeto (`mem://features/seo-blog-posts`) para que toda criação futura siga o padrão sem precisar lembrar manualmente.
+Bump em `public/version.json`.
 
-## Arquivos alterados
+## Arquivos tocados
 
-- `src/components/Seo.tsx` — aceitar `datePublished`, `dateModified`, `author`; emitir `article:*` meta tags
-- `src/components/seo/SeoLandingLayout.tsx` — props novas + JSON-LD `Article` + `type="article"`
-- `src/pages/seo/landings.tsx` — adicionar `datePublished` / `dateModified` nos 6 posts
-- `src/pages/seo/clusters.tsx` — idem nos 8 posts
-- `src/pages/seo/extras.tsx` — idem nos 10 posts
-- `src/pages/seo/README.md` — checklist obrigatório
-- `mem://features/seo-blog-posts` + atualização do índice de memória
-
-## Fora do escopo
-
-- Não toco em `index.html` (head sitewide já correto)
-- Não mexo no `Sitemap.xml` nem em `robots.txt`
-- Não altero `GoogleAnalyticsTracker` nem `MetaPixelTracker`
-- Não mudo rotas em `App.tsx`
+- `src/pages/seo/extras.tsx` — novo export `ChecklistInspecao5EstrelasAirbnb`
+- `src/App.tsx` — import lazy + `<Route>`
+- `src/components/seo/SeoLandingLayout.tsx` — adicionar prop opcional `ctaHref` (retrocompatível)
+- `public/sitemap.xml` — nova URL
+- `public/version.json` — bump
