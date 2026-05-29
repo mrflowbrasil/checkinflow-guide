@@ -27,6 +27,8 @@ export interface SeoLandingProps {
   faq: FaqItem[];
   internalLinks: { to: string; label: string; desc: string }[];
   ctaPrimary?: string;
+  /** Optional external URL for the primary CTA. When set, the CTA opens in a new tab instead of routing to /auth. */
+  ctaHref?: string;
   /** ISO 8601 date (e.g. "2026-01-15"). Required by convention for new posts. */
   datePublished?: string;
   /** ISO 8601 date. Defaults to datePublished. Update whenever content changes. */
@@ -53,6 +55,7 @@ export function SeoLandingLayout({
   faq,
   internalLinks,
   ctaPrimary = "Criar conta grátis",
+  ctaHref,
   datePublished = DEFAULT_DATE_PUBLISHED,
   dateModified,
   author = DEFAULT_AUTHOR,
@@ -155,7 +158,11 @@ export function SeoLandingLayout({
           <div className="text-base lg:text-lg leading-relaxed text-white/80 mb-8 space-y-4">{intro}</div>
           <div className="flex flex-wrap gap-3">
             <Button asChild size="lg" className="h-12 px-8 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg">
-              <Link to="/auth">{ctaPrimary} <ArrowRight className="ml-2 h-4 w-4" /></Link>
+              {ctaHref ? (
+                <a href={ctaHref} target="_blank" rel="noopener noreferrer">{ctaPrimary} <ArrowRight className="ml-2 h-4 w-4" /></a>
+              ) : (
+                <Link to="/auth">{ctaPrimary} <ArrowRight className="ml-2 h-4 w-4" /></Link>
+              )}
             </Button>
             <Button asChild size="lg" variant="outline" className="h-12 px-8 rounded-xl bg-white/5 border-white/20 text-white hover:bg-white/10">
               <Link to="/">Conhecer o Mr Flow</Link>
@@ -196,7 +203,11 @@ export function SeoLandingLayout({
             <h2 className="text-2xl lg:text-3xl font-bold text-white mb-3">Comece grátis em menos de 2 minutos</h2>
             <p className="text-white/80 mb-6">Crie seu Hub de Boas Vindas e impressione seus hóspedes na próxima reserva.</p>
             <Button asChild size="lg" className="h-12 px-8 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg">
-              <Link to="/auth">{ctaPrimary} <ArrowRight className="ml-2 h-4 w-4" /></Link>
+              {ctaHref ? (
+                <a href={ctaHref} target="_blank" rel="noopener noreferrer">{ctaPrimary} <ArrowRight className="ml-2 h-4 w-4" /></a>
+              ) : (
+                <Link to="/auth">{ctaPrimary} <ArrowRight className="ml-2 h-4 w-4" /></Link>
+              )}
             </Button>
           </div>
         </section>

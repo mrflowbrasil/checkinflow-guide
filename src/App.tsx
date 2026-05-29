@@ -64,6 +64,7 @@ const SeoExtras = {
   CentralDoHospede: lazy(() => import("./pages/seo/extras").then(m => ({ default: m.CentralDoHospede }))),
   CheckInAutonomoAirbnb: lazy(() => import("./pages/seo/extras").then(m => ({ default: m.CheckInAutonomoAirbnb }))),
   ComoModernizarSuaHospedagem: lazy(() => import("./pages/seo/extras").then(m => ({ default: m.ComoModernizarSuaHospedagem }))),
+  ChecklistInspecao5EstrelasAirbnb: lazy(() => import("./pages/seo/extras").then(m => ({ default: m.ChecklistInspecao5EstrelasAirbnb }))),
 };
 
 const queryClient = new QueryClient({
@@ -108,6 +109,7 @@ const App = () => (
               <Route path="/central-do-hospede" element={<SeoExtras.CentralDoHospede />} />
               <Route path="/check-in-autonomo-airbnb" element={<SeoExtras.CheckInAutonomoAirbnb />} />
               <Route path="/como-modernizar-sua-hospedagem" element={<SeoExtras.ComoModernizarSuaHospedagem />} />
+              <Route path="/checklist-inspecao-5-estrelas-airbnb" element={<SeoExtras.ChecklistInspecao5EstrelasAirbnb />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
