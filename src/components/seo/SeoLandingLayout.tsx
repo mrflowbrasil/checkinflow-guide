@@ -27,7 +27,20 @@ export interface SeoLandingProps {
   faq: FaqItem[];
   internalLinks: { to: string; label: string; desc: string }[];
   ctaPrimary?: string;
+  /** ISO 8601 date (e.g. "2026-01-15"). Required by convention for new posts. */
+  datePublished?: string;
+  /** ISO 8601 date. Defaults to datePublished. Update whenever content changes. */
+  dateModified?: string;
+  /** Author. Defaults to Mr Flow Organization. */
+  author?: { name: string; url?: string };
+  articleType?: "Article" | "BlogPosting";
 }
+
+const DEFAULT_DATE_PUBLISHED = "2026-01-15";
+const DEFAULT_DATE_MODIFIED = "2026-05-29";
+const DEFAULT_AUTHOR = { name: "Mr Flow", url: "https://hub.mrflow.com.br" };
+const PUBLISHER_LOGO =
+  "https://storage.googleapis.com/gpt-engineer-file-uploads/QOxsOCPLdoWqcZHw4rluKIZw7h52/social-images/social-1777558596702-Logo_Welcome_Hub.webp";
 
 export function SeoLandingLayout({
   path,
