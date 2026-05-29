@@ -404,7 +404,7 @@ export function ChecklistInspecao5EstrelasAirbnb() {
       title="Checklist Gratuito de Inspeção 5 Estrelas para Airbnb | Mr Flow Welcome Hub"
       description="Baixe gratuitamente o checklist de inspeção utilizado por anfitriões profissionais para evitar avaliações negativas e oferecer uma experiência 5 estrelas aos hóspedes."
       eyebrow="Checklist gratuito"
-      h1={<>Checklist Gratuito de Inspeção <span style={{ color: "#00FFFF" }}>5 Estrelas</span> para Airbnb</>}
+      h1={<>Checklist Gratuito de Inspeção <span style={{ color: "#00FF00" }}>5 Estrelas</span> para Airbnb</>}
       intro={
         <>
           <p>Descubra os principais itens que anfitriões profissionais verificam antes do check-in para evitar reclamações, melhorar avaliações e proporcionar uma experiência impecável aos hóspedes.</p>
