@@ -203,7 +203,11 @@ export function SeoLandingLayout({
             <h2 className="text-2xl lg:text-3xl font-bold text-white mb-3">Comece grátis em menos de 2 minutos</h2>
             <p className="text-white/80 mb-6">Crie seu Hub de Boas Vindas e impressione seus hóspedes na próxima reserva.</p>
             <Button asChild size="lg" className="h-12 px-8 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg">
-              <Link to="/auth">{ctaPrimary} <ArrowRight className="ml-2 h-4 w-4" /></Link>
+              {ctaHref ? (
+                <a href={ctaHref} target="_blank" rel="noopener noreferrer">{ctaPrimary} <ArrowRight className="ml-2 h-4 w-4" /></a>
+              ) : (
+                <Link to="/auth">{ctaPrimary} <ArrowRight className="ml-2 h-4 w-4" /></Link>
+              )}
             </Button>
           </div>
         </section>
