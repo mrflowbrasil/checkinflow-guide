@@ -27,6 +27,8 @@ export interface SeoLandingProps {
   faq: FaqItem[];
   internalLinks: { to: string; label: string; desc: string }[];
   ctaPrimary?: string;
+  /** Optional external URL for the primary CTA. When set, the CTA opens in a new tab instead of routing to /auth. */
+  ctaHref?: string;
   /** ISO 8601 date (e.g. "2026-01-15"). Required by convention for new posts. */
   datePublished?: string;
   /** ISO 8601 date. Defaults to datePublished. Update whenever content changes. */
