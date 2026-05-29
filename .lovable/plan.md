@@ -1,49 +1,95 @@
-## Objetivo
+## Contexto
 
-Garantir que GTM e GA4 só sejam carregados/disparados quando `window.location.hostname === "hub.mrflow.com.br"`. Em qualquer outro host (preview do Lovable, `*.lovable.app`, `localhost`, dev/staging), nada deve ser inicializado nem enviado.
+As "páginas de blog" do projeto são as landing pages SEO em `src/pages/seo/{landings,clusters,extras}.tsx`. Todas renderizam através de `src/components/seo/SeoLandingLayout.tsx`, que já cuida de:
 
-Escopo: apenas GTM e GA4. Meta Pixel fica como está (não foi pedido).
+- `<title>`, `<meta description>`, `<link rel="canonical">` (via `Seo.tsx`)
+- Open Graph completo (`og:title`, `og:description`, `og:url`, `og:type`, `og:image`, `og:locale`, `og:site_name`) + Twitter Card
+- JSON-LD: `SoftwareApplication`, `FAQPage`, `BreadcrumbList`
 
-## Mudanças
+**Faltando** para performance editorial: `Article` (com `author`, `datePublished`, `dateModified`) e padronizar `og:type="article"` + `article:published_time` / `article:modified_time`.
 
-### 1) `index.html` — gate dos scripts inline
+## O que vou implementar
 
-Envolver os dois blocos abaixo num único `if (window.location.hostname === "hub.mrflow.com.br") { ... }` para que nada seja injetado fora do domínio oficial:
+### 1. Estender `SeoLandingLayout` com metadados de artigo
 
-- Bloco `Google Tag Manager` (snippet inline que injeta `gtm.js`).
-- Bloco `Google Analytics 4`: tanto o `<script async src="...gtag/js?id=G-C0F1061BBE">` (criar via `document.createElement` dentro do guard) quanto o snippet inline com `gtag('js', ...)` e `gtag('config', ...)`.
+Adicionar props opcionais com defaults sensatos:
 
-Também envolver o `<noscript>` do GTM no `<body>` com um pequeno script que só insere o `<iframe>` quando o hostname bate (já que `<noscript>` puro não pode ser condicionado, removeremos o iframe via JS quando o host não for o oficial — ou inseri-lo via JS apenas quando for; optaremos por inserir via JS no host correto).
+- `datePublished: string` (ISO 8601) — obrigatório por convenção, com fallback `"2026-01-01"` caso não informado para posts legados
+- `dateModified?: string` — default = `datePublished`
+- `author?: { name: string; url?: string }` — default = `{ name: "Mr Flow", url: "https://hub.mrflow.com.br" }`
+- `articleType?: "Article" | "BlogPosting"` — default `"Article"`
 
-O `<noscript>` do Meta Pixel permanece inalterado.
+Comportamento dentro do layout:
 
-### 2) `src/components/analytics/GoogleAnalyticsTracker.tsx` — gate do `page_view`
+- Trocar `type="website"` por `type="article"` na chamada do `<Seo>` (Open Graph)
+- Injetar JSON-LD adicional `Article` no array passado ao `<Seo>`:
+  ```json
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "<title>",
+    "description": "<description>",
+    "mainEntityOfPage": "https://hub.mrflow.com.br<path>",
+    "url": "https://hub.mrflow.com.br<path>",
+    "datePublished": "...",
+    "dateModified": "...",
+    "author": { "@type": "Organization", "name": "Mr Flow", "url": "https://hub.mrflow.com.br" },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Mr. Flow Automações e Serviços Digitais LTDA",
+      "logo": { "@type": "ImageObject", "url": "<DEFAULT_OG_IMAGE>" }
+    },
+    "image": "<og image>"
+  }
+  ```
+- Manter `SoftwareApplication`, `FAQPage` e `BreadcrumbList` já existentes.
 
-Adicionar early-return quando `window.location.hostname !== "hub.mrflow.com.br"`, evitando enviar `page_view` em SPA navigation em previews/dev. O check de `typeof window.gtag === "function"` já existe, mas reforçamos com o host para defesa em profundidade.
+### 2. Estender `Seo.tsx` com tags de artigo
 
-### 3) Sem mudanças em
+Quando `type === "article"` e props `datePublished` / `dateModified` / `author` forem passadas, emitir:
 
-- `MetaPixelTracker.tsx` (fora de escopo).
-- `src/App.tsx` (os componentes continuam montados; eles é que decidem se disparam).
-- Variáveis de ambiente / config Supabase / rotas.
+- `<meta property="article:published_time" content="..." />`
+- `<meta property="article:modified_time" content="..." />`
+- `<meta property="article:author" content="Mr Flow" />`
 
-## Como a regra fica
+(canonical e og:* já existem; só adicionamos os campos de artigo)
 
-```js
-const isProdHost =
-  typeof window !== "undefined" &&
-  window.location.hostname === "hub.mrflow.com.br";
+### 3. Preencher datas para os posts atuais
+
+Os 26 posts existentes em `landings.tsx`, `clusters.tsx`, `extras.tsx` recebem `datePublished` e `dateModified` na chamada de `<SeoLandingLayout>`. Vou usar `datePublished="2026-01-15"` e `dateModified="2026-05-29"` (hoje) como baseline uniforme — assim o Google vê data válida e o autor pode evoluir caso a caso depois.
+
+### 4. Regra para novos posts (documentação no projeto)
+
+Criar `src/pages/seo/README.md` com checklist obrigatório para qualquer novo post:
+
+```
+Todo novo post SEO em src/pages/seo/* deve usar <SeoLandingLayout> e informar:
+- path, title (≤60), description (≤160)
+- eyebrow, h1, intro, sections, faq, internalLinks
+- datePublished (ISO, ex: "2026-05-29")
+- dateModified (ISO, atualizar sempre que editar conteúdo)
+- author opcional — default Mr Flow
+
+Schemas garantidos automaticamente pelo layout:
+Article + Author + Published/Modified, FAQPage, BreadcrumbList,
+SoftwareApplication, Open Graph article, Twitter Card, canonical.
 ```
 
-- `hub.mrflow.com.br` → carrega GTM + GA4 e dispara `page_view` por rota.
-- Qualquer outro hostname (incluindo `id-preview--*.lovable.app`, `*.lovable.app`, `localhost`, `127.0.0.1`, staging) → nenhum script é injetado e nenhum evento é enviado.
+E salvar como memória do projeto (`mem://features/seo-blog-posts`) para que toda criação futura siga o padrão sem precisar lembrar manualmente.
 
-Funciona em todas as rotas da SPA (`/`, `/auth`, landing pages, `/app/*`, `/g/:slug`, etc.) porque:
-- O guard em `index.html` decide o carregamento uma vez no boot.
-- O `GoogleAnalyticsTracker` está montado no `App` acima das `Routes` e roda em toda navegação client-side, com o mesmo guard de hostname.
+## Arquivos alterados
 
-## Confirmação pós-implementação
+- `src/components/Seo.tsx` — aceitar `datePublished`, `dateModified`, `author`; emitir `article:*` meta tags
+- `src/components/seo/SeoLandingLayout.tsx` — props novas + JSON-LD `Article` + `type="article"`
+- `src/pages/seo/landings.tsx` — adicionar `datePublished` / `dateModified` nos 6 posts
+- `src/pages/seo/clusters.tsx` — idem nos 8 posts
+- `src/pages/seo/extras.tsx` — idem nos 10 posts
+- `src/pages/seo/README.md` — checklist obrigatório
+- `mem://features/seo-blog-posts` + atualização do índice de memória
 
-Ao final, vou confirmar exatamente:
-- `index.html`: blocos GTM (`<script>` inline do head), GA4 (`<script async ...gtag/js>` + snippet `gtag('config', ...)`) e `<noscript>` do GTM no body — todos passam a depender do hostname.
-- `src/components/analytics/GoogleAnalyticsTracker.tsx`: early-return adicional baseado no hostname.
+## Fora do escopo
+
+- Não toco em `index.html` (head sitewide já correto)
+- Não mexo no `Sitemap.xml` nem em `robots.txt`
+- Não altero `GoogleAnalyticsTracker` nem `MetaPixelTracker`
+- Não mudo rotas em `App.tsx`

@@ -60,6 +60,8 @@ export function IntegracaoHostaway() {
         { q: "Quanto tempo leva para configurar?", a: "Em poucos minutos. Basta conectar a Hostaway e escolher os imóveis a sincronizar." },
       ]}
       internalLinks={linksFor(path, ["/checkin-com-qr-code", "/central-do-hospede", "/app-para-anfitriao", "/hub-de-boas-vindas"])}
+      datePublished="2026-01-15"
+      dateModified="2026-05-29"
     />
   );
 }
@@ -91,6 +93,8 @@ export function IntegracaoStays() {
         { q: "Preciso de equipe técnica?", a: "Não. Toda a configuração é feita por uma tela visual de integrações." },
       ]}
       internalLinks={linksFor(path, ["/integracao-hostaway", "/central-do-hospede", "/app-para-anfitriao", "/hub-de-boas-vindas"])}
+      datePublished="2026-01-15"
+      dateModified="2026-05-29"
     />
   );
 }
@@ -122,6 +126,8 @@ export function IntegracaoAirbnb() {
         { q: "E para Booking, VRBO, aluguel direto?", a: "Funciona igual. O hub é independente da plataforma de reserva." },
       ]}
       internalLinks={linksFor(path, ["/guia-digital-airbnb", "/checkin-com-qr-code", "/manual-digital-para-airbnb", "/hub-de-boas-vindas"])}
+      datePublished="2026-01-15"
+      dateModified="2026-05-29"
     />
   );
 }
@@ -153,6 +159,8 @@ export function CheckinComQrCode() {
         { q: "Funciona com vários idiomas?", a: "Sim. O guia traduz automaticamente para inglês e espanhol." },
       ]}
       internalLinks={linksFor(path, ["/check-in-autonomo-airbnb", "/wifi-por-qr-code", "/integracao-airbnb", "/hub-de-boas-vindas"])}
+      datePublished="2026-01-15"
+      dateModified="2026-05-29"
     />
   );
 }
@@ -184,6 +192,8 @@ export function ManualDigitalPousada() {
         { q: "Preciso de internet boa no quarto?", a: "O guia é leve e abre rápido até em conexões fracas." },
       ]}
       internalLinks={linksFor(path, ["/como-modernizar-sua-hospedagem", "/central-do-hospede", "/hub-de-boas-vindas", "/wifi-por-qr-code"])}
+      datePublished="2026-01-15"
+      dateModified="2026-05-29"
     />
   );
 }
@@ -215,6 +225,8 @@ export function ManualDigitalParaAirbnb() {
         { q: "É melhor que app nativo?", a: "Para uso de poucos dias, sim. Sem instalação, sem atualização, sem barreira." },
       ]}
       internalLinks={linksFor(path, ["/manual-digital-airbnb", "/integracao-airbnb", "/guia-digital-airbnb", "/hub-de-boas-vindas"])}
+      datePublished="2026-01-15"
+      dateModified="2026-05-29"
     />
   );
 }
@@ -246,6 +258,8 @@ export function WifiPorQrCode() {
         { q: "Posso oferecer rede de visitantes?", a: "Sim. Recomendamos rede separada para hóspedes, com QR Code próprio." },
       ]}
       internalLinks={linksFor(path, ["/checkin-com-qr-code", "/manual-digital-pousada", "/central-do-hospede", "/hub-de-boas-vindas"])}
+      datePublished="2026-01-15"
+      dateModified="2026-05-29"
     />
   );
 }
@@ -277,6 +291,8 @@ export function CentralDoHospede() {
         { q: "Posso personalizar com minha marca?", a: "Sim. Logo, cores e tipografia próprias nos planos Pro e Business." },
       ]}
       internalLinks={linksFor(path, ["/hub-de-boas-vindas", "/integracao-hostaway", "/integracao-stays", "/app-para-anfitriao"])}
+      datePublished="2026-01-15"
+      dateModified="2026-05-29"
     />
   );
 }
@@ -308,6 +324,8 @@ export function CheckInAutonomoAirbnb() {
         { q: "Substitui a recepção física?", a: "Substitui a presença obrigatória. O suporte continua disponível pelo botão do hub." },
       ]}
       internalLinks={linksFor(path, ["/checkin-com-qr-code", "/integracao-airbnb", "/central-do-hospede", "/hub-de-boas-vindas"])}
+      datePublished="2026-01-15"
+      dateModified="2026-05-29"
     />
   );
 }
@@ -340,6 +358,8 @@ export function ComoModernizarSuaHospedagem() {
         { q: "Tecnologia tira o toque humano?", a: "Pelo contrário. Tira o operacional e libera tempo para o que importa: receber bem." },
       ]}
       internalLinks={linksFor(path, ["/manual-digital-pousada", "/check-in-autonomo-airbnb", "/central-do-hospede", "/integracao-hostaway"])}
+      datePublished="2026-01-15"
+      dateModified="2026-05-29"
     />
   );
 }

@@ -40,6 +40,8 @@ export function GuiaDigitalAirbnb() {
         { q: "Funciona para outras plataformas além do Airbnb?", a: "Sim. Funciona para Booking, VRBO, aluguel direto e qualquer reserva — basta enviar o link." },
       ]}
       internalLinks={linksExcept(path)}
+      datePublished="2026-01-15"
+      dateModified="2026-05-29"
     />
   );
 }
@@ -71,6 +73,8 @@ export function ManualDigitalAirbnb() {
         { q: "Posso clonar o manual entre imóveis parecidos?", a: "Sim. É possível duplicar páginas e blocos para acelerar a criação de manuais em portfólios maiores." },
       ]}
       internalLinks={linksExcept(path)}
+      datePublished="2026-01-15"
+      dateModified="2026-05-29"
     />
   );
 }
@@ -102,6 +106,8 @@ export function AppParaAnfitriao() {
         { q: "Existe versão para iOS e Android?", a: "O app web funciona em qualquer sistema. Para o anfitrião e para o hóspede, basta abrir o link no celular." },
       ]}
       internalLinks={linksExcept(path)}
+      datePublished="2026-01-15"
+      dateModified="2026-05-29"
     />
   );
 }
@@ -133,6 +139,8 @@ export function HubDeBoasVindas() {
         { q: "O hub é responsivo?", a: "É mobile-first. Foi desenhado primeiro para o celular do hóspede, com botões grandes e leitura confortável." },
       ]}
       internalLinks={linksExcept(path)}
+      datePublished="2026-01-15"
+      dateModified="2026-05-29"
     />
   );
 }
@@ -164,6 +172,8 @@ export function GuestAppAirbnb() {
         { q: "É seguro abrir links públicos?", a: "Sim. O conteúdo é controlado por você e o link pode ser desativado a qualquer momento." },
       ]}
       internalLinks={linksExcept(path)}
+      datePublished="2026-01-15"
+      dateModified="2026-05-29"
     />
   );
 }
@@ -195,6 +205,8 @@ export function GuiaDoHospede() {
         { q: "Funciona com Booking, VRBO e aluguel direto?", a: "Sim. O guia é independente da plataforma de reserva e pode ser usado em qualquer canal." },
       ]}
       internalLinks={linksExcept(path)}
+      datePublished="2026-01-15"
+      dateModified="2026-05-29"
     />
   );
 }

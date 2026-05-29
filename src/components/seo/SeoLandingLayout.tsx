@@ -27,7 +27,20 @@ export interface SeoLandingProps {
   faq: FaqItem[];
   internalLinks: { to: string; label: string; desc: string }[];
   ctaPrimary?: string;
+  /** ISO 8601 date (e.g. "2026-01-15"). Required by convention for new posts. */
+  datePublished?: string;
+  /** ISO 8601 date. Defaults to datePublished. Update whenever content changes. */
+  dateModified?: string;
+  /** Author. Defaults to Mr Flow Organization. */
+  author?: { name: string; url?: string };
+  articleType?: "Article" | "BlogPosting";
 }
+
+const DEFAULT_DATE_PUBLISHED = "2026-01-15";
+const DEFAULT_DATE_MODIFIED = "2026-05-29";
+const DEFAULT_AUTHOR = { name: "Mr Flow", url: "https://hub.mrflow.com.br" };
+const PUBLISHER_LOGO =
+  "https://storage.googleapis.com/gpt-engineer-file-uploads/QOxsOCPLdoWqcZHw4rluKIZw7h52/social-images/social-1777558596702-Logo_Welcome_Hub.webp";
 
 export function SeoLandingLayout({
   path,
@@ -40,7 +53,14 @@ export function SeoLandingLayout({
   faq,
   internalLinks,
   ctaPrimary = "Criar conta grátis",
+  datePublished = DEFAULT_DATE_PUBLISHED,
+  dateModified,
+  author = DEFAULT_AUTHOR,
+  articleType = "Article",
 }: SeoLandingProps) {
+  const finalDateModified = dateModified ?? DEFAULT_DATE_MODIFIED ?? datePublished;
+  const canonicalUrl = `https://hub.mrflow.com.br${path}`;
+
   const softwareLd = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
@@ -48,7 +68,7 @@ export function SeoLandingLayout({
     applicationCategory: "BusinessApplication",
     operatingSystem: "Web, iOS, Android",
     description,
-    url: `https://hub.mrflow.com.br${path}`,
+    url: canonicalUrl,
     offers: { "@type": "Offer", price: "0", priceCurrency: "BRL" },
     publisher: { "@type": "Organization", name: "Mr. Flow Automações e Serviços Digitais LTDA" },
   };
@@ -66,18 +86,50 @@ export function SeoLandingLayout({
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Início", item: "https://hub.mrflow.com.br/" },
-      { "@type": "ListItem", position: 2, name: eyebrow, item: `https://hub.mrflow.com.br${path}` },
+      { "@type": "ListItem", position: 2, name: eyebrow, item: canonicalUrl },
     ],
+  };
+  const articleLd = {
+    "@context": "https://schema.org",
+    "@type": articleType,
+    headline: title,
+    description,
+    mainEntityOfPage: { "@type": "WebPage", "@id": canonicalUrl },
+    url: canonicalUrl,
+    datePublished,
+    dateModified: finalDateModified,
+    inLanguage: "pt-BR",
+    author: {
+      "@type": "Organization",
+      name: author.name,
+      ...(author.url ? { url: author.url } : {}),
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Mr. Flow Automações e Serviços Digitais LTDA",
+      logo: { "@type": "ImageObject", url: PUBLISHER_LOGO },
+    },
+    image: PUBLISHER_LOGO,
   };
 
   return (
     <div className="min-h-screen flex flex-col text-white relative" style={HERO_BG}>
-      <Seo title={title} description={description} path={path} jsonLd={[softwareLd, faqLd, breadcrumbLd]} />
+      <Seo
+        title={title}
+        description={description}
+        path={path}
+        type="article"
+        datePublished={datePublished}
+        dateModified={finalDateModified}
+        author={author}
+        jsonLd={[articleLd, softwareLd, faqLd, breadcrumbLd]}
+      />
       <ShaderBackground className="pointer-events-none absolute inset-0 z-0 h-full w-full opacity-75" />
 
       <header className="sticky top-0 z-30 backdrop-blur-md bg-[#020617]/40 border-b border-white/10">
         <div className="container px-6 sm:px-10 lg:px-20 xl:px-32 flex items-center justify-between h-16">
           <Link to="/" className="flex flex-col items-start gap-0.5">
+
             <img src={mrFlowLogoWhite} alt="Mr Flow Welcome Hub" className="h-8 w-auto" />
             <span className="text-[9px] tracking-[0.25em] text-white/70 uppercase">Welcome Hub</span>
           </Link>
