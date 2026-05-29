@@ -55,6 +55,7 @@ export function SeoLandingLayout({
   faq,
   internalLinks,
   ctaPrimary = "Criar conta grátis",
+  ctaHref,
   datePublished = DEFAULT_DATE_PUBLISHED,
   dateModified,
   author = DEFAULT_AUTHOR,
