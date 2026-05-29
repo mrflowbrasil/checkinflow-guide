@@ -7,7 +7,9 @@ export default function GoogleAnalyticsTracker() {
   const location = useLocation();
 
   useEffect(() => {
-    if (typeof window === "undefined" || typeof window.gtag !== "function") return;
+    if (typeof window === "undefined") return;
+    if (window.location.hostname !== "hub.mrflow.com.br") return;
+    if (typeof window.gtag !== "function") return;
     const page_path = location.pathname + location.search;
     window.gtag("event", "page_view", {
       page_path,
