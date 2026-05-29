@@ -1,5 +1,6 @@
 import { SeoLandingLayout } from "@/components/seo/SeoLandingLayout";
 import { Link } from "react-router-dom";
+import { Star } from "lucide-react";
 
 const REQUIRED_LINKS = [
   { to: "/guia-digital-airbnb", label: "Guia digital para Airbnb", desc: "Tudo que o hóspede precisa, em um link." },
@@ -404,7 +405,7 @@ export function ChecklistInspecao5EstrelasAirbnb() {
       title="Checklist Gratuito de Inspeção 5 Estrelas para Airbnb | Mr Flow Welcome Hub"
       description="Baixe gratuitamente o checklist de inspeção utilizado por anfitriões profissionais para evitar avaliações negativas e oferecer uma experiência 5 estrelas aos hóspedes."
       eyebrow="Checklist gratuito"
-      h1={<>Checklist Gratuito de Inspeção <span style={{ color: "#00FF00" }}>5 Estrelas</span> para Airbnb</>}
+      h1={<>Checklist Gratuito de Inspeção <span style={{ color: "#00FF00" }}>5 Estrelas</span> para Airbnb <span className="inline-flex items-center gap-0.5 align-middle ml-2">{Array.from({ length: 5 }).map((_, i) => (<Star key={i} className="h-6 w-6 lg:h-8 lg:w-8" fill="#FACC15" stroke="#FACC15" />))}</span></>}
       intro={
         <>
           <p>Descubra os principais itens que anfitriões profissionais verificam antes do check-in para evitar reclamações, melhorar avaliações e proporcionar uma experiência impecável aos hóspedes.</p>
