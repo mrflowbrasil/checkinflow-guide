@@ -8,7 +8,7 @@ const VIDEO_SRC = "/videos/teaser-criacao.mp4";
 const bullets = [
   "Cadastre o imóvel com nome, fotos e informações principais",
   "Adicione páginas como Wi-Fi, check-in, regras e localização",
-  "Veja a prévia como o hóspede vai acessa no celular",
+  "Veja a prévia como o hóspede vai acessar no celular",
   "Publique e compartilhe por link ou QR Code",
   "Atualize tudo depois, sem reenviar manual ou PDF",
 ];
