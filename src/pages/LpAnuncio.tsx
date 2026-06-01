@@ -254,7 +254,9 @@ function AntesDepois() {
                   key={d}
                   className="flex items-start gap-3 bg-white rounded-2xl px-4 py-3 border border-[hsl(186_100%_32%)]/15 shadow-sm"
                 >
-                  <Check className="h-5 w-5 text-[hsl(186_100%_32%)] shrink-0 mt-0.5" />
+                  <span className="shrink-0 mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-green-100">
+                    <Check className="h-3.5 w-3.5 text-green-600" strokeWidth={3} />
+                  </span>
                   <span className="text-slate-800 font-medium">{d}</span>
                 </li>
               ))}
