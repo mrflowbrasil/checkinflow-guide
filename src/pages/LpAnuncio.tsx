@@ -15,6 +15,7 @@ import {
   Smartphone,
   ShieldCheck,
   Star,
+  X,
 } from "lucide-react";
 import { Seo } from "@/components/Seo";
 import mrFlowLogo from "@/assets/mrflow-logo.png";
@@ -227,7 +228,9 @@ function AntesDepois() {
                   key={q}
                   className="flex items-start gap-3 bg-white rounded-2xl px-4 py-3 border border-slate-200/80"
                 >
-                  <MessageCircleQuestion className="h-5 w-5 text-slate-400 shrink-0 mt-0.5" />
+                  <span className="shrink-0 mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-red-100">
+                    <X className="h-3.5 w-3.5 text-red-600" strokeWidth={3} />
+                  </span>
                   <span className="text-slate-700">"{q}"</span>
                 </li>
               ))}
@@ -251,7 +254,9 @@ function AntesDepois() {
                   key={d}
                   className="flex items-start gap-3 bg-white rounded-2xl px-4 py-3 border border-[hsl(186_100%_32%)]/15 shadow-sm"
                 >
-                  <Check className="h-5 w-5 text-[hsl(186_100%_32%)] shrink-0 mt-0.5" />
+                  <span className="shrink-0 mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-green-100">
+                    <Check className="h-3.5 w-3.5 text-green-600" strokeWidth={3} />
+                  </span>
                   <span className="text-slate-800 font-medium">{d}</span>
                 </li>
               ))}
