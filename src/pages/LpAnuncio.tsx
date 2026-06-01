@@ -121,15 +121,15 @@ function HeroLp() {
         <div className="grid lg:grid-cols-[1.05fr_1fr] gap-10 lg:gap-14 items-center">
           <div>
             <Badge className="mb-5 bg-white border border-[hsl(186_100%_32%)]/30 text-[hsl(186_100%_24%)] rounded-full px-3 py-1 hover:bg-white">
-              <Sparkles className="h-3.5 w-3.5 mr-1.5" /> Para Airbnb, pousadas e aluguel por temporada
+              <Sparkles className="h-3.5 w-3.5 mr-1.5" /> Guia digital para Airbnb, pousadas e casas de temporada
             </Badge>
             <h1 className="text-4xl sm:text-5xl lg:text-[3.4rem] font-bold tracking-tight leading-[1.08] text-slate-900">
-              Pare de repetir as mesmas instruções no WhatsApp.{" "}
-              <span style={{ color: CYAN }}>Encante seu hóspede</span> com um guia digital em poucos minutos.
+              Pare de responder as mesmas dúvidas no WhatsApp.{" "}
+              Envie um <span style={{ color: CYAN }}>guia digital completo</span> pro seu hóspede.
             </h1>
             <p className="mt-6 text-lg lg:text-xl text-slate-600 leading-relaxed max-w-xl">
-              Envie Wi-Fi, check-in, senha da fechadura, regras da casa, localização e dicas locais em um único link
-              bonito, profissional e fácil de acessar pelo celular.
+              Wi-Fi, check-in, senha da fechadura, regras da casa, localização e dicas locais em um único link. Lindo,
+              profissional e fácil de acessar pelo celular.
             </p>
 
             <div className="mt-8 flex flex-col sm:flex-row gap-3">
@@ -140,12 +140,12 @@ function HeroLp() {
               </Button>
               <Button asChild className={ctaSecondary}>
                 <a href="#demo" onClick={scrollToDemo}>
-                  Ver guia demo como hóspede
+                  Ver como o hóspede acessa
                 </a>
               </Button>
             </div>
             <p className="mt-4 text-sm text-slate-500">
-              Leva menos de 5 minutos. Não precisa de cartão.
+              Leva menos de 5 minutos. Não precisa de cartão de crédito.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-600">
@@ -178,7 +178,7 @@ function HeroLp() {
               </div>
               <div>
                 <div className="text-sm font-semibold text-slate-900">+ avaliações 5 estrelas</div>
-                <div className="text-xs text-slate-500">menos perguntas, mais autonomia</div>
+                <div className="text-xs text-slate-500">menos dúvidas, mais autonomia</div>
               </div>
             </div>
           </div>
