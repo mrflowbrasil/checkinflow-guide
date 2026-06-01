@@ -82,6 +82,7 @@ export default function LpAnuncio() {
 
       <main className="flex-1">
         <HeroLp />
+        <VideoCriacao />
         <AntesDepois />
         <Beneficios />
         <RealDemoLight />
