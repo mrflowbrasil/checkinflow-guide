@@ -15,12 +15,15 @@ import {
   Languages, Building2, Hotel, Home, Briefcase, Network, Zap, Database,
   Workflow, ShieldCheck, RefreshCw, Image as ImageIcon, FileText, Check,
   ChevronRight, Phone, Star as StarIcon, Settings2, Globe, Users, Edit3,
+  MessageCircle,
 } from "lucide-react";
 import { Seo } from "@/components/Seo";
 import { MrFlowLogo } from "@/components/brand/MrFlowLogo";
 import ShaderBackground from "@/components/ui/shader-background";
 import phoneMockup from "@/assets/welcome-hub-phone-mockup.webp";
+import heroLifestyle from "@/assets/hero-mockup-lifestyle.jpg";
 import { StickyFeatureSection } from "@/components/ui/sticky-scroll-cards-section";
+import WhatsAppGuideDialog from "@/components/lp/WhatsAppGuideDialog";
 
 const DEMO_URL = "https://hub.mrflow.com.br/g/suite-premium-vila-serena-23515a";
 
@@ -157,6 +160,7 @@ function FloatingChip({ icon: Icon, label, className = "" }: { icon: any; label:
 }
 
 function Hero() {
+  const [waOpen, setWaOpen] = useState(false);
   return (
     <section id="top" className="relative pt-16 pb-20 lg:pt-24 lg:pb-32 overflow-hidden">
       <div className="container px-4 sm:px-6 lg:px-12 grid lg:grid-cols-2 gap-14 items-center">
@@ -186,6 +190,16 @@ function Hero() {
               <a href="#demo">Ver demo real</a>
             </Button>
           </div>
+          <div className="flex justify-center lg:justify-start">
+            <Button
+              size="lg"
+              onClick={() => setWaOpen(true)}
+              className="h-12 px-8 rounded-xl bg-[#25D366] hover:bg-[#1ebe5a] text-white font-semibold shadow-lg shadow-[#25D366]/20"
+            >
+              <MessageCircle className="mr-2 h-5 w-5" />
+              Receber Guia no meu WhatsApp
+            </Button>
+          </div>
         </div>
 
         <div className="relative flex justify-center items-center min-h-[560px]">
@@ -201,12 +215,23 @@ function Hero() {
             fetchPriority="high"
             decoding="async"
           />
+          {/* Mockup lifestyle flutuante (mulher visualizando o hub) */}
+          <div className="hidden md:block absolute -top-2 -right-2 lg:-top-4 lg:-right-6 z-20 w-[180px] lg:w-[210px] rounded-2xl overflow-hidden border border-white/15 bg-[#111827]/80 backdrop-blur-md shadow-[0_20px_50px_-10px_rgba(0,0,0,0.6)] rotate-3">
+            <img
+              src={heroLifestyle}
+              alt="Hóspede visualizando o hub de boas-vindas no celular"
+              className="w-full h-auto block"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
           <FloatingChip icon={MessageSquare} label="Menos dúvidas repetidas" className="top-10 left-4 z-10" />
           <FloatingChip icon={Smartphone} label="Mais autonomia para o hóspede" className="top-1/4 right-2 z-10" />
           <FloatingChip icon={Sparkles} label="Experiência profissional" className="bottom-24 left-2 z-10" />
           <FloatingChip icon={QrCode} label="QR Code pronto para impressão" className="bottom-10 right-6 z-10" />
         </div>
       </div>
+      <WhatsAppGuideDialog open={waOpen} onOpenChange={setWaOpen} />
     </section>
   );
 }
