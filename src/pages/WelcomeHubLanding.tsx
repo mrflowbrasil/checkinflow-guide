@@ -20,7 +20,9 @@ import { Seo } from "@/components/Seo";
 import { MrFlowLogo } from "@/components/brand/MrFlowLogo";
 import ShaderBackground from "@/components/ui/shader-background";
 import phoneMockup from "@/assets/welcome-hub-phone-mockup.webp";
+import heroLifestyle from "@/assets/hero-mockup-lifestyle.jpg";
 import { StickyFeatureSection } from "@/components/ui/sticky-scroll-cards-section";
+import WhatsAppGuideDialog from "@/components/lp/WhatsAppGuideDialog";
 
 const DEMO_URL = "https://hub.mrflow.com.br/g/suite-premium-vila-serena-23515a";
 
