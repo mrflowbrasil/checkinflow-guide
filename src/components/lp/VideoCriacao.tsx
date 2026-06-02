@@ -1,9 +1,15 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Check } from "lucide-react";
 import teaserVideo from "@/assets/lp/primeiro-imovel-teaser.mp4.asset.json";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const CYAN = "hsl(186 100% 32%)";
-const YOUTUBE_URL = "https://youtu.be/l8SxORuMqLU";
+const YOUTUBE_ID = "l8SxORuMqLU";
 const VIDEO_SRC = teaserVideo.url;
 const POSTER_SRC: string | undefined = undefined;
 
