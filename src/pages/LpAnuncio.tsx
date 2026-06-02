@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -6,6 +7,7 @@ import {
   ArrowRight,
   Check,
   ExternalLink,
+  MessageCircle,
   MessageCircleQuestion,
   Sparkles,
   Link2,
@@ -20,9 +22,11 @@ import {
 import { Seo } from "@/components/Seo";
 import mrFlowLogo from "@/assets/mrflow-logo.png";
 import heroImg from "@/assets/lp/hero-guest-phone.jpg";
+import heroMockupLifestyle from "@/assets/lp/hero-mockup-lifestyle.jpg";
 import guideMockup from "@/assets/lp/guide-panel-mockup.webp";
 import qrFrame from "@/assets/lp/qrcode-frame.webp";
 import VideoCriacao from "@/components/lp/VideoCriacao";
+import WhatsAppGuideDialog from "@/components/lp/WhatsAppGuideDialog";
 
 const DEMO_URL = "https://hub.mrflow.com.br/g/suite-premium-vila-serena-23515a";
 const CYAN = "hsl(186 100% 32%)"; // ciano Mr Flow acessível em fundo claro
