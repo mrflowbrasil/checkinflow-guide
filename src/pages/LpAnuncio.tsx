@@ -21,8 +21,8 @@ import {
 } from "lucide-react";
 import { Seo } from "@/components/Seo";
 import mrFlowLogo from "@/assets/mrflow-logo.png";
-import heroImg from "@/assets/lp/hero-guest-phone.jpg";
-import heroMockupLifestyle from "@/assets/lp/hero-mockup-lifestyle.jpg";
+import heroImg from "@/assets/lp/hero-guest-phone.webp";
+import heroMockupLifestyle from "@/assets/lp/hero-mockup-lifestyle.webp";
 import guideMockup from "@/assets/lp/guide-panel-mockup.webp";
 import qrFrame from "@/assets/lp/qrcode-frame.webp";
 import VideoCriacao from "@/components/lp/VideoCriacao";
