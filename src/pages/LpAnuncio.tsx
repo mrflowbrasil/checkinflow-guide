@@ -185,6 +185,9 @@ function HeroLp() {
                 alt="Hóspede sorrindo olhando o guia digital no celular em apartamento moderno"
                 width={1536}
                 height={1024}
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
                 className="w-full h-auto object-cover"
               />
             </div>
