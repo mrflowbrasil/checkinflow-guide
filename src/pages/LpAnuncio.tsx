@@ -156,7 +156,7 @@ function HeroLp() {
                 className="h-14 px-7 rounded-2xl bg-[#25D366] hover:bg-[#1ebe5a] text-white font-semibold text-base shadow-[0_10px_30px_-10px_rgba(37,211,102,0.55)]"
               >
                 <MessageCircle className="mr-2 h-5 w-5" />
-                Receber Guia no meu WhatsApp
+                Receber Guia no WhatsApp
               </Button>
             </div>
             <p className="mt-4 text-sm text-slate-500">
