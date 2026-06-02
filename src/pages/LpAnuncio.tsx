@@ -89,8 +89,8 @@ export default function LpAnuncio() {
         <HeroLp />
         <VideoCriacao />
         <AntesDepois />
-        <Beneficios />
         <RealDemoLight />
+        <Beneficios />
         <BulletsPro />
         <Gatilhos />
         <CtaFinal />
