@@ -85,8 +85,8 @@ const App = () => (
         <AuthProvider>
           <Suspense fallback={null}>
             <Routes>
-              <Route path="/" element={<WelcomeHubLanding />} />
-              <Route path="/lp" element={<LpAnuncio />} />
+              <Route path="/" element={<LpAnuncio />} />
+              <Route path="/lp" element={<WelcomeHubLanding />} />
               <Route path="/welcome-hub" element={<Index />} />
               <Route path="/guia-digital-airbnb" element={<SeoLandings.GuiaDigitalAirbnb />} />
               <Route path="/manual-digital-airbnb" element={<SeoLandings.ManualDigitalAirbnb />} />
