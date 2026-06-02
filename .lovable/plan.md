@@ -1,14 +1,10 @@
-## Contexto
-Na seção Hero de `LpAnuncio.tsx`, os 3 botões ("Criar meu guia grátis", "Ver como o hóspede acessa", "Receber Guia no WhatsApp") estão empilhados verticalmente mesmo no desktop. O usuário quer que fiquem lado a lado na versão desktop.
+## Problema
+A linha de botões com `lg:flex-1` ficou mais larga que o parágrafo acima, esticando a coluna de texto do grid `[1.05fr_1fr]` e empurrando a imagem para uma largura menor.
 
-## O que será feito
-1. Ajustar o container dos botões (linha ~142) para forçar layout horizontal sem wrap em telas `lg` e acima.
-2. Fazer os botões se ajustarem ao espaço disponível (shrink/grow) para caber sem quebrar linha.
-3. Manter o empilhamento atual no mobile (`flex-col` em telas pequenas).
+## Solução
+1. Limitar a linha de botões à mesma largura do parágrafo (`max-w-xl`) — assim o conteúdo da coluna esquerda não fica maior do que antes, e a imagem volta ao tamanho original.
+2. Manter os 3 botões em linha no desktop (`lg:flex-nowrap`), mas remover `lg:flex-1` para que os botões não estiquem; deixar apenas padding reduzido (`lg:px-5`) para caberem juntos no `max-w-xl`.
+3. Mobile permanece empilhado.
 
-## Arquivos
-- `src/pages/LpAnuncio.tsx` — alterar classes do container de botões e adicionar classes de flexibilidade nos botões.
-
-## Resultado esperado
-- Mobile: botões empilhados (sem alteração)
-- Desktop (`lg`): 3 botões em uma única linha horizontal
+## Arquivo
+- `src/pages/LpAnuncio.tsx` — ajustar o container dos botões (~linha 142) adicionando `max-w-xl` e removendo `lg:flex-1` dos botões.

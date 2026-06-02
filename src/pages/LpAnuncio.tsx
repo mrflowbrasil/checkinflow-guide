@@ -126,7 +126,7 @@ function HeroLp() {
       />
       <div className="container relative max-w-6xl mx-auto px-5 sm:px-8 pt-12 pb-16 lg:pt-20 lg:pb-24">
         <div className="grid lg:grid-cols-[1.05fr_1fr] gap-10 lg:gap-14 items-center">
-          <div>
+          <div className="min-w-0">
             <Badge className="mb-5 bg-white border border-[hsl(186_100%_32%)]/30 text-[hsl(186_100%_24%)] rounded-full px-3 py-1 hover:bg-white">
               <Sparkles className="h-3.5 w-3.5 mr-1.5" /> Guia digital para Airbnb, pousadas e casas de temporada
             </Badge>
