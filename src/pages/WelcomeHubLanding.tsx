@@ -15,6 +15,7 @@ import {
   Languages, Building2, Hotel, Home, Briefcase, Network, Zap, Database,
   Workflow, ShieldCheck, RefreshCw, Image as ImageIcon, FileText, Check,
   ChevronRight, Phone, Star as StarIcon, Settings2, Globe, Users, Edit3,
+  MessageCircle,
 } from "lucide-react";
 import { Seo } from "@/components/Seo";
 import { MrFlowLogo } from "@/components/brand/MrFlowLogo";
