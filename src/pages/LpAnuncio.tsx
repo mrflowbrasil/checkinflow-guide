@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -6,6 +7,7 @@ import {
   ArrowRight,
   Check,
   ExternalLink,
+  MessageCircle,
   MessageCircleQuestion,
   Sparkles,
   Link2,
@@ -20,9 +22,11 @@ import {
 import { Seo } from "@/components/Seo";
 import mrFlowLogo from "@/assets/mrflow-logo.png";
 import heroImg from "@/assets/lp/hero-guest-phone.jpg";
+import heroMockupLifestyle from "@/assets/lp/hero-mockup-lifestyle.jpg";
 import guideMockup from "@/assets/lp/guide-panel-mockup.webp";
 import qrFrame from "@/assets/lp/qrcode-frame.webp";
 import VideoCriacao from "@/components/lp/VideoCriacao";
+import WhatsAppGuideDialog from "@/components/lp/WhatsAppGuideDialog";
 
 const DEMO_URL = "https://hub.mrflow.com.br/g/suite-premium-vila-serena-23515a";
 const CYAN = "hsl(186 100% 32%)"; // ciano Mr Flow acessível em fundo claro
@@ -110,6 +114,7 @@ export default function LpAnuncio() {
 
 /* ----------------------------- HERO ----------------------------- */
 function HeroLp() {
+  const [waOpen, setWaOpen] = useState(false);
   return (
     <section className="relative overflow-hidden">
       <div
@@ -134,7 +139,7 @@ function HeroLp() {
               profissional e fácil de acessar pelo celular.
             </p>
 
-            <div className="mt-8 flex flex-col sm:flex-row gap-3">
+            <div className="mt-8 flex flex-col sm:flex-row flex-wrap gap-3">
               <Button asChild className={ctaPrimary}>
                 <Link to="/auth">
                   Criar meu guia grátis <ArrowRight className="ml-2 h-5 w-5" />
@@ -144,6 +149,14 @@ function HeroLp() {
                 <a href="#demo" onClick={scrollToDemo}>
                   Ver como o hóspede acessa
                 </a>
+              </Button>
+              <Button
+                type="button"
+                onClick={() => setWaOpen(true)}
+                className="h-14 px-7 rounded-2xl bg-[#25D366] hover:bg-[#1ebe5a] text-white font-semibold text-base shadow-[0_10px_30px_-10px_rgba(37,211,102,0.55)]"
+              >
+                <MessageCircle className="mr-2 h-5 w-5" />
+                Receber Guia no meu WhatsApp
               </Button>
             </div>
             <p className="mt-4 text-sm text-slate-500">
@@ -174,6 +187,17 @@ function HeroLp() {
                 className="w-full h-auto object-cover"
               />
             </div>
+            <div className="hidden sm:block absolute -top-5 -right-5 z-20 rotate-3">
+              <div className="bg-white rounded-2xl shadow-xl ring-1 ring-slate-200 p-2 w-[150px]">
+                <img
+                  src={heroMockupLifestyle}
+                  alt="Hóspede visualizando o hub Suíte Premium · Vila Serena no celular"
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-auto rounded-xl object-cover"
+                />
+              </div>
+            </div>
             <div className="hidden sm:flex absolute -bottom-5 -left-5 bg-white rounded-2xl shadow-lg ring-1 ring-slate-200 px-4 py-3 items-center gap-3">
               <div className="h-9 w-9 rounded-lg bg-[hsl(186_100%_94%)] grid place-items-center">
                 <Star className="h-5 w-5 text-[hsl(186_100%_32%)]" fill="currentColor" />
@@ -186,6 +210,7 @@ function HeroLp() {
           </div>
         </div>
       </div>
+      <WhatsAppGuideDialog open={waOpen} onOpenChange={setWaOpen} />
     </section>
   );
 }
