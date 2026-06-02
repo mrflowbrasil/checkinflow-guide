@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
 import { Check } from "lucide-react";
-import teaserVideo from "@/assets/primeiro-imovel.mp4.asset.json";
+import teaserVideo from "@/assets/lp/primeiro-imovel-teaser.mp4.asset.json";
 
 const CYAN = "hsl(186 100% 32%)";
 const YOUTUBE_URL = "https://youtu.be/l8SxORuMqLU";
 const VIDEO_SRC = teaserVideo.url;
+const POSTER_SRC: string | undefined = undefined;
 
 const bullets = [
   "Cadastre o imóvel com nome, fotos e informações principais",
