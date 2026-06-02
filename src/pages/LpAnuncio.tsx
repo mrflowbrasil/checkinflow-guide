@@ -139,13 +139,13 @@ function HeroLp() {
               profissional e fácil de acessar pelo celular.
             </p>
 
-            <div className="mt-8 flex flex-col sm:flex-row flex-wrap gap-3">
-              <Button asChild className={ctaPrimary}>
+            <div className="mt-8 flex flex-col sm:flex-row flex-wrap lg:flex-nowrap gap-3">
+              <Button asChild className={`${ctaPrimary} lg:px-5 lg:flex-1`}>
                 <Link to="/auth">
                   Criar meu guia grátis <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-              <Button asChild className={ctaSecondary}>
+              <Button asChild className={`${ctaSecondary} lg:px-5 lg:flex-1`}>
                 <a href="#demo" onClick={scrollToDemo}>
                   Ver como o hóspede acessa
                 </a>
@@ -153,7 +153,7 @@ function HeroLp() {
               <Button
                 type="button"
                 onClick={() => setWaOpen(true)}
-                className="h-14 px-7 rounded-2xl bg-[#25D366] hover:bg-[#1ebe5a] text-white font-semibold text-base shadow-[0_10px_30px_-10px_rgba(37,211,102,0.55)]"
+                className="h-14 px-7 lg:px-5 lg:flex-1 rounded-2xl bg-[#25D366] hover:bg-[#1ebe5a] text-white font-semibold text-base shadow-[0_10px_30px_-10px_rgba(37,211,102,0.55)]"
               >
                 <MessageCircle className="mr-2 h-5 w-5" />
                 Receber Guia no WhatsApp
