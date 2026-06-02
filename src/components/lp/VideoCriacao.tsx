@@ -96,6 +96,7 @@ export default function VideoCriacao() {
                       controls
                       playsInline
                       preload="metadata"
+                      poster={POSTER_SRC}
                       className="h-full w-full object-cover"
                       src={VIDEO_SRC}
                     />
