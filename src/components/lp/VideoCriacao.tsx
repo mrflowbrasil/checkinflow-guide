@@ -68,14 +68,13 @@ export default function VideoCriacao() {
                 >
                   Criar meu guia grátis
                 </Link>
-                <a
-                  href={YOUTUBE_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  type="button"
+                  onClick={() => setVideoOpen(true)}
                   className="inline-flex items-center justify-center h-14 px-7 rounded-2xl bg-white border-2 border-[hsl(186_100%_32%)]/30 text-[hsl(186_100%_24%)] hover:bg-[hsl(186_100%_32%)]/5 font-semibold text-base transition-colors"
                 >
                   Ver vídeo completo
-                </a>
+                </button>
               </div>
 
               <p className="mt-4 text-sm text-muted-foreground">
