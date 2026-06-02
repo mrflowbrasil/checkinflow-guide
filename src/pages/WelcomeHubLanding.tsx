@@ -21,7 +21,7 @@ import { Seo } from "@/components/Seo";
 import { MrFlowLogo } from "@/components/brand/MrFlowLogo";
 import ShaderBackground from "@/components/ui/shader-background";
 import phoneMockup from "@/assets/welcome-hub-phone-mockup.webp";
-import heroLifestyle from "@/assets/hero-mockup-lifestyle.jpg";
+import heroLifestyle from "@/assets/hero-mockup-lifestyle.webp";
 import { StickyFeatureSection } from "@/components/ui/sticky-scroll-cards-section";
 import WhatsAppGuideDialog from "@/components/lp/WhatsAppGuideDialog";
 
