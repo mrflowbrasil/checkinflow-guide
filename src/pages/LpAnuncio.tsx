@@ -188,7 +188,7 @@ function HeroLp() {
               />
             </div>
             <div className="hidden sm:block absolute -top-5 -right-5 z-20 rotate-3">
-              <div className="bg-white rounded-2xl shadow-xl ring-1 ring-slate-200 p-2 w-[150px]">
+              <div className="bg-white rounded-2xl shadow-xl ring-1 ring-slate-200 p-1 w-[150px]">
                 <img
                   src={heroMockupLifestyle}
                   alt="Hóspede visualizando o hub Suíte Premium · Vila Serena no celular"
