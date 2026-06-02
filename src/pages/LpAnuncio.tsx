@@ -89,8 +89,8 @@ export default function LpAnuncio() {
         <HeroLp />
         <VideoCriacao />
         <AntesDepois />
-        <Beneficios />
         <RealDemoLight />
+        <Beneficios />
         <BulletsPro />
         <Gatilhos />
         <CtaFinal />
@@ -416,7 +416,7 @@ function RealDemoLight() {
   return (
     <section
       id="demo"
-      className="py-16 lg:py-24 bg-white border-y border-slate-200/70 scroll-mt-20"
+      className="py-16 lg:py-24 bg-gradient-to-b from-[hsl(186_100%_97%)] via-white to-[#FAF8F2] border-y border-[hsl(186_100%_32%)]/15 scroll-mt-20"
     >
       <div className="container max-w-6xl mx-auto px-5 sm:px-8">
         <div className="text-center mb-12">
