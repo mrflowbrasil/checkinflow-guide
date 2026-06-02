@@ -126,5 +126,24 @@ export default function VideoCriacao() {
         </div>
       </div>
     </section>
+    <Dialog open={videoOpen} onOpenChange={setVideoOpen}>
+      <DialogContent className="max-w-4xl p-0 overflow-hidden bg-black border-0">
+        <DialogTitle className="sr-only">
+          Crie seu primeiro imóvel em menos de 5 minutos
+        </DialogTitle>
+        <div className="aspect-video w-full">
+          {videoOpen && (
+            <iframe
+              className="h-full w-full"
+              src={`https://www.youtube.com/embed/${YOUTUBE_ID}?autoplay=1&rel=0`}
+              title="Crie seu primeiro imóvel em menos de 5 minutos"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }
