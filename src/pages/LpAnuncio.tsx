@@ -126,7 +126,7 @@ function HeroLp() {
       />
       <div className="container relative max-w-6xl mx-auto px-5 sm:px-8 pt-12 pb-16 lg:pt-20 lg:pb-24">
         <div className="grid lg:grid-cols-[1.05fr_1fr] gap-10 lg:gap-14 items-center">
-          <div className="min-w-0">
+          <div>
             <Badge className="mb-5 bg-white border border-[hsl(186_100%_32%)]/30 text-[hsl(186_100%_24%)] rounded-full px-3 py-1 hover:bg-white">
               <Sparkles className="h-3.5 w-3.5 mr-1.5" /> Guia digital para Airbnb, pousadas e casas de temporada
             </Badge>
@@ -139,13 +139,14 @@ function HeroLp() {
               profissional e fácil de acessar pelo celular.
             </p>
 
-            <div className="mt-8 flex flex-col sm:flex-row flex-wrap lg:flex-nowrap gap-2 lg:gap-2">
-              <Button asChild className={`${ctaPrimary} lg:px-3 lg:text-sm lg:min-w-0 lg:flex-1`}>
+            {/* Botões mobile (dentro da coluna). No desktop ficam abaixo do grid. */}
+            <div className="mt-8 flex flex-col sm:flex-row sm:flex-wrap gap-3 lg:hidden">
+              <Button asChild className={ctaPrimary}>
                 <Link to="/auth">
-                  Criar meu guia grátis <ArrowRight className="ml-2 h-5 w-5 shrink-0" />
+                  Criar meu guia grátis <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-              <Button asChild className={`${ctaSecondary} lg:px-3 lg:text-sm lg:min-w-0 lg:flex-1`}>
+              <Button asChild className={ctaSecondary}>
                 <a href="#demo" onClick={scrollToDemo}>
                   Ver como o hóspede acessa
                 </a>
@@ -153,17 +154,17 @@ function HeroLp() {
               <Button
                 type="button"
                 onClick={() => setWaOpen(true)}
-                className="h-14 px-7 lg:px-3 lg:text-sm lg:min-w-0 lg:flex-1 rounded-2xl bg-[#25D366] hover:bg-[#1ebe5a] text-white font-semibold text-base shadow-[0_10px_30px_-10px_rgba(37,211,102,0.55)]"
+                className="h-14 px-7 rounded-2xl bg-[#25D366] hover:bg-[#1ebe5a] text-white font-semibold text-base shadow-[0_10px_30px_-10px_rgba(37,211,102,0.55)]"
               >
-                <MessageCircle className="mr-2 h-5 w-5 shrink-0" />
+                <MessageCircle className="mr-2 h-5 w-5" />
                 Receber Guia no WhatsApp
               </Button>
             </div>
-            <p className="mt-4 text-sm text-slate-500">
+            <p className="mt-4 text-sm text-slate-500 lg:hidden">
               Leva menos de 5 minutos. Não precisa de cartão de crédito.
             </p>
 
-            <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-600">
+            <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-600 lg:hidden">
               <span className="inline-flex items-center gap-1.5">
                 <Check className="h-4 w-4 text-[hsl(186_100%_32%)]" /> Sem app para o hóspede baixar
               </span>
@@ -207,6 +208,44 @@ function HeroLp() {
                 <div className="text-xs text-slate-500">menos dúvidas, mais autonomia</div>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Botões desktop (full-width abaixo do grid hero) */}
+        <div className="hidden lg:block mt-12">
+          <div className="flex flex-row flex-nowrap gap-3 justify-start">
+            <Button asChild className={ctaPrimary}>
+              <Link to="/auth">
+                Criar meu guia grátis <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+            </Button>
+            <Button asChild className={ctaSecondary}>
+              <a href="#demo" onClick={scrollToDemo}>
+                Ver como o hóspede acessa
+              </a>
+            </Button>
+            <Button
+              type="button"
+              onClick={() => setWaOpen(true)}
+              className="h-14 px-7 rounded-2xl bg-[#25D366] hover:bg-[#1ebe5a] text-white font-semibold text-base shadow-[0_10px_30px_-10px_rgba(37,211,102,0.55)]"
+            >
+              <MessageCircle className="mr-2 h-5 w-5" />
+              Receber Guia no WhatsApp
+            </Button>
+          </div>
+          <p className="mt-4 text-sm text-slate-500">
+            Leva menos de 5 minutos. Não precisa de cartão de crédito.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-600">
+            <span className="inline-flex items-center gap-1.5">
+              <Check className="h-4 w-4 text-[hsl(186_100%_32%)]" /> Sem app para o hóspede baixar
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <Check className="h-4 w-4 text-[hsl(186_100%_32%)]" /> Link, QR Code e celular
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <Check className="h-4 w-4 text-[hsl(186_100%_32%)]" /> Atualização em tempo real
+            </span>
           </div>
         </div>
       </div>
