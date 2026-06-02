@@ -24,6 +24,7 @@ const bullets = [
 export default function VideoCriacao() {
   const [videoOpen, setVideoOpen] = useState(false);
   return (
+    <>
     <section className="bg-[#FAFAF7]">
       <div className="max-w-6xl mx-auto px-5 sm:px-8 py-16 lg:py-24">
         <div className="bg-white rounded-3xl border border-border shadow-sm p-6 sm:p-10 lg:p-14">
