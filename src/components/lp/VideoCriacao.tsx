@@ -1,9 +1,15 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Check } from "lucide-react";
 import teaserVideo from "@/assets/lp/primeiro-imovel-teaser.mp4.asset.json";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const CYAN = "hsl(186 100% 32%)";
-const YOUTUBE_URL = "https://youtu.be/l8SxORuMqLU";
+const YOUTUBE_ID = "l8SxORuMqLU";
 const VIDEO_SRC = teaserVideo.url;
 const POSTER_SRC: string | undefined = undefined;
 
@@ -16,7 +22,9 @@ const bullets = [
 ];
 
 export default function VideoCriacao() {
+  const [videoOpen, setVideoOpen] = useState(false);
   return (
+    <>
     <section className="bg-[#FAFAF7]">
       <div className="max-w-6xl mx-auto px-5 sm:px-8 py-16 lg:py-24">
         <div className="bg-white rounded-3xl border border-border shadow-sm p-6 sm:p-10 lg:p-14">
@@ -61,14 +69,13 @@ export default function VideoCriacao() {
                 >
                   Criar meu guia grátis
                 </Link>
-                <a
-                  href={YOUTUBE_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  type="button"
+                  onClick={() => setVideoOpen(true)}
                   className="inline-flex items-center justify-center h-14 px-7 rounded-2xl bg-white border-2 border-[hsl(186_100%_32%)]/30 text-[hsl(186_100%_24%)] hover:bg-[hsl(186_100%_32%)]/5 font-semibold text-base transition-colors"
                 >
                   Ver vídeo completo
-                </a>
+                </button>
               </div>
 
               <p className="mt-4 text-sm text-muted-foreground">
@@ -120,5 +127,24 @@ export default function VideoCriacao() {
         </div>
       </div>
     </section>
+    <Dialog open={videoOpen} onOpenChange={setVideoOpen}>
+      <DialogContent className="max-w-4xl p-0 overflow-hidden bg-black border-0">
+        <DialogTitle className="sr-only">
+          Crie seu primeiro imóvel em menos de 5 minutos
+        </DialogTitle>
+        <div className="aspect-video w-full">
+          {videoOpen && (
+            <iframe
+              className="h-full w-full"
+              src={`https://www.youtube.com/embed/${YOUTUBE_ID}?autoplay=1&rel=0`}
+              title="Crie seu primeiro imóvel em menos de 5 minutos"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }
