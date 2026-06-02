@@ -91,13 +91,13 @@ export default function VideoCriacao() {
               {/* Tampa do notebook */}
               <div className="relative mx-auto w-full max-w-[560px]">
                 <div className="rounded-t-2xl bg-slate-900 p-2 sm:p-3 shadow-2xl ring-1 ring-slate-800">
-                  <div className="relative aspect-video w-full overflow-hidden rounded-md bg-black">
+                  <div className="relative aspect-[21/9] w-full overflow-hidden rounded-md bg-black">
                     <video
                       controls
                       playsInline
                       preload="metadata"
                       poster={POSTER_SRC}
-                      className="h-full w-full object-contain"
+                      className="h-full w-full object-cover"
                       src={VIDEO_SRC}
                     />
                   </div>
