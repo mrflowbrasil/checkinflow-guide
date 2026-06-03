@@ -62,7 +62,7 @@ export default function Auth() {
     setBusy(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(traduzErroAuth(error.message));
     navigate("/app");
   };
 
