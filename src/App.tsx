@@ -10,10 +10,10 @@ import VersionWatcher from "@/components/VersionWatcher";
 import GoogleAnalyticsTracker from "@/components/analytics/GoogleAnalyticsTracker";
 import MetaPixelTracker from "@/components/analytics/MetaPixelTracker";
 
-import WelcomeHubLanding from "./pages/WelcomeHubLanding";
 import NotFound from "./pages/NotFound";
 
 const LpAnuncio = lazy(() => import("./pages/LpAnuncio"));
+const WelcomeHubLanding = lazy(() => import("./pages/WelcomeHubLanding"));
 
 // Lazy-loaded routes — keep landing page (/) eager, split everything else.
 const AppShell = lazy(() => import("@/components/layout/AppShell"));
