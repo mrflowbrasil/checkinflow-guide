@@ -109,6 +109,29 @@ export default function Help() {
           <TopicContent topic={activeTopic} />
         </Card>
       </div>
+
+      <Card className="p-6 md:p-8 flex flex-col items-center text-center gap-4 bg-gradient-to-br from-white to-accent-soft border-accent/20">
+        <MessageCircle className="h-8 w-8 text-accent-foreground" />
+        <div className="space-y-1">
+          <h3 className="text-lg font-semibold">Ainda com dúvida?</h3>
+          <p className="text-muted-foreground text-sm">
+            Chame nosso suporte no WhatsApp.
+          </p>
+        </div>
+        <Button
+          asChild
+          className="bg-[#25D366] hover:bg-[#128C7E] text-white gap-2"
+        >
+          <a
+            href="https://wa.me/5521996507509"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <MessageCircle className="h-4 w-4" />
+            Falar no WhatsApp
+          </a>
+        </Button>
+      </Card>
     </div>
   );
 }
