@@ -874,3 +874,40 @@ export default function WelcomeHubLanding() {
     </div>
   );
 }
+
+function LazyAutoVideo({ src, poster }: { src: string; poster: string }) {
+  const ref = useRef<HTMLVideoElement | null>(null);
+  const [shouldLoad, setShouldLoad] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            setShouldLoad(true);
+            el.play().catch(() => {});
+          } else {
+            el.pause();
+          }
+        }
+      },
+      { rootMargin: "200px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  return (
+    <video
+      ref={ref}
+      src={shouldLoad ? src : undefined}
+      poster={poster}
+      muted
+      loop
+      playsInline
+      preload="none"
+      aria-hidden="true"
+      className="h-full w-full object-contain"
+    />
+  );
+}
