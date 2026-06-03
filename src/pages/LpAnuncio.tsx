@@ -1171,14 +1171,14 @@ function PlanosSection() {
 }
 
 // ============================ TRUST LOGOS ============================
-import airbnbLogo from "@/assets/lp/logos/airbnb.png.asset.json";
-import bookingLogo from "@/assets/lp/logos/booking.png.asset.json";
-import tripadvisorLogo from "@/assets/lp/logos/tripadvisor.png.asset.json";
-import vrboLogo from "@/assets/lp/logos/vrbo.png.asset.json";
-import staysLogo from "@/assets/lp/logos/stays.png.asset.json";
-import hostawayLogo from "@/assets/lp/logos/hostaway.png.asset.json";
-import omnibeesLogo from "@/assets/lp/logos/omnibees.png.asset.json";
-import hospedinLogo from "@/assets/lp/logos/hospedin.png.asset.json";
+import airbnbLogo from "@/assets/lp/logos/airbnb.webp.asset.json";
+import bookingLogo from "@/assets/lp/logos/booking.webp.asset.json";
+import tripadvisorLogo from "@/assets/lp/logos/tripadvisor.webp.asset.json";
+import vrboLogo from "@/assets/lp/logos/vrbo.webp.asset.json";
+import staysLogo from "@/assets/lp/logos/stays.webp.asset.json";
+import hostawayLogo from "@/assets/lp/logos/hostaway.webp.asset.json";
+import omnibeesLogo from "@/assets/lp/logos/omnibees.webp.asset.json";
+import hospedinLogo from "@/assets/lp/logos/hospedin.webp.asset.json";
 
 function TrustLogos() {
   const logos = [
