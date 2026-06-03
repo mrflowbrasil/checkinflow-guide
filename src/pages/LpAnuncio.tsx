@@ -99,6 +99,7 @@ export default function LpAnuncio() {
         <RealDemoLight />
         <Beneficios />
         <BulletsPro />
+        <PlanosSection />
         <Gatilhos />
         <CtaFinal />
       </main>
