@@ -99,6 +99,7 @@ export default function LpAnuncio() {
         <BulletsPro />
         <Beneficios />
         <VideoCriacao />
+        <QuemSomos />
         <PlanosSection />
         <Gatilhos />
         <CtaFinal />
