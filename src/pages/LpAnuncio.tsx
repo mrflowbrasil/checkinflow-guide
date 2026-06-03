@@ -200,48 +200,19 @@ function HeroLp() {
                 decoding="async"
                 className="w-full h-auto object-cover"
               />
-              {/* Hotspots clicáveis sobre o mockup do celular */}
-              <button
-                type="button"
-                aria-label="Ver demonstração do Wi-Fi"
-                onClick={openDemoCta}
-                className={`${hotspotClass} top-[30%] left-[55%] w-[18%] h-[14%]`}
-              />
-              <button
-                type="button"
-                aria-label="Ver demonstração das regras da casa"
-                onClick={openDemoCta}
-                className={`${hotspotClass} top-[46%] left-[55%] w-[18%] h-[14%]`}
-              />
-              <button
-                type="button"
-                aria-label="Ver demonstração da localização"
-                onClick={openDemoCta}
-                className={`${hotspotClass} top-[62%] left-[55%] w-[18%] h-[14%]`}
-              />
-              <button
-                type="button"
-                aria-label="Ver demonstração do check-in"
-                onClick={openDemoCta}
-                className={`${hotspotClass} top-[78%] left-[55%] w-[18%] h-[14%]`}
-              />
             </div>
             <div className="hidden sm:block absolute -top-5 -right-5 z-20 rotate-3">
-              <button
-                type="button"
-                aria-label="Ver demonstração do guia Vila Serena"
-                onClick={openDemoCta}
-                className="bg-white rounded-2xl shadow-xl ring-1 ring-slate-200 p-1 w-[150px] hover:ring-[hsl(186_100%_32%)]/40 transition cursor-pointer"
-              >
+              <div className="bg-white rounded-2xl shadow-xl ring-1 ring-slate-200 p-1 w-[150px]">
                 <img
                   src={heroMockupLifestyle}
                   alt="Hóspede visualizando o hub Suíte Premium · Vila Serena no celular"
                   loading="lazy"
                   decoding="async"
-                  className="w-full h-auto rounded-xl object-cover pointer-events-none"
+                  className="w-full h-auto rounded-xl object-cover"
                 />
-              </button>
+              </div>
             </div>
+
             <div className="hidden sm:flex absolute -bottom-5 -left-5 bg-white rounded-2xl shadow-lg ring-1 ring-slate-200 px-4 py-3 items-center gap-3">
               <div className="h-9 w-9 rounded-lg bg-[hsl(186_100%_94%)] grid place-items-center">
                 <Star className="h-5 w-5 text-[hsl(186_100%_32%)]" fill="currentColor" />
