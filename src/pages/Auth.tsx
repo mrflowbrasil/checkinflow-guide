@@ -139,9 +139,11 @@ export default function Auth() {
               </div>
             ) : (
               <div className="space-y-7">
-                <span className="inline-flex items-center gap-2 text-[10px] tracking-[0.22em] uppercase font-semibold px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-[#5EEAD4]">
-                  30 dias grátis · Sem cartão
-                </span>
+                <div className="flex justify-end">
+                  <span className="inline-flex items-center gap-2 text-[10px] tracking-[0.22em] uppercase font-semibold px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-[#5EEAD4]">
+                    30 dias grátis · Sem cartão
+                  </span>
+                </div>
                 <h1 className="text-4xl lg:text-[44px] leading-[1.1] tracking-tight font-bold text-white">
                   Falta apenas um passo para{" "}
                   <span style={{ color: "#5EEAD4" }}>profissionalizar</span> seu imóvel
