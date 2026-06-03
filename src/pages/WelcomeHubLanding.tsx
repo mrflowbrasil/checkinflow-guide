@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import hubVideo from "@/assets/lp/hub-rapido2.mp4.asset.json";
+import hubPoster from "@/assets/lp/hub-rapido2-poster.jpg.asset.json";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -344,16 +346,7 @@ function HostBuilderSection() {
 
           <div className="order-first lg:order-last">
             <LaptopMockup>
-              <video
-                src="/videos/hub-rapido2.mp4"
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="metadata"
-                aria-hidden="true"
-                className="h-full w-full object-contain"
-              />
+              <LazyAutoVideo src={hubVideo.url} poster={hubPoster.url} />
             </LaptopMockup>
           </div>
         </div>
