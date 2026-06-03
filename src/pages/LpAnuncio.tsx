@@ -203,17 +203,47 @@ function HeroLp() {
                 decoding="async"
                 className="w-full h-auto object-cover"
               />
+              {/* Hotspots clicáveis sobre o mockup do celular */}
+              <button
+                type="button"
+                aria-label="Ver demonstração do Wi-Fi"
+                onClick={openDemoCta}
+                className={`${hotspotClass} top-[30%] left-[55%] w-[18%] h-[14%]`}
+              />
+              <button
+                type="button"
+                aria-label="Ver demonstração das regras da casa"
+                onClick={openDemoCta}
+                className={`${hotspotClass} top-[46%] left-[55%] w-[18%] h-[14%]`}
+              />
+              <button
+                type="button"
+                aria-label="Ver demonstração da localização"
+                onClick={openDemoCta}
+                className={`${hotspotClass} top-[62%] left-[55%] w-[18%] h-[14%]`}
+              />
+              <button
+                type="button"
+                aria-label="Ver demonstração do check-in"
+                onClick={openDemoCta}
+                className={`${hotspotClass} top-[78%] left-[55%] w-[18%] h-[14%]`}
+              />
             </div>
             <div className="hidden sm:block absolute -top-5 -right-5 z-20 rotate-3">
-              <div className="bg-white rounded-2xl shadow-xl ring-1 ring-slate-200 p-1 w-[150px]">
+              <button
+                type="button"
+                aria-label="Ver demonstração do guia Vila Serena"
+                onClick={openDemoCta}
+                className="bg-white rounded-2xl shadow-xl ring-1 ring-slate-200 p-1 w-[150px] hover:ring-[hsl(186_100%_32%)]/40 transition cursor-pointer"
+              >
                 <img
                   src={heroMockupLifestyle}
                   alt="Hóspede visualizando o hub Suíte Premium · Vila Serena no celular"
                   loading="lazy"
                   decoding="async"
-                  className="w-full h-auto rounded-xl object-cover"
+                  className="w-full h-auto rounded-xl object-cover pointer-events-none"
                 />
-              </div>
+              </button>
             </div>
             <div className="hidden sm:flex absolute -bottom-5 -left-5 bg-white rounded-2xl shadow-lg ring-1 ring-slate-200 px-4 py-3 items-center gap-3">
               <div className="h-9 w-9 rounded-lg bg-[hsl(186_100%_94%)] grid place-items-center">
@@ -222,6 +252,51 @@ function HeroLp() {
               <div>
                 <div className="text-sm font-semibold text-slate-900">+ avaliações 5 estrelas!</div>
                 <div className="text-xs text-slate-500">Mais tempo livre e mais tranquilidade</div>
+              </div>
+            </div>
+
+            {/* Banner de conversão exibido ao clicar em um hotspot */}
+            <div
+              role="status"
+              aria-live="polite"
+              className={`mt-6 transition-all duration-300 ${
+                demoCtaOpen
+                  ? "opacity-100 translate-y-0 pointer-events-auto"
+                  : "opacity-0 -translate-y-2 pointer-events-none"
+              }`}
+            >
+              <div className="relative rounded-2xl bg-white shadow-xl ring-1 ring-[hsl(186_100%_32%)]/25 px-4 py-3 sm:px-5 sm:py-4 flex flex-col sm:flex-row sm:items-center gap-3">
+                <div className="flex items-start gap-3 flex-1">
+                  <div className="h-9 w-9 shrink-0 rounded-xl bg-[hsl(186_100%_94%)] grid place-items-center">
+                    <Sparkles className="h-5 w-5 text-[hsl(186_100%_32%)]" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-sm sm:text-base font-semibold text-slate-900">
+                      Gostou da facilidade?
+                    </div>
+                    <div className="text-xs sm:text-sm text-slate-600">
+                      Crie um guia igual a este para o seu imóvel.
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 sm:shrink-0">
+                  <Button
+                    asChild
+                    className="h-11 px-5 rounded-xl bg-[hsl(186_100%_32%)] hover:bg-[hsl(186_100%_27%)] text-white font-semibold text-sm shadow-[0_10px_25px_-10px_hsl(186_100%_32%/0.6)]"
+                  >
+                    <Link to="/auth">
+                      Criar Meu Guia Grátis <ArrowRight className="ml-1.5 h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <button
+                    type="button"
+                    onClick={() => setDemoCtaOpen(false)}
+                    aria-label="Fechar"
+                    className="h-9 w-9 grid place-items-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
