@@ -223,50 +223,8 @@ function HeroLp() {
               </div>
             </div>
 
-            {/* Banner de conversão exibido ao clicar em um hotspot */}
-            <div
-              role="status"
-              aria-live="polite"
-              className={`mt-6 transition-all duration-300 ${
-                demoCtaOpen
-                  ? "opacity-100 translate-y-0 pointer-events-auto"
-                  : "opacity-0 -translate-y-2 pointer-events-none"
-              }`}
-            >
-              <div className="relative rounded-2xl bg-white shadow-xl ring-1 ring-[hsl(186_100%_32%)]/25 px-4 py-3 sm:px-5 sm:py-4 flex flex-col sm:flex-row sm:items-center gap-3">
-                <div className="flex items-start gap-3 flex-1">
-                  <div className="h-9 w-9 shrink-0 rounded-xl bg-[hsl(186_100%_94%)] grid place-items-center">
-                    <Sparkles className="h-5 w-5 text-[hsl(186_100%_32%)]" />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="text-sm sm:text-base font-semibold text-slate-900">
-                      Gostou da facilidade?
-                    </div>
-                    <div className="text-xs sm:text-sm text-slate-600">
-                      Crie um guia igual a este para o seu imóvel.
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 sm:shrink-0">
-                  <Button
-                    asChild
-                    className="h-11 px-5 rounded-xl bg-[hsl(186_100%_32%)] hover:bg-[hsl(186_100%_27%)] text-white font-semibold text-sm shadow-[0_10px_25px_-10px_hsl(186_100%_32%/0.6)]"
-                  >
-                    <Link to="/auth">
-                      Criar Meu Guia Grátis <ArrowRight className="ml-1.5 h-4 w-4" />
-                    </Link>
-                  </Button>
-                  <button
-                    type="button"
-                    onClick={() => setDemoCtaOpen(false)}
-                    aria-label="Fechar"
-                    className="h-9 w-9 grid place-items-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
+          </div>
+
           </div>
         </div>
 
