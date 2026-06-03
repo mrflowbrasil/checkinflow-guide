@@ -429,14 +429,14 @@ function RealDemoLight() {
           </h2>
           <p className="text-slate-600 text-lg max-w-2xl mx-auto leading-relaxed">
             Veja abaixo como o seu hóspede recebe todas as informações da sua hospedagem de um jeito lindo, prático e
-            interativo. Toque nos botões para testar a demonstração real.
+            interativo.&nbsp;
           </p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
             <h3 className="text-2xl font-semibold text-slate-900 mb-3">
-              Uma experiência real, direto no celular do hóspede
+              Toque nos botões para testar a demonstração real
             </h3>
             <p className="text-slate-600 mb-6 leading-relaxed">
               Wi-Fi, check-in, checkout, regras da casa, localização, dicas locais e contatos úteis em uma página
