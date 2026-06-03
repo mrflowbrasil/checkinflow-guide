@@ -1,32 +1,41 @@
 ## Diagnóstico
 
-Em `src/pages/LpAnuncio.tsx` (linhas 484–486), o mockup do celular usa dimensões fixas que não consideram a altura da viewport:
+O mockup foi reduzido em desktop via `clamp()` aplicado direto na largura/altura do iframe (linhas 484–486 de `src/pages/LpAnuncio.tsx`). Como o iframe carrega a página real do guest em modo mobile-first, quando ele é reduzido para ~260px de largura, o **conteúdo interno** (header com logo, título, botões) é renderizado a 260px e fica espremido — a logo encosta no título, botões ficam estreitos. O Tailwind do guest assume ~375px como largura mobile padrão.
 
-- Largura: `w-[300px] sm:w-[340px]`
-- Altura interna: `h-[620px] sm:h-[700px]`
-
-Somando borda (`border-[10px]`) e padding do container, o mockup ocupa ~720px de altura no breakpoint `sm+`. Em monitores 20" (≈900px úteis com chrome do navegador) e notebooks 15,6" (≈660–720px úteis), o mockup ultrapassa a viewport, forçando o usuário a rolar e nunca vendo-o inteiro junto com o texto ao lado.
+A correção da etapa anterior reduziu o "vidro" do mockup, mas também encolheu o conteúdo, criando o problema atual.
 
 ## Plano
 
-Tornar as dimensões do mockup responsivas à altura da viewport em desktop, mantendo a proporção atual (~aspect 17:35) e o visual mobile inalterado.
+Manter o iframe sempre em **largura/altura nativas de mobile** (375 × 800px) e usar `transform: scale()` para encolher o mockup inteiro proporcionalmente em desktop, preservando o layout interno como num celular real.
 
-1. **Substituir altura/largura fixas por `clamp()` baseado em `vh`** no container do mockup (linha 484 e 486 de `src/pages/LpAnuncio.tsx`):
-   - Mobile (`<lg`): mantém `w-[300px] sm:w-[340px]` e `h-[620px] sm:h-[700px]` como está hoje.
-   - Desktop (`lg:`): aplicar
-     - `lg:w-[clamp(260px,32vh,340px)]`
-     - `lg:h-[clamp(540px,66vh,700px)]`
-   - Resultado: em telas de ~720px de altura, mockup ≈ 475px alt × 230px larg; em telas ≥1060px volta ao tamanho máximo atual (700×340). Cabe inteiro ao lado do texto em notebooks e monitores 20".
+### Mudanças em `src/pages/LpAnuncio.tsx` (linhas 481–496)
 
-2. **Ajustar o notch** (linha 485) para escalar junto:
-   - Trocar `w-32 h-6` por `w-[40%] h-[3.5%]` para acompanhar proporcionalmente a largura/altura do mockup quando ele encolhe em desktop.
+1. **Wrapper externo** com `aspect-ratio` reservando o espaço escalado, para não quebrar o grid.
 
-3. **Reduzir gap do grid em desktop** (linha 446), trocando `gap-12` por `gap-8 lg:gap-10`, dando mais respiro horizontal sem afetar mobile.
+2. **Mockup em tamanho fixo "real"**: `w-[375px] h-[800px]` (frame interno do iframe). Borda externa (`border-[10px]`) e `rounded-[3rem]` mantêm o visual atual.
 
-4. **Garantir alinhamento vertical** — o `items-center` já existente no grid mantém o mockup centralizado verticalmente em relação ao bloco de texto após o redimensionamento.
+3. **Iframe** volta a `w-full h-full` sobre 375×800 — sem clamp — então renderiza a página como um celular de verdade.
+
+4. **Escala responsiva via CSS variable + `transform: scale(var(--mockup-scale))`** com `transform-origin: top center`:
+   - Mobile/tablet (`<lg`): `--mockup-scale: 0.8` em telas estreitas para casar com o tamanho atual de ~300/340px.
+   - Desktop (`lg:`): `--mockup-scale: clamp(0.55, calc(66vh / 820), 0.95)`.
+   - Resultado em viewport de 673px alt (como o atual do usuário): escala ≈ 0.54 → mockup ≈ 202×432px com conteúdo renderizado em 375px e proporcional.
+   - Em telas de ≥1080px alt: volta perto de 0.95 (≈ 356×760).
+
+5. **Container reserva espaço real**: usar `style={{ width: 'calc(375px * var(--mockup-scale))', height: 'calc(820px * var(--mockup-scale))' }}` no wrapper, com o mockup absoluto dentro escalado. Assim o grid mede o tamanho final correto e nada vaza.
+
+6. **Notch** volta a `w-32 h-6` (tamanho fixo, escala junto com o transform).
+
+7. **Gap do grid** mantém `gap-8 lg:gap-10`.
+
+### Resultado
+
+- O conteúdo dentro do iframe sempre renderiza em 375px (largura mobile real) → logo, título e botões com proporção correta.
+- O mockup inteiro encolhe/cresce proporcionalmente conforme a altura da viewport.
+- Cabe inteiro em notebooks 15,6" e monitores 20" sem espremer nada.
 
 ## Escopo
 
-- Arquivo alterado: `src/pages/LpAnuncio.tsx` (apenas as linhas 446, 484, 485, 486).
-- Nenhuma mudança em outras seções, rotas, backend ou estilo global.
-- Mobile e tablet permanecem visualmente idênticos.
+- Arquivo alterado: `src/pages/LpAnuncio.tsx` apenas (linhas 481–496).
+- Sem mudanças em backend, rotas ou outras seções.
+- Mobile e tablet permanecem visualmente próximos do atual.
