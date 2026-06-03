@@ -428,8 +428,8 @@ function RealDemoLight() {
             Ofereça uma experiência de hotel 5 estrelas no celular do seu hóspede
           </h2>
           <p className="text-slate-600 text-lg max-w-2xl mx-auto leading-relaxed">
-            Esta é uma propriedade demonstrativa criada no Mr Flow Welcome Hub. Navegue como se fosse um hóspede
-            acessando pelo celular.
+            Veja abaixo como o seu hóspede recebe todas as informações da sua hospedagem de um jeito lindo, prático e
+            interativo. Toque nos botões para testar a demonstração real.
           </p>
         </div>
 
@@ -444,11 +444,11 @@ function RealDemoLight() {
             </p>
             <ul className="space-y-3 mb-8">
               {[
-                "Navegação igual à do hóspede",
-                "Acesso por link ou QR Code",
-                "Conteúdo atualizado em tempo real",
-                "Experiência mobile-first",
-                "Ideal para enviar antes da chegada",
+                "Crie o seu em menos de 5 minutos (Zero complicações técnicas).",
+                "Seu hóspede acessa por link ou QR Code (Sem precisar baixar nenhum aplicativo).Acesso por link ou QR Code",
+                "Altere o Wi-Fi ou as regras da casa e atualize no celular do hóspede em tempo real.",
+                "Design profissional e totalmente planejado para telas de celular.",
+                "Ideal para enviar automaticamente no WhatsApp assim que a reserva for confirmada",
               ].map((b) => (
                 <li key={b} className="flex items-start gap-3">
                   <Check className="h-5 w-5 text-[hsl(186_100%_32%)] shrink-0 mt-0.5" />
