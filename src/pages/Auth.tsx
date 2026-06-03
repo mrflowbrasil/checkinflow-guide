@@ -93,7 +93,7 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2 bg-[#020617]">
+    <div className="min-h-screen flex flex-col lg:grid lg:grid-cols-2 bg-[#020617]">
       <Seo
         title="Entrar — Mr Flow Welcome Hub"
         description="Acesse sua conta de anfitrião na Mr Flow para gerenciar guias digitais dos seus imóveis de temporada."
@@ -102,7 +102,7 @@ export default function Auth() {
       />
       {/* Hero side */}
       <div
-        className="hidden lg:flex relative overflow-hidden text-white bg-[#0a1521]"
+        className="relative overflow-hidden text-white bg-[#0a1521] min-h-[60vh] sm:min-h-[55vh] lg:min-h-screen lg:flex"
         style={{
           backgroundImage: `url(${hospitalityBg.url})`,
           backgroundSize: "cover",
@@ -115,22 +115,22 @@ export default function Auth() {
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(180deg, rgba(8,15,25,0.62) 0%, rgba(8,15,25,0.72) 55%, rgba(8,15,25,0.88) 100%)",
+              "linear-gradient(180deg, rgba(8,15,25,0.62) 0%, rgba(8,15,25,0.72) 55%, rgba(8,15,25,0.92) 100%)",
           }}
         />
 
         {/* Logo */}
-        <Link to="/" className="absolute top-10 left-12 flex flex-col items-start gap-1 z-10">
-          <MrFlowLogo forceDark className="h-10 w-auto" />
+        <Link to="/" className="absolute top-6 left-6 lg:top-10 lg:left-12 flex flex-col items-start gap-1 z-10">
+          <MrFlowLogo forceDark className="h-9 lg:h-10 w-auto" />
           <span className="text-[10px] tracking-[0.25em] text-white/70 uppercase">Welcome Hub</span>
         </Link>
 
         {/* Content (centered vertically) */}
-        <div className="relative z-10 flex flex-col justify-center w-full px-12 lg:px-16 py-24">
-          <div key={tab} className="max-w-lg animate-in fade-in duration-500">
+        <div className="relative z-10 flex flex-col justify-center w-full px-6 sm:px-10 lg:px-16 pt-24 pb-12 lg:py-24">
+          <div key={tab} className="max-w-lg mx-auto lg:mx-0 w-full animate-in fade-in duration-500">
             {tab === "signin" ? (
-              <div className="space-y-6">
-                <h1 className="text-4xl lg:text-5xl leading-[1.1] tracking-tight font-bold text-white">
+              <div className="space-y-5 lg:space-y-6">
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl leading-[1.1] tracking-tight font-bold text-white">
                   Hub de Boas Vindas <span style={{ color: "#5EEAD4" }}>Inteligente</span>
                 </h1>
                 <p className="text-base lg:text-lg text-white/85 leading-relaxed max-w-md">
@@ -138,20 +138,20 @@ export default function Auth() {
                 </p>
               </div>
             ) : (
-              <div className="space-y-7">
-                <div className="flex justify-end">
+              <div className="space-y-5 lg:space-y-7">
+                <div className="flex justify-start lg:justify-end">
                   <span className="inline-flex items-center gap-2 text-[10px] tracking-[0.22em] uppercase font-semibold px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-[#5EEAD4]">
                     30 dias grátis · Sem cartão
                   </span>
                 </div>
-                <h1 className="text-4xl lg:text-[44px] leading-[1.1] tracking-tight font-bold text-white">
+                <h1 className="text-3xl sm:text-4xl lg:text-[44px] leading-[1.1] tracking-tight font-bold text-white">
                   Falta apenas um passo para{" "}
                   <span style={{ color: "#5EEAD4" }}>profissionalizar</span> seu imóvel
                 </h1>
-                <p className="text-base lg:text-lg text-white/85 leading-relaxed">
+                <p className="text-sm sm:text-base lg:text-lg text-white/85 leading-relaxed">
                   Monte o seu guia digital hoje e garanta acesso imediato a todas as vantagens:
                 </p>
-                <ul className="space-y-4 pt-2">
+                <ul className="space-y-3 lg:space-y-4 pt-1">
                   {[
                     {
                       title: "30 dias grátis no plano Single",
@@ -171,12 +171,12 @@ export default function Auth() {
                     },
                   ].map((item) => (
                     <li key={item.title} className="flex items-start gap-3">
-                      <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#5EEAD4]/15 border border-[#5EEAD4]/40">
-                        <Check className="h-3.5 w-3.5 text-[#5EEAD4]" strokeWidth={3} />
+                      <span className="mt-0.5 flex h-5 w-5 lg:h-6 lg:w-6 shrink-0 items-center justify-center rounded-full bg-[#5EEAD4]/15 border border-[#5EEAD4]/40">
+                        <Check className="h-3 w-3 lg:h-3.5 lg:w-3.5 text-[#5EEAD4]" strokeWidth={3} />
                       </span>
                       <div className="leading-snug">
-                        <p className="text-[15px] font-semibold text-white">{item.title}</p>
-                        <p className="text-sm text-white/70">{item.desc}</p>
+                        <p className="text-sm lg:text-[15px] font-semibold text-white">{item.title}</p>
+                        <p className="text-xs lg:text-sm text-white/70">{item.desc}</p>
                       </div>
                     </li>
                   ))}
@@ -186,8 +186,8 @@ export default function Auth() {
           </div>
         </div>
 
-        {/* Footer copyright */}
-        <p className="absolute bottom-8 left-12 right-12 z-10 text-white/50 text-xs leading-relaxed max-w-md">
+        {/* Footer copyright — desktop only inside hero */}
+        <p className="hidden lg:block absolute bottom-8 left-12 right-12 z-10 text-white/50 text-xs leading-relaxed max-w-md">
           © 2026 –{" "}
           <a href="http://mrflow.com.br" target="_blank" rel="noreferrer noopener" className="underline hover:text-white/80">
             Mr. Flow Automações e Serviços Digitais LTDA
@@ -199,10 +199,7 @@ export default function Auth() {
       {/* Form side */}
       <div className="flex flex-col items-center justify-center p-6 bg-[#f6f6f7]">
         <Card className="w-full max-w-md p-8 sm:p-10 rounded-3xl shadow-2xl border-0 bg-white">
-          <div className="lg:hidden flex flex-col items-start gap-1 mb-8">
-            <MrFlowLogo className="h-9 w-auto" />
-            <span className="text-[10px] tracking-[0.25em] text-muted-foreground uppercase">Welcome Hub</span>
-          </div>
+
 
           <Tabs value={tab} onValueChange={(v) => setTab(v as "signin" | "signup")} className="w-full">
             <TabsList className="grid grid-cols-2 w-full mb-6">
