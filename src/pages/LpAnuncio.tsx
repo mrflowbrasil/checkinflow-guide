@@ -94,9 +94,9 @@ export default function LpAnuncio() {
 
       <main className="flex-1">
         <HeroLp />
+        <RealDemoLight />
         <VideoCriacao />
         <AntesDepois />
-        <RealDemoLight />
         <Beneficios />
         <BulletsPro />
         <PlanosSection />
@@ -153,11 +153,6 @@ function HeroLp() {
                 <Link to="/auth">
                   Criar meu guia grátis <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
-              </Button>
-              <Button asChild className={ctaSecondary}>
-                <a href="#demo" onClick={scrollToDemo}>
-                  Ver como o hóspede acessa
-                </a>
               </Button>
               <Button
                 type="button"
@@ -229,11 +224,6 @@ function HeroLp() {
               <Link to="/auth">
                 Criar meu guia grátis <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
-            </Button>
-            <Button asChild className={ctaSecondary}>
-              <a href="#demo" onClick={scrollToDemo}>
-                Ver como o hóspede acessa
-              </a>
             </Button>
             <Button
               type="button"
