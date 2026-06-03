@@ -1,24 +1,23 @@
-## Diagnóstico
+## Objetivo
 
-A rota `/` (home) renderiza `src/pages/LpAnuncio.tsx`, **não** `src/pages/Index.tsx` (que está em `/welcome-hub`). Por isso a seção Planos adicionada anteriormente não aparece — ela foi inserida no arquivo errado.
+Recolorir apenas os 4 ícones sobrepostos (wifi, casa+chave, lâmpada, pin de localização) da imagem hero de `/` para `#00FFFF` (ciano puro), preservando integralmente a foto da hóspede e do ambiente.
 
-## Plano
+## Passos
 
-1. **Remover** a `PlanosSection` (e constantes `LP_PLANS`, `LP_PLAN_FEATURES`, `ENTERPRISE_BENEFITS`, `formatBRL`, `CYAN`, `ENTERPRISE_WHATSAPP`) de `src/pages/Index.tsx`, restaurando o arquivo ao estado anterior.
+1. Usar `imagegen--edit_image` sobre `src/assets/lp/hero-guest-phone.webp` (a imagem atual da hero) com prompt instruindo:
+   - Recolorir somente os 4 ícones vetoriais sobrepostos (wifi top-left, casa-com-chave top-right, lâmpada center-right, pin bottom-left) para ciano sólido `#00FFFF`.
+   - Manter o estilo line/outline original, a posição, o tamanho e o leve gradiente — apenas trocar o teal/turquesa atual por #00FFFF.
+   - Preservar 100% a fotografia (rosto, sofá, cozinha, almofada, planta) sem retoques.
+2. Salvar o resultado em `src/assets/lp/hero-guest-phone.webp` (sobrescrevendo), aspect ratio `16:9` para manter o enquadramento atual (1672×941 ≈ 16:9).
+3. Validar visualmente abrindo a imagem gerada antes de finalizar; se algum ícone ficar fora do tom ou a foto for alterada, reiterar com prompt mais específico ou versionar como `hero-guest-phone-v2.webp` e atualizar o import.
 
-2. **Adicionar** a mesma `PlanosSection` em `src/pages/LpAnuncio.tsx`:
-   - Inserir `<PlanosSection />` no JSX principal entre `<BulletsPro />` e `<Gatilhos />` (posição natural: depois dos benefícios e antes dos gatilhos finais).
-   - Copiar para o final do arquivo o componente `PlanosSection` e as constantes auxiliares (`LP_PLANS`, `LP_PLAN_FEATURES`, `ENTERPRISE_BENEFITS`, `formatBRL`, `CYAN`, `ENTERPRISE_WHATSAPP`).
-   - Adicionar imports necessários: `useState`, `Tabs`, `TabsList`, `TabsTrigger`, `Badge`, `Card`, ícones `Sparkles`, `Check`, `Building2`, `Gift`, `MessageCircle`, `Headphones`, `Rocket`, `Settings as SettingsIcon`, `TrendingUp` (mantendo os já existentes).
+## Escopo / não-escopo
 
-3. **Conteúdo da seção** (idêntico ao já criado):
-   - Título: "Mais paz para você. Mais clareza para o hóspede. Por menos que um cafezinho por imóvel."
-   - Subtítulo: "Comece com 30 dias grátis, sem cartão de crédito. Teste sem compromisso e continue apenas se fizer sentido para sua operação."
-   - Toggle Mensal/Anual (−17%), 5 planos (Single, Starter, Pro, Business, Enterprise), CTAs para `/auth` e WhatsApp Enterprise.
-   - `id="planos"` para anchor.
+- Sem mudanças em `LpAnuncio.tsx` (mesmo path de import, mesmas dimensões 1672×941).
+- Sem alteração de CSS/filtros globais — a recoloração fica embutida no asset.
+- Não mexer no mockup secundário (`hero-mockup-lifestyle.webp`).
 
-## Escopo
+## Riscos
 
-- Arquivos alterados: `src/pages/Index.tsx` (remoção) e `src/pages/LpAnuncio.tsx` (adição).
-- Sem mudanças em rotas, backend, RLS ou outros componentes.
-- Não inclui adicionar "Planos" ao header (não foi pedido nesta mensagem).
+- Modelos de edição podem alterar levemente o rosto/iluminação. Mitigação: prompt explícito de preservação + comparação visual; se necessário, gerar 2 variações e escolher a mais fiel.
+- `#00FFFF` puro pode parecer berrante sobre o fundo claro; se o resultado destoar da identidade visual, podemos ajustar para `#00E5FF` ou aplicar leve gradiente — confirmar após ver o resultado.
