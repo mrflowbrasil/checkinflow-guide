@@ -424,7 +424,18 @@ function Beneficios() {
 
 /* ----------------------- DEMO REAL (LIGHT) ----------------------- */
 function RealDemoLight() {
+  const [ctaOpen, setCtaOpen] = useState(false);
+  useEffect(() => {
+    function onMsg(e: MessageEvent) {
+      if (e?.data && typeof e.data === "object" && (e.data as any).type === "wh_demo_page_closed") {
+        setCtaOpen(true);
+      }
+    }
+    window.addEventListener("message", onMsg);
+    return () => window.removeEventListener("message", onMsg);
+  }, []);
   return (
+
     <section
       id="demo"
       className="py-16 lg:py-24 bg-gradient-to-b from-[hsl(186_100%_97%)] via-white to-[#FAF8F2] border-y border-[hsl(186_100%_32%)]/15 scroll-mt-20"
