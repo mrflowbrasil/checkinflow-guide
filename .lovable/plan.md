@@ -1,58 +1,82 @@
-## Diagnóstico
-Auditei os assets de imagem do projeto. Os maiores ofensores estão na rota `/` (LpAnuncio):
+## Objetivo
 
-| Arquivo | Tamanho | Dimensões | Uso real |
-|---|---|---|---|
-| `src/assets/lp/hero-mockup-lifestyle.jpg` | **1.5 MB** | 896×1200 | Sticker de **150px** no hero |
-| `src/assets/hero-mockup-lifestyle.jpg` | **1.3 MB** | 1024×1024 | Sticker pequeno em `/lp` |
-| `src/assets/lp/hero-guest-phone.jpg` | 129 KB | 1920×1080 | **Imagem LCP do hero** (renderizada ~600px) |
-| `public/*.webp` (4 cards) | 65–114 KB | 1376×768 | Cards renderizados ~600px |
-| `src/assets/welcome-hub-phone-original.png` | 565 KB | — | **Não usado** |
-| `src/assets/welcome-hub-phone-original-v2.webp` | 155 KB | — | **Não usado** |
+Adicionar uma nova seção **Planos** na home (`src/pages/Index.tsx`) replicando a funcionalidade de `/app/billing` (toggle Mensal/Anual + cálculo de preço por imóvel + 5 planos) **mas estilizada na identidade visual clara da `/lp`** (fundo creme `#FAFAF7`, ciano `hsl(186 100% 32%)`, cards brancos arredondados, sombras suaves) — criando uma "ilha" clara dentro da home dark.
 
-Total bruto hoje: ~4.5 MB de imagens; após otimização esperamos **~400 KB** (redução ~90%).
+> Observação: a `/lp` hoje **não tem** uma seção de planos. Estou interpretando "identidade visual da mesma seção da `/lp`" como **a estética geral da `/lp`** (paleta clara, ciano, cards `rounded-2xl`, badges de borda ciano, CTAs `ctaPrimary`/`ctaSecondary`). Se você quis dizer outra coisa, me avise antes de eu construir.
 
-Além disso, a imagem LCP do hero (`hero-guest-phone.jpg`) está com `loading` padrão e sem `fetchpriority`/`preload` — atrasa o LCP.
+## Mudanças
 
-## Plano de otimização
+### 1. Novo componente `PlanosSection` em `src/pages/Index.tsx`
 
-### 1. Recompressão e redimensionamento (sharp via script único)
-Para cada asset abaixo, gerar versão `.webp` na largura útil máxima (2× do tamanho renderizado, para retina) e substituir os imports no código.
+Inserido entre o bloco **Features** e o `<footer>`, com `id="planos"`.
 
-| Arquivo origem | Saída | Largura alvo | Qualidade |
-|---|---|---|---|
-| `src/assets/lp/hero-mockup-lifestyle.jpg` | `.webp` | 320 px | 80 |
-| `src/assets/hero-mockup-lifestyle.jpg` | `.webp` | 320 px | 80 |
-| `src/assets/lp/hero-guest-phone.jpg` | `.webp` | 1200 px | 78 |
-| `public/{4f67…,393a…,1cf7…,2b8b…}.webp` | sobrescrever | 1000 px | 78 |
+Estrutura:
 
-Os arquivos `.webp` derivados das duas `hero-mockup-lifestyle.jpg` ficarão ao lado dos originais; depois removo os `.jpg` antigos.
+```text
+[Container claro — bg #FAFAF7, borda arredondada top/bottom, padding generoso]
+  [Badge "Planos" — borda ciano, fundo branco]
+  H2 (slate-900): Mais paz para você. Mais clareza para o hóspede.
+                  Por menos que um cafezinho por imóvel.
+  Sub (slate-600): Comece com 30 dias grátis, sem cartão de crédito.
+                   Teste sem compromisso e continue apenas se fizer
+                   sentido para sua operação.
 
-### 2. Remover assets não usados
-- `src/assets/welcome-hub-phone-original.png` (565 KB)
-- `src/assets/welcome-hub-phone-original-v2.webp` (155 KB)
+  [Toggle Mensal | Anual (−17%)]
 
-### 3. Atualizar imports
-- `src/pages/LpAnuncio.tsx`: trocar `hero-mockup-lifestyle.jpg` → `.webp`; trocar `hero-guest-phone.jpg` → `.webp`.
-- `src/pages/WelcomeHubLanding.tsx`: trocar `hero-mockup-lifestyle.jpg` → `.webp`.
+  [Grid 5 cards: Single · Starter · Pro · Business · Enterprise]
 
-### 4. Priorizar o LCP do hero (`/`)
-Em `src/pages/LpAnuncio.tsx`, na `<img>` do `heroImg`:
+  Nota: pagamentos via Stripe, cancele quando quiser.
+```
 
-- Adicionar `loading="eager"`, `fetchpriority="high"`, `decoding="async"`.
+Por card:
+- Nome + descrição curta
+- Preço mensal/anual conforme toggle
+- Equivalente mensal (no anual)
+- Economia % no anual
+- **Preço por imóvel** (Starter/Pro/Business)
+- Lista de features (mesmo conteúdo de `PLAN_FEATURES` em `Billing.tsx`)
+- CTA: "Começar grátis" (Single) / "Assinar" (demais) → `/auth`
+- Enterprise: card especial com "Sob consulta" + botão WhatsApp (`5521996507509`)
+- Pro: badge "Mais popular" com destaque ciano
+- Single: badge "30 dias grátis"
 
-Não vou adicionar `<link rel="preload">` em `index.html` porque o asset tem hash do Vite e o caminho não é estável — o `fetchpriority="high"` no `<img>` já garante priorização sem o risco de preload quebrado.
+### 2. Fonte dos dados
 
-### 5. Verificação
-- Rodar o script e listar tamanhos finais.
-- Conferir que os imports ainda resolvem e não sobra referência ao `.jpg` removido (`rg`).
+**Hardcoded** em uma constante `LP_PLANS` no topo de `Index.tsx`, espelhando os valores atuais da tabela `subscription_plans`:
 
-## Arquivos afetados
-- `src/assets/lp/hero-mockup-lifestyle.jpg` → substituído por `.webp`
-- `src/assets/hero-mockup-lifestyle.jpg` → substituído por `.webp`
-- `src/assets/lp/hero-guest-phone.jpg` → substituído por `.webp`
-- `public/4f67f9e6-9ac6-4147-bfc3-24da30575b55.webp` (e os outros 3) → reotimizados in-place
-- `src/assets/welcome-hub-phone-original.png` e `-v2.webp` → removidos
-- `src/pages/LpAnuncio.tsx` e `src/pages/WelcomeHubLanding.tsx` → imports + atributos do `<img>` do hero
+```text
+free       Single     1      R$  8,90/mês    R$  89,00/ano
+starter    Starter    5      R$ 29,90/mês    R$ 299,00/ano
+pro        Pro       20      R$ 89,90/mês    R$ 899,00/ano
+business   Business  50      R$199,90/mês    R$1.990,00/ano
+enterprise Enterprise —      Sob consulta
+```
 
-Nada de mudança visual: dimensões finais renderizadas permanecem idênticas.
+Motivo: a home é pública/anônima e a tabela `subscription_plans` não tem GRANT para `anon`. Hardcoded evita expor a tabela publicamente, elimina loading state e descacopla a LP do backend. Os valores mudam raramente; atualização futura = editar `LP_PLANS`.
+
+### 3. Identidade visual
+
+- Faixa da seção: `bg-[#FAFAF7] text-slate-900` para quebrar o tema dark da home (transição suave acima/abaixo com gradiente).
+- Cards: `rounded-2xl bg-white ring-1 ring-slate-200 shadow-[0_20px_60px_-30px_rgba(15,23,42,0.18)]`.
+- Card Pro (destaque): borda + glow ciano `shadow-[0_25px_70px_-25px_hsl(186_100%_32%/0.45)]`.
+- Card Enterprise: gradiente sutil creme→branco com toque ciano + ícone `Building2`.
+- Toggle: `Tabs` do shadcn, com `TabsTrigger` ativo em ciano.
+- CTA primário: ciano sólido (mesmo padrão `ctaPrimary` da `/lp`). CTA secundário em branco com borda ciano.
+- Badges: "Mais popular" (ciano), "30 dias grátis" (cinza neutro com ícone `Gift`).
+
+### 4. Detalhes técnicos
+
+Arquivo único alterado: `src/pages/Index.tsx`
+- Imports adicionais: `Tabs/TabsList/TabsTrigger`, `Badge`, `Card`, `useState`, ícones `Check`, `Crown`, `Building2`, `Gift`, `MessageCircle`.
+- Helper local `formatBRL(cents)` + cálculo `perPropertyCents = base / property_limit`.
+- Constante `LP_PLANS` com 5 planos.
+- Componente `PlanosSection()` no fim do arquivo.
+- Inserir `<PlanosSection />` em `<Index>` antes do `<footer>`.
+
+Nenhuma alteração em rotas, backend, RLS, `LpAnuncio.tsx`, ou `Billing.tsx`.
+
+## Fora de escopo
+
+- Não adiciono link "Planos" no header da home (você não pediu desta vez; posso adicionar depois se quiser).
+- Não criamos checkout direto pela home — o CTA leva para `/auth`.
+- Não sincronizamos preços com o banco em tempo real.
