@@ -454,7 +454,7 @@ function RealDemoLight() {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="grid lg:grid-cols-2 gap-12 items-start">
           <div>
             <h3 className="text-2xl font-semibold text-slate-900 mb-3">
               Feito para facilitar sua rotina
