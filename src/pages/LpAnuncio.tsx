@@ -640,6 +640,123 @@ function CtaFinal() {
   );
 }
 
+/* ----------------------- QUEM SOMOS ----------------------- */
+const trustBadges = [
+  {
+    icon: ShieldCheck,
+    title: "Infraestrutura Robusta",
+    desc: "Seus dados e guias sempre online e rápidos.",
+    bg: "bg-[hsl(186_100%_94%)]",
+    iconColor: "text-[hsl(186_100%_28%)]",
+    ring: "ring-[hsl(186_100%_32%)]/20",
+  },
+  {
+    icon: SettingsIcon,
+    title: "Especialistas em Automação",
+    desc: "Criado por quem entende de fluxos e mensagens inteligentes.",
+    bg: "bg-[#F3EBDD]/70",
+    iconColor: "text-[#8a6a35]",
+    ring: "ring-[#C9A56A]/30",
+  },
+  {
+    icon: Headphones,
+    title: "Suporte Dedicado",
+    desc: "Prontos para ajudar você a configurar e escalar sua operação.",
+    bg: "bg-[#D8EBD9]/70",
+    iconColor: "text-[#3f7a48]",
+    ring: "ring-[#7BA17F]/30",
+  },
+];
+
+function QuemSomos() {
+  return (
+    <section className="py-16 lg:py-24 bg-white border-y border-slate-200/70">
+      <div className="container max-w-6xl mx-auto px-5 sm:px-8">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          {/* Texto */}
+          <div>
+            <Badge className="mb-5 bg-white border border-[hsl(186_100%_32%)]/30 text-[hsl(186_100%_24%)] rounded-full px-3 py-1 hover:bg-white">
+              <Sparkles className="h-3.5 w-3.5 mr-1.5" /> Quem somos
+            </Badge>
+            <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 leading-tight">
+              Quem está por trás do{" "}
+              <span style={{ color: CYAN }}>Welcome Hub?</span>
+            </h2>
+            <p className="mt-5 text-lg text-slate-600 leading-relaxed">
+              Conheça a tecnologia feita por especialistas em automação para transformar o turismo e a hotelaria.
+            </p>
+
+            <div className="mt-7 space-y-5">
+              <p className="text-slate-700 leading-relaxed">
+                O <strong className="text-slate-900">Welcome Hub</strong> nasceu da{" "}
+                <strong className="text-slate-900">Mr. Flow</strong>, uma plataforma de tecnologia e automação
+                especialista em simplificar processos de atendimento e comunicação digital.
+              </p>
+              <p className="text-slate-700 leading-relaxed">
+                Desenvolvemos essa solução porque entendemos o campo de batalha do anfitrião: a exaustão de responder
+                às mesmas mensagens, o estresse dos check-ins desorganizados na madrugada e a importância vital de
+                manter uma nota 5 estrelas nas plataformas de reserva.
+              </p>
+              <p className="text-slate-700 leading-relaxed">
+                Nossa missão é colocar a tecnologia mais avançada de guias digitais e fluxos inteligentes para
+                trabalhar por você 24 horas por dia, 7 dias por semana. Assim, você recupera o controle do seu tempo
+                livre enquanto seus hóspedes desfrutam de uma recepção padrão hotelaria de luxo.
+              </p>
+            </div>
+          </div>
+
+          {/* Visual */}
+          <div className="relative order-first lg:order-last">
+            <div className="absolute -inset-6 bg-gradient-to-tr from-[hsl(186_100%_85%)]/40 via-white/0 to-[#F3EBDD]/70 rounded-[2.5rem] blur-3xl pointer-events-none" />
+            <div className="relative rounded-[2rem] bg-gradient-to-br from-[hsl(186_100%_96%)] via-white to-[#F3EBDD]/40 border border-[hsl(186_100%_32%)]/20 shadow-[0_30px_80px_-30px_rgba(15,23,42,0.25)] p-10 lg:p-12 flex flex-col items-center text-center">
+              <div className="absolute -top-10 -right-10 h-40 w-40 rounded-full bg-[hsl(186_100%_70%)]/25 blur-3xl pointer-events-none" />
+              <div className="absolute -bottom-10 -left-10 h-40 w-40 rounded-full bg-[#F4C9B8]/40 blur-3xl pointer-events-none" />
+
+              <div className="relative bg-white rounded-3xl shadow-[0_20px_50px_-25px_rgba(15,23,42,0.25)] ring-1 ring-slate-200 px-8 py-7 mb-6">
+                <img src={mrFlowLogo} alt="Mr. Flow" className="h-12 w-auto" />
+              </div>
+              <p className="relative text-sm font-semibold tracking-[0.25em] uppercase text-[hsl(186_100%_24%)]">
+                Tecnologia &amp; Automação
+              </p>
+              <p className="relative mt-2 text-slate-600 leading-relaxed max-w-xs">
+                Plataforma brasileira focada em hospedagem, com olhar de quem vive a rotina do anfitrião.
+              </p>
+
+              <div className="relative mt-7 flex flex-wrap gap-3 justify-center">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[hsl(186_100%_32%)]/20 text-xs font-medium text-[hsl(186_100%_24%)]">
+                  <Check className="h-3.5 w-3.5" /> Hospedagem
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[hsl(186_100%_32%)]/20 text-xs font-medium text-[hsl(186_100%_24%)]">
+                  <Check className="h-3.5 w-3.5" /> Turismo
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[hsl(186_100%_32%)]/20 text-xs font-medium text-[hsl(186_100%_24%)]">
+                  <Check className="h-3.5 w-3.5" /> Automação
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Selos de confiança */}
+        <div className="mt-14 lg:mt-16 grid sm:grid-cols-3 gap-5">
+          {trustBadges.map((b) => (
+            <Card
+              key={b.title}
+              className={`p-6 rounded-3xl bg-white border-slate-200 ring-1 ${b.ring} shadow-[0_10px_30px_-20px_rgba(15,23,42,0.15)]`}
+            >
+              <div className={`h-12 w-12 rounded-2xl ${b.bg} grid place-items-center mb-4`}>
+                <b.icon className={`h-6 w-6 ${b.iconColor}`} />
+              </div>
+              <h3 className="text-base font-semibold text-slate-900 mb-1.5">{b.title}</h3>
+              <p className="text-sm text-slate-600 leading-relaxed">{b.desc}</p>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ----------------------------- PLANOS ----------------------------- */
 const ENTERPRISE_WHATSAPP = "5521996507509";
 
