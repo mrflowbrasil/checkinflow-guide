@@ -224,9 +224,8 @@ function HeroLp() {
             </div>
 
           </div>
-
-          </div>
         </div>
+
 
         {/* Botões desktop (full-width abaixo do grid hero) */}
         <div className="hidden lg:block mt-12">
