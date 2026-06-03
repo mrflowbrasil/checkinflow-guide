@@ -27,6 +27,7 @@ import {
   Star,
   TrendingUp,
   X,
+  Zap,
 } from "lucide-react";
 import { Seo } from "@/components/Seo";
 import mrFlowLogo from "@/assets/mrflow-logo.png";
