@@ -10,10 +10,11 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, Check } from "lucide-react";
 import { MrFlowLogo } from "@/components/brand/MrFlowLogo";
 import { Seo } from "@/components/Seo";
 import { lovable } from "@/integrations/lovable/index";
+import hospitalityBg from "@/assets/auth/hospitality-bg.jpg.asset.json";
 
 const emailSchema = z.string().trim().email("Email inválido").max(255);
 const passwordSchema = z.string().min(1, "Informe uma senha").max(72);
@@ -101,27 +102,92 @@ export default function Auth() {
       />
       {/* Hero side */}
       <div
-        className="hidden lg:flex p-12 flex-col justify-between relative overflow-hidden text-white"
+        className="hidden lg:flex relative overflow-hidden text-white bg-[#0a1521]"
         style={{
-          background:
-            "radial-gradient(1200px 600px at 20% 10%, rgba(0,255,255,0.15), transparent 60%), radial-gradient(900px 500px at 80% 90%, rgba(0,140,142,0.25), transparent 60%), linear-gradient(135deg, #020617 0%, #0a1f2e 50%, #062a33 100%)",
+          backgroundImage: `url(${hospitalityBg.url})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
         }}
       >
-        <Link to="/" className="flex flex-col items-start gap-1 relative">
+        {/* Overlays */}
+        <div
+          aria-hidden
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(8,15,25,0.62) 0%, rgba(8,15,25,0.72) 55%, rgba(8,15,25,0.88) 100%)",
+          }}
+        />
+
+        {/* Logo */}
+        <Link to="/" className="absolute top-10 left-12 flex flex-col items-start gap-1 z-10">
           <MrFlowLogo forceDark className="h-10 w-auto" />
           <span className="text-[10px] tracking-[0.25em] text-white/70 uppercase">Welcome Hub</span>
         </Link>
-        <div className="relative space-y-6">
-          <h1 className="text-5xl leading-[1.05] tracking-tight text-white font-bold">
-            Hub de Boas Vindas <span style={{ color: "#00FFFF" }}>Inteligente</span>
-          </h1>
-          <p className="text-lg max-w-md leading-relaxed" style={{ color: "#00FF00" }}>
-            Encante seu hóspede desde o primeiro momento com um guia digital completo da sua hospedagem.
-          </p>
+
+        {/* Content (centered vertically) */}
+        <div className="relative z-10 flex flex-col justify-center w-full px-12 lg:px-16 py-24">
+          <div key={tab} className="max-w-lg animate-in fade-in duration-500">
+            {tab === "signin" ? (
+              <div className="space-y-6">
+                <h1 className="text-4xl lg:text-5xl leading-[1.1] tracking-tight font-bold text-white">
+                  Hub de Boas Vindas <span style={{ color: "#5EEAD4" }}>Inteligente</span>
+                </h1>
+                <p className="text-base lg:text-lg text-white/85 leading-relaxed max-w-md">
+                  Encante seu hóspede desde o primeiro momento com um guia digital completo da sua hospedagem.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-7">
+                <span className="inline-flex items-center gap-2 text-[10px] tracking-[0.22em] uppercase font-semibold px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-[#5EEAD4]">
+                  30 dias grátis · Sem cartão
+                </span>
+                <h1 className="text-4xl lg:text-[44px] leading-[1.1] tracking-tight font-bold text-white">
+                  Falta apenas um passo para{" "}
+                  <span style={{ color: "#5EEAD4" }}>profissionalizar</span> seu imóvel
+                </h1>
+                <p className="text-base lg:text-lg text-white/85 leading-relaxed">
+                  Monte o seu guia digital hoje e garanta acesso imediato a todas as vantagens:
+                </p>
+                <ul className="space-y-4 pt-2">
+                  {[
+                    {
+                      title: "30 dias grátis no plano Single",
+                      desc: "Sem pegadinhas e sem precisar de cartão de crédito.",
+                    },
+                    {
+                      title: "Bônus 1: Scripts de Mensagens para WhatsApp",
+                      desc: "Modelos prontos, copia e cola.",
+                    },
+                    {
+                      title: "Bônus 2: Guia Prático de Automação para Anfitriões",
+                      desc: "Para escalar sem perder o toque humano.",
+                    },
+                    {
+                      title: "Suporte humano via WhatsApp",
+                      desc: "Direto com a gente para te ajudar na configuração.",
+                    },
+                  ].map((item) => (
+                    <li key={item.title} className="flex items-start gap-3">
+                      <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#5EEAD4]/15 border border-[#5EEAD4]/40">
+                        <Check className="h-3.5 w-3.5 text-[#5EEAD4]" strokeWidth={3} />
+                      </span>
+                      <div className="leading-snug">
+                        <p className="text-[15px] font-semibold text-white">{item.title}</p>
+                        <p className="text-sm text-white/70">{item.desc}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
         </div>
-        <p className="text-white/40 text-xs relative leading-relaxed max-w-md">
+
+        {/* Footer copyright */}
+        <p className="absolute bottom-8 left-12 right-12 z-10 text-white/50 text-xs leading-relaxed max-w-md">
           © 2026 –{" "}
-          <a href="http://mrflow.com.br" target="_blank" rel="noreferrer noopener" className="underline hover:text-white/70">
+          <a href="http://mrflow.com.br" target="_blank" rel="noreferrer noopener" className="underline hover:text-white/80">
             Mr. Flow Automações e Serviços Digitais LTDA
           </a>{" "}
           – CNPJ 57.466.519/0001-87 – Todos os direitos reservados.
