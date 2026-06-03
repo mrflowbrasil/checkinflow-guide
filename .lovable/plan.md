@@ -1,24 +1,32 @@
 ## Diagnóstico
 
-A rota `/` (home) renderiza `src/pages/LpAnuncio.tsx`, **não** `src/pages/Index.tsx` (que está em `/welcome-hub`). Por isso a seção Planos adicionada anteriormente não aparece — ela foi inserida no arquivo errado.
+Em `src/pages/LpAnuncio.tsx` (linhas 484–486), o mockup do celular usa dimensões fixas que não consideram a altura da viewport:
+
+- Largura: `w-[300px] sm:w-[340px]`
+- Altura interna: `h-[620px] sm:h-[700px]`
+
+Somando borda (`border-[10px]`) e padding do container, o mockup ocupa ~720px de altura no breakpoint `sm+`. Em monitores 20" (≈900px úteis com chrome do navegador) e notebooks 15,6" (≈660–720px úteis), o mockup ultrapassa a viewport, forçando o usuário a rolar e nunca vendo-o inteiro junto com o texto ao lado.
 
 ## Plano
 
-1. **Remover** a `PlanosSection` (e constantes `LP_PLANS`, `LP_PLAN_FEATURES`, `ENTERPRISE_BENEFITS`, `formatBRL`, `CYAN`, `ENTERPRISE_WHATSAPP`) de `src/pages/Index.tsx`, restaurando o arquivo ao estado anterior.
+Tornar as dimensões do mockup responsivas à altura da viewport em desktop, mantendo a proporção atual (~aspect 17:35) e o visual mobile inalterado.
 
-2. **Adicionar** a mesma `PlanosSection` em `src/pages/LpAnuncio.tsx`:
-   - Inserir `<PlanosSection />` no JSX principal entre `<BulletsPro />` e `<Gatilhos />` (posição natural: depois dos benefícios e antes dos gatilhos finais).
-   - Copiar para o final do arquivo o componente `PlanosSection` e as constantes auxiliares (`LP_PLANS`, `LP_PLAN_FEATURES`, `ENTERPRISE_BENEFITS`, `formatBRL`, `CYAN`, `ENTERPRISE_WHATSAPP`).
-   - Adicionar imports necessários: `useState`, `Tabs`, `TabsList`, `TabsTrigger`, `Badge`, `Card`, ícones `Sparkles`, `Check`, `Building2`, `Gift`, `MessageCircle`, `Headphones`, `Rocket`, `Settings as SettingsIcon`, `TrendingUp` (mantendo os já existentes).
+1. **Substituir altura/largura fixas por `clamp()` baseado em `vh`** no container do mockup (linha 484 e 486 de `src/pages/LpAnuncio.tsx`):
+   - Mobile (`<lg`): mantém `w-[300px] sm:w-[340px]` e `h-[620px] sm:h-[700px]` como está hoje.
+   - Desktop (`lg:`): aplicar
+     - `lg:w-[clamp(260px,32vh,340px)]`
+     - `lg:h-[clamp(540px,66vh,700px)]`
+   - Resultado: em telas de ~720px de altura, mockup ≈ 475px alt × 230px larg; em telas ≥1060px volta ao tamanho máximo atual (700×340). Cabe inteiro ao lado do texto em notebooks e monitores 20".
 
-3. **Conteúdo da seção** (idêntico ao já criado):
-   - Título: "Mais paz para você. Mais clareza para o hóspede. Por menos que um cafezinho por imóvel."
-   - Subtítulo: "Comece com 30 dias grátis, sem cartão de crédito. Teste sem compromisso e continue apenas se fizer sentido para sua operação."
-   - Toggle Mensal/Anual (−17%), 5 planos (Single, Starter, Pro, Business, Enterprise), CTAs para `/auth` e WhatsApp Enterprise.
-   - `id="planos"` para anchor.
+2. **Ajustar o notch** (linha 485) para escalar junto:
+   - Trocar `w-32 h-6` por `w-[40%] h-[3.5%]` para acompanhar proporcionalmente a largura/altura do mockup quando ele encolhe em desktop.
+
+3. **Reduzir gap do grid em desktop** (linha 446), trocando `gap-12` por `gap-8 lg:gap-10`, dando mais respiro horizontal sem afetar mobile.
+
+4. **Garantir alinhamento vertical** — o `items-center` já existente no grid mantém o mockup centralizado verticalmente em relação ao bloco de texto após o redimensionamento.
 
 ## Escopo
 
-- Arquivos alterados: `src/pages/Index.tsx` (remoção) e `src/pages/LpAnuncio.tsx` (adição).
-- Sem mudanças em rotas, backend, RLS ou outros componentes.
-- Não inclui adicionar "Planos" ao header (não foi pedido nesta mensagem).
+- Arquivo alterado: `src/pages/LpAnuncio.tsx` (apenas as linhas 446, 484, 485, 486).
+- Nenhuma mudança em outras seções, rotas, backend ou estilo global.
+- Mobile e tablet permanecem visualmente idênticos.
