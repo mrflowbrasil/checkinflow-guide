@@ -1076,6 +1076,75 @@ function PlanosSection() {
           })}
         </div>
 
+        {/* Bônus exclusivos */}
+        <div className="mt-16 space-y-8">
+          <div className="text-center space-y-2 max-w-3xl mx-auto">
+            <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+              Criando seu guia digital hoje, você ganha 2 bônus exclusivos:
+            </h3>
+            <p className="text-sm sm:text-base text-slate-600">
+              Incentivos especiais para profissionalizar sua hospedagem ainda esta semana.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {[
+              {
+                icon: MessageSquare,
+                title: "🎁 Bônus 1: Script de Mensagens Prontas para WhatsApp",
+                desc: "Chega de pensar no que escrever. Copie e cole modelos exatos de mensagens de boas-vindas, pré-check-in, regras finas e pedido de avaliação 5 estrelas que geram a melhor experiência para o hóspede.",
+                from: "R$ 47,00",
+              },
+              {
+                icon: Zap,
+                title: "🎁 Bônus 2: Guia Prático de Automação para Anfitriões",
+                desc: "Um material digital passo a passo ensinando como usar o WhatsApp de forma inteligente na sua operação de temporada, economizar horas de suporte manual e fechar mais reservas diretas.",
+                from: "R$ 97,00",
+              },
+            ].map((b) => (
+              <Card
+                key={b.title}
+                className="p-6 rounded-2xl border-2 border-[hsl(186_100%_32%)]/25 bg-gradient-to-br from-white to-[hsl(186_100%_32%)]/5 shadow-[0_20px_60px_-30px_rgba(15,23,42,0.18)] flex flex-col gap-4"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="h-11 w-11 rounded-xl bg-[hsl(186_100%_32%)]/10 grid place-items-center shrink-0">
+                    <b.icon className="h-5 w-5 text-[hsl(186_100%_24%)]" />
+                  </div>
+                  <h4 className="font-semibold text-base sm:text-lg leading-snug text-slate-900">
+                    {b.title}
+                  </h4>
+                </div>
+                <p className="text-sm text-slate-600 leading-relaxed">{b.desc}</p>
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="text-slate-500 line-through">De {b.from}</span>
+                  <Badge className="bg-[hsl(186_100%_32%)] text-white hover:bg-[hsl(186_100%_32%)]">
+                    por R$ 0,00
+                  </Badge>
+                </div>
+                <Button
+                  asChild
+                  className="mt-auto w-full h-12 rounded-xl font-semibold bg-[hsl(186_100%_32%)] hover:bg-[hsl(186_100%_27%)] text-white"
+                >
+                  <Link to="/auth">Criar Meu Guia Grátis</Link>
+                </Button>
+              </Card>
+            ))}
+          </div>
+
+          <Card className="p-5 sm:p-6 rounded-2xl border border-slate-200 bg-slate-50 flex items-start gap-4 max-w-4xl mx-auto">
+            <div className="h-11 w-11 rounded-xl bg-white border border-slate-200 grid place-items-center shrink-0">
+              <Lock className="h-5 w-5 text-[hsl(186_100%_24%)]" />
+            </div>
+            <p className="text-sm sm:text-base leading-relaxed text-slate-700">
+              <span className="font-semibold text-slate-900">🔒 Risco Zero para começar:</span>{" "}
+              Crie sua conta no Plano Single e aproveite 30 dias totalmente grátis com todas as
+              funcionalidades liberadas. Sem pegadinhas, sem contratos e sem precisar de cartão de
+              crédito no cadastro. Se sua operação crescer e você precisar de mais imóveis, mude
+              de plano quando quiser.
+            </p>
+          </Card>
+        </div>
+
         <p className="text-xs text-slate-500 text-center mt-10 max-w-2xl mx-auto">
           Pagamentos processados com segurança via Stripe. Cancele a qualquer
           momento — você mantém acesso até o fim do período pago. Notas fiscais
