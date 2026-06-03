@@ -772,24 +772,18 @@ function QuemSomos() {
               <span style={{ color: CYAN }}>Welcome Hub?</span>
             </h2>
             <p className="mt-5 text-lg text-slate-600 leading-relaxed">
-              Conheça a tecnologia feita por especialistas em automação para transformar o turismo e a hotelaria.
+              Conheça a tecnologia feita de anfitrião para anfitrião para transformar a sua rotina.
             </p>
 
             <div className="mt-7 space-y-5">
               <p className="text-slate-700 leading-relaxed">
-                O <strong className="text-slate-900">Welcome Hub</strong> nasceu da{" "}
-                <strong className="text-slate-900">Mr. Flow</strong>, uma plataforma de tecnologia e automação
-                especialista em simplificar processos de atendimento e comunicação digital.
+                O Welcome Hub nasceu da Mr. Flow, mas a sua verdadeira origem vem do campo de batalha. Como anfitrião, eu vivencio exatamente o mesmo dia a dia que você: a exaustão de responder às mesmas perguntas, o estresse de check-ins desorganizados tarde da noite e a eterna busca pela avaliação 5 estrelas.
               </p>
               <p className="text-slate-700 leading-relaxed">
-                Desenvolvemos essa solução porque entendemos o campo de batalha do anfitrião: a exaustão de responder
-                às mesmas mensagens, o estresse dos check-ins desorganizados na madrugada e a importância vital de
-                manter uma nota 5 estrelas nas plataformas de reserva.
+                Sabendo como funciona a rotina de quem gerencia propriedades na pele, desenvolvemos essa solução para ser o fim definitivo do trabalho manual. Unimos a nossa especialidade técnica em automação com a vivência prática de quem sabe o valor de cada minuto livre.
               </p>
               <p className="text-slate-700 leading-relaxed">
-                Nossa missão é colocar a tecnologia mais avançada de guias digitais e fluxos inteligentes para
-                trabalhar por você 24 horas por dia, 7 dias por semana. Assim, você recupera o controle do seu tempo
-                livre enquanto seus hóspedes desfrutam de uma recepção padrão hotelaria de luxo.
+                Nossa missão é colocar um guia digital interativo e inteligente para trabalhar por você 24 horas por dia. Assim, você recupera a sua paz e o seu tempo enquanto seus hóspedes desfrutam de uma recepção padrão hotelaria de luxo.
               </p>
             </div>
           </div>
