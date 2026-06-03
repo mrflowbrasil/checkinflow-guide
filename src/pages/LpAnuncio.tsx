@@ -438,7 +438,7 @@ function RealDemoLight() {
 
     <section
       id="demo"
-      className="py-16 lg:py-24 bg-gradient-to-b from-[hsl(186_100%_97%)] via-white to-[#FAF8F2] border-y border-[hsl(186_100%_32%)]/15 scroll-mt-20"
+      className="py-12 lg:py-16 bg-gradient-to-b from-[hsl(186_100%_97%)] via-white to-[#FAF8F2] border-y border-[hsl(186_100%_32%)]/15 scroll-mt-20"
     >
       <div className="container max-w-6xl mx-auto px-5 sm:px-8">
         <div className="text-center mb-12">
@@ -454,7 +454,7 @@ function RealDemoLight() {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="grid lg:grid-cols-2 gap-12 items-start">
           <div>
             <h3 className="text-2xl font-semibold text-slate-900 mb-3">
               Feito para facilitar sua rotina
