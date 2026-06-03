@@ -1194,10 +1194,10 @@ function Depoimentos() {
         "Gerenciar os check-ins da pousada sempre foi exaustivo por conta das dúvidas repetidas. Com o guia interativo, os hóspedes têm total autonomia. Eles chegam sabendo exatamente o que fazer e nossas avaliações 5 estrelas dispararam nas plataformas.",
     },
     {
-      initials: "AB",
+      initials: "PS",
       bg: "from-cyan-200 to-cyan-400",
-      name: "Alexandre Barbosa",
-      meta: "ABMnb • Caruaru - PE",
+      name: "Pablo Siqueira",
+      meta: "Sítio Vidamare • Nova Friburgo - RJ",
       text:
         "Antes eu mandava um bloco enorme de texto com as instruções que os hóspedes ignoravam e acabavam me ligando de madrugada. O hub no celular é tão simples e visual que o suporte manual virou praticamente zero.",
     },
