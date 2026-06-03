@@ -1112,37 +1112,96 @@ function PlanosSection() {
 
 // ============================ TRUST LOGOS ============================
 function TrustLogos() {
-  const logos = [
-    "Airbnb",
-    "Booking.com",
-    "TripAdvisor",
-    "Vrbo",
-    "Stays",
-    "Hostaway",
-    "Omnibees",
-    "Hospedin",
+  // SVGs reais (simple-icons CDN) onde disponíveis; wordmarks tipográficos
+  // monocromáticos para as marcas brasileiras sem ativo público equivalente.
+  // Todos com mesma altura, filtro brightness-0 e opacity uniforme para
+  // garantir alinhamento e ritmo visual premium.
+  const items: Array<{ name: string; src?: string; wordmark?: React.ReactNode }> = [
+    { name: "Airbnb", src: "https://cdn.simpleicons.org/airbnb" },
+    { name: "Booking.com", src: "https://cdn.simpleicons.org/bookingdotcom" },
+    { name: "Tripadvisor", src: "https://cdn.simpleicons.org/tripadvisor" },
+    {
+      name: "Vrbo",
+      wordmark: (
+        <span className="font-extrabold italic text-[22px] leading-none tracking-tight">
+          vrbo
+        </span>
+      ),
+    },
+    {
+      name: "Stays",
+      wordmark: (
+        <span className="font-semibold text-[20px] leading-none tracking-tight">
+          stays<span className="font-light">.net</span>
+        </span>
+      ),
+    },
+    {
+      name: "Hostaway",
+      wordmark: (
+        <span className="font-bold text-[19px] leading-none tracking-tight">
+          Hostaway
+        </span>
+      ),
+    },
+    {
+      name: "Omnibees",
+      wordmark: (
+        <span className="font-semibold text-[19px] leading-none tracking-tight">
+          omni<span className="font-extrabold">bees</span>
+        </span>
+      ),
+    },
+    {
+      name: "Hospedin",
+      wordmark: (
+        <span className="font-semibold text-[19px] leading-none tracking-tight">
+          hospedin
+        </span>
+      ),
+    },
   ];
+
   return (
-    <section className="py-12 lg:py-16 bg-white border-y border-slate-200/70">
+    <section className="py-6 sm:py-8 bg-gray-50/80 border-y border-slate-200/60">
       <div className="container mx-auto px-4">
-        <p className="text-center text-xs sm:text-sm font-medium tracking-wide text-slate-500 uppercase mb-8">
+        <p className="text-center text-[11px] sm:text-xs font-semibold tracking-wider uppercase text-gray-500 mb-6">
           O complemento perfeito para anfitriões de destaque no:
         </p>
-        <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-5 sm:gap-x-12 lg:gap-x-16">
-          {logos.map((name) => (
-            <span
-              key={name}
-              className="text-slate-400 hover:text-slate-600 transition-colors font-semibold text-base sm:text-lg tracking-tight select-none"
-              style={{ fontFamily: '"Helvetica Neue", Arial, sans-serif' }}
+
+        <ul
+          className="grid grid-cols-4 items-center justify-items-center gap-x-6 gap-y-6 sm:flex sm:flex-wrap sm:justify-center sm:gap-x-10 lg:flex-nowrap lg:justify-between lg:gap-x-8"
+          aria-label="Plataformas compatíveis"
+        >
+          {items.map((it) => (
+            <li
+              key={it.name}
+              className="flex h-7 sm:h-8 items-center justify-center text-gray-700 opacity-50 hover:opacity-80 transition-opacity duration-200"
+              title={it.name}
             >
-              {name}
-            </span>
+              {it.src ? (
+                <img
+                  src={it.src}
+                  alt={it.name}
+                  loading="lazy"
+                  className="h-6 sm:h-7 w-auto object-contain [filter:brightness(0)]"
+                />
+              ) : (
+                <span
+                  aria-label={it.name}
+                  style={{ fontFamily: '"Helvetica Neue", Inter, Arial, sans-serif' }}
+                >
+                  {it.wordmark}
+                </span>
+              )}
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
     </section>
   );
 }
+
 
 // ============================ DEPOIMENTOS ============================
 function Depoimentos() {
