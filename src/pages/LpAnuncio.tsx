@@ -443,7 +443,7 @@ function RealDemoLight() {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-10 items-center">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
             <h3 className="text-2xl font-semibold text-slate-900 mb-3">
               Uma experiência real, direto no celular do hóspede
@@ -479,20 +479,11 @@ function RealDemoLight() {
           </div>
 
           <div className="flex justify-center">
-            <div
-              className="relative [--mockup-scale:0.78] sm:[--mockup-scale:0.86] lg:[--mockup-scale:clamp(0.55,calc((100vh-220px)/820),0.92)]"
-              style={{
-                width: "calc(395px * var(--mockup-scale))",
-                height: "calc(820px * var(--mockup-scale))",
-              }}
-            >
+            <div className="relative">
               <div className="absolute -inset-6 bg-gradient-to-tr from-[hsl(186_100%_85%)]/40 via-transparent to-[#F3EBDD]/60 blur-3xl rounded-full pointer-events-none" />
-              <div
-                className="absolute top-0 left-0 w-[395px] h-[820px] origin-top-left rounded-[3rem] bg-[#0a0f1c] border-[10px] border-[#1a2236] shadow-[0_30px_80px_-20px_rgba(15,23,42,0.3)] overflow-hidden"
-                style={{ transform: "scale(var(--mockup-scale))" }}
-              >
+              <div className="relative w-[300px] sm:w-[340px] rounded-[3rem] bg-[#0a0f1c] border-[10px] border-[#1a2236] shadow-[0_30px_80px_-20px_rgba(15,23,42,0.3)] overflow-hidden">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-[#0a0f1c] rounded-b-2xl z-10" />
-                <div className="relative w-[375px] h-[800px] bg-[#0F172A] overflow-hidden rounded-[2rem]">
+                <div className="relative h-[620px] sm:h-[700px] bg-[#0F172A] overflow-hidden rounded-[2rem]">
                   <iframe
                     src={DEMO_URL}
                     title="Demo Mr Flow Welcome Hub"
