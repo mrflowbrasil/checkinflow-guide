@@ -772,7 +772,7 @@ function QuemSomos() {
               <span style={{ color: CYAN }}>Welcome Hub?</span>
             </h2>
             <p className="mt-5 text-lg text-slate-600 leading-relaxed">
-              Conheça a tecnologia feita por especialistas em automação para transformar o turismo e a hotelaria.
+              Conheça a tecnologia feita de anfitrião para anfitrião para transformar a sua rotina.
             </p>
 
             <div className="mt-7 space-y-5">
