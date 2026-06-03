@@ -210,8 +210,8 @@ function HeroLp() {
                 <Star className="h-5 w-5 text-[hsl(186_100%_32%)]" fill="currentColor" />
               </div>
               <div>
-                <div className="text-sm font-semibold text-slate-900">+ avaliações 5 estrelas</div>
-                <div className="text-xs text-slate-500">menos dúvidas, mais autonomia</div>
+                <div className="text-sm font-semibold text-slate-900">+ avaliações 5 estrelas!</div>
+                <div className="text-xs text-slate-500">Mais tempo livre e mais tranquilidade</div>
               </div>
             </div>
           </div>
