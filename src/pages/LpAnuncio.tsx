@@ -1216,7 +1216,7 @@ function TrustLogos() {
       </div>
 
       <div className="mrflow-logos-mask">
-        <div className="mrflow-logos-track flex w-max items-center gap-12 lg:gap-16 hover:[animation-play-state:paused]">
+        <div className="mrflow-logos-track flex w-max items-center gap-8 lg:gap-12 hover:[animation-play-state:paused]">
           {track.map((logo, i) => (
             <img
               key={`${logo.name}-${i}`}
@@ -1224,9 +1224,9 @@ function TrustLogos() {
               alt={logo.name}
               loading="lazy"
               decoding="async"
-              width={120}
-              height={40}
-              className="h-8 sm:h-9 lg:h-10 w-auto object-contain grayscale opacity-60 hover:opacity-100 transition-opacity duration-200 shrink-0"
+              width={96}
+              height={96}
+              className="h-16 sm:h-20 lg:h-24 w-auto object-contain grayscale opacity-60 hover:opacity-100 transition-opacity duration-200 shrink-0"
             />
           ))}
         </div>
