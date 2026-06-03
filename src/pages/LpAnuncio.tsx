@@ -28,6 +28,9 @@ import {
 } from "lucide-react";
 import { Seo } from "@/components/Seo";
 import mrFlowLogo from "@/assets/mrflow-logo.png";
+import denizeAvatar from "@/assets/lp/avatars/denize.jpg.asset.json";
+import pabloAvatar from "@/assets/lp/avatars/pablo.jpg.asset.json";
+import julianaAvatar from "@/assets/lp/avatars/juliana.jpg.asset.json";
 import heroImg from "@/assets/lp/hero-guest-phone.webp";
 import heroMockupLifestyle from "@/assets/lp/hero-mockup-lifestyle.webp";
 import guideMockup from "@/assets/lp/guide-panel-mockup.webp";
