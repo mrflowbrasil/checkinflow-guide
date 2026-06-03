@@ -1111,96 +1111,67 @@ function PlanosSection() {
 }
 
 // ============================ TRUST LOGOS ============================
+import airbnbLogo from "@/assets/lp/logos/airbnb.png.asset.json";
+import bookingLogo from "@/assets/lp/logos/booking.png.asset.json";
+import tripadvisorLogo from "@/assets/lp/logos/tripadvisor.png.asset.json";
+import vrboLogo from "@/assets/lp/logos/vrbo.png.asset.json";
+import staysLogo from "@/assets/lp/logos/stays.png.asset.json";
+import hostawayLogo from "@/assets/lp/logos/hostaway.png.asset.json";
+import omnibeesLogo from "@/assets/lp/logos/omnibees.png.asset.json";
+import hospedinLogo from "@/assets/lp/logos/hospedin.png.asset.json";
+
 function TrustLogos() {
-  // SVGs reais (simple-icons CDN) onde disponíveis; wordmarks tipográficos
-  // monocromáticos para as marcas brasileiras sem ativo público equivalente.
-  // Todos com mesma altura, filtro brightness-0 e opacity uniforme para
-  // garantir alinhamento e ritmo visual premium.
-  const items: Array<{ name: string; src?: string; wordmark?: React.ReactNode }> = [
-    { name: "Airbnb", src: "https://cdn.simpleicons.org/airbnb" },
-    { name: "Booking.com", src: "https://cdn.simpleicons.org/bookingdotcom" },
-    { name: "Tripadvisor", src: "https://cdn.simpleicons.org/tripadvisor" },
-    {
-      name: "Vrbo",
-      wordmark: (
-        <span className="font-extrabold italic text-[22px] leading-none tracking-tight">
-          vrbo
-        </span>
-      ),
-    },
-    {
-      name: "Stays",
-      wordmark: (
-        <span className="font-semibold text-[20px] leading-none tracking-tight">
-          stays<span className="font-light">.net</span>
-        </span>
-      ),
-    },
-    {
-      name: "Hostaway",
-      wordmark: (
-        <span className="font-bold text-[19px] leading-none tracking-tight">
-          Hostaway
-        </span>
-      ),
-    },
-    {
-      name: "Omnibees",
-      wordmark: (
-        <span className="font-semibold text-[19px] leading-none tracking-tight">
-          omni<span className="font-extrabold">bees</span>
-        </span>
-      ),
-    },
-    {
-      name: "Hospedin",
-      wordmark: (
-        <span className="font-semibold text-[19px] leading-none tracking-tight">
-          hospedin
-        </span>
-      ),
-    },
+  const logos = [
+    { name: "Airbnb", src: airbnbLogo.url },
+    { name: "Booking.com", src: bookingLogo.url },
+    { name: "Tripadvisor", src: tripadvisorLogo.url },
+    { name: "Vrbo", src: vrboLogo.url },
+    { name: "Stays", src: staysLogo.url },
+    { name: "Hostaway", src: hostawayLogo.url },
+    { name: "Omnibees", src: omnibeesLogo.url },
+    { name: "Hospedin", src: hospedinLogo.url },
   ];
+  const track = [...logos, ...logos];
 
   return (
-    <section className="py-6 sm:py-8 bg-gray-50/80 border-y border-slate-200/60">
+    <section className="py-8 lg:py-10 bg-gray-50/80 border-y border-slate-200/60 overflow-hidden">
+      <style>{`
+        @keyframes mrflow-logos-scroll {
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
+        }
+        .mrflow-logos-track {
+          animation: mrflow-logos-scroll 40s linear infinite;
+        }
+        .mrflow-logos-mask {
+          mask-image: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
+          -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
+        }
+      `}</style>
+
       <div className="container mx-auto px-4">
-        <p className="text-center text-[11px] sm:text-xs font-semibold tracking-wider uppercase text-gray-500 mb-6">
+        <p className="text-center text-[11px] sm:text-xs font-semibold tracking-[0.18em] uppercase text-slate-500 mb-6">
           O complemento perfeito para anfitriões de destaque no:
         </p>
+      </div>
 
-        <ul
-          className="grid grid-cols-4 items-center justify-items-center gap-x-6 gap-y-6 sm:flex sm:flex-wrap sm:justify-center sm:gap-x-10 lg:flex-nowrap lg:justify-between lg:gap-x-8"
-          aria-label="Plataformas compatíveis"
-        >
-          {items.map((it) => (
-            <li
-              key={it.name}
-              className="flex h-7 sm:h-8 items-center justify-center text-gray-700 opacity-50 hover:opacity-80 transition-opacity duration-200"
-              title={it.name}
-            >
-              {it.src ? (
-                <img
-                  src={it.src}
-                  alt={it.name}
-                  loading="lazy"
-                  className="h-6 sm:h-7 w-auto object-contain [filter:brightness(0)]"
-                />
-              ) : (
-                <span
-                  aria-label={it.name}
-                  style={{ fontFamily: '"Helvetica Neue", Inter, Arial, sans-serif' }}
-                >
-                  {it.wordmark}
-                </span>
-              )}
-            </li>
+      <div className="mrflow-logos-mask">
+        <div className="mrflow-logos-track flex w-max items-center gap-12 lg:gap-16 hover:[animation-play-state:paused]">
+          {track.map((logo, i) => (
+            <img
+              key={`${logo.name}-${i}`}
+              src={logo.src}
+              alt={logo.name}
+              loading="lazy"
+              className="h-8 sm:h-9 lg:h-10 w-auto object-contain grayscale opacity-60 hover:opacity-100 transition-opacity duration-200 shrink-0"
+            />
           ))}
-        </ul>
+        </div>
       </div>
     </section>
   );
 }
+
 
 
 // ============================ DEPOIMENTOS ============================
