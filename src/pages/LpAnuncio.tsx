@@ -28,6 +28,9 @@ import {
 } from "lucide-react";
 import { Seo } from "@/components/Seo";
 import mrFlowLogo from "@/assets/mrflow-logo.png";
+import denizeAvatar from "@/assets/lp/avatars/denize.jpg.asset.json";
+import pabloAvatar from "@/assets/lp/avatars/pablo.jpg.asset.json";
+import julianaAvatar from "@/assets/lp/avatars/juliana.jpg.asset.json";
 import heroImg from "@/assets/lp/hero-guest-phone.webp";
 import heroMockupLifestyle from "@/assets/lp/hero-mockup-lifestyle.webp";
 import guideMockup from "@/assets/lp/guide-panel-mockup.webp";
@@ -1178,24 +1181,21 @@ function TrustLogos() {
 function Depoimentos() {
   const items = [
     {
-      initials: "DS",
-      bg: "from-rose-200 to-rose-400",
+      photo: denizeAvatar.url,
       name: "Denize Siqueira",
       meta: "Casa da Dinda • Rio de Janeiro - RJ",
       text:
         "Eu não aguentava mais ir jantar com meu esposo na sexta-feira e passar o tempo todo respondendo no WhatsApp sobre a senha do Wi-Fi ou regras do imóvel. Com o Welcome Hub, eu programo o envio do link e pronto. Recuperei minha paz e meu tempo livre.",
     },
     {
-      initials: "JM",
-      bg: "from-amber-200 to-amber-400",
+      photo: julianaAvatar.url,
       name: "Juliana Medeiros",
       meta: "Paracuru - CE",
       text:
         "Gerenciar os check-ins da pousada sempre foi exaustivo por conta das dúvidas repetidas. Com o guia interativo, os hóspedes têm total autonomia. Eles chegam sabendo exatamente o que fazer e nossas avaliações 5 estrelas dispararam nas plataformas.",
     },
     {
-      initials: "PS",
-      bg: "from-cyan-200 to-cyan-400",
+      photo: pabloAvatar.url,
       name: "Pablo Siqueira",
       meta: "Sítio Vidamare • Nova Friburgo - RJ",
       text:
@@ -1221,12 +1221,12 @@ function Depoimentos() {
               className="p-6 lg:p-7 rounded-2xl bg-white border border-slate-200/70 shadow-sm hover:shadow-md transition-shadow flex flex-col"
             >
               <div className="flex items-center gap-4 mb-4">
-                <div
-                  className={`h-14 w-14 rounded-full bg-gradient-to-br ${t.bg} flex items-center justify-center text-white font-bold text-lg shadow-sm shrink-0`}
-                  aria-hidden="true"
-                >
-                  {t.initials}
-                </div>
+                <img
+                  src={t.photo}
+                  alt={t.name}
+                  loading="lazy"
+                  className="h-14 w-14 rounded-full object-cover shadow-sm shrink-0"
+                />
                 <div className="min-w-0">
                   <p className="font-semibold text-slate-900 truncate">{t.name}</p>
                   <p className="text-xs text-slate-500 truncate">{t.meta}</p>
