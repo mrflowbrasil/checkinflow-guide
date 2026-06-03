@@ -1,54 +1,51 @@
 ## Objetivo
 
-Redesenhar a coluna esquerda da página `/auth` com cara de hotelaria premium: imagem de interior aconchegante como fundo, overlay sutil para legibilidade e tipografia moderna. A coluna troca de conteúdo quando o usuário muda para a aba "Criar conta".
+Tornar a coluna esquerda (imagem + overlay + copy) visível em tablet e mobile na página `/auth`, mantendo o layout desktop atual intacto.
 
-## Imagem de fundo
+## Proposta de layout
 
-Já gerei uma foto editorial de uma sala de estar moderna, clara e arejada (estilo Airbnb premium — luz natural, sofá de linho, madeira clara, plantas), pronta para servir de fundo nas duas abas. Será publicada via Lovable Assets (`src/assets/auth/hospitality-bg.jpg.asset.json`).
+### Desktop (lg+) — sem mudança
+Continua com grid 2 colunas: hero à esquerda, formulário à direita.
 
-## Mudanças em `src/pages/Auth.tsx`
+### Tablet e Mobile — novo layout empilhado
+1. **Hero compacto no topo** (full-width)
+   - Mesma imagem de acomodação + overlay escuro já usados no desktop.
+   - Logo Mr. Flow + "Welcome Hub" no canto superior esquerdo (branco).
+   - Conteúdo centralizado horizontalmente com padding generoso.
+   - **Aba "Entrar":** headline "Hub de Boas Vindas Inteligente" + subtítulo curto.
+   - **Aba "Criar conta":** badge "30 dias grátis · Sem cartão" + headline "Falta apenas um passo…" + lista compacta de 4 bullets com check ciano (tipografia menor que no desktop para caber sem rolagem excessiva).
+   - Altura: `min-h-[60vh]` no mobile, `min-h-[55vh]` no tablet — proporção agradável sem dominar a tela.
+   - Transição suave de cor de fundo no rodapé do hero para a cor do form abaixo (fade do overlay).
 
-### Coluna esquerda — base comum
+2. **Card de formulário logo abaixo**
+   - Reutiliza o `<Card>` atual.
+   - No mobile, remove o bloco duplicado de logo dentro do card (`lg:hidden flex flex-col items-start gap-1 mb-8`) — a logo já aparece no hero acima.
+   - Mantém abas, botão Google, campos e CTA exatamente como hoje.
+   - Fundo da seção do form continua `bg-[#f6f6f7]`.
 
-- Trocar o gradiente azul-escuro atual pela imagem hospedada (`background-image` + `background-size: cover` + `background-position: center`).
-- Aplicar overlay duplo para garantir contraste:
-  - Camada escura suave: `linear-gradient(180deg, rgba(8,15,25,0.55) 0%, rgba(8,15,25,0.75) 100%)`
-  - Vinheta inferior extra para o rodapé de copyright.
-- Logo `MrFlowLogo` continua no topo (forçado branco).
-- Bloco de texto centralizado verticalmente (`justify-center` ao invés de `justify-between`) com `px-12 lg:px-16` e `max-w-lg`.
-- Rodapé de copyright posicionado absoluto no rodapé (`absolute bottom-8 left-12`) para não brigar com o centro.
+3. **Rodapé de copyright**
+   - Move o rodapé de copyright para o fim da página em mobile/tablet (abaixo do card), centralizado, em texto muted, no mesmo padrão do bloco `lg:hidden` que já existe.
+   - No desktop continua absolutamente posicionado dentro do hero como hoje.
 
-### Conteúdo — aba "Entrar" (mantém copy atual, novo visual)
+## Detalhes técnicos
 
-- **H1:** "Hub de Boas Vindas Inteligente" (palavra "Inteligente" em ciano `#5EEAD4` para suavizar do verde-limão atual e harmonizar com a foto).
-- **Subtítulo:** "Encante seu hóspede desde o primeiro momento com um guia digital completo da sua hospedagem." (branco/85, peso regular).
-
-### Conteúdo — aba "Criar conta" (novo)
-
-- **Pequeno eyebrow** acima do título: `30 DIAS GRÁTIS · SEM CARTÃO` em tracking wide, ciano translúcido.
-- **H1:** "Falta apenas um passo para profissionalizar seu imóvel"
-- **Subtítulo:** "Monte o seu guia digital hoje e garanta acesso imediato a todas as vantagens:"
-- **Lista de 4 itens** com check ciano em pílula circular (`bg-white/10 border border-white/20`), cada item com título em destaque + complemento secundário menor:
-  1. **30 dias grátis no plano Single** — Sem pegadinhas e sem precisar de cartão de crédito.
-  2. **Bônus 1 liberado: Scripts de Mensagens** — Modelos prontos para WhatsApp (copia e cola).
-  3. **Bônus 2 liberado: Guia Prático de Automação** — Para anfitriões que querem escalar.
-  4. **Suporte humano via WhatsApp** — Direto com a gente para te ajudar na configuração.
-
-### Transição entre abas
-
-- A coluna esquerda recebe `key={tab}` no bloco de conteúdo + classes `transition-opacity duration-500` para um fade suave quando o usuário alterna entre Entrar/Criar conta.
-
-### Tipografia
-
-- Mantém a stack atual do projeto (sem nova fonte). Headline em `font-bold text-4xl lg:text-5xl leading-[1.1] tracking-tight text-white`. Subtítulo `text-base lg:text-lg text-white/85 leading-relaxed`. Lista `text-sm lg:text-[15px]` com título em `font-semibold text-white` e complemento em `text-white/70`.
+- Trocar o wrapper raiz de `grid lg:grid-cols-2` para `flex flex-col lg:grid lg:grid-cols-2` para empilhar abaixo de `lg`.
+- Remover `hidden lg:flex` do bloco hero — passa a ser sempre visível.
+- Ajustar paddings responsivos do hero:
+  - Mobile: `px-6 py-12` com headline `text-3xl` e bullets `text-sm`.
+  - Tablet: `px-10 py-16` com headline `text-4xl`.
+  - Desktop: paddings atuais (`px-12 lg:px-16 py-24`).
+- Logo absoluta no topo: ajustar para `top-6 left-6 lg:top-10 lg:left-12`.
+- Rodapé absoluto: aplicar `hidden lg:block` (só desktop) e renderizar versão estática mobile já existente abaixo do card.
+- Badge "30 dias grátis" alinhada à direita já está; no mobile vira `justify-start` para ficar mais natural empilhada com o título.
+- Bullets em mobile: reduzir `space-y-4` → `space-y-3` e ícone `h-5 w-5` para compactar.
 
 ## Fora de escopo
 
-- Coluna direita (formulário) fica intacta.
-- Versão mobile (`lg:hidden` no hero atual) continua sem hero — apenas o card de formulário, como hoje.
-- Nenhuma mudança em validações, Supabase, rotas ou textos do formulário.
+- Mudanças no formulário, validações, fluxo de auth, OAuth, copy do desktop.
+- Nova imagem de fundo (reutiliza a existente).
+- Mudança visual do card de formulário.
 
-## Arquivos tocados
+## Arquivo tocado
 
-- `src/pages/Auth.tsx` — coluna esquerda + lógica condicional por aba.
-- `src/assets/auth/hospitality-bg.jpg.asset.json` (novo, via Lovable Assets).
+- `src/pages/Auth.tsx`
