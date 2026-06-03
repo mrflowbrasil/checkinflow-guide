@@ -94,8 +94,10 @@ export default function LpAnuncio() {
 
       <main className="flex-1">
         <HeroLp />
+        <TrustLogos />
         <RealDemoLight />
         <AntesDepois />
+        <Depoimentos />
         <BulletsPro />
         <Beneficios />
         <VideoCriacao />
@@ -1103,6 +1105,112 @@ function PlanosSection() {
           momento — você mantém acesso até o fim do período pago. Notas fiscais
           são emitidas após o processamento do pagamento.
         </p>
+      </div>
+    </section>
+  );
+}
+
+// ============================ TRUST LOGOS ============================
+function TrustLogos() {
+  const logos = [
+    "Airbnb",
+    "Booking.com",
+    "TripAdvisor",
+    "Vrbo",
+    "Stays",
+    "Hostaway",
+    "Omnibees",
+    "Hospedin",
+  ];
+  return (
+    <section className="py-12 lg:py-16 bg-white border-y border-slate-200/70">
+      <div className="container mx-auto px-4">
+        <p className="text-center text-xs sm:text-sm font-medium tracking-wide text-slate-500 uppercase mb-8">
+          O complemento perfeito para anfitriões de destaque no:
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-5 sm:gap-x-12 lg:gap-x-16">
+          {logos.map((name) => (
+            <span
+              key={name}
+              className="text-slate-400 hover:text-slate-600 transition-colors font-semibold text-base sm:text-lg tracking-tight select-none"
+              style={{ fontFamily: '"Helvetica Neue", Arial, sans-serif' }}
+            >
+              {name}
+            </span>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ============================ DEPOIMENTOS ============================
+function Depoimentos() {
+  const items = [
+    {
+      initials: "DS",
+      bg: "from-rose-200 to-rose-400",
+      name: "Denize Siqueira",
+      meta: "Casa da Dinda • Rio de Janeiro - RJ",
+      text:
+        "Eu não aguentava mais ir jantar com meu esposo na sexta-feira e passar o tempo todo respondendo no WhatsApp sobre a senha do Wi-Fi ou regras do imóvel. Com o Welcome Hub, eu programo o envio do link e pronto. Recuperei minha paz e meu tempo livre.",
+    },
+    {
+      initials: "JM",
+      bg: "from-amber-200 to-amber-400",
+      name: "Juliana Medeiros",
+      meta: "Paracuru - CE",
+      text:
+        "Gerenciar os check-ins da pousada sempre foi exaustivo por conta das dúvidas repetidas. Com o guia interativo, os hóspedes têm total autonomia. Eles chegam sabendo exatamente o que fazer e nossas avaliações 5 estrelas dispararam nas plataformas.",
+    },
+    {
+      initials: "AB",
+      bg: "from-cyan-200 to-cyan-400",
+      name: "Alexandre Barbosa",
+      meta: "ABMnb • Caruaru - PE",
+      text:
+        "Antes eu mandava um bloco enorme de texto com as instruções que os hóspedes ignoravam e acabavam me ligando de madrugada. O hub no celular é tão simples e visual que o suporte manual virou praticamente zero.",
+    },
+  ];
+  return (
+    <section className="py-16 lg:py-24 bg-slate-50/60">
+      <div className="container mx-auto px-4">
+        <div className="text-center max-w-2xl mx-auto mb-12 lg:mb-16">
+          <Badge variant="secondary" className="mb-4 bg-[hsl(186_100%_32%)]/10 text-[hsl(186_100%_24%)] border-0">
+            <Star className="h-3.5 w-3.5 mr-1.5 fill-current" /> Prova social
+          </Badge>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-slate-900">
+            O que dizem os anfitriões que usam o Welcome Hub
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+          {items.map((t) => (
+            <Card
+              key={t.name}
+              className="p-6 lg:p-7 rounded-2xl bg-white border border-slate-200/70 shadow-sm hover:shadow-md transition-shadow flex flex-col"
+            >
+              <div className="flex items-center gap-4 mb-4">
+                <div
+                  className={`h-14 w-14 rounded-full bg-gradient-to-br ${t.bg} flex items-center justify-center text-white font-bold text-lg shadow-sm shrink-0`}
+                  aria-hidden="true"
+                >
+                  {t.initials}
+                </div>
+                <div className="min-w-0">
+                  <p className="font-semibold text-slate-900 truncate">{t.name}</p>
+                  <p className="text-xs text-slate-500 truncate">{t.meta}</p>
+                </div>
+              </div>
+              <div className="flex gap-0.5 mb-3" aria-label="5 estrelas">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
+                ))}
+              </div>
+              <p className="text-slate-700 text-[15px] leading-relaxed">"{t.text}"</p>
+            </Card>
+          ))}
+        </div>
       </div>
     </section>
   );
