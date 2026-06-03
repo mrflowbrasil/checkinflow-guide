@@ -35,6 +35,9 @@ import denizeAvatar from "@/assets/lp/avatars/denize.jpg.asset.json";
 import pabloAvatar from "@/assets/lp/avatars/pablo.jpg.asset.json";
 import julianaAvatar from "@/assets/lp/avatars/juliana.jpg.asset.json";
 import heroImg from "@/assets/lp/hero-guest-phone.webp";
+import heroImg768 from "@/assets/lp/hero-guest-phone-768.webp";
+import heroAvif from "@/assets/lp/hero-guest-phone.avif";
+import heroAvif768 from "@/assets/lp/hero-guest-phone-768.avif";
 import heroMockupLifestyle from "@/assets/lp/hero-mockup-lifestyle.webp";
 import guideMockup from "@/assets/lp/guide-panel-mockup.webp";
 import qrFrame from "@/assets/lp/qrcode-frame.webp";
@@ -193,16 +196,28 @@ function HeroLp() {
           <div className="relative">
             <div className="absolute -inset-4 bg-gradient-to-tr from-[hsl(186_100%_85%)]/40 via-white/0 to-[#F3EBDD]/60 rounded-[2.5rem] blur-2xl pointer-events-none" />
             <div className="relative rounded-[2rem] overflow-hidden shadow-[0_30px_80px_-30px_rgba(15,23,42,0.25)] ring-1 ring-slate-200">
-              <img
-                src={heroImg}
-                alt="Hóspede sorrindo olhando o guia digital no celular em apartamento moderno"
-                width={1672}
-                height={941}
-                loading="eager"
-                fetchPriority="high"
-                decoding="async"
-                className="w-full h-auto object-cover"
-              />
+              <picture>
+                <source
+                  type="image/avif"
+                  srcSet={`${heroAvif768} 768w, ${heroAvif} 1280w`}
+                  sizes="(min-width: 1024px) 50vw, 100vw"
+                />
+                <source
+                  type="image/webp"
+                  srcSet={`${heroImg768} 768w, ${heroImg} 1280w`}
+                  sizes="(min-width: 1024px) 50vw, 100vw"
+                />
+                <img
+                  src={heroImg}
+                  alt="Hóspede sorrindo olhando o guia digital no celular em apartamento moderno"
+                  width={1280}
+                  height={720}
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
+                  className="w-full h-auto object-cover"
+                />
+              </picture>
             </div>
             <div className="hidden sm:block absolute -top-5 -right-5 z-20 rotate-3">
               <div className="bg-white rounded-2xl shadow-xl ring-1 ring-slate-200 p-1 w-[150px]">
@@ -1208,6 +1223,9 @@ function TrustLogos() {
               src={logo.src}
               alt={logo.name}
               loading="lazy"
+              decoding="async"
+              width={120}
+              height={40}
               className="h-8 sm:h-9 lg:h-10 w-auto object-contain grayscale opacity-60 hover:opacity-100 transition-opacity duration-200 shrink-0"
             />
           ))}
@@ -1267,6 +1285,9 @@ function Depoimentos() {
                   src={t.photo}
                   alt={t.name}
                   loading="lazy"
+                  decoding="async"
+                  width={56}
+                  height={56}
                   className="h-14 w-14 rounded-full object-cover shadow-sm shrink-0"
                 />
                 <div className="min-w-0">
