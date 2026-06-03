@@ -13,6 +13,11 @@ Deno.serve(async (req) => {
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
+    console.log("[admin-list-users] env ok?", {
+      hasUrl: !!SUPABASE_URL,
+      hasService: !!SERVICE_KEY,
+      hasAnon: !!ANON_KEY,
+    });
 
     const authHeader = req.headers.get("Authorization") ?? "";
     const userClient = createClient(SUPABASE_URL, ANON_KEY, {
@@ -20,17 +25,20 @@ Deno.serve(async (req) => {
     });
     const { data: userData, error: userErr } = await userClient.auth.getUser();
     if (userErr || !userData.user) {
+      console.log("[admin-list-users] unauthorized", userErr?.message);
       return new Response(JSON.stringify({ error: "unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+    console.log("[admin-list-users] caller", userData.user.id, userData.user.email);
 
     const admin = createClient(SUPABASE_URL, SERVICE_KEY);
-    const { data: isAdmin } = await admin.rpc("has_role", {
+    const { data: isAdmin, error: roleErr } = await admin.rpc("has_role", {
       _user_id: userData.user.id,
       _role: "super_admin",
     });
+    console.log("[admin-list-users] has_role result", { isAdmin, roleErr: roleErr?.message });
     if (!isAdmin) {
       return new Response(JSON.stringify({ error: "forbidden" }), {
         status: 403,
@@ -43,6 +51,7 @@ Deno.serve(async (req) => {
       const body = await req.json();
       q = (body?.q ?? "").toString().trim().toLowerCase();
     } catch {}
+    console.log("[admin-list-users] query q=", JSON.stringify(q));
 
     // Fetch users (paginated). For a small platform we fetch first ~1000.
     const all: any[] = [];
@@ -50,21 +59,32 @@ Deno.serve(async (req) => {
     const perPage = 200;
     while (true) {
       const { data, error } = await admin.auth.admin.listUsers({ page, perPage });
-      if (error) throw error;
+      if (error) {
+        console.log("[admin-list-users] listUsers error", error.message);
+        return new Response(JSON.stringify({ error: "listUsers_failed", message: error.message }), {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      console.log("[admin-list-users] page", page, "users fetched=", data.users.length);
       all.push(...data.users);
       if (data.users.length < perPage || page >= 5) break;
       page++;
     }
+    console.log("[admin-list-users] total fetched=", all.length);
 
     const filtered = q
       ? all.filter((u) => (u.email ?? "").toLowerCase().includes(q))
       : all;
+    console.log("[admin-list-users] filtered=", filtered.length);
 
     const ids = filtered.map((u) => u.id);
-    const { data: profiles } = await admin
+    const { data: profiles, error: profErr } = await admin
       .from("profiles")
       .select("id, full_name, tenant_id, tenants(name, slug)")
       .in("id", ids.length > 0 ? ids : ["00000000-0000-0000-0000-000000000000"]);
+    if (profErr) console.log("[admin-list-users] profiles error", profErr.message);
+    console.log("[admin-list-users] profiles fetched=", profiles?.length ?? 0);
     const profById = new Map((profiles ?? []).map((p: any) => [p.id, p]));
 
     const result = filtered.map((u) => {
@@ -80,6 +100,8 @@ Deno.serve(async (req) => {
       };
     });
     result.sort((a, b) => (a.email ?? "").localeCompare(b.email ?? ""));
+    console.log("[admin-list-users] returning users=", result.length);
+
 
     return new Response(JSON.stringify({ users: result }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
