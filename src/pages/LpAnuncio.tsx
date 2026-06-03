@@ -3,20 +3,27 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ArrowRight,
+  Building2,
   Check,
   ExternalLink,
+  Gift,
+  Headphones,
+  KeyRound,
+  Link2,
   MessageCircle,
   MessageCircleQuestion,
-  Sparkles,
-  Link2,
-  KeyRound,
   QrCode,
   RefreshCw,
-  Smartphone,
+  Rocket,
+  Settings as SettingsIcon,
   ShieldCheck,
+  Smartphone,
+  Sparkles,
   Star,
+  TrendingUp,
   X,
 } from "lucide-react";
 import { Seo } from "@/components/Seo";
