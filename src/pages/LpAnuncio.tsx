@@ -257,11 +257,11 @@ function HeroLp() {
 
 /* ---------------------- ANTES X DEPOIS ---------------------- */
 const antes = [
-  "Qual a senha do Wi-Fi?",
-  "Como faço check-in?",
-  "Onde estaciona?",
-  "Pode receber visita?",
-  "Qual o horário do checkout?",
+  "Hóspede te acordando às 23h para perguntar a senha do Wi-Fi.",
+  "Mensagens perdidas e hóspede esperando do lado de fora do imóvel.",
+  "Hóspede ligando estressado e trancando a rua porque não entendeu onde parar o carro.",
+  "Responder às mesmas 15 perguntas todos os dias, em vez de focar em crescer o seu negócio.",
+  "Perder a nota 5 estrelas no Airbnb por pequenos erros de comunicação na chegada.",
 ];
 const depois = [
   "Tudo em um único link",
