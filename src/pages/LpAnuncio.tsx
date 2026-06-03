@@ -264,11 +264,11 @@ const antes = [
   "Perder a nota 5 estrelas no Airbnb por pequenos erros de comunicação na chegada.",
 ];
 const depois = [
-  "Tudo em um único link",
-  "Informações organizadas no celular",
-  "Menos mensagens repetidas",
-  "Check-in mais tranquilo",
-  "Experiência mais profissional",
+  "Wi-Fi disponível no guia 24h por dia — hóspede acessa sozinho sem te incomodar.",
+  "Instruções de check-in claras, com fotos e passo a passo, sempre à mão no celular.",
+  "Localização, vagas e orientações de estacionamento explicadas com mapa e imagens.",
+  "Todas as respostas centralizadas no guia — você ganha tempo pra focar no seu negócio.",
+  "Experiência profissional do início ao fim, mais chance de avaliação 5 estrelas.",
 ];
 
 function AntesDepois() {
