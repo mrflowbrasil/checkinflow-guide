@@ -276,7 +276,18 @@ function GuideBody({
       </div>
 
       {/* Page detail sheet */}
-      <Sheet open={!!activePageKey} onOpenChange={(o) => !o && setActivePageKey(null)}>
+      <Sheet open={!!activePageKey} onOpenChange={(o) => {
+        if (!o) {
+          const closedKey = activePageKey;
+          setActivePageKey(null);
+          if (closedKey && typeof window !== "undefined" && window.parent && window.parent !== window) {
+            try {
+              window.parent.postMessage({ type: "wh_demo_page_closed", pageKey: closedKey }, "*");
+            } catch {}
+          }
+        }
+      }}>
+
         <SheetContent side="bottom" className="h-[88vh] p-0 rounded-t-3xl border-t-0 max-w-md mx-auto">
           {activePage && <PageContent pageId={activePage.id} title={activePage.title} icon={activePage.icon} template={template} primaryColor={primaryColor} onClose={() => setActivePageKey(null)} />}
         </SheetContent>
