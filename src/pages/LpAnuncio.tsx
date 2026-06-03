@@ -749,8 +749,8 @@ const trustBadges = [
   },
   {
     icon: Headphones,
-    title: "Suporte Dedicado",
-    desc: "Prontos para ajudar você a configurar e escalar sua operação.",
+    title: "Suporte Direto via WhatsApp",
+    desc: "Teve alguma dúvida? Você fala direto com a nossa equipe pelo WhatsApp para deixar o seu guia rodando perfeitamente, sem burocracia.",
     bg: "bg-[#D8EBD9]/70",
     iconColor: "text-[#3f7a48]",
     ring: "ring-[#7BA17F]/30",
@@ -1196,7 +1196,7 @@ function Depoimentos() {
     },
     {
       photo: pabloAvatar.url,
-      name: "Pablo Siqueira",
+      name: "Pablo da Costa",
       meta: "Sítio Vidamare • Nova Friburgo - RJ",
       text:
         "Antes eu mandava um bloco enorme de texto com as instruções que os hóspedes ignoravam e acabavam me ligando de madrugada. O hub no celular é tão simples e visual que o suporte manual virou praticamente zero.",
