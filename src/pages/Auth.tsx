@@ -20,6 +20,21 @@ const emailSchema = z.string().trim().email("Email inválido").max(255);
 const passwordSchema = z.string().min(1, "Informe uma senha").max(72);
 const nameSchema = z.string().trim().min(2, "Nome muito curto").max(80);
 
+function traduzErroAuth(msg: string): string {
+  const m = msg.toLowerCase();
+  if (m.includes("password") && (m.includes("weak") || m.includes("pwned") || m.includes("known"))) {
+    return "Esta senha é muito comum. Escolha outra senha.";
+  }
+  if (m.includes("password should be at least")) return "A senha é muito curta.";
+  if (m.includes("invalid login credentials")) return "Email ou senha incorretos.";
+  if (m.includes("email not confirmed")) return "Confirme seu email antes de entrar.";
+  if (m.includes("user already registered") || m.includes("already registered")) return "Este email já está cadastrado.";
+  if (m.includes("rate limit") || m.includes("too many")) return "Muitas tentativas. Tente novamente em alguns minutos.";
+  if (m.includes("invalid email")) return "Email inválido.";
+  if (m.includes("network")) return "Erro de conexão. Verifique sua internet.";
+  return "Não foi possível concluir. Tente novamente.";
+}
+
 export default function Auth() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
@@ -47,7 +62,7 @@ export default function Auth() {
     setBusy(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(traduzErroAuth(error.message));
     navigate("/app");
   };
 
@@ -73,7 +88,7 @@ export default function Auth() {
       },
     });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(traduzErroAuth(error.message));
     toast.success("Conta criada! Verifique seu email para confirmar antes de entrar.");
     setTab("signin");
   };
