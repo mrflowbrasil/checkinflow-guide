@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
-import { HelpCircle, Search, Lightbulb } from "lucide-react";
+import { HelpCircle, Search, Lightbulb, MessageCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { HELP_TOPICS, type HelpTopic } from "./help/topics";
 import { cn } from "@/lib/utils";
 
