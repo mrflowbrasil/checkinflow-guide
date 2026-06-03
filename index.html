@@ -47,28 +47,28 @@
       })();
     </script>
 
-    <!-- Meta Pixel Code (queue immediately, load script after page load) -->
+    <!-- Meta Pixel Code (async load, single init + PageView) -->
     <script>
-      !function(f,b,e,v,n,t,s)
-      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-      n.queue=[];}(window, document,'script',
-      'https://connect.facebook.net/en_US/fbevents.js');
-      fbq('init', '1411641184313501');
-      fbq('track', 'PageView');
-      // Defer script download until after the page has loaded to free the critical path.
-      (function(){
+      (function(f,b,e,v){
+        if(f.fbq)return;
+        var n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+        if(!f._fbq)f._fbq=n;
+        n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];
+        f.__mrflowPixelInit=false;
         function loadFbq(){
-          var t=document.createElement('script');
-          t.async=true;
-          t.src='https://connect.facebook.net/en_US/fbevents.js';
-          var s=document.getElementsByTagName('script')[0];
-          s.parentNode.insertBefore(t,s);
+          if(document.querySelector('script[data-fb-pixel]'))return;
+          var t=b.createElement(e);t.async=!0;t.defer=!0;t.src=v;t.setAttribute('data-fb-pixel','1');
+          var s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s);
         }
-        if (document.readyState === 'complete') loadFbq();
-        else window.addEventListener('load', loadFbq, { once: true });
-      })();
+        if(document.readyState==='complete')loadFbq();
+        else window.addEventListener('load',loadFbq,{once:true});
+      })(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+      if(!window.__mrflowPixelInit){
+        window.__mrflowPixelInit=true;
+        fbq('init','1411641184313501');
+        fbq('track','PageView');
+        window.__mrflowPixelPageViewFired=true;
+      }
     </script>
     <!-- End Meta Pixel Code -->
 
