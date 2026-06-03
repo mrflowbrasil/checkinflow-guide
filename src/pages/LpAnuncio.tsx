@@ -95,10 +95,10 @@ export default function LpAnuncio() {
       <main className="flex-1">
         <HeroLp />
         <RealDemoLight />
-        <VideoCriacao />
         <AntesDepois />
         <Beneficios />
         <BulletsPro />
+        <VideoCriacao />
         <PlanosSection />
         <Gatilhos />
         <CtaFinal />
@@ -445,7 +445,7 @@ function RealDemoLight() {
             <ul className="space-y-3 mb-8">
               {[
                 "Crie o seu em menos de 5 minutos (Zero complicações técnicas).",
-                "Seu hóspede acessa por link ou QR Code (Sem precisar baixar nenhum aplicativo).Acesso por link ou QR Code",
+                "Seu hóspede acessa por link ou QR Code (sem precisar baixar nenhum aplicativo).",
                 "Altere o Wi-Fi ou as regras da casa e atualize no celular do hóspede em tempo real.",
                 "Design profissional e totalmente planejado para telas de celular.",
                 "Ideal para enviar automaticamente no WhatsApp assim que a reserva for confirmada",
