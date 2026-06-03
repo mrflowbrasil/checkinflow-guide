@@ -19,6 +19,9 @@ import {
   TrendingUp,
   MessageCircle,
   Gift,
+  Lock,
+  MessageSquare,
+  Zap,
 } from "lucide-react";
 import { useState } from "react";
 import { StripeEmbeddedCheckout } from "@/components/billing/StripeEmbeddedCheckout";
@@ -343,6 +346,65 @@ export default function Billing() {
           );
         })}
       </div>
+
+      {/* Bônus exclusivos */}
+      <section className="space-y-6 pt-4">
+        <div className="text-center space-y-2">
+          <h3 className="text-xl sm:text-2xl font-semibold tracking-tight">
+            Criando seu guia digital hoje, você ganha 2 bônus exclusivos:
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            Incentivos especiais para profissionalizar sua hospedagem ainda esta semana.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            {
+              icon: MessageSquare,
+              title: "🎁 Bônus 1: Script de Mensagens Prontas para WhatsApp",
+              desc: "Chega de pensar no que escrever. Copie e cole modelos exatos de mensagens de boas-vindas, pré-check-in, regras finas e pedido de avaliação 5 estrelas que geram a melhor experiência para o hóspede.",
+              from: "R$ 47,00",
+            },
+            {
+              icon: Zap,
+              title: "🎁 Bônus 2: Guia Prático de Automação para Anfitriões",
+              desc: "Um material digital passo a passo ensinando como usar o WhatsApp de forma inteligente na sua operação de temporada, economizar horas de suporte manual e fechar mais reservas diretas.",
+              from: "R$ 97,00",
+            },
+          ].map((b) => (
+            <Card
+              key={b.title}
+              className="p-5 border-accent/40 bg-accent/5 shadow-card flex flex-col gap-3"
+            >
+              <div className="flex items-start gap-3">
+                <div className="h-9 w-9 rounded-lg bg-accent/15 grid place-items-center shrink-0">
+                  <b.icon className="h-5 w-5 text-accent-foreground" />
+                </div>
+                <h4 className="font-semibold text-base leading-snug">{b.title}</h4>
+              </div>
+              <p className="text-sm text-muted-foreground">{b.desc}</p>
+              <div className="flex items-center gap-2 text-sm">
+                <span className="text-muted-foreground line-through">De {b.from}</span>
+                <Badge className="bg-accent text-accent-foreground">por R$ 0,00</Badge>
+              </div>
+            </Card>
+          ))}
+        </div>
+
+        <Card className="p-5 border-primary/30 bg-primary/5 shadow-card flex items-start gap-3">
+          <div className="h-9 w-9 rounded-lg bg-primary/10 grid place-items-center shrink-0">
+            <Lock className="h-5 w-5 text-primary" />
+          </div>
+          <p className="text-sm leading-relaxed">
+            <span className="font-semibold">🔒 Risco Zero para começar:</span>{" "}
+            Quer testar a plataforma antes de decidir? Crie sua conta no Plano Single e
+            aproveite 30 dias totalmente grátis com todas as funcionalidades liberadas.
+            Sem pegadinhas, sem contratos e sem precisar de cartão de crédito no cadastro.
+            Se sua operação crescer e você precisar de mais imóveis, mude de plano quando quiser.
+          </p>
+        </Card>
+      </section>
 
       <p className="text-xs text-muted-foreground text-center">
         Pagamentos processados com segurança via Stripe. Cancele a qualquer momento — você
