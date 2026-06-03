@@ -124,6 +124,15 @@ export default function LpAnuncio() {
 /* ----------------------------- HERO ----------------------------- */
 function HeroLp() {
   const [waOpen, setWaOpen] = useState(false);
+  const [demoCtaOpen, setDemoCtaOpen] = useState(false);
+  const openDemoCta = () => {
+    setDemoCtaOpen(true);
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("lp_demo_hotspot_click"));
+    }
+  };
+  const hotspotClass =
+    "absolute rounded-xl bg-transparent hover:bg-[hsl(186_100%_32%)]/10 focus-visible:bg-[hsl(186_100%_32%)]/15 focus-visible:outline-none transition-colors cursor-pointer";
   return (
     <section className="relative overflow-hidden">
       <div
