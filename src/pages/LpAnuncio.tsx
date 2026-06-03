@@ -186,8 +186,8 @@ function HeroLp() {
               <img
                 src={heroImg}
                 alt="Hóspede sorrindo olhando o guia digital no celular em apartamento moderno"
-                width={1536}
-                height={1024}
+                width={1672}
+                height={941}
                 loading="eager"
                 fetchPriority="high"
                 decoding="async"
