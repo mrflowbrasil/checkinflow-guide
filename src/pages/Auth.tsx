@@ -16,7 +16,7 @@ import { Seo } from "@/components/Seo";
 import { lovable } from "@/integrations/lovable/index";
 
 const emailSchema = z.string().trim().email("Email inválido").max(255);
-const passwordSchema = z.string().min(8, "Mínimo 8 caracteres").max(72);
+const passwordSchema = z.string().min(1, "Informe uma senha").max(72);
 const nameSchema = z.string().trim().min(2, "Nome muito curto").max(80);
 
 export default function Auth() {
@@ -197,15 +197,14 @@ export default function Auth() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="su-password">Senha</Label>
-                  <Input id="su-password" name="password" type="password" autoComplete="new-password" minLength={8} required className="h-11 rounded-xl" />
-                  <p className="text-xs text-muted-foreground">Mínimo 8 caracteres.</p>
+                  <Input id="su-password" name="password" type="password" autoComplete="new-password" required className="h-11 rounded-xl" />
                 </div>
                 <Button type="submit" className="w-full h-11 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold" disabled={busy}>
                   {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Criar conta gratuita
                 </Button>
                 <p className="text-xs text-center text-muted-foreground">
-                  Você começa no plano Free e pode fazer upgrade quando quiser.
+                  Você começa com 30 dias grátis no plano Single. Sem pegadinhas.
                 </p>
               </form>
             </TabsContent>
