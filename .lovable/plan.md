@@ -1,41 +1,28 @@
 ## Objetivo
-Adicionar gatilho de conversão sobre a imagem do mockup do celular (Vila Serena) e manter os CTAs externos indo para `/auth`.
+Substituir a faixa estática de logos por um carrossel infinito com as 8 logos enviadas, todas em escala de cinza, e alinhar a tipografia do título com o restante da página.
 
-## Mudanças em `src/pages/LpAnuncio.tsx`
+## Mudanças
 
-### 1. Overlay clicável sobre o mockup
-No bloco do hero (linhas ~184-218), envolver o `<img src={heroImg} />` em um container `relative` e adicionar 3-4 hotspots `<button>` absolutamente posicionados (porcentagem) sobre as regiões aproximadas dos cards Wi-Fi, Regras, Localização e Check-in da imagem.
+### 1. Upload das 8 logos para o CDN (Lovable Assets)
+Subir cada arquivo de `/mnt/user-uploads/` via `lovable-assets create`, salvando os pointers em `src/assets/lp/logos/`:
+- airbnb.png, booking.png, tripadvisor.png, vrbo.png, stays.png, hostaway.png, omnibees.png, hospedin.png
 
-- Hotspots invisíveis (`bg-transparent`) com `aria-label` descritivo, `cursor-pointer` e leve `hover:bg-[hsl(186_100%_32%)]/10 rounded-xl transition` para feedback sutil.
-- `onClick` de qualquer hotspot → `setDemoCtaOpen(true)`.
-- Mesmo tratamento no mockup pequeno lifestyle (canto superior direito) com um único hotspot cobrindo toda a tela.
+Após o upload, os arquivos originais permanecem somente em `/mnt/user-uploads/` (não copiamos binários para o repo).
 
-### 2. Banner de conversão elegante
-Estado local `const [demoCtaOpen, setDemoCtaOpen] = useState(false)`.
+### 2. Refazer `TrustLogos` em `src/pages/LpAnuncio.tsx`
+Substituir o bloco atual (linhas ~1114-1145) por um carrossel infinito:
 
-Renderizar logo abaixo do container do mockup (dentro do mesmo `<div className="relative">`), com animação de entrada (`transition-all duration-300`, `opacity`, `translate-y`):
+- **Container**: `bg-gray-50/80 border-y border-slate-200/60 py-8 lg:py-10 overflow-hidden`.
+- **Título**: trocar a fonte custom (`Helvetica Neue`) por classes alinhadas ao restante da LP — `font-sans text-[11px] sm:text-xs font-semibold tracking-[0.18em] uppercase text-slate-500`, centralizado, com `mb-6`.
+- **Track**: wrapper `overflow-hidden` com máscara lateral (`mask-image: linear-gradient(...)` para fade nas bordas) e um `flex gap-12 lg:gap-16 w-max` com a lista de logos duplicada (`[...logos, ...logos]`) para loop perfeito.
+- **Animação**: `@keyframes mrflow-logos-scroll { from { transform: translateX(0) } to { transform: translateX(-50%) } }`, aplicada com `animation: mrflow-logos-scroll 40s linear infinite`. Pausa no hover (`hover:[animation-play-state:paused]`).
+- **Logos**: `<img>` com `h-7 sm:h-8 lg:h-9 w-auto object-contain` + `grayscale opacity-60 hover:opacity-100 transition` para uniformizar o tom de cinza independente da cor original (Airbnb vermelho, Vrbo azul, Omnibees amarelo, Hospedin roxo, Booking azul, Tripadvisor colorido → todas viram cinza via filtro CSS).
+- Remover todos os wordmarks em texto puro que existem hoje.
 
-```
-[ícone Sparkles]  Gostou da facilidade?
-                  Crie um guia igual a este para o seu imóvel.
-                                                    [Criar Meu Guia Grátis →]  [x fechar]
-```
-
-Estilo: `rounded-2xl bg-white shadow-xl ring-1 ring-slate-200 px-4 py-3`, título `text-slate-900 font-semibold`, CTA usando `ctaPrimary` reduzido (`h-11 px-5 text-sm`) em ciano `hsl(186 100% 32%)`. Botão fecha-se com ícone `X` discreto. Dispensa modal — é um banner inline para não bloquear a navegação.
-
-O CTA do banner aponta para `/auth` via `<Link to="/auth">` (mesma regra dos demais).
-
-### 3. CTAs externos
-Confirmar que todos os botões "Criar meu guia grátis" continuam apontando para `/auth` (já é o caso). Nenhuma mudança de comportamento — apenas mantém a regra atual.
-
-## Detalhes técnicos
-- Sem libs novas; usa `useState` + classes Tailwind + `lucide-react` (`Sparkles`, `X`) já importados.
-- Posicionamento dos hotspots: ajustado por tentativa visual usando `%` (ex.: `top-[38%] left-[12%] w-[24%] h-[14%]`). Como a imagem é fixa, posições são estáveis.
-- Acessibilidade: cada hotspot recebe `aria-label="Ver demonstração de Wi-Fi"` etc., e o banner usa `role="status"` + `aria-live="polite"`.
-- Mobile-first: hotspots cobrem áreas relativas, funcionam em qualquer largura; banner empilha em `flex-col sm:flex-row`.
-- Tracking opcional: chamamos `window.dispatchEvent(new CustomEvent('lp_demo_hotspot_click'))` para reuso futuro (sem dependência nova).
+### 3. CSS do keyframe
+Definir o keyframe dentro de uma tag `<style>` inline no próprio componente `TrustLogos` (mesmo padrão de `ImageAutoSlider`), evitando mexer em `index.css`/`tailwind.config.ts`.
 
 ## Fora do escopo
-- Não criar mockup interativo "real" com telas trocando — fica como overlay sobre a imagem atual.
-- Não alterar destino dos CTAs externos para `#planos`.
-- Nenhuma mudança em outras seções ou na seção `PlanosSection`.
+- Não alterar `Depoimentos`, hero, ou qualquer outra seção.
+- Não modificar `index.css`/Tailwind config.
+- Não mexer em outras páginas SEO que possam ter faixas similares.
