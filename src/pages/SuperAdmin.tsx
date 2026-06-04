@@ -20,7 +20,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Loader2, Shield, Copy, X, Mail, Check, KeyRound, Search, Lock, RefreshCw, Eye, EyeOff } from "lucide-react";
+import { Loader2, Shield, Copy, X, Mail, Check, KeyRound, Search, Lock, RefreshCw, Eye, EyeOff, Trash2 } from "lucide-react";
 import WebhooksAdmin from "@/components/admin/WebhooksAdmin";
 import { toast } from "sonner";
 import {
