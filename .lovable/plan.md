@@ -1,36 +1,111 @@
-## Correção do alerta: `properties` legível para tenants desativados
+## Objetivo
 
-### Problema
-A policy `Public reads active properties` (role `anon`) em `public.properties` usa apenas `status = 'active'`. Se um tenant for desativado (`is_active = false`), os imóveis ativos continuam visíveis publicamente — vazando `address`, `external_id`, `external_data` (PMS), `booking_url`, `cover_image_url`, `tenant_id`. As demais policies públicas (`property_details`, `property_pages`, `content_blocks`, `property_images`, `guide_translations`) já usam `is_property_active()`, que valida ambas as condições.
+Quando um usuário cria conta mas não cadastra nenhum imóvel em 24h, disparar automaticamente:
+1. Um **email** lembrando-o de cadastrar o primeiro imóvel — agora incluindo o **vídeo do YouTube** "criar imóvel em menos de 5 minutos"
+2. Uma chamada ao **webhook de Onboarding** com `tipo: "primeiro-imovel"`
 
-### Correção (1 migração)
-Substituir a policy anon de SELECT em `properties` para também checar o tenant ativo, alinhando com o resto do schema:
+Também adicionar `tipo: "onboarding"` ao payload do webhook já enviado em `onboarding-submit`.
 
-```sql
-DROP POLICY "Public reads active properties" ON public.properties;
+---
 
-CREATE POLICY "Public reads active properties"
-  ON public.properties FOR SELECT TO anon
-  USING (
-    status = 'active'
-    AND EXISTS (
-      SELECT 1 FROM public.tenants t
-      WHERE t.id = properties.tenant_id AND t.is_active = true
-    )
-  );
+## Como inserir o vídeo do YouTube no email
+
+Clientes de email (Gmail, Outlook, Apple Mail) **não executam `<iframe>`/`<video>`**. O padrão é usar uma **thumbnail clicável** que abre o YouTube em nova aba.
+
+Implementação no template:
+```tsx
+<Link href="https://youtu.be/<VIDEO_ID>">
+  <div style={{ position: 'relative' }}>
+    <Img
+      src="https://img.youtube.com/vi/<VIDEO_ID>/maxresdefault.jpg"
+      width="560" alt="Veja como criar seu imóvel em menos de 5 minutos"
+      style={{ borderRadius: 12, display: 'block' }}
+    />
+    {/* play button overlay via Img absoluto */}
+  </div>
+</Link>
+```
+Confirmação necessária: **qual é o ID/URL do vídeo do YouTube?**
+
+---
+
+## Arquitetura
+
+```text
+auth.users (created_at)
+        │ 24h depois, tenant sem properties
+        ▼
+pg_cron (a cada 15min)  ──►  edge function `first-property-reminder`
+                                  ├─► send-transactional-email (template com thumb YouTube)
+                                  ├─► POST webhook onboarding (tipo=primeiro-imovel)
+                                  └─► insert em first_property_reminders (idempotência)
 ```
 
-Mantém `authenticated` (policy `Tenant members manage own properties`) intacta — dashboard, edge functions e super_admin continuam funcionando normalmente.
+---
 
-### Impacto de acesso
-- **Tenants ativos:** zero impacto. Guias públicos (`/g/<slug>`) continuam carregando — a condição extra é satisfeita.
-- **Tenants desativados:** os imóveis deixam de aparecer publicamente, que é exatamente o comportamento já aplicado às tabelas relacionadas (detalhes, páginas, blocos, imagens). Hoje já é inconsistente: o hóspede consegue ler `properties` mas não consegue ler `property_details`/`property_pages`, então a página já quebra. A correção apenas fecha o vazamento de dados sem mudar a experiência efetiva.
-- **Dashboard/admin:** nenhum — usa policy `authenticated` separada.
-- **Edge functions** (ex.: `property-manifest`): usam `service_role`, bypassam RLS, sem impacto.
+## Passos
 
-### Validação após aplicar
-1. Abrir um guia público (`/g/<slug>`) de tenant ativo no preview — deve carregar normalmente.
-2. Marcar a finding como corrigida no scanner.
+### 1. Infra de email (pré-requisito)
+- `setup_email_infra` + `scaffold_transactional_email` para criar fila, `send-transactional-email`, página de unsubscribe.
 
-### Risco
-Mínimo. Migração isolada, reversível (basta recriar a policy antiga), sem alteração de schema ou dados.
+### 2. Template `first-property-reminder.tsx`
+- PT-BR, tom amigável, brand Mr Flow.
+- **Thumbnail do YouTube clicável** (link para `https://youtu.be/<ID>`) com play button sobreposto.
+- CTA principal: "Cadastrar meu primeiro imóvel" → `https://hub.mrflow.com.br/app/properties/new`.
+- Registrar em `registry.ts`.
+
+### 3. Migration: tabela de controle
+```sql
+CREATE TABLE public.first_property_reminders (
+  user_id uuid PRIMARY KEY,
+  sent_at timestamptz NOT NULL DEFAULT now(),
+  email_status text,
+  webhook_status text
+);
+GRANT ALL ON public.first_property_reminders TO service_role;
+ALTER TABLE ... ENABLE ROW LEVEL SECURITY;
+-- sem policies para anon/authenticated
+```
+
+### 4. Edge function `first-property-reminder` (verify_jwt=false)
+1. Buscar `auth.users` com `created_at` entre **agora-7d** e **agora-24h** (janela curta evita backfill enorme).
+2. Filtrar quem não está em `first_property_reminders` e não é `super_admin`.
+3. Para cada user, contar `properties` do `tenant_id` (via `profiles`). Se = 0:
+   - Invocar `send-transactional-email` (idempotencyKey `first-prop-${user.id}`).
+   - POST webhook `provider='onboarding'` com `tipo: "primeiro-imovel"`, `user_id`, `email`, `full_name`, `created_at`.
+   - Insert em `first_property_reminders`.
+4. Lote máx. 50/execução.
+
+### 5. Atualizar `onboarding-submit`
+- Adicionar `tipo: "onboarding"` ao payload do webhook (linha ~107).
+
+### 6. Cron job (via `supabase--insert`, não migration — contém anon key)
+```sql
+select cron.schedule(
+  'first-property-reminder', '*/15 * * * *',
+  $$ select net.http_post(
+       url := 'https://<project>.supabase.co/functions/v1/first-property-reminder',
+       headers := '{"Content-Type":"application/json","apikey":"<ANON_KEY>"}'::jsonb,
+       body := '{}'::jsonb
+     ); $$
+);
+```
+
+---
+
+## Garantias de não-impacto
+
+- **Idempotência**: tabela impede envio duplicado.
+- **Janela 7d a partir do deploy**: usuários antigos **não** recebem retroativamente (evita "spray" no backlog).
+- **Não bloqueia signup**: lógica roda fora do fluxo de cadastro.
+- **Falhas isoladas**: email e webhook em try/catch independentes; status registrado.
+- **Webhook existente intacto**: só ganha a chave `tipo`, sem mudar URL nem schema.
+
+---
+
+## Pontos a confirmar
+
+1. **URL/ID do vídeo do YouTube** a embutir no email.
+2. **Backfill**: confirmar que usuários criados antes do deploy **não** devem receber (recomendado).
+3. **Critério "sem imóvel"**: zero properties no tenant do usuário (recomendado).
+4. **Super admin**: excluir da régua (recomendado).
