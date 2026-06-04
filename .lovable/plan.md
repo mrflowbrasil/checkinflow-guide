@@ -1,21 +1,37 @@
-## Objetivo
-Remover a confirmação de email no cadastro. O usuário cria a conta e já pode entrar imediatamente com email+senha (sem precisar clicar em link no email).
+# Excluir usuário (e workspace) no Super Admin
 
-## Mudanças
+Adicionar exclusão direta na aba *Usuários* de `/admin`. Sem digitação de e-mail — apenas um `AlertDialog` simples de confirmação, com checkbox para também apagar o workspace.
 
-### 1. Backend (Lovable Cloud / Auth)
-- Ativar `auto_confirm_email = true` via `supabase--configure_auth`.
-  - Efeito: novos usuários nascem com `email_confirmed_at` preenchido, sem envio de email de confirmação e sem bloqueio no login.
-  - Mantém `disable_signup = false`, `external_anonymous_users_enabled = false`, `password_hibp_enabled = false` (já desativado).
+## O que será feito
 
-### 2. Frontend (`src/pages/Auth.tsx`)
-- No `handleSignUp`, após sucesso:
-  - Trocar o toast atual ("Conta criada! Verifique seu email...") por:
-    - `toast.success("Conta criada com sucesso! Faça login com seu email e senha para continuar.")`
-  - Continuar trocando para a aba "signin" (`setTab("signin")`).
-  - Não fazer login automático — o usuário digita novamente email/senha conforme pedido.
-- Manter a mitigação de "sucesso silencioso" (checar `data.user.identities.length === 0`) para emails problemáticos como o caso `supercelular.com.br`, exibindo erro em português.
+### 1. Nova edge function `supabase/functions/admin-delete-user/index.ts`
+- CORS + valida JWT no código (padrão das outras admin functions).
+- Confere `has_role(caller, 'super_admin')`.
+- Body: `{ user_id: string, delete_workspace?: boolean }`.
+- Bloqueia auto-exclusão (`caller.id === user_id` → 400).
+- Lê `profiles.tenant_id` do alvo.
+- `admin.auth.admin.deleteUser(user_id)` — cascateia `profiles`, `user_roles`, `onboarding_profiles`.
+- Tenant:
+  - `delete_workspace = true`: apaga em ordem (com service_role): `content_blocks` → `property_pages` → `property_details` → `property_images` → `guide_translations` → `property_slug_history` → `properties` → `tenant_api_keys` → `tenant_integrations` → `subscriptions` → `invitations` (do email) → `tenants`.
+  - `delete_workspace = false`: apaga `tenants` somente se ficar órfão (sem `profiles` e sem `properties`); caso contrário mantém.
+- Loga em `admin_action_log` (`action='delete_user'`, metadata com `tenant_id`, `delete_workspace`, `tenant_deleted`).
+- Retorna `{ ok: true, tenant_deleted: boolean }`.
 
-## Observações
-- Templates de email de signup (`supabase/functions/_shared/email-templates/signup.tsx`) e o hook continuam existindo, mas não serão mais disparados para confirmação de cadastro. Recuperação de senha (`recovery`) continua funcionando normalmente.
-- Usuários já cadastrados e ainda não confirmados (ex.: `acesso@mrflow.com.br`) precisarão ser confirmados manualmente se quiserem entrar — posso fazer isso via migration/SQL se você quiser (me avise).
+### 2. UI em `src/pages/SuperAdmin.tsx`
+- Importar `Trash2` (lucide) e `Checkbox` (já existente em `@/components/ui/checkbox`).
+- Estado: `deleteTarget: { id, email, tenant_name } | null`, `deleteWorkspace: boolean` (default `true`).
+- Botão **Excluir** (variante `destructive` outline, ícone `Trash2`) na coluna *Ações* da linha, após "Definir senha". Ocultar quando `u.id === user?.id`.
+- `AlertDialog` de confirmação:
+  - Título: "Excluir usuário?"
+  - Descrição: mostra e-mail e workspace; aviso de irreversibilidade.
+  - `Checkbox` "Excluir também o workspace e todos os imóveis vinculados" (marcado por padrão).
+  - Botões: "Cancelar" / "Excluir definitivamente" (destrutivo).
+- On confirm: `supabase.functions.invoke("admin-delete-user", { body: { user_id, delete_workspace } })`. Toast de sucesso (indica se workspace foi removido). Invalida queries `users-search` e `tenants-search`.
+
+### 3. Sem migração de banco
+Nenhuma alteração de schema. Cascades existentes em `auth.users` cuidam de `profiles`, `user_roles`, `onboarding_profiles`. A função usa service_role para os deletes do tenant, ignorando RLS.
+
+## Detalhes técnicos
+- Novo: `supabase/functions/admin-delete-user/index.ts` (mesmo padrão de `admin-set-user-password`).
+- Edits: `src/pages/SuperAdmin.tsx` (botão + dialog + handler + invalidação).
+- Auditoria em `admin_action_log` (RLS já permite super_admin inserir/ler).
