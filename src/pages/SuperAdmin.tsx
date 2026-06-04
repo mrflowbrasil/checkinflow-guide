@@ -20,7 +20,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Loader2, Shield, Copy, X, Mail, Check, KeyRound, Search, Lock, RefreshCw, Eye, EyeOff } from "lucide-react";
+import { Loader2, Shield, Copy, X, Mail, Check, KeyRound, Search, Lock, RefreshCw, Eye, EyeOff, Trash2 } from "lucide-react";
 import WebhooksAdmin from "@/components/admin/WebhooksAdmin";
 import { toast } from "sonner";
 import {
@@ -92,6 +92,11 @@ export default function SuperAdmin() {
   const [setPwShow, setSetPwShow] = useState(false);
   const [setPwSubmitting, setSetPwSubmitting] = useState(false);
   const [setPwResult, setSetPwResult] = useState<{ email: string; password: string } | null>(null);
+
+  // Delete user state
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; email: string; tenant_name: string | null } | null>(null);
+  const [deleteWorkspace, setDeleteWorkspace] = useState(true);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(() => setUserQuery(userSearch.trim().toLowerCase()), 300);
@@ -252,6 +257,41 @@ export default function SuperAdmin() {
     }
   };
 
+  const openDeleteUser = (u: { id: string; email: string; tenant_name?: string | null }) => {
+    setDeleteTarget({ id: u.id, email: u.email, tenant_name: u.tenant_name ?? null });
+    setDeleteWorkspace(true);
+  };
+
+  const submitDeleteUser = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("admin-delete-user", {
+        body: { user_id: deleteTarget.id, delete_workspace: deleteWorkspace },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).message ?? (data as any).error);
+      const tenantDeleted = (data as any)?.tenant_deleted;
+      const keptReason = (data as any)?.tenant_kept_reason;
+      if (tenantDeleted) {
+        toast.success("Usuário e workspace excluídos.");
+      } else if (keptReason === "has_properties") {
+        toast.success("Usuário excluído. Workspace mantido (possui imóveis).");
+      } else if (keptReason === "has_other_members") {
+        toast.success("Usuário excluído. Workspace mantido (possui outros membros).");
+      } else {
+        toast.success("Usuário excluído.");
+      }
+      setDeleteTarget(null);
+      qc.invalidateQueries({ queryKey: ["admin_users"] });
+      qc.invalidateQueries({ queryKey: ["all_tenants"] });
+    } catch (err: any) {
+      toast.error(err.message ?? "Erro ao excluir usuário");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   return (
     <div className="container py-8 max-w-6xl space-y-6 animate-fade-in">
       <header className="flex items-center gap-2">
@@ -383,6 +423,17 @@ export default function SuperAdmin() {
                     <Lock className="h-3.5 w-3.5 mr-1.5" />
                     Definir senha
                   </Button>
+                  {u.id !== user?.id && (
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => openDeleteUser({ id: u.id, email: u.email, tenant_name: u.tenant_name })}
+                      title="Excluir usuário"
+                    >
+                      <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+                      Excluir
+                    </Button>
+                  )}
                 </div>
               </div>
             ))}
@@ -411,6 +462,51 @@ export default function SuperAdmin() {
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
+
+          {/* Delete user */}
+          <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && !deleting && setDeleteTarget(null)}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Excluir usuário?</AlertDialogTitle>
+                <AlertDialogDescription asChild>
+                  <div className="space-y-2">
+                    <div>
+                      Esta ação é <strong>irreversível</strong>. O usuário <strong>{deleteTarget?.email}</strong>
+                      {deleteTarget?.tenant_name ? <> (workspace <strong>{deleteTarget.tenant_name}</strong>)</> : null}
+                      {" "}será removido permanentemente do login e do banco.
+                    </div>
+                    <label className="flex items-start gap-2 text-sm cursor-pointer pt-2">
+                      <Checkbox
+                        checked={deleteWorkspace}
+                        onCheckedChange={(v) => setDeleteWorkspace(!!v)}
+                        className="mt-0.5"
+                      />
+                      <span>
+                        Excluir também o <strong>workspace</strong> e todos os imóveis, páginas, integrações e assinaturas vinculados.
+                      </span>
+                    </label>
+                    {deleteWorkspace && (
+                      <div className="text-xs text-destructive bg-destructive/5 border border-destructive/20 rounded p-2">
+                        Atenção: todos os imóveis, conteúdos e assinaturas deste workspace serão apagados.
+                      </div>
+                    )}
+                  </div>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel disabled={deleting}>Cancelar</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={submitDeleteUser}
+                  disabled={deleting}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  {deleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Excluir definitivamente
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
 
           {/* Set password (LGPD fallback) */}
           <Dialog open={!!setPwTarget} onOpenChange={(o) => !o && setSetPwTarget(null)}>
