@@ -103,6 +103,7 @@ Deno.serve(async (req) => {
 
       if (hook?.is_active && hook.webhook_url) {
         const payload = {
+          tipo: "onboarding",
           user_id: user.id,
           tenant_id: profile.tenant_id,
           email: user.email,
