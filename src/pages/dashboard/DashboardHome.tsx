@@ -5,6 +5,7 @@ import { useTenant } from "@/hooks/useTenant";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Home, Plus, ArrowRight, CheckCircle2 } from "lucide-react";
+import { FirstPropertyHelpCard } from "@/components/help/FirstPropertyHelpCard";
 
 export default function DashboardHome() {
   const { data: tenant } = useTenant();
@@ -53,6 +54,8 @@ export default function DashboardHome() {
           </Button>
         </Card>
       </div>
+
+      {stats && stats.total === 0 && <FirstPropertyHelpCard />}
 
       <div>
         <h2 className="text-lg font-semibold mb-3">Imóveis recentes</h2>
