@@ -1,31 +1,15 @@
-## Objetivo
+## Otimizar avatares de depoimentos da /lp/anuncio
 
-Adicionar nas telas iniciais (Dashboard e Imóveis) um card de ajuda com título "Precisa de ajuda para criar seu primeiro imóvel?" e subtítulo "Assista o vídeo e veja como criar sua propriedade em menos de 5 minutos!" que ao ser clicado abre um modal com o vídeo embedado (sem sair da página).
+Os 3 avatares em `src/assets/lp/avatars/` são PNGs de ~2,5 MB cada (mislabeled `.jpg`), renderizados a 56×56 px — total ~7,8 MB desnecessários. Logos já estão otimizados (8-22 KB WebP).
 
-## Decisão de UX
+### Passos
 
-Vou usar a opção **card visível** (não um "?" ao hover), porque:
-- Maior descoberta para usuários novos (o objetivo é justamente ajudar quem ainda não criou imóvel).
-- Combina com o estilo dos cards/CTAs já presentes nas duas telas.
-- Hover-only é ruim em mobile.
+1. Baixar `denize.jpg`, `juliana.jpg`, `pablo.jpg` do CDN para `/tmp`.
+2. Converter cada um para WebP 112×112 px (2× retina) com `cwebp -q 82`.
+3. Re-upload via `lovable-assets create --filename <nome>.webp` gerando novos `src/assets/lp/avatars/<nome>.webp.asset.json`.
+4. Atualizar imports em `src/pages/LpAnuncio.tsx` (linhas 34-36) de `.jpg.asset.json` para `.webp.asset.json`.
+5. Deletar pointers antigos via `assets--delete_asset` (remove binário do CDN).
+6. Verificar tamanhos finais.
 
-Para não poluir, o card só aparece quando o usuário **ainda não tem imóveis cadastrados** (estado inicial das duas telas dos prints). Assim que cadastra o primeiro imóvel, o card some automaticamente.
-
-## Arquivos a criar/editar
-
-### 1. Novo componente `src/components/help/FirstPropertyHelpCard.tsx`
-- Card clicável com ícone `PlayCircle` + título + subtítulo.
-- Estado interno para abrir/fechar `Dialog`.
-- Dentro do `DialogContent` (max-w-3xl), `<video controls autoPlay>` com `src` vindo de `@/assets/primeiro-imovel.mp4.asset.json` (vídeo completo já existente, 98 MB) e `poster` do `hub-rapido2-poster.jpg.asset.json`.
-- Visual alinhado ao design system (bg `accent-soft`, border `accent/20`, hover sutil). Sem cores hardcoded.
-
-### 2. `src/pages/dashboard/DashboardHome.tsx`
-- Importar e renderizar `<FirstPropertyHelpCard />` condicionalmente quando `properties.length === 0`, logo abaixo do bloco "Imóveis recentes" (ou acima, conforme melhor encaixe visual após leitura do arquivo).
-
-### 3. `src/pages/dashboard/PropertiesList.tsx`
-- Importar e renderizar `<FirstPropertyHelpCard />` no empty state, abaixo do botão "Cadastrar primeiro imóvel".
-
-## Notas técnicas
-- Reusar `Dialog`/`DialogContent` de `@/components/ui/dialog` (já fecha com ESC, overlay e botão X).
-- Vídeo: usar `import videoAsset from "@/assets/primeiro-imovel.mp4.asset.json"` e `<video src={videoAsset.url} />`. Pausar o vídeo ao fechar o modal via `onOpenChange`.
-- Sem novas dependências, sem mudanças de backend.
+### Resultado esperado
+~7,8 MB → ~30 KB (≈99,6% de economia). Sem mudanças de markup, CSS, ou outras páginas.
