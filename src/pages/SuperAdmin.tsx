@@ -257,6 +257,41 @@ export default function SuperAdmin() {
     }
   };
 
+  const openDeleteUser = (u: { id: string; email: string; tenant_name?: string | null }) => {
+    setDeleteTarget({ id: u.id, email: u.email, tenant_name: u.tenant_name ?? null });
+    setDeleteWorkspace(true);
+  };
+
+  const submitDeleteUser = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("admin-delete-user", {
+        body: { user_id: deleteTarget.id, delete_workspace: deleteWorkspace },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).message ?? (data as any).error);
+      const tenantDeleted = (data as any)?.tenant_deleted;
+      const keptReason = (data as any)?.tenant_kept_reason;
+      if (tenantDeleted) {
+        toast.success("Usuário e workspace excluídos.");
+      } else if (keptReason === "has_properties") {
+        toast.success("Usuário excluído. Workspace mantido (possui imóveis).");
+      } else if (keptReason === "has_other_members") {
+        toast.success("Usuário excluído. Workspace mantido (possui outros membros).");
+      } else {
+        toast.success("Usuário excluído.");
+      }
+      setDeleteTarget(null);
+      qc.invalidateQueries({ queryKey: ["admin_users"] });
+      qc.invalidateQueries({ queryKey: ["all_tenants"] });
+    } catch (err: any) {
+      toast.error(err.message ?? "Erro ao excluir usuário");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   return (
     <div className="container py-8 max-w-6xl space-y-6 animate-fade-in">
       <header className="flex items-center gap-2">
