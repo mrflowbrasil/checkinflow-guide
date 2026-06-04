@@ -140,7 +140,7 @@ export default function Auth() {
         />
 
         {/* Logo */}
-        <Link to="/" className="absolute top-6 left-6 lg:top-10 lg:left-12 flex flex-col items-start gap-1 z-10">
+        <Link to="/" className="absolute top-6 left-6 lg:top-10 lg:left-12 flex flex-col items-start gap-1 z-20">
           <MrFlowLogo forceDark className="h-9 lg:h-10 w-auto" />
           <span className="text-[10px] tracking-[0.25em] text-white/70 uppercase">Welcome Hub</span>
         </Link>
