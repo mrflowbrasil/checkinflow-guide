@@ -1,0 +1,16 @@
+/// <reference types="npm:@types/react@18.3.1" />
+
+import type { ComponentType } from 'npm:react@18.3.1'
+import { template as firstPropertyReminder } from './first-property-reminder.tsx'
+
+export interface TemplateEntry {
+  component: ComponentType<any>
+  subject: string | ((data: any) => string)
+  displayName?: string
+  previewData?: Record<string, any>
+  to?: string | ((data: any) => string)
+}
+
+export const TEMPLATES: Record<string, TemplateEntry> = {
+  'first-property-reminder': firstPropertyReminder,
+}

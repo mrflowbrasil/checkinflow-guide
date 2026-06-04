@@ -175,6 +175,27 @@ export type Database = {
         }
         Relationships: []
       }
+      first_property_reminders: {
+        Row: {
+          email_status: string | null
+          sent_at: string
+          user_id: string
+          webhook_status: string | null
+        }
+        Insert: {
+          email_status?: string | null
+          sent_at?: string
+          user_id: string
+          webhook_status?: string | null
+        }
+        Update: {
+          email_status?: string | null
+          sent_at?: string
+          user_id?: string
+          webhook_status?: string | null
+        }
+        Relationships: []
+      }
       guide_translations: {
         Row: {
           content_hash: string
