@@ -31,9 +31,9 @@ import {
 } from "lucide-react";
 import { Seo } from "@/components/Seo";
 import mrFlowLogo from "@/assets/mrflow-logo.png";
-import denizeAvatar from "@/assets/lp/avatars/denize.jpg.asset.json";
-import pabloAvatar from "@/assets/lp/avatars/pablo.jpg.asset.json";
-import julianaAvatar from "@/assets/lp/avatars/juliana.jpg.asset.json";
+import denizeAvatar from "@/assets/lp/avatars/denize.webp.asset.json";
+import pabloAvatar from "@/assets/lp/avatars/pablo.webp.asset.json";
+import julianaAvatar from "@/assets/lp/avatars/juliana.webp.asset.json";
 import heroImg from "@/assets/lp/hero-guest-phone.webp";
 import heroImg768 from "@/assets/lp/hero-guest-phone-768.webp";
 import heroAvif from "@/assets/lp/hero-guest-phone.avif";
