@@ -423,6 +423,17 @@ export default function SuperAdmin() {
                     <Lock className="h-3.5 w-3.5 mr-1.5" />
                     Definir senha
                   </Button>
+                  {u.id !== user?.id && (
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => openDeleteUser({ id: u.id, email: u.email, tenant_name: u.tenant_name })}
+                      title="Excluir usuário"
+                    >
+                      <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+                      Excluir
+                    </Button>
+                  )}
                 </div>
               </div>
             ))}
