@@ -26,6 +26,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { FirstPropertyHelpCard } from "@/components/help/FirstPropertyHelpCard";
 
 type IntegrationRow = {
   provider: "stays" | "hostaway";
@@ -341,13 +342,16 @@ export default function PropertiesList() {
           ))}
         </div>
       ) : properties?.length === 0 ? (
-        <Card className="p-12 text-center">
-          <Home className="h-10 w-10 mx-auto mb-4 text-muted-foreground opacity-40" />
-          <p className="text-muted-foreground mb-4">Nenhum imóvel cadastrado ainda.</p>
-          <Button asChild>
-            <Link to="/app/properties/new"><Plus className="mr-2 h-4 w-4" /> Cadastrar primeiro imóvel</Link>
-          </Button>
-        </Card>
+        <div className="space-y-4">
+          <Card className="p-12 text-center">
+            <Home className="h-10 w-10 mx-auto mb-4 text-muted-foreground opacity-40" />
+            <p className="text-muted-foreground mb-4">Nenhum imóvel cadastrado ainda.</p>
+            <Button asChild>
+              <Link to="/app/properties/new"><Plus className="mr-2 h-4 w-4" /> Cadastrar primeiro imóvel</Link>
+            </Button>
+          </Card>
+          <FirstPropertyHelpCard />
+        </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {properties?.map((p) => (

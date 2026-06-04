@@ -1,15 +1,31 @@
-## Ajustes na aba Usuários do Super Admin
+## Objetivo
 
-### 1. `supabase/functions/admin-list-users/index.ts`
-- Após buscar `profiles`, agregar contagem de imóveis por `tenant_id` via `properties` (`select tenant_id`, filtrando pelos tenant_ids dos perfis retornados) e montar um `Map<tenant_id, number>`.
-- Incluir `property_count: number` em cada item de `result`.
+Adicionar nas telas iniciais (Dashboard e Imóveis) um card de ajuda com título "Precisa de ajuda para criar seu primeiro imóvel?" e subtítulo "Assista o vídeo e veja como criar sua propriedade em menos de 5 minutos!" que ao ser clicado abre um modal com o vídeo embedado (sem sair da página).
 
-### 2. `src/pages/SuperAdmin.tsx` (tabela de usuários)
-- Alterar o grid de `grid-cols-[1fr_1fr_auto_auto_auto]` para `grid-cols-[1.4fr_1.4fr_80px_110px_110px_auto]` (E-mail | Workspace | Imóveis | Criado | Último acesso | Ações), aplicando o mesmo template no header e nas linhas.
-- Header: alinhar à esquerda E-mail/Workspace; centralizar "Imóveis"; alinhar "Criado" e "Último acesso" à direita (`text-right`); manter "Ações" à direita.
-- Linhas: aplicar `text-right` nas células de datas, `text-center` na coluna de imóveis, e `justify-end` no container dos botões de Ações para que fiquem alinhados com o cabeçalho.
-- Nova célula "Imóveis": exibe `u.property_count ?? 0` como badge/numero discreto (`text-sm font-medium`).
-- Datas formatadas como já estão (pt-BR).
+## Decisão de UX
 
-### 3. Sem migração
-Apenas leitura adicional em `properties` dentro da edge function (service_role já tem acesso).
+Vou usar a opção **card visível** (não um "?" ao hover), porque:
+- Maior descoberta para usuários novos (o objetivo é justamente ajudar quem ainda não criou imóvel).
+- Combina com o estilo dos cards/CTAs já presentes nas duas telas.
+- Hover-only é ruim em mobile.
+
+Para não poluir, o card só aparece quando o usuário **ainda não tem imóveis cadastrados** (estado inicial das duas telas dos prints). Assim que cadastra o primeiro imóvel, o card some automaticamente.
+
+## Arquivos a criar/editar
+
+### 1. Novo componente `src/components/help/FirstPropertyHelpCard.tsx`
+- Card clicável com ícone `PlayCircle` + título + subtítulo.
+- Estado interno para abrir/fechar `Dialog`.
+- Dentro do `DialogContent` (max-w-3xl), `<video controls autoPlay>` com `src` vindo de `@/assets/primeiro-imovel.mp4.asset.json` (vídeo completo já existente, 98 MB) e `poster` do `hub-rapido2-poster.jpg.asset.json`.
+- Visual alinhado ao design system (bg `accent-soft`, border `accent/20`, hover sutil). Sem cores hardcoded.
+
+### 2. `src/pages/dashboard/DashboardHome.tsx`
+- Importar e renderizar `<FirstPropertyHelpCard />` condicionalmente quando `properties.length === 0`, logo abaixo do bloco "Imóveis recentes" (ou acima, conforme melhor encaixe visual após leitura do arquivo).
+
+### 3. `src/pages/dashboard/PropertiesList.tsx`
+- Importar e renderizar `<FirstPropertyHelpCard />` no empty state, abaixo do botão "Cadastrar primeiro imóvel".
+
+## Notas técnicas
+- Reusar `Dialog`/`DialogContent` de `@/components/ui/dialog` (já fecha com ESC, overlay e botão X).
+- Vídeo: usar `import videoAsset from "@/assets/primeiro-imovel.mp4.asset.json"` e `<video src={videoAsset.url} />`. Pausar o vídeo ao fechar o modal via `onOpenChange`.
+- Sem novas dependências, sem mudanças de backend.
