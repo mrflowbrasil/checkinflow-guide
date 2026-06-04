@@ -463,6 +463,51 @@ export default function SuperAdmin() {
             </AlertDialogContent>
           </AlertDialog>
 
+          {/* Delete user */}
+          <AlertDialog open={!!deleteTarget} onOpenChange={(o) => !o && !deleting && setDeleteTarget(null)}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Excluir usuário?</AlertDialogTitle>
+                <AlertDialogDescription asChild>
+                  <div className="space-y-2">
+                    <div>
+                      Esta ação é <strong>irreversível</strong>. O usuário <strong>{deleteTarget?.email}</strong>
+                      {deleteTarget?.tenant_name ? <> (workspace <strong>{deleteTarget.tenant_name}</strong>)</> : null}
+                      {" "}será removido permanentemente do login e do banco.
+                    </div>
+                    <label className="flex items-start gap-2 text-sm cursor-pointer pt-2">
+                      <Checkbox
+                        checked={deleteWorkspace}
+                        onCheckedChange={(v) => setDeleteWorkspace(!!v)}
+                        className="mt-0.5"
+                      />
+                      <span>
+                        Excluir também o <strong>workspace</strong> e todos os imóveis, páginas, integrações e assinaturas vinculados.
+                      </span>
+                    </label>
+                    {deleteWorkspace && (
+                      <div className="text-xs text-destructive bg-destructive/5 border border-destructive/20 rounded p-2">
+                        Atenção: todos os imóveis, conteúdos e assinaturas deste workspace serão apagados.
+                      </div>
+                    )}
+                  </div>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel disabled={deleting}>Cancelar</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={submitDeleteUser}
+                  disabled={deleting}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  {deleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Excluir definitivamente
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
+
           {/* Set password (LGPD fallback) */}
           <Dialog open={!!setPwTarget} onOpenChange={(o) => !o && setSetPwTarget(null)}>
             <DialogContent className="max-w-md">
