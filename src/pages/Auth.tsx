@@ -79,7 +79,7 @@ export default function Auth() {
     if (!ev.success) return toast.error(ev.error.issues[0].message);
     if (!pv.success) return toast.error(pv.error.issues[0].message);
     setBusy(true);
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -87,9 +87,14 @@ export default function Auth() {
         data: { full_name: fullName },
       },
     });
+    // Encerrar sessão criada automaticamente para forçar login manual
+    await supabase.auth.signOut();
     setBusy(false);
     if (error) return toast.error(traduzErroAuth(error.message));
-    toast.success("Conta criada! Verifique seu email para confirmar antes de entrar.");
+    if (!data.user || (data.user.identities && data.user.identities.length === 0)) {
+      return toast.error("Não foi possível usar este email. Verifique o endereço ou tente outro.");
+    }
+    toast.success("Conta criada com sucesso! Faça login com seu email e senha para continuar.");
     setTab("signin");
   };
 
