@@ -93,6 +93,11 @@ export default function SuperAdmin() {
   const [setPwSubmitting, setSetPwSubmitting] = useState(false);
   const [setPwResult, setSetPwResult] = useState<{ email: string; password: string } | null>(null);
 
+  // Delete user state
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; email: string; tenant_name: string | null } | null>(null);
+  const [deleteWorkspace, setDeleteWorkspace] = useState(true);
+  const [deleting, setDeleting] = useState(false);
+
   useEffect(() => {
     const t = setTimeout(() => setUserQuery(userSearch.trim().toLowerCase()), 300);
     return () => clearTimeout(t);
