@@ -376,17 +376,18 @@ export default function SuperAdmin() {
           </Card>
 
           <Card className="shadow-card overflow-hidden">
-            <div className="hidden sm:grid grid-cols-[1fr_1fr_auto_auto_auto] gap-4 px-5 py-3 border-b bg-muted/40 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-              <div>E-mail</div>
-              <div>Workspace</div>
-              <div>Criado</div>
-              <div>Último acesso</div>
-              <div>Ações</div>
+            <div className="hidden sm:grid grid-cols-[minmax(0,1.4fr)_minmax(0,1.4fr)_80px_110px_130px_auto] gap-4 px-5 py-3 border-b bg-muted/40 text-xs font-medium text-muted-foreground uppercase tracking-wider items-center">
+              <div className="text-left">E-mail</div>
+              <div className="text-left">Workspace</div>
+              <div className="text-center">Imóveis</div>
+              <div className="text-right">Criado</div>
+              <div className="text-right">Último acesso</div>
+              <div className="text-right">Ações</div>
             </div>
             {(usersData ?? []).map((u: any) => (
               <div
                 key={u.id}
-                className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_auto_auto_auto] gap-3 px-5 py-3 border-b last:border-0 items-center text-sm"
+                className="grid grid-cols-1 sm:grid-cols-[minmax(0,1.4fr)_minmax(0,1.4fr)_80px_110px_130px_auto] gap-3 px-5 py-3 border-b last:border-0 items-center text-sm"
               >
                 <div className="min-w-0">
                   <div className="font-medium truncate">{u.email}</div>
@@ -397,13 +398,16 @@ export default function SuperAdmin() {
                 <div className="text-xs text-muted-foreground truncate">
                   {u.tenant_name ?? "—"}
                 </div>
-                <div className="text-xs text-muted-foreground">
+                <div className="text-sm font-medium text-center tabular-nums">
+                  {u.property_count ?? 0}
+                </div>
+                <div className="text-xs text-muted-foreground text-right tabular-nums">
                   {u.created_at ? new Date(u.created_at).toLocaleDateString("pt-BR") : "—"}
                 </div>
-                <div className="text-xs text-muted-foreground">
+                <div className="text-xs text-muted-foreground text-right tabular-nums">
                   {u.last_sign_in_at ? new Date(u.last_sign_in_at).toLocaleDateString("pt-BR") : "Nunca"}
                 </div>
-                <div className="flex gap-2 flex-wrap">
+                <div className="flex gap-2 flex-wrap justify-end">
                   <Button
                     size="sm"
                     variant="outline"

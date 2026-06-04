@@ -87,6 +87,23 @@ Deno.serve(async (req) => {
     console.log("[admin-list-users] profiles fetched=", profiles?.length ?? 0);
     const profById = new Map((profiles ?? []).map((p: any) => [p.id, p]));
 
+    // Count properties per tenant
+    const tenantIds = Array.from(
+      new Set((profiles ?? []).map((p: any) => p.tenant_id).filter(Boolean))
+    );
+    const propCountByTenant = new Map<string, number>();
+    if (tenantIds.length > 0) {
+      const { data: props, error: propsErr } = await admin
+        .from("properties")
+        .select("tenant_id")
+        .in("tenant_id", tenantIds);
+      if (propsErr) console.log("[admin-list-users] properties error", propsErr.message);
+      for (const row of props ?? []) {
+        const tid = (row as any).tenant_id as string;
+        propCountByTenant.set(tid, (propCountByTenant.get(tid) ?? 0) + 1);
+      }
+    }
+
     const result = filtered.map((u) => {
       const p: any = profById.get(u.id);
       return {
@@ -97,6 +114,7 @@ Deno.serve(async (req) => {
         full_name: p?.full_name ?? null,
         tenant_name: p?.tenants?.name ?? null,
         tenant_slug: p?.tenants?.slug ?? null,
+        property_count: p?.tenant_id ? (propCountByTenant.get(p.tenant_id) ?? 0) : 0,
       };
     });
     result.sort((a, b) => (a.email ?? "").localeCompare(b.email ?? ""));
