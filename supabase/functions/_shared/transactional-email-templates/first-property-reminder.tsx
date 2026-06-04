@@ -67,13 +67,6 @@ const FirstPropertyReminder = ({
                   width="496"
                   style={thumb}
                 />
-                <Img
-                  src={PLAY_ICON}
-                  alt="Assistir"
-                  width="72"
-                  height="72"
-                  style={playOverlay}
-                />
               </Link>
               <Text style={videoCaption}>
                 <Link href={videoUrl} style={link}>
