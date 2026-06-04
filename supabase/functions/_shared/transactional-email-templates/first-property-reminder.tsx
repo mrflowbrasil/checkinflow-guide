@@ -27,8 +27,6 @@ interface Props {
 const DEFAULT_CTA = 'https://hub.mrflow.com.br/app/properties/new'
 const DEFAULT_VIDEO = 'https://youtu.be/l8SxORuMqLU'
 const DEFAULT_THUMB = 'https://img.youtube.com/vi/l8SxORuMqLU/maxresdefault.jpg'
-const PLAY_ICON =
-  'https://pgdfcufjdyhmaqikwbdq.supabase.co/storage/v1/object/public/email-assets/youtube-play.png'
 
 const FirstPropertyReminder = ({
   firstName,
