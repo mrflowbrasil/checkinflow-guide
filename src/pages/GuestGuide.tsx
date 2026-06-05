@@ -141,6 +141,7 @@ export default function GuestGuide() {
   return (
     <GuideI18nProvider slug={slug!} locale={locale}>
       <GuideBody
+        showLeadBar={slug === "suite-premium-vila-serena-23515a"}
         data={data}
         tenant={tenant}
         pages={pages}
