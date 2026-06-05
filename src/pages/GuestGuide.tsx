@@ -174,8 +174,8 @@ function GuideBody({
   if (data.address) lodgingLd.address = { "@type": "PostalAddress", streetAddress: data.address };
   if (data.cover_image_url) lodgingLd.image = data.cover_image_url;
   return (
-    <div className={`guide-root guide-template-${template} min-h-screen pt-12 sm:pt-14`}>
-      <LeadCaptureBar />
+    <div className={`guide-root guide-template-${template} min-h-screen ${showLeadBar ? "pt-12 sm:pt-14" : ""}`}>
+      {showLeadBar && <LeadCaptureBar />}
       <Seo
         title={seoTitle}
         description={seoDesc}
