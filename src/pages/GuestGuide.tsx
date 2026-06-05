@@ -11,6 +11,7 @@ import { GuestLinkExpired } from "@/components/guest/GuestLinkExpired";
 import { InstallAppButton } from "@/components/guest/InstallAppButton";
 import { LanguageSwitcher } from "@/components/guest/LanguageSwitcher";
 import { SocialLinks } from "@/components/guest/SocialLinks";
+import { LeadCaptureBar } from "@/components/guest/LeadCaptureBar";
 import { GuideI18nProvider, useGuideT, type GuideLocale } from "@/lib/i18n-guide";
 import { Seo } from "@/components/Seo";
 
@@ -172,7 +173,8 @@ function GuideBody({
   if (data.address) lodgingLd.address = { "@type": "PostalAddress", streetAddress: data.address };
   if (data.cover_image_url) lodgingLd.image = data.cover_image_url;
   return (
-    <div className={`guide-root guide-template-${template} min-h-screen`}>
+    <div className={`guide-root guide-template-${template} min-h-screen pt-12 sm:pt-14`}>
+      <LeadCaptureBar />
       <Seo
         title={seoTitle}
         description={seoDesc}
