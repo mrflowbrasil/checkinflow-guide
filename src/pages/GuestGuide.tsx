@@ -141,6 +141,7 @@ export default function GuestGuide() {
   return (
     <GuideI18nProvider slug={slug!} locale={locale}>
       <GuideBody
+        showLeadBar={slug === "suite-premium-vila-serena-23515a"}
         data={data}
         tenant={tenant}
         pages={pages}
@@ -157,7 +158,7 @@ export default function GuestGuide() {
 }
 
 function GuideBody({
-  data, tenant, pages, template, primaryColor, activePage, activePageKey, setActivePageKey, locale, onLocaleChange,
+  data, tenant, pages, template, primaryColor, activePage, activePageKey, setActivePageKey, locale, onLocaleChange, showLeadBar,
 }: any) {
   const { t, isLoading: tLoading } = useGuideT();
   const seoTitle = `${data.name} — Guia do Hóspede`;
@@ -173,8 +174,8 @@ function GuideBody({
   if (data.address) lodgingLd.address = { "@type": "PostalAddress", streetAddress: data.address };
   if (data.cover_image_url) lodgingLd.image = data.cover_image_url;
   return (
-    <div className={`guide-root guide-template-${template} min-h-screen pt-12 sm:pt-14`}>
-      <LeadCaptureBar />
+    <div className={`guide-root guide-template-${template} min-h-screen ${showLeadBar ? "pt-12 sm:pt-14" : ""}`}>
+      {showLeadBar && <LeadCaptureBar />}
       <Seo
         title={seoTitle}
         description={seoDesc}
