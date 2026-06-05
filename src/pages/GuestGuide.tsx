@@ -158,7 +158,7 @@ export default function GuestGuide() {
 }
 
 function GuideBody({
-  data, tenant, pages, template, primaryColor, activePage, activePageKey, setActivePageKey, locale, onLocaleChange,
+  data, tenant, pages, template, primaryColor, activePage, activePageKey, setActivePageKey, locale, onLocaleChange, showLeadBar,
 }: any) {
   const { t, isLoading: tLoading } = useGuideT();
   const seoTitle = `${data.name} — Guia do Hóspede`;
