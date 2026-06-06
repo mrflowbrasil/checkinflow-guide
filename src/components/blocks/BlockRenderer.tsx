@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { FormattedText } from "@/lib/inline-format";
 import { useGuideT } from "@/lib/i18n-guide";
+import { sbImage, sbImageSrcSet } from "@/lib/supabase-image";
+
 
 export function BlockRenderer({ block, primaryColor, translate }: { block: BlockBase; primaryColor?: string; translate?: boolean }) {
   const { t } = useGuideT();
