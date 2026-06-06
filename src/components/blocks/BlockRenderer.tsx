@@ -26,7 +26,16 @@ export function BlockRenderer({ block, primaryColor, translate }: { block: Block
     case "image":
       return block.data?.url ? (
         <figure className="space-y-2">
-          <img src={block.data.url} alt={tr(block.data.caption ?? "")} className="w-full rounded-xl" loading="lazy" />
+          <img
+            src={sbImage(block.data.url, { width: 800 })}
+            srcSet={sbImageSrcSet(block.data.url, [480, 800, 1200])}
+            sizes="(max-width: 640px) 100vw, 640px"
+            alt={tr(block.data.caption ?? "")}
+            className="w-full rounded-xl"
+            loading="lazy"
+            decoding="async"
+          />
+
           {block.data.caption && <figcaption className="text-xs text-center" style={{ color: "hsl(var(--guide-muted))" }}>{tr(block.data.caption)}</figcaption>}
         </figure>
       ) : null;
