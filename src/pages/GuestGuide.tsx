@@ -192,9 +192,10 @@ function GuideBody({
             rel="preload"
             as="image"
             href={sbImage(data.cover_image_url, { width: 960 })}
-            imagesrcset={sbImageSrcSet(data.cover_image_url, [640, 960, 1280])}
-            imagesizes="100vw"
-            fetchpriority="high"
+            imageSrcSet={sbImageSrcSet(data.cover_image_url, [640, 960, 1280])}
+            imageSizes="100vw"
+            fetchPriority="high"
+
           />
         </Helmet>
       )}
