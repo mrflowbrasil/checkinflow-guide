@@ -14,6 +14,9 @@ import { SocialLinks } from "@/components/guest/SocialLinks";
 import { LeadCaptureBar } from "@/components/guest/LeadCaptureBar";
 import { GuideI18nProvider, useGuideT, type GuideLocale } from "@/lib/i18n-guide";
 import { Seo } from "@/components/Seo";
+import { Helmet } from "react-helmet-async";
+import { sbImage, sbImageSrcSet } from "@/lib/supabase-image";
+
 
 export default function GuestGuide() {
   const { slug } = useParams<{ slug: string }>();
