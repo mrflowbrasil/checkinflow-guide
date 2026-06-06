@@ -14,6 +14,9 @@ import { SocialLinks } from "@/components/guest/SocialLinks";
 import { LeadCaptureBar } from "@/components/guest/LeadCaptureBar";
 import { GuideI18nProvider, useGuideT, type GuideLocale } from "@/lib/i18n-guide";
 import { Seo } from "@/components/Seo";
+import { Helmet } from "react-helmet-async";
+import { sbImage, sbImageSrcSet } from "@/lib/supabase-image";
+
 
 export default function GuestGuide() {
   const { slug } = useParams<{ slug: string }>();
@@ -183,13 +186,35 @@ function GuideBody({
         image={data.cover_image_url || undefined}
         jsonLd={lodgingLd}
       />
+      {data.cover_image_url && (
+        <Helmet>
+          <link
+            rel="preload"
+            as="image"
+            href={sbImage(data.cover_image_url, { width: 960 })}
+            imageSrcSet={sbImageSrcSet(data.cover_image_url, [640, 960, 1280])}
+            imageSizes="100vw"
+            fetchPriority="high"
+
+          />
+        </Helmet>
+      )}
       {/* Hero */}
       <div className="relative">
         <LanguageSwitcher locale={locale} onChange={onLocaleChange} isLoading={tLoading} />
         <SocialLinks instagramUrl={tenant?.instagram_url} facebookUrl={tenant?.facebook_url} />
         <div className="aspect-[4/3] sm:aspect-[16/10] max-h-[60vh] w-full overflow-hidden">
           {data.cover_image_url ? (
-            <img src={data.cover_image_url} alt={data.name} className="h-full w-full object-cover" />
+            <img
+              src={sbImage(data.cover_image_url, { width: 960 })}
+              srcSet={sbImageSrcSet(data.cover_image_url, [640, 960, 1280])}
+              sizes="100vw"
+              alt={data.name}
+              className="h-full w-full object-cover"
+              fetchPriority="high"
+              decoding="async"
+            />
+
           ) : (
             <div className="h-full w-full bg-muted" />
           )}

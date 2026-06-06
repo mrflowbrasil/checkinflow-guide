@@ -26,11 +26,12 @@
     <meta name="apple-mobile-web-app-title" content="Mr Flow" />
     <meta name="application-name" content="Mr Flow Welcome Hub" />
 
-    <!-- Performance: preconnect to third-party origins used early -->
-    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
-    <link rel="preconnect" href="https://connect.facebook.net" crossorigin>
+    <!-- Performance: preconnect to origins critical for first paint; others use dns-prefetch -->
     <link rel="preconnect" href="https://pgdfcufjdyhmaqikwbdq.supabase.co" crossorigin>
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+    <link rel="dns-prefetch" href="https://connect.facebook.net">
     <link rel="dns-prefetch" href="https://www.facebook.com">
+
 
     <!-- Google Analytics 4 (only on official production hostname) -->
     <script>
