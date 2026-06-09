@@ -7,8 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Copy, Download, ExternalLink, Pencil, Printer, QrCode as QrIcon, Loader2, GripVertical, RefreshCw, Lock } from "lucide-react";
+import { ArrowLeft, Copy, Download, ExternalLink, Pencil, Printer, QrCode as QrIcon, Loader2, GripVertical, RefreshCw, Lock, MessageSquarePlus } from "lucide-react";
 import { WelcomeCardDialog } from "@/components/property/WelcomeCardDialog";
+import { SuggestionDialog } from "@/components/property/SuggestionDialog";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
@@ -33,6 +34,7 @@ export default function PropertyDetail() {
   const [qrUrl, setQrUrl] = useState<string>("");
   const [editOpen, setEditOpen] = useState(false);
   const [welcomeOpen, setWelcomeOpen] = useState(false);
+  const [suggestionOpen, setSuggestionOpen] = useState(false);
 
   const { data: property, isLoading } = useQuery({
     queryKey: ["property", id],
@@ -256,10 +258,22 @@ export default function PropertyDetail() {
 
       {/* Pages list */}
       <div>
-        <h2 className="text-lg font-semibold mb-3">Páginas do guia</h2>
-        <p className="text-sm text-muted-foreground mb-4">
-          Arraste pelo ícone <GripVertical className="inline h-3.5 w-3.5 align-text-bottom" /> para reordenar. Edite cada categoria que aparece no guia do hóspede.
-        </p>
+        <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h2 className="text-lg font-semibold">Páginas do guia</h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Arraste pelo ícone <GripVertical className="inline h-3.5 w-3.5 align-text-bottom" /> para reordenar. Edite cada categoria que aparece no guia do hóspede.
+            </p>
+          </div>
+          <div className="flex flex-col items-start sm:items-end gap-2 shrink-0">
+            <p className="text-xs text-muted-foreground sm:text-right">
+              Sentiu falta de algo? Envie sua sugestão pra gente!
+            </p>
+            <Button variant="outline" size="sm" onClick={() => setSuggestionOpen(true)}>
+              <MessageSquarePlus className="mr-2 h-4 w-4" /> Enviar sugestão
+            </Button>
+          </div>
+        </div>
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={pages.map((p) => p.id)} strategy={rectSortingStrategy}>
             <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
