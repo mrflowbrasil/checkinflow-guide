@@ -193,6 +193,7 @@ export default function PropertyDetail() {
       </Card>
 
       <EditPropertyDialog open={editOpen} onOpenChange={setEditOpen} property={property as any} />
+      <SuggestionDialog open={suggestionOpen} onOpenChange={setSuggestionOpen} />
       <WelcomeCardDialog
         open={welcomeOpen}
         onOpenChange={setWelcomeOpen}
