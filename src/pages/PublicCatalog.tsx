@@ -153,6 +153,7 @@ export default function PublicCatalog() {
       <Seo
         title={tenant ? `Catálogo · ${tenant.name}` : "Catálogo"}
         description={tenant?.bio ?? "Encontre sua próxima estadia"}
+        path={`/c/${tenantSlug}`}
         noindex
       />
       <div className="mx-auto max-w-md px-4 py-6 space-y-5">
