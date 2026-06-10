@@ -33,6 +33,8 @@ const Settings = lazy(() => import("./pages/dashboard/Settings"));
 const Billing = lazy(() => import("./pages/dashboard/Billing"));
 const Integrations = lazy(() => import("./pages/dashboard/Integrations"));
 const Templates = lazy(() => import("./pages/dashboard/Templates"));
+const Catalog = lazy(() => import("./pages/dashboard/Catalog"));
+const PublicCatalog = lazy(() => import("./pages/PublicCatalog"));
 const Help = lazy(() => import("./pages/dashboard/Help"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
@@ -119,6 +121,7 @@ const App = () => (
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/invite/:token" element={<Invite />} />
               <Route path="/g/:slug" element={<GuestGuide />} />
+              <Route path="/c/:tenantSlug" element={<PublicCatalog />} />
               <Route path="/termos" element={<Terms />} />
               <Route path="/privacidade" element={<Privacy />} />
               <Route path="/unsubscribe" element={<Unsubscribe />} />
