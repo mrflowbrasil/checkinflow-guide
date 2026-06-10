@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import { supabase } from "@/integrations/supabase/client";
-import Seo from "@/components/Seo";
+import { Seo } from "@/components/Seo";
 
 import { CatalogHeader } from "@/components/catalog/public/CatalogHeader";
 import { CatalogFilters, type Filters } from "@/components/catalog/public/CatalogFilters";
