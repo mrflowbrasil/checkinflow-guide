@@ -402,6 +402,8 @@ export default function PageEditor() {
                         tenantId={tenant?.id ?? ""}
                         onChange={(data) => updateBlock(b.id, data)}
                         onDelete={() => deleteBlock(b.id)}
+                        onCopy={() => copyBlock(b.id)}
+                        onDuplicate={() => duplicateBlock(b.id)}
                       />
                     ))}
                   </div>
