@@ -13,11 +13,14 @@ import {
 } from "@/components/ui/sheet";
 import { useEffect, useState } from "react";
 import CompleteProfileDialog from "@/components/onboarding/CompleteProfileDialog";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
+const isProduction = typeof window !== "undefined" && window.location.hostname === "hub.mrflow.com.br";
 
 const NAV = [
   { to: "/app", label: "Dashboard", icon: LayoutDashboard, end: true },
   { to: "/app/properties", label: "Imóveis", icon: Home },
-  { to: "/app/catalog", label: "Catálogo", icon: LayoutGrid },
+  { to: "/app/catalog", label: "Catálogo", icon: LayoutGrid, comingSoonInProd: true },
   { to: "/app/templates", label: "Templates", icon: Sparkles },
   { to: "/app/integrations", label: "Integrações", icon: Plug },
   { to: "/app/billing", label: "Planos", icon: CreditCard },
@@ -28,40 +31,62 @@ const NAV = [
 function NavItems({ onClick }: { onClick?: () => void }) {
   const { data: isAdmin } = useIsSuperAdmin();
   return (
-    <nav className="flex flex-col gap-1 p-3">
-      {NAV.map((item) => (
-        <NavLink
-          key={item.to}
-          to={item.to}
-          end={item.end}
-          onClick={onClick}
-          className={({ isActive }) =>
-            `flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
-              isActive
-                ? "bg-accent-soft text-accent-foreground"
-                : "text-sidebar-foreground hover:bg-muted"
-            }`
+    <TooltipProvider delayDuration={150}>
+      <nav className="flex flex-col gap-1 p-3">
+        {NAV.map((item) => {
+          const disabled = item.comingSoonInProd && isProduction && !isAdmin;
+          if (disabled) {
+            return (
+              <Tooltip key={item.to}>
+                <TooltipTrigger asChild>
+                  <div
+                    aria-disabled="true"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-muted-foreground/60 cursor-not-allowed select-none"
+                  >
+                    <item.icon className="h-4 w-4" />
+                    {item.label}
+                    <span className="ml-auto text-[10px] uppercase tracking-wider opacity-70">Em breve</span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="right">Em breve</TooltipContent>
+              </Tooltip>
+            );
           }
-        >
-          <item.icon className="h-4 w-4" />
-          {item.label}
-        </NavLink>
-      ))}
-      {isAdmin && (
-        <NavLink
-          to="/admin"
-          onClick={onClick}
-          className={({ isActive }) =>
-            `flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors mt-4 border-t pt-4 ${
-              isActive ? "bg-accent-soft text-accent-foreground" : "text-sidebar-foreground hover:bg-muted"
-            }`
-          }
-        >
-          <Shield className="h-4 w-4" />
-          Super Admin
-        </NavLink>
-      )}
-    </nav>
+          return (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.end}
+              onClick={onClick}
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
+                  isActive
+                    ? "bg-accent-soft text-accent-foreground"
+                    : "text-sidebar-foreground hover:bg-muted"
+                }`
+              }
+            >
+              <item.icon className="h-4 w-4" />
+              {item.label}
+            </NavLink>
+          );
+        })}
+        {isAdmin && (
+          <NavLink
+            to="/admin"
+            onClick={onClick}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors mt-4 border-t pt-4 ${
+                isActive ? "bg-accent-soft text-accent-foreground" : "text-sidebar-foreground hover:bg-muted"
+              }`
+            }
+          >
+            <Shield className="h-4 w-4" />
+            Super Admin
+          </NavLink>
+        )}
+      </nav>
+    </TooltipProvider>
   );
 }
 
