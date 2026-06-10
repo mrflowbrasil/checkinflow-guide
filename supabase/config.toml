@@ -29,3 +29,7 @@ project_id = "pgdfcufjdyhmaqikwbdq"
     verify_jwt = false
   [functions.property-manifest]
     verify_jwt = false
+  [functions.catalog-public]
+    verify_jwt = false
+  [functions.catalog-search]
+    verify_jwt = false

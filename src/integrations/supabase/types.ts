@@ -374,7 +374,9 @@ export type Database = {
       properties: {
         Row: {
           address: string | null
+          base_price: number | null
           booking_url: string | null
+          city: string | null
           cover_image_url: string | null
           created_at: string
           description: string | null
@@ -382,15 +384,19 @@ export type Database = {
           external_id: string | null
           external_provider: string | null
           id: string
+          max_guests: number | null
           name: string
           public_slug: string
+          source: string
           status: Database["public"]["Enums"]["property_status"]
           tenant_id: string
           updated_at: string
         }
         Insert: {
           address?: string | null
+          base_price?: number | null
           booking_url?: string | null
+          city?: string | null
           cover_image_url?: string | null
           created_at?: string
           description?: string | null
@@ -398,15 +404,19 @@ export type Database = {
           external_id?: string | null
           external_provider?: string | null
           id?: string
+          max_guests?: number | null
           name: string
           public_slug: string
+          source?: string
           status?: Database["public"]["Enums"]["property_status"]
           tenant_id: string
           updated_at?: string
         }
         Update: {
           address?: string | null
+          base_price?: number | null
           booking_url?: string | null
+          city?: string | null
           cover_image_url?: string | null
           created_at?: string
           description?: string | null
@@ -414,8 +424,10 @@ export type Database = {
           external_id?: string | null
           external_provider?: string | null
           id?: string
+          max_guests?: number | null
           name?: string
           public_slug?: string
+          source?: string
           status?: Database["public"]["Enums"]["property_status"]
           tenant_id?: string
           updated_at?: string
@@ -824,6 +836,7 @@ export type Database = {
       }
       tenants: {
         Row: {
+          catalog_bio: string | null
           created_at: string
           facebook_url: string | null
           id: string
@@ -845,6 +858,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          catalog_bio?: string | null
           created_at?: string
           facebook_url?: string | null
           id?: string
@@ -866,6 +880,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          catalog_bio?: string | null
           created_at?: string
           facebook_url?: string | null
           id?: string
