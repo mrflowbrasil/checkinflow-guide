@@ -19,11 +19,15 @@ export function BlockEditor({
   tenantId,
   onChange,
   onDelete,
+  onCopy,
+  onDuplicate,
 }: {
   block: BlockBase;
   tenantId: string;
   onChange: (data: any) => void;
   onDelete: () => void;
+  onCopy?: () => void;
+  onDuplicate?: () => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: block.id });
   const style = {
@@ -53,9 +57,21 @@ export function BlockEditor({
           </div>
           <BlockBody block={block} tenantId={tenantId} onChange={onChange} />
         </div>
-        <Button variant="ghost" size="icon" onClick={onDelete} className="text-destructive hover:bg-destructive/10">
-          <Trash2 className="h-4 w-4" />
-        </Button>
+        <div className="flex items-center gap-0.5 shrink-0">
+          {onCopy && (
+            <Button variant="ghost" size="icon" onClick={onCopy} title="Copiar bloco" aria-label="Copiar bloco">
+              <Copy className="h-4 w-4" />
+            </Button>
+          )}
+          {onDuplicate && (
+            <Button variant="ghost" size="icon" onClick={onDuplicate} title="Duplicar bloco" aria-label="Duplicar bloco">
+              <CopyPlus className="h-4 w-4" />
+            </Button>
+          )}
+          <Button variant="ghost" size="icon" onClick={onDelete} className="text-destructive hover:bg-destructive/10" title="Excluir bloco" aria-label="Excluir bloco">
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
     </Card>
   );
