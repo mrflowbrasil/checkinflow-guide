@@ -170,6 +170,43 @@ export default function PageEditor() {
   };
   const deleteBlock = (id: string) => setLocalBlocks(localBlocks.filter((b) => b.id !== id));
 
+  const duplicateBlock = (id: string) => {
+    const idx = localBlocks.findIndex((b) => b.id === id);
+    if (idx === -1) return;
+    const src = localBlocks[idx];
+    const clone = {
+      id: `tmp-${crypto.randomUUID()}`,
+      type: src.type,
+      data: JSON.parse(JSON.stringify(src.data ?? {})),
+      position: idx + 1,
+    };
+    const next = [...localBlocks.slice(0, idx + 1), clone, ...localBlocks.slice(idx + 1)]
+      .map((b, i) => ({ ...b, position: i }));
+    setLocalBlocks(next);
+    toast.success("Bloco duplicado");
+  };
+
+  const copyBlock = (id: string) => {
+    if (!tenant?.id || !data) return;
+    const b = localBlocks.find((x) => x.id === id);
+    if (!b) return;
+    const payload: ClipboardPayload = {
+      copiedAt: new Date().toISOString(),
+      sourcePropertyId: data.page.properties.id,
+      sourcePropertyName: data.page.properties.name,
+      sourcePageKey: data.page.page_key,
+      sourcePageTitle: data.page.title,
+      blocks: [{ type: b.type, data: b.data, position: 0 }],
+    };
+    try {
+      localStorage.setItem(clipboardKey(tenant.id), JSON.stringify(payload));
+      setClipboard(payload);
+      toast.success("Bloco copiado. Use 'Colar' em outra página.");
+    } catch (e: any) {
+      toast.error("Não foi possível copiar: " + (e?.message ?? "erro desconhecido"));
+    }
+  };
+
   const handleDragEnd = (e: any) => {
     const { active, over } = e;
     if (!over || active.id === over.id) return;
@@ -365,6 +402,8 @@ export default function PageEditor() {
                         tenantId={tenant?.id ?? ""}
                         onChange={(data) => updateBlock(b.id, data)}
                         onDelete={() => deleteBlock(b.id)}
+                        onCopy={() => copyBlock(b.id)}
+                        onDuplicate={() => duplicateBlock(b.id)}
                       />
                     ))}
                   </div>
