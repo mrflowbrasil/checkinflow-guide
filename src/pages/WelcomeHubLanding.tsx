@@ -628,7 +628,7 @@ const ENTERPRISE_WA_HREF = `https://wa.me/5521996507509?text=${encodeURIComponen
 
 const plans = [
   {
-    name: "Single", sub: "Para host individual", limit: "1 imóvel", trial: "30 dias grátis",
+    name: "Single", sub: "Para host individual", limit: "1 imóvel",
     monthly: "R$ 8,90", yearly: "R$ 89,00",
     features: ["1 imóvel", "Hub digital personalizado", "QR Code", "Link compartilhável", "Páginas essenciais", "Cartão de boas-vindas"],
     cta: "Começar agora", href: "/app/billing", featured: false,
