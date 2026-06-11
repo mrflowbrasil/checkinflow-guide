@@ -1029,11 +1029,6 @@ function PlanosSection() {
                     <Sparkles className="h-3 w-3 mr-1" /> Mais popular
                   </Badge>
                 )}
-                {isSingle && (
-                  <Badge className="absolute -top-2 right-4 bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-100">
-                    <Gift className="h-3 w-3 mr-1" /> 30 dias grátis
-                  </Badge>
-                )}
 
                 <div className="space-y-1 mb-4">
                   <h3 className="font-semibold text-lg text-slate-900">{plan.name}</h3>
