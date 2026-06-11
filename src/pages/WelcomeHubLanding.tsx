@@ -628,7 +628,7 @@ const ENTERPRISE_WA_HREF = `https://wa.me/5521996507509?text=${encodeURIComponen
 
 const plans = [
   {
-    name: "Single", sub: "Para host individual", limit: "1 imóvel", trial: "30 dias grátis",
+    name: "Single", sub: "Para host individual", limit: "1 imóvel",
     monthly: "R$ 8,90", yearly: "R$ 89,00",
     features: ["1 imóvel", "Hub digital personalizado", "QR Code", "Link compartilhável", "Páginas essenciais", "Cartão de boas-vindas"],
     cta: "Começar agora", href: "/app/billing", featured: false,
@@ -698,7 +698,7 @@ function PricingSection() {
                   </>
                 )}
               </div>
-              {p.trial && <div className={`text-[10px] font-medium mb-3 ${isDark ? "text-[#00FF00]" : "text-[#0E7490]"}`}>{p.trial}</div>}
+              
               <ul className="space-y-2 my-5 flex-1">
                 {p.features.map((f) => (
                   <li key={f} className={`flex items-start gap-2 text-xs ${isDark ? "text-[#CBD5E1]" : "text-slate-700"}`}>

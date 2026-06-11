@@ -278,11 +278,6 @@ export default function Billing() {
                   <Sparkles className="h-3 w-3 mr-1" /> Mais popular
                 </Badge>
               )}
-              {isSingle && (
-                <Badge variant="secondary" className="absolute -top-2 right-4">
-                  <Gift className="h-3 w-3 mr-1" /> 30 dias grátis
-                </Badge>
-              )}
 
               <div className="space-y-1 mb-4">
                 <h3 className="font-semibold text-lg">{plan.name}</h3>
