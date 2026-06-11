@@ -698,7 +698,7 @@ function PricingSection() {
                   </>
                 )}
               </div>
-              {p.trial && <div className={`text-[10px] font-medium mb-3 ${isDark ? "text-[#00FF00]" : "text-[#0E7490]"}`}>{p.trial}</div>}
+              
               <ul className="space-y-2 my-5 flex-1">
                 {p.features.map((f) => (
                   <li key={f} className={`flex items-start gap-2 text-xs ${isDark ? "text-[#CBD5E1]" : "text-slate-700"}`}>
