@@ -190,9 +190,9 @@ function HeroLp() {
       <div className="container relative max-w-6xl mx-auto px-5 sm:px-8 pt-12 pb-16 lg:pt-20 lg:pb-24">
         <div className="grid lg:grid-cols-[1.05fr_1fr] gap-10 lg:gap-14 items-center">
           <div>
-            <Badge className="mb-5 bg-white border border-[hsl(186_100%_32%)]/30 text-[hsl(186_100%_24%)] rounded-full px-3 py-1 hover:bg-white">
-              <Sparkles className="h-3.5 w-3.5 mr-1.5" /> Para anfitriões Superhost e gestores de temporada
-            </Badge>
+            <span className="inline-flex items-center gap-2 mb-5 px-4 py-1.5 rounded-full bg-[hsl(186_100%_94%)] border border-[hsl(186_100%_32%)]/20 text-xs font-semibold tracking-wide uppercase text-[hsl(186_100%_24%)]">
+              <Sparkles className="h-3.5 w-3.5" /> Para anfitriões Superhost e gestores de temporada
+            </span>
             <h1 className="text-4xl sm:text-5xl lg:text-[3.4rem] font-bold tracking-tight leading-[1.08] text-slate-900">
               Pare de responder as mesmas dúvidas no WhatsApp.
             </h1>
