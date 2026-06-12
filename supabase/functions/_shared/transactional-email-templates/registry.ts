@@ -2,6 +2,7 @@
 
 import type { ComponentType } from 'npm:react@18.3.1'
 import { template as firstPropertyReminder } from './first-property-reminder.tsx'
+import { template as quickSignupWelcome } from './quick-signup-welcome.tsx'
 
 export interface TemplateEntry {
   component: ComponentType<any>
@@ -13,4 +14,5 @@ export interface TemplateEntry {
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'first-property-reminder': firstPropertyReminder,
+  'quick-signup-welcome': quickSignupWelcome,
 }

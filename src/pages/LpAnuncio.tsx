@@ -40,6 +40,7 @@ import guideMockup from "@/assets/lp/guide-panel-mockup.webp";
 import qrFrame from "@/assets/lp/qrcode-frame.webp";
 import VideoCriacao from "@/components/lp/VideoCriacao";
 import WhatsAppGuideDialog from "@/components/lp/WhatsAppGuideDialog";
+import QuickSignupDialog, { openQuickSignup } from "@/components/lp/QuickSignupDialog";
 
 const DEMO_URL = "https://hub.mrflow.com.br/g/suite-premium-vila-serena-23515a";
 const CYAN = "hsl(186 100% 32%)"; // ciano Mr Flow acessível em fundo claro
@@ -152,6 +153,7 @@ export default function LpAnuncio() {
         </a>{" "}
         – CNPJ 57.466.519/0001-87
       </footer>
+      <QuickSignupDialog />
     </div>
   );
 }
@@ -185,10 +187,8 @@ function HeroLp() {
 
             {/* Botões mobile (dentro da coluna). No desktop ficam abaixo do grid. */}
             <div className="mt-8 flex flex-col sm:flex-row sm:flex-wrap gap-3 lg:hidden">
-              <Button asChild className={ctaPrimary}>
-                <Link to="/auth">
-                  Criar meu guia grátis <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
+              <Button type="button" onClick={openQuickSignup} className={ctaPrimary}>
+                Criar meu guia grátis <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <Button
                 type="button"
@@ -246,10 +246,8 @@ function HeroLp() {
         {/* Botões desktop (full-width abaixo do grid hero) */}
         <div className="hidden lg:block mt-12">
           <div className="flex flex-row flex-nowrap gap-3 justify-start">
-            <Button asChild className={ctaPrimary}>
-              <Link to="/auth">
-                Criar meu guia grátis <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
+            <Button type="button" onClick={openQuickSignup} className={ctaPrimary}>
+              Criar meu guia grátis <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
             <Button
               type="button"
@@ -422,10 +420,8 @@ function Beneficios() {
         </div>
 
         <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
-          <Button asChild className={ctaPrimary}>
-            <Link to="/auth">
-              Criar meu guia grátis <ArrowRight className="ml-2 h-5 w-5" />
-            </Link>
+          <Button type="button" onClick={openQuickSignup} className={ctaPrimary}>
+            Criar meu guia grátis <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
           <Button asChild className={ctaSecondary}>
             <a href="#demo" onClick={scrollToDemo}>
@@ -499,8 +495,8 @@ function RealDemoLight() {
                   Abrir demo completa <ExternalLink className="ml-2 h-4 w-4" />
                 </a>
               </Button>
-              <Button asChild className={ctaSecondary}>
-                <Link to="/auth">Criar meu guia grátis</Link>
+              <Button type="button" onClick={openQuickSignup} className={ctaSecondary}>
+                Criar meu guia grátis
               </Button>
             </div>
           </div>
@@ -546,12 +542,11 @@ function RealDemoLight() {
                 </div>
                 <div className="flex items-center gap-2 sm:shrink-0">
                   <Button
-                    asChild
+                    type="button"
+                    onClick={openQuickSignup}
                     className="h-11 px-5 rounded-xl bg-[hsl(186_100%_32%)] hover:bg-[hsl(186_100%_27%)] text-white font-semibold text-sm shadow-[0_10px_25px_-10px_hsl(186_100%_32%/0.6)]"
                   >
-                    <Link to="/auth">
-                      Criar Meu Guia Grátis <ArrowRight className="ml-1.5 h-4 w-4" />
-                    </Link>
+                    Criar Meu Guia Grátis <ArrowRight className="ml-1.5 h-4 w-4" />
                   </Button>
                   <button
                     type="button"
@@ -607,10 +602,8 @@ function BulletsPro() {
               O hóspede sente organização. Você ganha tempo. A estadia começa melhor.
             </p>
             <div className="mt-7 flex flex-col sm:flex-row gap-3">
-              <Button asChild className={ctaPrimary}>
-                <Link to="/auth">
-                  Criar meu guia grátis <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
+              <Button type="button" onClick={openQuickSignup} className={ctaPrimary}>
+                Criar meu guia grátis <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <Button asChild className={ctaSecondary}>
                 <a href="#demo" onClick={scrollToDemo}>
@@ -701,10 +694,8 @@ function CtaFinal() {
             Sem cartão. Sem app para o hóspede. Sem complicação. Você cria, compartilha e atualiza quando quiser.
           </p>
           <div className="relative mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-            <Button asChild className={ctaPrimary}>
-              <Link to="/auth">
-                Criar meu guia grátis <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
+            <Button type="button" onClick={openQuickSignup} className={ctaPrimary}>
+              Criar meu guia grátis <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
             <Button asChild className={ctaSecondary}>
               <a href="#demo" onClick={scrollToDemo}>
@@ -1069,16 +1060,26 @@ function PlanosSection() {
                   ))}
                 </ul>
 
-                <Button
-                  asChild
-                  className={`w-full h-12 rounded-xl font-semibold ${
-                    isHighlighted
-                      ? "bg-[hsl(186_100%_32%)] hover:bg-[hsl(186_100%_27%)] text-white"
-                      : "bg-white border-2 border-[hsl(186_100%_32%)]/30 text-[hsl(186_100%_24%)] hover:bg-[hsl(186_100%_32%)]/5"
-                  }`}
-                >
-                  <Link to="/auth">{isSingle ? "Começar grátis" : "Assinar"}</Link>
-                </Button>
+                {isSingle ? (
+                  <Button
+                    type="button"
+                    onClick={openQuickSignup}
+                    className="w-full h-12 rounded-xl font-semibold bg-[hsl(186_100%_32%)] hover:bg-[hsl(186_100%_27%)] text-white"
+                  >
+                    Começar grátis
+                  </Button>
+                ) : (
+                  <Button
+                    asChild
+                    className={`w-full h-12 rounded-xl font-semibold ${
+                      isHighlighted
+                        ? "bg-[hsl(186_100%_32%)] hover:bg-[hsl(186_100%_27%)] text-white"
+                        : "bg-white border-2 border-[hsl(186_100%_32%)]/30 text-[hsl(186_100%_24%)] hover:bg-[hsl(186_100%_32%)]/5"
+                    }`}
+                  >
+                    <Link to="/auth">Assinar</Link>
+                  </Button>
+                )}
               </Card>
             );
           })}
@@ -1130,10 +1131,11 @@ function PlanosSection() {
                   </Badge>
                 </div>
                 <Button
-                  asChild
+                  type="button"
+                  onClick={openQuickSignup}
                   className="mt-auto w-full h-12 rounded-xl font-semibold bg-[hsl(186_100%_32%)] hover:bg-[hsl(186_100%_27%)] text-white"
                 >
-                  <Link to="/auth">Criar Meu Guia Grátis</Link>
+                  Criar Meu Guia Grátis
                 </Button>
               </Card>
             ))}

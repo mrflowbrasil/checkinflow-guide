@@ -33,3 +33,5 @@ project_id = "pgdfcufjdyhmaqikwbdq"
     verify_jwt = false
   [functions.catalog-search]
     verify_jwt = false
+  [functions.quick-signup]
+    verify_jwt = false
