@@ -1,15 +1,70 @@
-# Atualizar hero da home (`/`)
+# Modal de cadastro rápido na landing page
 
-Mudanças em `src/pages/LpAnuncio.tsx` (seção hero, ~linhas 195-243):
+Substituir o redirect para `/auth` em todos os CTAs "Criar meu hub grátis" / "Criar meu guia grátis" / "Começar grátis" da landing page por um modal que cria a conta, faz login automático e leva o usuário direto pro `/app`.
 
-1. **Substituir imagem do hero** pela `home2.webp` enviada.
-   - Subir o arquivo via `lovable-assets create --file /mnt/user-uploads/home2.webp` gerando `src/assets/lp/home2.webp.asset.json`.
-   - Trocar o `<picture>` atual (que usa `heroAvif/heroImg` em AVIF + WebP responsivo) por um `<img>` simples apontando para a nova asset. As variantes responsivas antigas (`heroAvif768`, `heroImg768`, `heroImg`) deixam de ser usadas no hero (mantidas no import caso ainda sejam referenciadas em outro lugar; remover se órfãs).
+## 1. Novo componente `QuickSignupDialog`
 
-2. **Remover o "fundo" do container do hero**: tirar o wrapper com `rounded-[2rem] overflow-hidden shadow-... ring-1 ring-slate-200` e o glow `absolute -inset-4 bg-gradient-to-tr ...`. A nova imagem já tem composição própria (fundo creme + mockup + foto), então fica direto, sem moldura nem brilho atrás.
+Arquivo: `src/components/lp/QuickSignupDialog.tsx`.
 
-3. **Remover a imagem de destaque** (mockup pequeno rotacionado no canto superior direito — bloco `absolute -top-5 -right-5 ... heroMockupLifestyle`). Import de `heroMockupLifestyle` também removido se ficar órfão.
+Conteúdo:
+- Dialog (shadcn) centralizado, overlay escuro suave, bordas arredondadas, responsivo.
+- Topo: imagem mockup anexada (`mockup-comp-light.webp`) subida via `lovable-assets` para `src/assets/lp/mockup-comp-light.webp.asset.json`, com `object-contain` e altura fluida.
+- Título: "Comece seu guia grátis agora".
+- Subtítulo: "Preencha seus dados e acesse o Welcome Hub por 30 dias grátis, sem cartão de crédito."
+- Campos: Nome e E-mail (validação zod — nome ≥2, email válido).
+- Botão principal cor da marca (#008e8e / `bg-primary`): "Criar meu hub grátis". Durante envio: texto vira "Criando seu acesso…", `disabled` para evitar duplo clique.
+- Texto pequeno: "30 dias grátis no plano Single. Sem cartão. Sem pegadinhas."
+- Estado de erro de e-mail já existente: troca o conteúdo do dialog por uma mensagem amigável "Já existe uma conta com este e-mail. Entrar agora?" + botão "Entrar na minha conta" → leva para `/auth`.
 
-4. **Mover badge de avaliações para a direita**: o card "+ avaliações 5 estrelas!" muda de `-bottom-5 -left-5` para `-bottom-5 -right-5` (mantendo o mesmo visual e conteúdo).
+## 2. Edge function `quick-signup`
 
-Sem alterações de copy, links ou outras seções.
+Arquivo: `supabase/functions/quick-signup/index.ts` (público, sem JWT).
+
+Fluxo:
+1. Recebe `{ name, email }`. Valida.
+2. Usa service-role client para verificar se o e-mail já existe (`auth.admin.listUsers` filtrando por email, ou tenta criar e trata erro de duplicado). Se existe → retorna `{ status: "exists" }`.
+3. Gera senha temporária forte (16 chars aleatórios) e cria usuário com `auth.admin.createUser({ email, password, email_confirm: true, user_metadata: { full_name: name } })`. `email_confirm: true` garante que o login com senha funciona sem o usuário precisar abrir email antes.
+4. Dispara `send-transactional-email` com um novo template `quick-signup-welcome` contendo: boas-vindas, senha temporária visível, e botão "Trocar minha senha" linkando para `${SITE_URL}/reset-password` (via `resetPasswordForEmail` server-side ou link direto).
+5. Retorna `{ status: "created", email, tempPassword }` para o cliente.
+
+Adicionar em `supabase/config.toml`: `[functions.quick-signup] verify_jwt = false`.
+
+## 3. Novo template de e-mail
+
+Arquivo: `supabase/functions/_shared/transactional-email-templates/quick-signup-welcome.tsx`.
+
+Conteúdo: marca Mr Flow, saudação com nome, frase explicando que a conta foi criada via landing, **senha temporária em destaque** (caixa monoespaçada), CTA "Trocar minha senha agora" apontando para a página de reset, observação de validade/segurança. Registrar em `_shared/transactional-email-templates/registry.ts`.
+
+## 4. Login automático no cliente
+
+No `QuickSignupDialog`, após a edge function retornar `created`:
+1. `await supabase.auth.signInWithPassword({ email, password: tempPassword })`.
+2. Toast "Conta criada! Enviamos sua senha temporária por email."
+3. `navigate("/app")`.
+
+A senha temporária nunca é exibida na UI da LP — só usada em memória para o login e enviada por email.
+
+## 5. Integração com a landing page
+
+Em `src/pages/LpAnuncio.tsx`:
+- Adicionar `const [signupOpen, setSignupOpen] = useState(false)` e renderizar `<QuickSignupDialog open={signupOpen} onOpenChange={setSignupOpen} />` ao final do componente.
+- Substituir cada `<Link to="/auth">Criar meu hub grátis</Link>` (e variações "Criar meu guia grátis", "Começar grátis", "Criar Meu Guia Grátis") por um `<Button onClick={() => setSignupOpen(true)}>…</Button>` mantendo o mesmo visual atual.
+- Manter o `<Link to="/auth">Entrar</Link>` do topo intacto (usuário que já tem conta).
+
+## Detalhes técnicos
+
+- Auto-confirm de e-mail fica restrito a este fluxo via `email_confirm: true` no `admin.createUser`. Não mexe na config global (`auto_confirm_email`) — outros signups normais continuam exigindo verificação.
+- Edge function usa `SUPABASE_SERVICE_ROLE_KEY` (já disponível em functions) — nada exposto no cliente.
+- Validação zod no cliente + revalidação no servidor.
+- Tratamento de erros: rate limit / falha de envio de email → mostra toast amigável e mantém o modal aberto.
+- Sem alteração em rotas, RLS, ou tabelas existentes.
+
+## Arquivos a criar/editar
+
+- criar: `src/components/lp/QuickSignupDialog.tsx`
+- criar: `src/assets/lp/mockup-comp-light.webp.asset.json`
+- criar: `supabase/functions/quick-signup/index.ts`
+- criar: `supabase/functions/_shared/transactional-email-templates/quick-signup-welcome.tsx`
+- editar: `supabase/functions/_shared/transactional-email-templates/registry.ts`
+- editar: `supabase/config.toml` (verify_jwt=false para quick-signup)
+- editar: `src/pages/LpAnuncio.tsx` (trocar CTAs por trigger do modal)
