@@ -749,9 +749,9 @@ function QuemSomos() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Texto */}
           <div>
-            <Badge className="mb-5 bg-white border border-[hsl(186_100%_32%)]/30 text-[hsl(186_100%_24%)] rounded-full px-3 py-1 hover:bg-white">
-              <Sparkles className="h-3.5 w-3.5 mr-1.5" /> Quem somos
-            </Badge>
+            <span className="inline-flex items-center gap-2 mb-5 px-4 py-1.5 rounded-full bg-[hsl(186_100%_94%)] border border-[hsl(186_100%_32%)]/20 text-xs font-semibold tracking-wide uppercase text-[hsl(186_100%_24%)]">
+              <Sparkles className="h-3.5 w-3.5" /> Quem somos
+            </span>
             <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 leading-tight">
               Quem está por trás do{" "}
               <span style={{ color: CYAN }}>Welcome Hub?</span>
