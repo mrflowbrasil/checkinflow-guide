@@ -191,9 +191,11 @@ function HeroLp() {
               <Sparkles className="h-3.5 w-3.5 mr-1.5" /> Para anfitriões Superhost e gestores de temporada
             </Badge>
             <h1 className="text-4xl sm:text-5xl lg:text-[3.4rem] font-bold tracking-tight leading-[1.08] text-slate-900">
-              Pare de responder as mesmas dúvidas no WhatsApp.<br />
-              Envie um <span style={{ color: CYAN }}>guia digital completo</span> pro seu hóspede.
+              Pare de responder as mesmas dúvidas no WhatsApp.
             </h1>
+            <p className="mt-3 text-2xl sm:text-3xl lg:text-[2.1rem] font-semibold tracking-tight leading-snug text-slate-800">
+              Envie um <span style={{ color: CYAN }}>guia digital completo</span> pro seu hóspede.
+            </p>
             <p className="mt-6 text-lg lg:text-xl text-slate-600 leading-relaxed max-w-xl">
               Wi-Fi, check-in, senha da fechadura, regras da casa, localização e dicas locais em um único link. O hóspede acessa no celular em segundos. Você para de receber mensagem às 23h.
             </p>
