@@ -457,10 +457,10 @@ function RealDemoLight() {
             Demo real
           </Badge>
           <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-3">
-            Ofereça uma experiência de hotel 5 estrelas no celular do seu hóspede
+            Experiência de hotel 5 estrelas no celular do seu hóspede
           </h2>
           <p className="text-slate-600 text-lg max-w-2xl mx-auto leading-relaxed">
-            Veja abaixo como o seu hóspede recebe todas as informações da sua hospedagem de um jeito lindo, prático e
+            Veja abaixo como o seu hóspede recebe as informações da sua hospedagem de um jeito lindo, prático e
             interativo.&nbsp;Toque nos botões para testar a demonstração real
           </p>
         </div>
