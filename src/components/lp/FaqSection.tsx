@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, HelpCircle } from "lucide-react";
+import { openQuickSignup } from "@/components/lp/QuickSignupDialog";
 
 const faqs = [
   {
