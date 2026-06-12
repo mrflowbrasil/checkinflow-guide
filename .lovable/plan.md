@@ -1,61 +1,15 @@
-# Plano — Rotação manual da API Key de integração
+# Atualizar hero da home (`/`)
 
-## Objetivo
+Mudanças em `src/pages/LpAnuncio.tsx` (seção hero, ~linhas 195-243):
 
-Eliminar a rotação automática da `tenant_api_keys` ao (re)conectar Stays/Hostaway e ao disparar importação. A chave só deve ser substituída quando o cliente clica explicitamente em **"Gerar nova chave"** na tela de Integrações.
+1. **Substituir imagem do hero** pela `home2.webp` enviada.
+   - Subir o arquivo via `lovable-assets create --file /mnt/user-uploads/home2.webp` gerando `src/assets/lp/home2.webp.asset.json`.
+   - Trocar o `<picture>` atual (que usa `heroAvif/heroImg` em AVIF + WebP responsivo) por um `<img>` simples apontando para a nova asset. As variantes responsivas antigas (`heroAvif768`, `heroImg768`, `heroImg`) deixam de ser usadas no hero (mantidas no import caso ainda sejam referenciadas em outro lugar; remover se órfãs).
 
-Isso resolve o caso ABMnb (n8n parou após reconexão porque a chave antiga foi revogada e o n8n não foi atualizado com a nova).
+2. **Remover o "fundo" do container do hero**: tirar o wrapper com `rounded-[2rem] overflow-hidden shadow-... ring-1 ring-slate-200` e o glow `absolute -inset-4 bg-gradient-to-tr ...`. A nova imagem já tem composição própria (fundo creme + mockup + foto), então fica direto, sem moldura nem brilho atrás.
 
----
+3. **Remover a imagem de destaque** (mockup pequeno rotacionado no canto superior direito — bloco `absolute -top-5 -right-5 ... heroMockupLifestyle`). Import de `heroMockupLifestyle` também removido se ficar órfão.
 
-## Mudanças
+4. **Mover badge de avaliações para a direita**: o card "+ avaliações 5 estrelas!" muda de `-bottom-5 -left-5` para `-bottom-5 -right-5` (mantendo o mesmo visual e conteúdo).
 
-### 1. `supabase/functions/integrations-connect`
-- Remover o bloco que revoga a chave existente e cria outra quando `existingKey` já existe.
-- Comportamento novo:
-  - Se **não existe** chave ativa para o tenant → gerar uma (única vez na vida do tenant) e enviar no `callback.api_key` do webhook.
-  - Se **já existe** chave ativa → **não rotacionar**; enviar `callback.api_key = null` (ou omitir o campo) e adicionar `callback.api_key_status = "existing"` para o n8n saber que deve reutilizar a chave já configurada.
-- Manter o restante (upsert da integração, disparo do webhook, tratamento de erro).
-
-### 2. `supabase/functions/integrations-trigger-import`
-- Remover a rotação da chave (bloco `genApiKey` + revoke + insert).
-- Mesma lógica do connect: só gera se o tenant nunca teve chave. Caso contrário envia `api_key: null` e `api_key_status: "existing"`.
-
-### 3. `src/pages/dashboard/Integrations.tsx`
-Já existe seção de API Keys com botão de criar/revogar. Acrescentar comunicação clara para o caso PMS:
-- Ao reconectar Stays/Hostaway, mostrar aviso no diálogo: *"Sua API Key atual será mantida. Se precisar de uma nova, gere manualmente em 'Chaves de API' depois."*
-- Não há mudança funcional no botão "Nova chave" — ele já chama `tenant-api-keys` (POST), que continua sendo o único caminho de criação manual.
-
-### 4. Documentação para o n8n (no `ApiReference.tsx`)
-Adicionar nota: *"A API Key enviada no webhook de conexão só vem preenchida na primeira conexão do tenant. Em reconexões, o campo virá `null` — mantenha o valor já configurado no fluxo."*
-
----
-
-## Detalhes técnicos
-
-**Payload novo do webhook (connect e import):**
-```json
-{
-  "event": "connection" | "upload_listings",
-  "tenant_id": "...",
-  "provider": "stays",
-  "system_url": "...",
-  "authorization": "Basic ...",
-  "callback": {
-    "base_url": "https://.../functions/v1",
-    "api_key": "mrf_live_..." | null,
-    "api_key_status": "new" | "existing"
-  }
-}
-```
-
-**Sem migração de DB.** Tabela `tenant_api_keys` permanece igual; apenas para de receber revokes automáticos.
-
-**Caso ABMnb (one-off, fora do plano):** atualizar manualmente o nó HTTP no n8n com a chave ativa atual `mrf_live_aba4OLr…` antes/depois do deploy.
-
----
-
-## Riscos
-
-- Fluxos n8n existentes que dependiam de receber a chave a cada reconexão precisarão ser ajustados para tratar `api_key: null`. Hoje só há fluxos para Stays/Hostaway e ambos passarão a usar a chave configurada no nó HTTP.
-- Se um cliente perder a chave (não copiou na criação), terá que clicar em "Gerar nova chave" e atualizar o n8n — comportamento esperado e desejado.
+Sem alterações de copy, links ou outras seções.

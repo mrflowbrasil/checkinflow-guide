@@ -34,11 +34,8 @@ import mrFlowLogo from "@/assets/mrflow-logo.png";
 import denizeAvatar from "@/assets/lp/avatars/denize.webp.asset.json";
 import pabloAvatar from "@/assets/lp/avatars/pablo.webp.asset.json";
 import julianaAvatar from "@/assets/lp/avatars/juliana.webp.asset.json";
-import heroImg from "@/assets/lp/hero-guest-phone.webp";
-import heroImg768 from "@/assets/lp/hero-guest-phone-768.webp";
-import heroAvif from "@/assets/lp/hero-guest-phone.avif";
-import heroAvif768 from "@/assets/lp/hero-guest-phone-768.avif";
-import heroMockupLifestyle from "@/assets/lp/hero-mockup-lifestyle.webp";
+import heroImgAsset from "@/assets/lp/home2.webp.asset.json";
+const heroImg = heroImgAsset.url;
 import guideMockup from "@/assets/lp/guide-panel-mockup.webp";
 import qrFrame from "@/assets/lp/qrcode-frame.webp";
 import VideoCriacao from "@/components/lp/VideoCriacao";
@@ -193,44 +190,18 @@ function HeroLp() {
           </div>
 
           <div className="relative">
-            <div className="absolute -inset-4 bg-gradient-to-tr from-[hsl(186_100%_85%)]/40 via-white/0 to-[#F3EBDD]/60 rounded-[2.5rem] blur-2xl pointer-events-none" />
-            <div className="relative rounded-[2rem] overflow-hidden shadow-[0_30px_80px_-30px_rgba(15,23,42,0.25)] ring-1 ring-slate-200">
-              <picture>
-                <source
-                  type="image/avif"
-                  srcSet={`${heroAvif768} 768w, ${heroAvif} 1280w`}
-                  sizes="(min-width: 1024px) 50vw, 100vw"
-                />
-                <source
-                  type="image/webp"
-                  srcSet={`${heroImg768} 768w, ${heroImg} 1280w`}
-                  sizes="(min-width: 1024px) 50vw, 100vw"
-                />
-                <img
-                  src={heroImg}
-                  alt="Hóspede sorrindo olhando o guia digital no celular em apartamento moderno"
-                  width={1280}
-                  height={720}
-                  loading="eager"
-                  fetchPriority="high"
-                  decoding="async"
-                  className="w-full h-auto object-cover"
-                />
-              </picture>
-            </div>
-            <div className="hidden sm:block absolute -top-5 -right-5 z-20 rotate-3">
-              <div className="bg-white rounded-2xl shadow-xl ring-1 ring-slate-200 p-1 w-[150px]">
-                <img
-                  src={heroMockupLifestyle}
-                  alt="Hóspede visualizando o hub Suíte Premium · Vila Serena no celular"
-                  loading="lazy"
-                  decoding="async"
-                  className="w-full h-auto rounded-xl object-cover"
-                />
-              </div>
-            </div>
+            <img
+              src={heroImg}
+              alt="Hóspede sorrindo olhando o guia digital no celular em apartamento moderno"
+              width={1280}
+              height={720}
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              className="w-full h-auto"
+            />
 
-            <div className="hidden sm:flex absolute -bottom-5 -left-5 bg-white rounded-2xl shadow-lg ring-1 ring-slate-200 px-4 py-3 items-center gap-3">
+            <div className="hidden sm:flex absolute -bottom-5 -right-5 bg-white rounded-2xl shadow-lg ring-1 ring-slate-200 px-4 py-3 items-center gap-3">
               <div className="h-9 w-9 rounded-lg bg-[hsl(186_100%_94%)] grid place-items-center">
                 <Star className="h-5 w-5 text-[hsl(186_100%_32%)]" fill="currentColor" />
               </div>
