@@ -189,17 +189,18 @@ function HeroLp() {
             </div>
           </div>
 
-          <div className="relative">
+          <div className="relative w-full">
             <img
               src={heroImg}
               alt="Hóspede sorrindo olhando o guia digital no celular em apartamento moderno"
               width={1280}
-              height={720}
+              height={920}
               loading="eager"
               fetchPriority="high"
               decoding="async"
-              className="w-full h-auto"
+              className="w-full h-auto object-contain"
             />
+
 
             <div className="hidden sm:flex absolute -bottom-5 -right-5 bg-white rounded-2xl shadow-lg ring-1 ring-slate-200 px-4 py-3 items-center gap-3">
               <div className="h-9 w-9 rounded-lg bg-[hsl(186_100%_94%)] grid place-items-center">
