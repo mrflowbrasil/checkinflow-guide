@@ -106,7 +106,7 @@ export default function LpAnuncio() {
         <style>{`@keyframes lp-marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}`}</style>
         <div
           className="flex whitespace-nowrap"
-          style={{ animation: "lp-marquee 40s linear infinite", willChange: "transform" }}
+          style={{ animation: "lp-marquee 65s linear infinite", willChange: "transform" }}
         >
           {[0, 1].map((i) => (
             <div
