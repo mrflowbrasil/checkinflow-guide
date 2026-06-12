@@ -898,9 +898,9 @@ function PlanosSection() {
       />
       <div className="relative container max-w-6xl mx-auto px-5 sm:px-8 py-20 lg:py-28">
         <div className="max-w-3xl mx-auto text-center mb-12">
-          <Badge className="mb-5 bg-white border border-[hsl(186_100%_32%)]/30 text-[hsl(186_100%_24%)] rounded-full px-3 py-1 hover:bg-white">
-            <Sparkles className="h-3.5 w-3.5 mr-1.5" /> Planos
-          </Badge>
+          <span className="inline-flex items-center gap-2 mb-5 px-4 py-1.5 rounded-full bg-[hsl(186_100%_94%)] border border-[hsl(186_100%_32%)]/20 text-xs font-semibold tracking-wide uppercase text-[hsl(186_100%_24%)]">
+            <Sparkles className="h-3.5 w-3.5" /> Planos
+          </span>
           <h2 className="text-3xl sm:text-4xl lg:text-[2.6rem] font-bold tracking-tight leading-[1.1] text-slate-900">
             Mais paz para você. Mais clareza para o hóspede.{" "}
             <span style={{ color: CYAN }}>Por menos que um cafezinho por imóvel.</span>
