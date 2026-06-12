@@ -40,6 +40,7 @@ import guideMockup from "@/assets/lp/guide-panel-mockup.webp";
 import qrFrame from "@/assets/lp/qrcode-frame.webp";
 import VideoCriacao from "@/components/lp/VideoCriacao";
 import WhatsAppGuideDialog from "@/components/lp/WhatsAppGuideDialog";
+import QuickSignupDialog, { openQuickSignup } from "@/components/lp/QuickSignupDialog";
 
 const DEMO_URL = "https://hub.mrflow.com.br/g/suite-premium-vila-serena-23515a";
 const CYAN = "hsl(186 100% 32%)"; // ciano Mr Flow acessível em fundo claro
@@ -152,6 +153,7 @@ export default function LpAnuncio() {
         </a>{" "}
         – CNPJ 57.466.519/0001-87
       </footer>
+      <QuickSignupDialog />
     </div>
   );
 }
