@@ -149,15 +149,14 @@ function HeroLp() {
         <div className="grid lg:grid-cols-[1.05fr_1fr] gap-10 lg:gap-14 items-center">
           <div>
             <Badge className="mb-5 bg-white border border-[hsl(186_100%_32%)]/30 text-[hsl(186_100%_24%)] rounded-full px-3 py-1 hover:bg-white">
-              <Sparkles className="h-3.5 w-3.5 mr-1.5" /> Guia digital para Airbnb, pousadas e casas de temporada
+              <Sparkles className="h-3.5 w-3.5 mr-1.5" /> Para anfitriões Superhost e gestores de temporada
             </Badge>
             <h1 className="text-4xl sm:text-5xl lg:text-[3.4rem] font-bold tracking-tight leading-[1.08] text-slate-900">
-              Pare de responder as mesmas dúvidas no WhatsApp.{" "}
+              Pare de responder as mesmas dúvidas no WhatsApp.<br />
               Envie um <span style={{ color: CYAN }}>guia digital completo</span> pro seu hóspede.
             </h1>
             <p className="mt-6 text-lg lg:text-xl text-slate-600 leading-relaxed max-w-xl">
-              Wi-Fi, check-in, senha da fechadura, regras da casa, localização e dicas locais em um único link. Lindo,
-              profissional e fácil de acessar pelo celular.
+              Wi-Fi, check-in, senha da fechadura, regras da casa, localização e dicas locais em um único link. O hóspede acessa no celular em segundos. Você para de receber mensagem às 23h.
             </p>
 
             {/* Botões mobile (dentro da coluna). No desktop ficam abaixo do grid. */}
