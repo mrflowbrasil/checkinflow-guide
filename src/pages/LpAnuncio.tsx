@@ -456,9 +456,9 @@ function RealDemoLight() {
     >
       <div className="container max-w-6xl mx-auto px-5 sm:px-8">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-[hsl(186_100%_32%)]/10 text-[hsl(186_100%_24%)] border-[hsl(186_100%_32%)]/30 rounded-full hover:bg-[hsl(186_100%_32%)]/10">
+          <span className="inline-flex items-center gap-2 mb-4 px-4 py-1.5 rounded-full bg-[hsl(186_100%_94%)] border border-[hsl(186_100%_32%)]/20 text-xs font-semibold tracking-wide uppercase text-[hsl(186_100%_24%)]">
             Demo real
-          </Badge>
+          </span>
           <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-3">
             Experiência de hotel 5 estrelas no celular do seu hóspede
           </h2>
