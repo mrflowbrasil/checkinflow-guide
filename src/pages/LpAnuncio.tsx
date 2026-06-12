@@ -146,17 +146,25 @@ export default function LpAnuncio() {
         <CtaFinal />
       </main>
 
-      <footer className="border-t border-slate-200 py-8 text-center text-xs text-slate-500 px-4">
-        © 2026 –{" "}
-        <a
-          href="http://mrflow.com.br"
-          target="_blank"
-          rel="noreferrer noopener"
-          className="underline hover:text-slate-700"
-        >
-          Mr. Flow Automações e Serviços Digitais LTDA
-        </a>{" "}
-        – CNPJ 57.466.519/0001-87
+      <footer className="border-t border-slate-200 py-8 text-center text-xs text-slate-500 px-4 space-y-3">
+        <p className="text-sm text-slate-600">
+          Já possui conta?{" "}
+          <Link to="/auth" className="font-semibold text-[hsl(186_100%_32%)] hover:underline">
+            Acesse aqui
+          </Link>
+        </p>
+        <p>
+          © 2026 –{" "}
+          <a
+            href="http://mrflow.com.br"
+            target="_blank"
+            rel="noreferrer noopener"
+            className="underline hover:text-slate-700"
+          >
+            Mr. Flow Automações e Serviços Digitais LTDA
+          </a>{" "}
+          – CNPJ 57.466.519/0001-87
+        </p>
       </footer>
       <QuickSignupDialog />
     </div>
