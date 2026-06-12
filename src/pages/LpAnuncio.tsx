@@ -93,8 +93,13 @@ export default function LpAnuncio() {
             <img src={mrFlowLogo} alt="Mr Flow Welcome Hub" className="h-8 w-auto" />
             <span className="text-[9px] tracking-[0.25em] text-slate-500 uppercase">Welcome Hub</span>
           </Link>
-          <Button asChild size="sm" variant="ghost" className="text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-xl">
-            <Link to="/auth">Entrar</Link>
+          <Button
+            type="button"
+            size="sm"
+            onClick={openQuickSignup}
+            className="bg-[hsl(186_100%_32%)] hover:bg-[hsl(186_100%_27%)] text-white font-semibold rounded-xl shadow-[0_8px_24px_-10px_hsl(186_100%_32%/0.5)]"
+          >
+            Aproveitar agora
           </Button>
         </div>
       </header>
@@ -141,17 +146,25 @@ export default function LpAnuncio() {
         <CtaFinal />
       </main>
 
-      <footer className="border-t border-slate-200 py-8 text-center text-xs text-slate-500 px-4">
-        © 2026 –{" "}
-        <a
-          href="http://mrflow.com.br"
-          target="_blank"
-          rel="noreferrer noopener"
-          className="underline hover:text-slate-700"
-        >
-          Mr. Flow Automações e Serviços Digitais LTDA
-        </a>{" "}
-        – CNPJ 57.466.519/0001-87
+      <footer className="border-t border-slate-200 py-8 text-center text-xs text-slate-500 px-4 space-y-3">
+        <p className="text-sm text-slate-600">
+          Já possui conta?{" "}
+          <Link to="/auth" className="font-semibold text-[hsl(186_100%_32%)] hover:underline">
+            Acesse aqui
+          </Link>
+        </p>
+        <p>
+          © 2026 –{" "}
+          <a
+            href="http://mrflow.com.br"
+            target="_blank"
+            rel="noreferrer noopener"
+            className="underline hover:text-slate-700"
+          >
+            Mr. Flow Automações e Serviços Digitais LTDA
+          </a>{" "}
+          – CNPJ 57.466.519/0001-87
+        </p>
       </footer>
       <QuickSignupDialog />
     </div>
