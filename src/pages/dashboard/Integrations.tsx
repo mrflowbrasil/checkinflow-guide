@@ -470,6 +470,10 @@ export default function Integrations() {
             </p>
           )}
 
+          <p className="text-xs text-muted-foreground leading-relaxed border-l-2 border-amber-500/60 pl-3">
+            Sua API Key atual será mantida ao conectar/reconectar. Para gerar uma chave nova, use o botão <strong>"Nova chave"</strong> na seção Chaves de API abaixo e atualize o valor no seu fluxo n8n.
+          </p>
+
           <div className="space-y-3">
             {openProvider !== "hostaway" && (
               <div className="space-y-1.5">

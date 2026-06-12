@@ -86,20 +86,29 @@ serve(async (req) => {
       }, 503);
     }
 
-    // Rotate API key (we only stored hash, can't recover plain)
-    const plainKey = genApiKey();
-    const hash = await sha256(plainKey);
-    await admin
+    // Do NOT rotate the API key. If the tenant doesn't have one yet, create
+    // one (first time only). Otherwise reuse the existing key — n8n must keep
+    // using whatever it already has configured (we can't recover the plain
+    // value because only the hash is stored).
+    let plainKey: string | null = null;
+    const { data: existingKey } = await admin
       .from("tenant_api_keys")
-      .update({ revoked_at: new Date().toISOString() })
+      .select("id")
       .eq("tenant_id", tenantId)
-      .is("revoked_at", null);
-    await admin.from("tenant_api_keys").insert({
-      tenant_id: tenantId,
-      name: "Importação",
-      key_hash: hash,
-      key_prefix: plainKey.slice(0, 16),
-    });
+      .is("revoked_at", null)
+      .limit(1)
+      .maybeSingle();
+    if (!existingKey) {
+      plainKey = genApiKey();
+      const hash = await sha256(plainKey);
+      await admin.from("tenant_api_keys").insert({
+        tenant_id: tenantId,
+        name: "Importação",
+        key_hash: hash,
+        key_prefix: plainKey.slice(0, 16),
+      });
+    }
+    const apiKeyStatus = plainKey ? "new" : "existing";
 
     // Mark as syncing
     await admin
@@ -120,6 +129,7 @@ serve(async (req) => {
       callback: {
         base_url: `${SUPABASE_URL}/functions/v1`,
         api_key: plainKey,
+        api_key_status: apiKeyStatus,
         endpoints: {
           // event=connection → confirm credentials are valid
           connection_done: "/integrations-mark-synced",
