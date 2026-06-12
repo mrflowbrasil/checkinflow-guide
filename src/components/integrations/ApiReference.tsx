@@ -304,6 +304,13 @@ export default function ApiReference() {
         <code className="font-mono text-foreground break-all">{BASE_URL}</code>
       </div>
 
+      <div className="rounded-md border border-amber-500/40 bg-amber-500/5 p-3 text-xs space-y-1">
+        <p className="font-medium text-foreground">Webhooks de conexão (Stays / Hostaway)</p>
+        <p className="text-muted-foreground">
+          O campo <code className="px-1 py-0.5 rounded bg-muted">callback.api_key</code> só vem preenchido na primeira conexão do tenant (quando <code className="px-1 py-0.5 rounded bg-muted">api_key_status = "new"</code>). Em reconexões e novas importações o valor virá <code className="px-1 py-0.5 rounded bg-muted">null</code> com <code className="px-1 py-0.5 rounded bg-muted">api_key_status = "existing"</code> — mantenha no n8n a chave já configurada. Para trocar a chave, gere uma nova manualmente em "Chaves de API".
+        </p>
+      </div>
+
       <div className="border rounded-md divide-y">
         {ENDPOINTS.map((ep) => (
           <EndpointRow key={`${ep.method}-${ep.path}-${ep.title}`} ep={ep} />
