@@ -1263,9 +1263,9 @@ function Depoimentos() {
     <section className="py-16 lg:py-24 bg-slate-50/60">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-2xl mx-auto mb-12 lg:mb-16">
-          <Badge variant="secondary" className="mb-4 bg-[hsl(186_100%_32%)]/10 text-[hsl(186_100%_24%)] border-0">
-            <Star className="h-3.5 w-3.5 mr-1.5 fill-current" /> Prova social
-          </Badge>
+          <span className="inline-flex items-center gap-2 mb-4 px-4 py-1.5 rounded-full bg-[hsl(186_100%_94%)] border border-[hsl(186_100%_32%)]/20 text-xs font-semibold tracking-wide uppercase text-[hsl(186_100%_24%)]">
+            <Star className="h-3.5 w-3.5 fill-current" /> Prova social
+          </span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-slate-900">
             O que dizem os anfitriões que usam o Welcome Hub
           </h2>
