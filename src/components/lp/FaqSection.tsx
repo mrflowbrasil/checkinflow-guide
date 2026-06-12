@@ -116,10 +116,7 @@ export default function FaqSection() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <Button
                 type="button"
-                onClick={() => {
-                  const ev = new Event("open-quick-signup");
-                  window.dispatchEvent(ev);
-                }}
+                onClick={openQuickSignup}
                 className={ctaPrimary}
               >
                 Criar meu guia grátis <ArrowRight className="ml-2 h-5 w-5" />
