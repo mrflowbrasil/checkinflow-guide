@@ -43,6 +43,7 @@ import WhatsAppGuideDialog from "@/components/lp/WhatsAppGuideDialog";
 import QuickSignupDialog, { openQuickSignup } from "@/components/lp/QuickSignupDialog";
 import Funcionalidades from "@/components/lp/Funcionalidades";
 import ParaQuemE from "@/components/lp/ParaQuemE";
+import FaqSection from "@/components/lp/FaqSection";
 
 const DEMO_URL = "https://hub.mrflow.com.br/g/suite-premium-vila-serena-23515a";
 const CYAN = "hsl(186 100% 32%)"; // ciano Mr Flow acessível em fundo claro
@@ -145,6 +146,7 @@ export default function LpAnuncio() {
         <VideoCriacao />
         <QuemSomos />
         <PlanosSection />
+        <FaqSection />
         <Gatilhos />
         <CtaFinal />
       </main>
