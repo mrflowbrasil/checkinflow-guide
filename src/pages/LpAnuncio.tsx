@@ -205,14 +205,6 @@ function HeroLp() {
               <Button type="button" onClick={openQuickSignup} className={ctaPrimary}>
                 Criar meu guia grátis <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-              <Button
-                type="button"
-                onClick={() => setWaOpen(true)}
-                className="h-14 px-7 rounded-2xl bg-[#25D366] hover:bg-[#1ebe5a] text-white font-semibold text-base shadow-[0_10px_30px_-10px_rgba(37,211,102,0.55)]"
-              >
-                <MessageCircle className="mr-2 h-5 w-5" />
-                Receber Guia no WhatsApp
-              </Button>
             </div>
             <p className="mt-4 text-sm text-slate-500 lg:hidden">
               Leva menos de 5 minutos. Não precisa de cartão de crédito.
@@ -263,14 +255,6 @@ function HeroLp() {
           <div className="flex flex-row flex-nowrap gap-3 justify-start">
             <Button type="button" onClick={openQuickSignup} className={ctaPrimary}>
               Criar meu guia grátis <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-            <Button
-              type="button"
-              onClick={() => setWaOpen(true)}
-              className="h-14 px-7 rounded-2xl bg-[#25D366] hover:bg-[#1ebe5a] text-white font-semibold text-base shadow-[0_10px_30px_-10px_rgba(37,211,102,0.55)]"
-            >
-              <MessageCircle className="mr-2 h-5 w-5" />
-              Receber Guia no WhatsApp
             </Button>
           </div>
           <p className="mt-4 text-sm text-slate-500">
