@@ -34,7 +34,7 @@ import mrFlowLogo from "@/assets/mrflow-logo.png";
 import denizeAvatar from "@/assets/lp/avatars/denize.webp.asset.json";
 import pabloAvatar from "@/assets/lp/avatars/pablo.webp.asset.json";
 import julianaAvatar from "@/assets/lp/avatars/juliana.webp.asset.json";
-import heroImgAsset from "@/assets/lp/home2.webp.asset.json";
+import heroImgAsset from "@/assets/lp/home4.webp.asset.json";
 const heroImg = heroImgAsset.url;
 import guideMockup from "@/assets/lp/guide-panel-mockup.webp";
 import qrFrame from "@/assets/lp/qrcode-frame.webp";
