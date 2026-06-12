@@ -202,7 +202,7 @@ function HeroLp() {
             />
 
 
-            <div className="hidden sm:flex absolute -bottom-5 -right-5 bg-white rounded-2xl shadow-lg ring-1 ring-slate-200 px-4 py-3 items-center gap-3">
+            <div className="hidden sm:flex absolute bottom-16 -right-2 bg-white rounded-2xl shadow-lg ring-1 ring-slate-200 px-4 py-3 items-center gap-3">
               <div className="h-9 w-9 rounded-lg bg-[hsl(186_100%_94%)] grid place-items-center">
                 <Star className="h-5 w-5 text-[hsl(186_100%_32%)]" fill="currentColor" />
               </div>
