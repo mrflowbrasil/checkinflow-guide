@@ -129,6 +129,7 @@ serve(async (req) => {
       callback: {
         base_url: `${SUPABASE_URL}/functions/v1`,
         api_key: plainKey,
+        api_key_status: apiKeyStatus,
         endpoints: {
           // event=connection → confirm credentials are valid
           connection_done: "/integrations-mark-synced",
