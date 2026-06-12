@@ -105,18 +105,17 @@ export default function Funcionalidades() {
                 className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center"
               >
                 <div className={`relative ${reverse ? "lg:order-2" : ""}`}>
-                  <div className="absolute -inset-4 bg-gradient-to-tr from-[hsl(186_100%_70%)]/20 via-transparent to-[#F4C9B8]/30 rounded-[2.5rem] blur-2xl pointer-events-none" />
-                  <div className="relative rounded-3xl overflow-hidden ring-1 ring-slate-200/70 shadow-[0_30px_80px_-30px_rgba(15,23,42,0.25)] bg-white">
-                    <img
-                      src={f.image}
-                      alt={f.alt}
-                      loading="lazy"
-                      width={1600}
-                      height={1200}
-                      className="w-full h-auto object-contain"
-                    />
-                  </div>
+                  <div className="absolute -inset-8 bg-gradient-to-tr from-[hsl(186_100%_70%)]/25 via-transparent to-[#F4C9B8]/40 rounded-[2.5rem] blur-3xl pointer-events-none" />
+                  <img
+                    src={f.image}
+                    alt={f.alt}
+                    loading="lazy"
+                    width={1600}
+                    height={1200}
+                    className="relative w-full h-auto object-contain mix-blend-multiply"
+                  />
                 </div>
+
 
                 <div className={reverse ? "lg:order-1" : ""}>
                   <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-[hsl(186_100%_32%)]/20 text-xs font-semibold text-[hsl(186_100%_24%)] mb-4">
