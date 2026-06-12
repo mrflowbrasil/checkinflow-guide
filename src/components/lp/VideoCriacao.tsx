@@ -31,10 +31,7 @@ export default function VideoCriacao() {
           <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
             {/* Coluna esquerda */}
             <div>
-              <span
-                className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold"
-                style={{ background: "hsl(186 100% 32% / 0.1)", color: CYAN }}
-              >
+              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[hsl(186_100%_94%)] border border-[hsl(186_100%_32%)]/20 text-xs font-semibold tracking-wide uppercase text-[hsl(186_100%_24%)]">
                 Demonstração rápida
               </span>
 

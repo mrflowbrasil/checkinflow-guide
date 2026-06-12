@@ -190,9 +190,9 @@ function HeroLp() {
       <div className="container relative max-w-6xl mx-auto px-5 sm:px-8 pt-12 pb-16 lg:pt-20 lg:pb-24">
         <div className="grid lg:grid-cols-[1.05fr_1fr] gap-10 lg:gap-14 items-center">
           <div>
-            <Badge className="mb-5 bg-white border border-[hsl(186_100%_32%)]/30 text-[hsl(186_100%_24%)] rounded-full px-3 py-1 hover:bg-white">
-              <Sparkles className="h-3.5 w-3.5 mr-1.5" /> Para anfitriões Superhost e gestores de temporada
-            </Badge>
+            <span className="inline-flex items-center gap-2 mb-5 px-4 py-1.5 rounded-full bg-[hsl(186_100%_94%)] border border-[hsl(186_100%_32%)]/20 text-xs font-semibold tracking-wide uppercase text-[hsl(186_100%_24%)]">
+              <Sparkles className="h-3.5 w-3.5" /> Para anfitriões Superhost e gestores de temporada
+            </span>
             <h1 className="text-4xl sm:text-5xl lg:text-[3.4rem] font-bold tracking-tight leading-[1.08] text-slate-900">
               Pare de responder as mesmas dúvidas no WhatsApp.
             </h1>
@@ -456,9 +456,9 @@ function RealDemoLight() {
     >
       <div className="container max-w-6xl mx-auto px-5 sm:px-8">
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-[hsl(186_100%_32%)]/10 text-[hsl(186_100%_24%)] border-[hsl(186_100%_32%)]/30 rounded-full hover:bg-[hsl(186_100%_32%)]/10">
+          <span className="inline-flex items-center gap-2 mb-4 px-4 py-1.5 rounded-full bg-[hsl(186_100%_94%)] border border-[hsl(186_100%_32%)]/20 text-xs font-semibold tracking-wide uppercase text-[hsl(186_100%_24%)]">
             Demo real
-          </Badge>
+          </span>
           <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-3">
             Experiência de hotel 5 estrelas no celular do seu hóspede
           </h2>
@@ -749,9 +749,9 @@ function QuemSomos() {
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Texto */}
           <div>
-            <Badge className="mb-5 bg-white border border-[hsl(186_100%_32%)]/30 text-[hsl(186_100%_24%)] rounded-full px-3 py-1 hover:bg-white">
-              <Sparkles className="h-3.5 w-3.5 mr-1.5" /> Quem somos
-            </Badge>
+            <span className="inline-flex items-center gap-2 mb-5 px-4 py-1.5 rounded-full bg-[hsl(186_100%_94%)] border border-[hsl(186_100%_32%)]/20 text-xs font-semibold tracking-wide uppercase text-[hsl(186_100%_24%)]">
+              <Sparkles className="h-3.5 w-3.5" /> Quem somos
+            </span>
             <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 leading-tight">
               Quem está por trás do{" "}
               <span style={{ color: CYAN }}>Welcome Hub?</span>
@@ -898,9 +898,9 @@ function PlanosSection() {
       />
       <div className="relative container max-w-6xl mx-auto px-5 sm:px-8 py-20 lg:py-28">
         <div className="max-w-3xl mx-auto text-center mb-12">
-          <Badge className="mb-5 bg-white border border-[hsl(186_100%_32%)]/30 text-[hsl(186_100%_24%)] rounded-full px-3 py-1 hover:bg-white">
-            <Sparkles className="h-3.5 w-3.5 mr-1.5" /> Planos
-          </Badge>
+          <span className="inline-flex items-center gap-2 mb-5 px-4 py-1.5 rounded-full bg-[hsl(186_100%_94%)] border border-[hsl(186_100%_32%)]/20 text-xs font-semibold tracking-wide uppercase text-[hsl(186_100%_24%)]">
+            <Sparkles className="h-3.5 w-3.5" /> Planos
+          </span>
           <h2 className="text-3xl sm:text-4xl lg:text-[2.6rem] font-bold tracking-tight leading-[1.1] text-slate-900">
             Mais paz para você. Mais clareza para o hóspede.{" "}
             <span style={{ color: CYAN }}>Por menos que um cafezinho por imóvel.</span>
@@ -1263,9 +1263,9 @@ function Depoimentos() {
     <section className="py-16 lg:py-24 bg-slate-50/60">
       <div className="container mx-auto px-4">
         <div className="text-center max-w-2xl mx-auto mb-12 lg:mb-16">
-          <Badge variant="secondary" className="mb-4 bg-[hsl(186_100%_32%)]/10 text-[hsl(186_100%_24%)] border-0">
-            <Star className="h-3.5 w-3.5 mr-1.5 fill-current" /> Prova social
-          </Badge>
+          <span className="inline-flex items-center gap-2 mb-4 px-4 py-1.5 rounded-full bg-[hsl(186_100%_94%)] border border-[hsl(186_100%_32%)]/20 text-xs font-semibold tracking-wide uppercase text-[hsl(186_100%_24%)]">
+            <Star className="h-3.5 w-3.5 fill-current" /> Prova social
+          </span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-slate-900">
             O que dizem os anfitriões que usam o Welcome Hub
           </h2>
