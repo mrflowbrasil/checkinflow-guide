@@ -98,6 +98,33 @@ export default function LpAnuncio() {
         </div>
       </header>
 
+      {/* Topbar promocional - marquee */}
+      <div
+        aria-label="Oferta promocional"
+        className="w-full overflow-hidden bg-[#00FFFF] h-[42px] md:h-[46px] flex items-center"
+      >
+        <style>{`@keyframes lp-marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}`}</style>
+        <div
+          className="flex whitespace-nowrap"
+          style={{ animation: "lp-marquee 40s linear infinite", willChange: "transform" }}
+        >
+          {[0, 1].map((i) => (
+            <div
+              key={i}
+              aria-hidden={i === 1}
+              className="flex shrink-0 items-center text-[#006B6B] font-semibold tracking-wide text-[12px] md:text-[14px]"
+            >
+              {Array.from({ length: 6 }).map((_, j) => (
+                <span key={j} className="px-6">
+                  Oferta de lançamento • 30 dias grátis • Apenas para os 100 primeiros •
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+
+
       <main className="flex-1">
         <HeroLp />
         <TrustLogos />
