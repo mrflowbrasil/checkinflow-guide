@@ -146,6 +146,7 @@ export default function LpAnuncio() {
         <VideoCriacao />
         <QuemSomos />
         <PlanosSection />
+        <FaqSection />
         <Gatilhos />
         <CtaFinal />
       </main>
