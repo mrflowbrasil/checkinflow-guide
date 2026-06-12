@@ -52,7 +52,7 @@ const features: Feature[] = [
     icon: Palette,
     title: "Templates profissionais que valorizam a sua marca",
     description:
-      "Escolha entre templates básicos e da biblioteca premium para deixar o guia com a cara da sua operação. Cores, fontes e estilo ajustados sem precisar mexer em código.",
+      "Escolha entre templates básicos e da biblioteca premium para deixar o guia com a cara da sua operação. Sua logo, cores, fontes e estilo ajustados sem precisar mexer em código.",
     bullets: [
       "Biblioteca de templates Pro",
       "Identidade visual personalizada",
@@ -64,9 +64,9 @@ const features: Feature[] = [
   {
     badge: "Integrações e API",
     icon: Plug,
-    title: "Conecte com Stays, Hostaway e seu fluxo de trabalho",
+    title: "Conecte com Stays, Hostaway e muito mais.",
     description:
-      "Importe imóveis automaticamente do seu PMS e use nossa API REST para integrar com Make, n8n, Zapier ou qualquer sistema. E, se precisar, nossa equipe oferece suporte no WhatsApp.",
+      "Importe imóveis automaticamente do seu sistema e use nossa API REST para integrar com Make, n8n, Zapier ou qualquer sistema. E, se precisar, nossa equipe oferece suporte no WhatsApp.",
     bullets: [
       "Integração nativa com Stays e Hostaway",
       "API REST com chaves dedicadas",
