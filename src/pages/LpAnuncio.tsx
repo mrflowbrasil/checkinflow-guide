@@ -140,6 +140,7 @@ export default function LpAnuncio() {
         <Depoimentos />
         <BulletsPro />
         <Beneficios />
+        <Funcionalidades />
         <VideoCriacao />
         <QuemSomos />
         <PlanosSection />
