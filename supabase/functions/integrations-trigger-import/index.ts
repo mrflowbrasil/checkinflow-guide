@@ -86,29 +86,27 @@ serve(async (req) => {
       }, 503);
     }
 
-    // Do NOT rotate the API key. If the tenant doesn't have one yet, create
-    // one (first time only). Otherwise reuse the existing key — n8n must keep
-    // using whatever it already has configured (we can't recover the plain
-    // value because only the hash is stored).
-    let plainKey: string | null = null;
-    const { data: existingKey } = await admin
+    // Always issue a fresh API key for this import so n8n receives a usable
+    // value in the webhook payload. We can't recover previously generated
+    // plain keys (only hashes are stored), so we revoke active "Importação"
+    // keys and create a new one each time. n8n should use the api_key from
+    // this payload for the callback calls.
+    await admin
       .from("tenant_api_keys")
-      .select("id")
+      .update({ revoked_at: new Date().toISOString() })
       .eq("tenant_id", tenantId)
       .is("revoked_at", null)
-      .limit(1)
-      .maybeSingle();
-    if (!existingKey) {
-      plainKey = genApiKey();
-      const hash = await sha256(plainKey);
-      await admin.from("tenant_api_keys").insert({
-        tenant_id: tenantId,
-        name: "Importação",
-        key_hash: hash,
-        key_prefix: plainKey.slice(0, 16),
-      });
-    }
-    const apiKeyStatus = plainKey ? "new" : "existing";
+      .eq("name", "Importação");
+
+    const plainKey = genApiKey();
+    const hash = await sha256(plainKey);
+    await admin.from("tenant_api_keys").insert({
+      tenant_id: tenantId,
+      name: "Importação",
+      key_hash: hash,
+      key_prefix: plainKey.slice(0, 16),
+    });
+    const apiKeyStatus = "new";
 
     // Mark as syncing
     await admin
