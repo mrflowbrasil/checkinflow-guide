@@ -52,15 +52,15 @@ export function PropertyCatalogCard({ property, onEdit, onChanged }: Props) {
   };
 
   return (
-    <Card className="overflow-hidden flex flex-col">
-      <div className="relative aspect-[4/3] bg-muted">
+    <Card className="overflow-hidden flex h-full flex-col">
+      <div className="relative overflow-hidden bg-muted" style={{ aspectRatio: "4 / 3" }}>
         {property.cover_image_url ? (
           <img
             src={property.cover_image_url}
             alt={property.name}
             loading="lazy"
             decoding="async"
-            className="h-full w-full object-cover"
+            className="absolute inset-0 h-full w-full object-cover"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
