@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
   ArrowRight,
   Award,
@@ -33,9 +34,9 @@ import {
   TrendingUp,
   X,
   Zap,
-
 } from "lucide-react";
 import { Seo } from "@/components/Seo";
+import { StripeEmbeddedCheckout } from "@/components/billing/StripeEmbeddedCheckout";
 import mrFlowLogo from "@/assets/mrflow-logo.png";
 import denizeAvatar from "@/assets/lp/avatars/denize.webp.asset.json";
 import pabloAvatar from "@/assets/lp/avatars/pablo.webp.asset.json";
@@ -900,13 +901,28 @@ const formatBRL = (cents: number) =>
 
 type Interval = "month" | "year";
 
+const PRICE_IDS: Record<string, Record<Interval, string>> = {
+  starter: { month: "starter_monthly", year: "starter_yearly" },
+  pro: { month: "pro_monthly", year: "pro_yearly" },
+};
+
 function PlanosSection() {
   const [interval, setInterval] = useState<Interval>("month");
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [checkoutPriceId, setCheckoutPriceId] = useState<string | null>(null);
 
   const yearlyDiscount = (monthly: number, yearly: number) =>
     monthly > 0 ? Math.round((1 - yearly / (monthly * 12)) * 100) : 0;
 
   const visiblePlans = LP_PLANS.filter((p) => VISIBLE_PLAN_CODES.includes(p.code));
+
+  const openStripeCheckout = (planCode: string) => {
+    const priceId = PRICE_IDS[planCode]?.[interval];
+    if (priceId) {
+      setCheckoutPriceId(priceId);
+      setCheckoutOpen(true);
+    }
+  };
 
   return (
     <section
@@ -1065,14 +1081,15 @@ function PlanosSection() {
                   </Button>
                 ) : (
                   <Button
-                    asChild
+                    type="button"
+                    onClick={() => openStripeCheckout(plan.code)}
                     className={`w-full h-12 rounded-xl font-semibold ${
                       isHighlighted
                         ? "bg-[hsl(186_100%_32%)] hover:bg-[hsl(186_100%_27%)] text-white"
                         : "bg-white border-2 border-[hsl(186_100%_32%)]/30 text-[hsl(186_100%_24%)] hover:bg-[hsl(186_100%_32%)]/5"
                     }`}
                   >
-                    <Link to="/auth">Assinar</Link>
+                    Assinar
                   </Button>
                 )}
               </Card>
@@ -1194,6 +1211,18 @@ function PlanosSection() {
           momento — você mantém acesso até o fim do período pago. Notas fiscais
           são emitidas após o processamento do pagamento.
         </p>
+
+        {/* Stripe Checkout Dialog */}
+        <Dialog open={checkoutOpen} onOpenChange={setCheckoutOpen}>
+          <DialogContent className="sm:max-w-xl p-0 overflow-hidden rounded-2xl border-slate-200">
+            {checkoutPriceId && (
+              <StripeEmbeddedCheckout
+                priceId={checkoutPriceId}
+                returnUrl={`${window.location.origin}/lp?checkout=success`}
+              />
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </section>
   );
