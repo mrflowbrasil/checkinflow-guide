@@ -23,6 +23,7 @@ import {
   MessageCircle,
   MessageCircleQuestion,
   MessageSquare,
+  Plug,
   QrCode,
   RefreshCw,
   Rocket,
