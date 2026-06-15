@@ -855,33 +855,45 @@ const LP_PLANS: LpPlan[] = [
   { code: "enterprise", name: "Enterprise", description: "Para grandes operações com necessidades específicas.", property_limit: 999999, price_cents: 0, price_yearly_cents: 0 },
 ];
 
-const LP_PLAN_FEATURES: Record<LpPlan["code"], string[]> = {
-  free: ["1 imóvel", "Guias personalizáveis", "3 templates", "QR codes ilimitados"],
-  starter: ["5 imóveis", "Guias personalizáveis", "3 templates", "QR codes ilimitados"],
+type PlanFeature = { icon: React.ComponentType<{ className?: string }>; label: string };
+
+const LP_PLAN_FEATURES: Record<LpPlan["code"], PlanFeature[]> = {
+  free: [
+    { icon: Home, label: "1 imóvel" },
+    { icon: FileText, label: "Guias personalizáveis" },
+    { icon: LayoutGrid, label: "3 templates" },
+    { icon: QrCode, label: "QR Codes ilimitados" },
+    { icon: MessageCircle, label: "Suporte por WhatsApp" },
+  ],
+  starter: [
+    { icon: Home, label: "5 imóveis" },
+    { icon: FileText, label: "Guias personalizáveis" },
+    { icon: LayoutGrid, label: "3 templates" },
+    { icon: QrCode, label: "QR Codes ilimitados" },
+    { icon: MessageCircle, label: "Suporte por WhatsApp" },
+  ],
   pro: [
-    "20 imóveis",
-    "Guias personalizáveis",
-    "15 templates premium",
-    "Logo personalizada no guia",
-    "URL rotativa (revoga acesso de hóspedes anteriores)",
+    { icon: Home, label: "20 imóveis" },
+    { icon: FileText, label: "Guias personalizáveis" },
+    { icon: Award, label: "15 templates premium" },
+    { icon: ImageIcon, label: "Logo personalizada no guia" },
+    { icon: Link2, label: "URL rotativa" },
+    { icon: MessageCircle, label: "Suporte por WhatsApp" },
   ],
-  business: [
-    "Até 50 imóveis",
-    "Guias personalizáveis",
-    "15 templates premium",
-    "Logo personalizada no guia",
-    "URL rotativa",
-    "Integração nativa Stays e Hostaway",
-  ],
+  business: [],
   enterprise: [],
 };
 
-const ENTERPRISE_BENEFITS = [
-  { icon: Headphones, label: "Suporte prioritário dedicado" },
-  { icon: Rocket, label: "Onboarding assistido" },
-  { icon: SettingsIcon, label: "Condições e SLA personalizados" },
-  { icon: TrendingUp, label: "Escalabilidade ilimitada" },
-];
+// Display configuration — exibe apenas 3 planos principais (visual).
+// Planos business/enterprise permanecem no sistema mas saem da comparação principal.
+const VISIBLE_PLAN_CODES: LpPlan["code"][] = ["free", "starter", "pro"];
+const PLAN_DISPLAY_NAMES: Partial<Record<LpPlan["code"], string>> = {
+  starter: "Anfitrião",
+  pro: "Gestão",
+};
+const PLAN_DISPLAY_DESCRIPTIONS: Partial<Record<LpPlan["code"], string>> = {
+  pro: "Para operações que querem escalar com mais identidade.",
+};
 
 const formatBRL = (cents: number) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(cents / 100);
@@ -893,6 +905,8 @@ function PlanosSection() {
 
   const yearlyDiscount = (monthly: number, yearly: number) =>
     monthly > 0 ? Math.round((1 - yearly / (monthly * 12)) * 100) : 0;
+
+  const visiblePlans = LP_PLANS.filter((p) => VISIBLE_PLAN_CODES.includes(p.code));
 
   return (
     <section
@@ -907,21 +921,33 @@ function PlanosSection() {
         }}
       />
       <div className="relative container max-w-6xl mx-auto px-5 sm:px-8 py-20 lg:py-28">
-        <div className="max-w-3xl mx-auto text-center mb-12">
-          <span className="inline-flex items-center gap-2 mb-5 px-4 py-1.5 rounded-full bg-[hsl(186_100%_94%)] border border-[hsl(186_100%_32%)]/20 text-xs font-semibold tracking-wide uppercase text-[hsl(186_100%_24%)]">
-            <Sparkles className="h-3.5 w-3.5" /> Planos
-          </span>
-          <h2 className="text-3xl sm:text-4xl lg:text-[2.6rem] font-bold tracking-tight leading-[1.1] text-slate-900">
-            Mais paz para você. Mais clareza para o hóspede.{" "}
-            <span style={{ color: CYAN }}>Por menos que um cafezinho por imóvel.</span>
-          </h2>
-          <p className="mt-5 text-lg text-slate-600 leading-relaxed">
-            Comece com 30 dias grátis, sem cartão de crédito. Teste sem
-            compromisso e continue apenas se fizer sentido para sua operação.
-          </p>
+        {/* Header + mockup discreto */}
+        <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-10 lg:gap-12 items-center mb-14">
+          <div className="text-center lg:text-left">
+            <span className="inline-flex items-center gap-2 mb-5 px-4 py-1.5 rounded-full bg-[hsl(186_100%_94%)] border border-[hsl(186_100%_32%)]/20 text-xs font-semibold tracking-wide uppercase text-[hsl(186_100%_24%)]">
+              <Sparkles className="h-3.5 w-3.5" /> Planos
+            </span>
+            <h2 className="text-3xl sm:text-4xl lg:text-[2.4rem] font-bold tracking-tight leading-[1.1] text-slate-900">
+              Mais paz para você. Mais clareza para o hóspede.{" "}
+              <span style={{ color: CYAN }}>Por menos que um cafezinho por imóvel.</span>
+            </h2>
+            <p className="mt-5 text-base sm:text-lg text-slate-600 leading-relaxed max-w-xl mx-auto lg:mx-0">
+              Comece com 30 dias grátis, sem cartão de crédito. Teste sem
+              compromisso e continue apenas se fizer sentido para sua operação.
+            </p>
+          </div>
+          <div className="order-last lg:order-none">
+            <img
+              src={plansMockup.url}
+              alt="Welcome Hub no notebook e celular"
+              loading="lazy"
+              className="w-full max-w-[520px] mx-auto h-auto drop-shadow-[0_30px_40px_rgba(15,23,42,0.18)] animate-fade-in"
+            />
+          </div>
         </div>
 
-        <div className="flex justify-center mb-10">
+        {/* Seletor mensal/anual */}
+        <div className="flex justify-center mb-12">
           <Tabs value={interval} onValueChange={(v) => setInterval(v as Interval)}>
             <TabsList className="bg-white border border-slate-200 rounded-full p-1 h-auto">
               <TabsTrigger
@@ -943,11 +969,13 @@ function PlanosSection() {
           </Tabs>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-          {LP_PLANS.map((plan) => {
-            const isEnterprise = plan.code === "enterprise";
+        {/* 3 planos principais */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-7 max-w-5xl mx-auto">
+          {visiblePlans.map((plan, idx) => {
             const isSingle = plan.code === "free";
             const isHighlighted = plan.code === "pro";
+            const displayName = PLAN_DISPLAY_NAMES[plan.code] ?? plan.name;
+            const displayDesc = PLAN_DISPLAY_DESCRIPTIONS[plan.code] ?? plan.description;
 
             const cents = interval === "month" ? plan.price_cents : plan.price_yearly_cents;
             const discount = yearlyDiscount(plan.price_cents, plan.price_yearly_cents);
@@ -957,7 +985,7 @@ function PlanosSection() {
                 : null;
 
             const perPropertyCents = (() => {
-              if (isEnterprise || isSingle) return null;
+              if (isSingle) return null;
               if (!plan.property_limit || plan.property_limit < 1) return null;
               const baseCents =
                 interval === "year" && plan.price_yearly_cents > 0
@@ -966,80 +994,33 @@ function PlanosSection() {
               return Math.round(baseCents / plan.property_limit);
             })();
 
-            if (isEnterprise) {
-              return (
-                <Card
-                  key={plan.code}
-                  className="p-6 flex flex-col relative rounded-2xl bg-gradient-to-br from-white via-white to-[hsl(186_100%_94%)]/40 border border-[hsl(186_100%_32%)]/30 shadow-[0_20px_60px_-30px_rgba(15,23,42,0.18)] overflow-hidden"
-                >
-                  <div className="absolute -top-12 -right-12 h-32 w-32 rounded-full bg-[hsl(186_100%_32%)]/10 blur-2xl pointer-events-none" />
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="h-9 w-9 rounded-lg bg-[hsl(186_100%_94%)] grid place-items-center">
-                      <Building2 className="h-5 w-5 text-[hsl(186_100%_32%)]" />
-                    </div>
-                    <h3 className="font-semibold text-lg text-slate-900">{plan.name}</h3>
-                  </div>
-                  <p className="text-xs text-slate-600 min-h-[2.5em] mb-4">{plan.description}</p>
-
-                  <div className="mb-5 space-y-1">
-                    <div className="text-3xl font-bold tracking-tight text-slate-900">Sob consulta</div>
-                    <div className="text-xs text-slate-500">
-                      Planos personalizados para grandes operações
-                    </div>
-                  </div>
-
-                  <ul className="space-y-2.5 text-sm mb-6 flex-1">
-                    {ENTERPRISE_BENEFITS.map(({ icon: Icon, label }) => (
-                      <li key={label} className="flex items-start gap-2 text-slate-700">
-                        <Icon className="h-4 w-4 text-[hsl(186_100%_32%)] mt-0.5 shrink-0" />
-                        <span>{label}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <Button
-                    asChild
-                    className="w-full h-12 rounded-xl bg-[hsl(186_100%_32%)] hover:bg-[hsl(186_100%_27%)] text-white font-semibold"
-                  >
-                    <a
-                      href={`https://wa.me/${ENTERPRISE_WHATSAPP}?text=${encodeURIComponent(
-                        "Olá! Tenho interesse no plano Enterprise do MrFlow."
-                      )}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <MessageCircle className="h-4 w-4 mr-2" />
-                      Falar com comercial
-                    </a>
-                  </Button>
-                </Card>
-              );
-            }
-
             return (
               <Card
                 key={plan.code}
-                className={`p-6 flex flex-col relative rounded-2xl bg-white border ${
+                style={{ animationDelay: `${idx * 80}ms` }}
+                className={`p-7 sm:p-8 flex flex-col relative rounded-2xl bg-white animate-fade-in ${
                   isHighlighted
-                    ? "border-[hsl(186_100%_32%)] ring-2 ring-[hsl(186_100%_32%)]/20 shadow-[0_25px_70px_-25px_hsl(186_100%_32%/0.45)]"
-                    : "border-slate-200 shadow-[0_20px_60px_-30px_rgba(15,23,42,0.18)]"
+                    ? "border-2 border-[hsl(186_100%_32%)] shadow-[0_30px_80px_-25px_hsl(186_100%_32%/0.45)] lg:scale-[1.03] lg:-my-2"
+                    : "border border-slate-200 shadow-[0_20px_60px_-30px_rgba(15,23,42,0.18)]"
                 }`}
               >
                 {isHighlighted && (
-                  <Badge className="absolute -top-2 right-4 bg-[hsl(186_100%_32%)] text-white hover:bg-[hsl(186_100%_32%)]">
+                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[hsl(186_100%_32%)] text-white hover:bg-[hsl(186_100%_32%)] px-3 py-1 shadow-md">
                     <Sparkles className="h-3 w-3 mr-1" /> Mais popular
                   </Badge>
                 )}
 
-                <div className="space-y-1 mb-4">
-                  <h3 className="font-semibold text-lg text-slate-900">{plan.name}</h3>
-                  <p className="text-xs text-slate-600 min-h-[2.5em]">{plan.description}</p>
+                <div className="space-y-1.5 mb-5">
+                  <h3 className="font-semibold text-xl text-slate-900">{displayName}</h3>
+                  <p className="text-sm text-slate-600 min-h-[2.75em] leading-relaxed">
+                    {displayDesc}
+                  </p>
                 </div>
 
-                <div className="mb-5 space-y-1">
-                  <div className="text-3xl font-bold tracking-tight text-slate-900">
+                <div className="mb-6 space-y-1">
+                  <div className="text-4xl font-bold tracking-tight text-slate-900">
                     {formatBRL(cents)}
-                    <span className="text-sm font-normal text-slate-500">
+                    <span className="text-base font-normal text-slate-500">
                       /{interval === "month" ? "mês" : "ano"}
                     </span>
                   </div>
@@ -1063,11 +1044,13 @@ function PlanosSection() {
                   )}
                 </div>
 
-                <ul className="space-y-2 text-sm mb-6 flex-1">
-                  {LP_PLAN_FEATURES[plan.code].map((feat) => (
-                    <li key={feat} className="flex items-start gap-2 text-slate-700">
-                      <Check className="h-4 w-4 text-[hsl(186_100%_32%)] mt-0.5 shrink-0" />
-                      <span>{feat}</span>
+                <ul className="space-y-3 text-sm mb-7 flex-1">
+                  {LP_PLAN_FEATURES[plan.code].map(({ icon: Icon, label }) => (
+                    <li key={label} className="flex items-start gap-2.5 text-slate-700">
+                      <span className="mt-0.5 h-5 w-5 rounded-md bg-[hsl(186_100%_94%)] grid place-items-center shrink-0">
+                        <Icon className="h-3 w-3 text-[hsl(186_100%_24%)]" />
+                      </span>
+                      <span className="leading-snug">{label}</span>
                     </li>
                   ))}
                 </ul>
@@ -1076,7 +1059,7 @@ function PlanosSection() {
                   <Button
                     type="button"
                     onClick={openQuickSignup}
-                    className="w-full h-12 rounded-xl font-semibold bg-[hsl(186_100%_32%)] hover:bg-[hsl(186_100%_27%)] text-white"
+                    className="w-full h-12 rounded-xl font-semibold bg-white border-2 border-[hsl(186_100%_32%)] text-[hsl(186_100%_24%)] hover:bg-[hsl(186_100%_94%)]"
                   >
                     Começar grátis
                   </Button>
@@ -1096,6 +1079,45 @@ function PlanosSection() {
             );
           })}
         </div>
+
+        {/* Bloco horizontal — operações com mais de 20 imóveis */}
+        <Card
+          className="mt-10 max-w-5xl mx-auto p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-white to-[hsl(186_100%_94%)]/50 border border-[hsl(186_100%_32%)]/40 shadow-[0_20px_60px_-30px_rgba(15,23,42,0.18)] animate-fade-in"
+          style={{ animationDelay: "320ms" }}
+        >
+          <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-8">
+            <div className="flex items-start gap-4 flex-1">
+              <div className="h-12 w-12 rounded-xl bg-[hsl(186_100%_94%)] grid place-items-center shrink-0">
+                <Building2 className="h-6 w-6 text-[hsl(186_100%_32%)]" />
+              </div>
+              <div className="space-y-1.5">
+                <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
+                  Sua operação tem mais de 20 imóveis?
+                </h3>
+                <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
+                  Converse com nosso time e receba uma condição personalizada,
+                  com suporte comercial, onboarding assistido e estrutura sob
+                  medida para grandes portfólios.
+                </p>
+              </div>
+            </div>
+            <Button
+              asChild
+              className="md:shrink-0 w-full md:w-auto h-12 px-6 rounded-xl bg-[hsl(186_100%_32%)] hover:bg-[hsl(186_100%_27%)] text-white font-semibold"
+            >
+              <a
+                href={`https://wa.me/${ENTERPRISE_WHATSAPP}?text=${encodeURIComponent(
+                  "Olá! Tenho uma operação com mais de 20 imóveis e gostaria de conversar sobre uma condição personalizada."
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <MessageCircle className="h-4 w-4 mr-2" />
+                Falar com comercial
+              </a>
+            </Button>
+          </div>
+        </Card>
 
         {/* Bônus exclusivos */}
         <div className="mt-16 space-y-8">
@@ -1176,6 +1198,7 @@ function PlanosSection() {
     </section>
   );
 }
+
 
 // ============================ TRUST LOGOS ============================
 import airbnbLogo from "@/assets/lp/logos/airbnb.webp.asset.json";
