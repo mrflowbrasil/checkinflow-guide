@@ -12,8 +12,8 @@ const BodySchema = z.object({
   checkin: z.string().optional().nullable(),
   checkout: z.string().optional().nullable(),
   guests: z.number().int().min(1).max(20).optional().nullable(),
-  city: z.string().optional().nullable(),
   max_price: z.number().nonnegative().optional().nullable(),
+  integration_url: z.string().optional().nullable(),
 });
 
 Deno.serve(async (req) => {
@@ -53,11 +53,29 @@ Deno.serve(async (req) => {
       .eq("tenant_id", tenant.id)
       .eq("status", "active");
 
-    if (body.city) q = q.ilike("city", `%${body.city}%`);
     if (body.guests) q = q.gte("max_guests", body.guests);
     if (body.max_price) q = q.lte("base_price", body.max_price);
 
     const { data: candidates } = await q;
+
+    // Check active integration
+    const { data: activeIntegration } = await admin
+      .from("tenant_integrations")
+      .select("provider, system_url")
+      .eq("tenant_id", tenant.id)
+      .in("provider", ["stays", "hostaway"])
+      .eq("status", "connected")
+      .order("provider", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+
+    if (!activeIntegration) {
+      // No active integration → return locally filtered results, no webhook
+      return new Response(
+        JSON.stringify({ properties: candidates ?? [], mocked: true }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
 
     // Lookup webhook
     const { data: hook } = await admin
@@ -86,8 +104,9 @@ Deno.serve(async (req) => {
           checkin: body.checkin,
           checkout: body.checkout,
           guests: body.guests,
-          city: body.city,
           max_price: body.max_price,
+          integration_provider: activeIntegration.provider,
+          integration_url: body.integration_url ?? activeIntegration.system_url,
           properties: (candidates ?? []).map((p) => ({
             id: p.id,
             external_id: p.external_id,
@@ -103,7 +122,6 @@ Deno.serve(async (req) => {
         );
       }
       const remote = await res.json();
-      // remote = { properties: [{ id, booking_url, available }] }
       const map = new Map<string, { booking_url?: string; available?: boolean }>();
       for (const item of remote?.properties ?? []) {
         if (item?.id) map.set(item.id, { booking_url: item.booking_url, available: item.available });

@@ -43,6 +43,23 @@ Deno.serve(async (req) => {
       .eq("status", "active")
       .order("created_at", { ascending: false });
 
+    const { data: integrations } = await admin
+      .from("tenant_integrations")
+      .select("provider, system_url, status")
+      .eq("tenant_id", tenant.id)
+      .in("provider", ["stays", "hostaway"])
+      .eq("status", "connected");
+
+    const prioritized =
+      integrations?.find((i) => i.provider === "stays") ??
+      integrations?.find((i) => i.provider === "hostaway") ??
+      null;
+
+    const has_live_availability = !!prioritized;
+    const integration = prioritized
+      ? { provider: prioritized.provider, system_url: prioritized.system_url }
+      : null;
+
     return new Response(
       JSON.stringify({
         tenant: {
@@ -55,6 +72,8 @@ Deno.serve(async (req) => {
           bio: tenant.catalog_bio,
         },
         properties: properties ?? [],
+        has_live_availability,
+        integration,
       }),
       {
         headers: {
