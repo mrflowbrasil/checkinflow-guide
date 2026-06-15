@@ -12,22 +12,27 @@ export function CatalogResultCard({ property }: { property: PublicProperty }) {
   };
 
   return (
-    <article className="overflow-hidden rounded-2xl border bg-background shadow-sm">
-      <div className="relative aspect-[4/3] bg-muted">
+    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border bg-background shadow-sm transition hover:shadow-md">
+      <div className="relative aspect-[16/10] bg-muted overflow-hidden">
         {property.cover_image_url ? (
           <img
             src={property.cover_image_url}
             alt={property.name}
             loading="lazy"
             decoding="async"
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover object-center transition group-hover:scale-[1.02]"
           />
         ) : (
           <div className="flex h-full items-center justify-center text-xs text-muted-foreground">Sem foto</div>
         )}
+        {property.source && property.source !== "manual" && (
+          <span className="absolute top-2 left-2 rounded-full bg-background/90 backdrop-blur px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide">
+            {property.source}
+          </span>
+        )}
       </div>
-      <div className="p-4 space-y-2">
-        <h2 className="font-semibold leading-tight">{property.name}</h2>
+      <div className="flex flex-1 flex-col p-4 space-y-2">
+        <h2 className="font-semibold leading-tight line-clamp-2">{property.name}</h2>
         <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
           {property.max_guests && (
             <span className="inline-flex items-center gap-1">
@@ -48,7 +53,7 @@ export function CatalogResultCard({ property }: { property: PublicProperty }) {
             <span className="text-muted-foreground font-normal text-sm">/ noite</span>
           </p>
         )}
-        <Button className="w-full mt-2" onClick={handleClick} disabled={!property.booking_url}>
+        <Button className="w-full mt-auto" onClick={handleClick} disabled={!property.booking_url}>
           Ver detalhes e reservar
         </Button>
       </div>
