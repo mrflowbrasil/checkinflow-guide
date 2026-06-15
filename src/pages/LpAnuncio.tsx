@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
   ArrowRight,
   Award,
@@ -33,9 +34,9 @@ import {
   TrendingUp,
   X,
   Zap,
-
 } from "lucide-react";
 import { Seo } from "@/components/Seo";
+import { StripeEmbeddedCheckout } from "@/components/billing/StripeEmbeddedCheckout";
 import mrFlowLogo from "@/assets/mrflow-logo.png";
 import denizeAvatar from "@/assets/lp/avatars/denize.webp.asset.json";
 import pabloAvatar from "@/assets/lp/avatars/pablo.webp.asset.json";
