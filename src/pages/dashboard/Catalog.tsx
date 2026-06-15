@@ -103,7 +103,7 @@ export default function Catalog() {
   const refresh = () => qc.invalidateQueries({ queryKey: ["catalog-properties", tenant?.id] });
 
   return (
-    <div className="space-y-6">
+    <div className="container py-8 max-w-6xl space-y-6 animate-fade-in">
       <header className="flex flex-col gap-2">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <LayoutGrid className="h-4 w-4" />
