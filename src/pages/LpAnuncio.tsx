@@ -880,6 +880,7 @@ const LP_PLAN_FEATURES: Record<LpPlan["code"], PlanFeature[]> = {
     { icon: Award, label: "15 templates premium" },
     { icon: ImageIcon, label: "Logo personalizada no guia" },
     { icon: Link2, label: "URL rotativa" },
+    { icon: Plug, label: "Integração com Stays e Hostaway" },
     { icon: MessageCircle, label: "Suporte por WhatsApp" },
   ],
   business: [],
