@@ -100,6 +100,6 @@ export function usePlanFeatures(): PlanFeatures {
     proTemplates: proOrAbove,
     customLogo: proOrAbove,
     slugRotation: proOrAbove,
-    pmsIntegrations: plan === "business",
+    pmsIntegrations: plan === "pro" || plan === "business",
   };
 }
