@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { Copy, Download, ExternalLink, Eye, LayoutGrid, Loader2, Plus, RefreshCcw } from "lucide-react";
+import { Copy, Download, ExternalLink, Eye, Loader2, Plus, RefreshCcw } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -105,10 +105,6 @@ export default function Catalog() {
   return (
     <div className="container py-8 max-w-6xl space-y-6 animate-fade-in">
       <header className="flex flex-col gap-2">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <LayoutGrid className="h-4 w-4" />
-          Catálogo
-        </div>
         <h1 className="text-3xl font-semibold tracking-tight">Catálogo & Link da Bio</h1>
         <p className="text-muted-foreground">
           Reúna seus imóveis em uma página única, otimizada para o Instagram, e deixe seus hóspedes pesquisarem disponibilidade em segundos.
