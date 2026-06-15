@@ -53,8 +53,8 @@ serve(async (req) => {
       .select("plan_code")
       .eq("id", tenantId)
       .maybeSingle();
-    if (tenantRow?.plan_code !== "business") {
-      return json({ error: "feature_not_available_in_plan", message: "Integrações com Stays/Hostaway estão disponíveis apenas no plano Business." }, 403);
+    if (tenantRow?.plan_code !== "pro" && tenantRow?.plan_code !== "business") {
+      return json({ error: "feature_not_available_in_plan", message: "Integrações com Stays/Hostaway estão disponíveis a partir do plano Gestão." }, 403);
     }
 
     const body = await req.json();
