@@ -6,12 +6,17 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ArrowRight,
+  Award,
   Building2,
   Check,
   ExternalLink,
+  FileText,
   Gift,
   Headphones,
+  Home,
+  Image as ImageIcon,
   KeyRound,
+  LayoutGrid,
   Link2,
   Lock,
   MessageCircle,
@@ -28,6 +33,7 @@ import {
   TrendingUp,
   X,
   Zap,
+
 } from "lucide-react";
 import { Seo } from "@/components/Seo";
 import mrFlowLogo from "@/assets/mrflow-logo.png";
