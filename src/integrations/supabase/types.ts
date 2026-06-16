@@ -798,6 +798,7 @@ export type Database = {
           last_error: string | null
           last_sync_at: string | null
           provider: string
+          public_site_url: string | null
           status: string
           system_url: string | null
           tenant_id: string
@@ -810,6 +811,7 @@ export type Database = {
           last_error?: string | null
           last_sync_at?: string | null
           provider: string
+          public_site_url?: string | null
           status?: string
           system_url?: string | null
           tenant_id: string
@@ -822,6 +824,7 @@ export type Database = {
           last_error?: string | null
           last_sync_at?: string | null
           provider?: string
+          public_site_url?: string | null
           status?: string
           system_url?: string | null
           tenant_id?: string
