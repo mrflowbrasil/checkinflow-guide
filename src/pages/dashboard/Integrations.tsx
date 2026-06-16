@@ -69,6 +69,7 @@ export default function Integrations() {
   const features = usePlanFeatures();
   const [openProvider, setOpenProvider] = useState<Provider | null>(null);
   const [systemUrl, setSystemUrl] = useState("");
+  const [publicSiteUrl, setPublicSiteUrl] = useState("");
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -80,7 +81,7 @@ export default function Integrations() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("tenant_integrations")
-        .select("provider, system_url, status, last_sync_at, last_error")
+        .select("provider, system_url, public_site_url, status, last_sync_at, last_error")
         .eq("tenant_id", tenant!.id);
       if (error) throw error;
       return data;
@@ -139,6 +140,7 @@ export default function Integrations() {
   const openDialog = (provider: Provider) => {
     const cur = integrations?.find((i) => i.provider === provider);
     setSystemUrl(cur?.system_url ?? (provider === "hostaway" ? "https://api.hostaway.com/v1" : ""));
+    setPublicSiteUrl((cur as any)?.public_site_url ?? "");
     setLogin("");
     setPassword("");
     setOpenProvider(provider);
@@ -153,7 +155,13 @@ export default function Integrations() {
     setSubmitting(true);
     try {
       const { data, error } = await supabase.functions.invoke("integrations-connect", {
-        body: { provider: openProvider, system_url: systemUrl.trim(), login: login.trim(), password },
+        body: {
+          provider: openProvider,
+          system_url: systemUrl.trim(),
+          public_site_url: publicSiteUrl.trim() || null,
+          login: login.trim(),
+          password,
+        },
       });
       if (error) throw error;
       if (!data?.ok) {
@@ -486,6 +494,18 @@ export default function Integrations() {
                 />
               </div>
             )}
+            <div className="space-y-1.5">
+              <Label htmlFor="public-site-url">URL pública do site <span className="text-muted-foreground font-normal">(opcional)</span></Label>
+              <Input
+                id="public-site-url"
+                placeholder="https://www.suaempresa.com.br"
+                value={publicSiteUrl}
+                onChange={(e) => setPublicSiteUrl(e.target.value)}
+              />
+              <p className="text-[11px] text-muted-foreground">
+                Usaremos esta URL para gerar links de reserva diretos para os imóveis importados.
+              </p>
+            </div>
             <div className="space-y-1.5">
               <Label htmlFor="login">{meta?.loginLabel}</Label>
               <Input id="login" value={login} onChange={(e) => setLogin(e.target.value)} />
