@@ -42,7 +42,7 @@ serve(async (req) => {
     }
 
     const body = await req.json();
-    const { provider, system_url, login, password } = body ?? {};
+    const { provider, system_url, public_site_url, login, password } = body ?? {};
 
     if (provider !== "stays" && provider !== "hostaway") {
       return json({ error: "invalid_provider" }, 400);
@@ -50,6 +50,10 @@ serve(async (req) => {
     if (!system_url || !login || !password) {
       return json({ error: "missing_fields" }, 400);
     }
+
+    const publicSiteUrl = typeof public_site_url === "string" && public_site_url.trim().length > 0
+      ? public_site_url.trim()
+      : null;
 
     const credentials = btoa(`${login}:${password}`);
 
@@ -61,6 +65,7 @@ serve(async (req) => {
           tenant_id: tenantId,
           provider,
           system_url,
+          public_site_url: publicSiteUrl,
           credentials_encrypted: credentials,
           status: "pending",
           last_error: null,
@@ -95,6 +100,7 @@ serve(async (req) => {
       tenant_id: tenantId,
       provider,
       system_url,
+      public_site_url: publicSiteUrl,
       authorization: `Basic ${credentials}`,
       callback: {
         base_url: `${SUPABASE_URL}/functions/v1`,

@@ -37,7 +37,7 @@ serve(async (req) => {
     // Load integration
     const { data: integration } = await admin
       .from("tenant_integrations")
-      .select("system_url, credentials_encrypted, status")
+      .select("system_url, public_site_url, credentials_encrypted, status")
       .eq("tenant_id", tenantId)
       .eq("provider", provider)
       .maybeSingle();
@@ -90,6 +90,7 @@ serve(async (req) => {
       tenant_id: tenantId,
       provider,
       system_url: integration.system_url,
+      public_site_url: integration.public_site_url ?? null,
       authorization: `Basic ${integration.credentials_encrypted}`,
       callback: {
         base_url: `${SUPABASE_URL}/functions/v1`,
