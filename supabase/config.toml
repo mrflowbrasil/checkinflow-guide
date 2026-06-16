@@ -11,6 +11,8 @@ project_id = "pgdfcufjdyhmaqikwbdq"
     verify_jwt = false
   [functions.integrations-trigger-import]
     verify_jwt = true
+  [functions.catalog-trigger-import]
+    verify_jwt = true
   [functions.payments-webhook]
     verify_jwt = false
   [functions.process-email-queue]
