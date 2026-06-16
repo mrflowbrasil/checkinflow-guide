@@ -39,7 +39,7 @@ serve(async (req) => {
     // Find an active integration (stays or hostaway)
     const { data: integration } = await admin
       .from("tenant_integrations")
-      .select("provider, system_url, credentials_encrypted, status")
+      .select("provider, system_url, public_site_url, credentials_encrypted, status")
       .eq("tenant_id", tenantId)
       .in("provider", ["stays", "hostaway"])
       .eq("status", "connected")
@@ -84,6 +84,7 @@ serve(async (req) => {
       tenant_id: tenantId,
       provider,
       system_url: integration.system_url,
+      public_site_url: integration.public_site_url ?? null,
       authorization: `Basic ${integration.credentials_encrypted}`,
       callback: {
         base_url: `${SUPABASE_URL}/functions/v1`,
