@@ -1,27 +1,10 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { corsHeaders } from "../_shared/cors.ts";
+import { createTenantApiKey } from "../_shared/tenant-api-keys.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const ANON = Deno.env.get("SUPABASE_ANON_KEY")!;
-
-function genApiKey(): string {
-  const bytes = new Uint8Array(32);
-  crypto.getRandomValues(bytes);
-  const b64 = btoa(String.fromCharCode(...bytes))
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/, "");
-  return `mrf_live_${b64}`;
-}
-
-async function sha256(input: string): Promise<string> {
-  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(input));
-  return Array.from(new Uint8Array(buf))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-}
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -76,20 +59,8 @@ serve(async (req) => {
     if (req.method === "POST") {
       const body = await req.json().catch(() => ({}));
       const name = (body?.name ?? "").toString().trim().slice(0, 60) || "API Key";
-      const plainKey = genApiKey();
-      const hash = await sha256(plainKey);
-      const { data, error } = await admin
-        .from("tenant_api_keys")
-        .insert({
-          tenant_id: tenantId,
-          name,
-          key_hash: hash,
-          key_prefix: plainKey.slice(0, 16),
-        })
-        .select("id, name, key_prefix, created_at")
-        .single();
-      if (error) throw error;
-      return json({ ...data, api_key: plainKey });
+      const created = await createTenantApiKey(admin, tenantId, name);
+      return json({ id: created.keyId, name: created.keyName, key_prefix: created.keyPrefix, api_key: created.apiKey });
     }
 
     if (req.method === "DELETE") {

@@ -1,27 +1,11 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { corsHeaders } from "../_shared/cors.ts";
+import { getLatestRecoverableTenantApiKey, unrecoverableApiKeyPayload } from "../_shared/tenant-api-keys.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const ANON = Deno.env.get("SUPABASE_ANON_KEY")!;
-
-function genApiKey(): string {
-  const bytes = new Uint8Array(32);
-  crypto.getRandomValues(bytes);
-  const b64 = btoa(String.fromCharCode(...bytes))
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/, "");
-  return `mrf_live_${b64}`;
-}
-
-async function sha256(input: string): Promise<string> {
-  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(input));
-  return Array.from(new Uint8Array(buf))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -86,27 +70,10 @@ serve(async (req) => {
       }, 503);
     }
 
-    // Always issue a fresh API key for this import so n8n receives a usable
-    // value in the webhook payload. We can't recover previously generated
-    // plain keys (only hashes are stored), so we revoke active "Importação"
-    // keys and create a new one each time. n8n should use the api_key from
-    // this payload for the callback calls.
-    await admin
-      .from("tenant_api_keys")
-      .update({ revoked_at: new Date().toISOString() })
-      .eq("tenant_id", tenantId)
-      .is("revoked_at", null)
-      .eq("name", "Importação");
-
-    const plainKey = genApiKey();
-    const hash = await sha256(plainKey);
-    await admin.from("tenant_api_keys").insert({
-      tenant_id: tenantId,
-      name: "Importação",
-      key_hash: hash,
-      key_prefix: plainKey.slice(0, 16),
-    });
-    const apiKeyStatus = "new";
+    // Reuse the latest active API key. Never revoke/rotate keys implicitly:
+    // external automations may depend on the key shown in the panel.
+    const keyResult = await getLatestRecoverableTenantApiKey(admin, tenantId);
+    if (!keyResult.apiKey) return json(unrecoverableApiKeyPayload(keyResult), 409);
 
     // Mark as syncing
     await admin
@@ -126,8 +93,9 @@ serve(async (req) => {
       authorization: `Basic ${integration.credentials_encrypted}`,
       callback: {
         base_url: `${SUPABASE_URL}/functions/v1`,
-        api_key: plainKey,
-        api_key_status: apiKeyStatus,
+        api_key: keyResult.apiKey,
+        api_key_status: keyResult.apiKeyStatus,
+        key_prefix: keyResult.keyPrefix,
         endpoints: {
           // event=connection → confirm credentials are valid
           connection_done: "/integrations-mark-synced",

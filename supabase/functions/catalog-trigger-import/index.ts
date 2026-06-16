@@ -1,27 +1,11 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { corsHeaders } from "../_shared/cors.ts";
+import { getLatestRecoverableTenantApiKey, unrecoverableApiKeyPayload } from "../_shared/tenant-api-keys.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const ANON = Deno.env.get("SUPABASE_ANON_KEY")!;
-
-function genApiKey(): string {
-  const bytes = new Uint8Array(32);
-  crypto.getRandomValues(bytes);
-  const b64 = btoa(String.fromCharCode(...bytes))
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/, "");
-  return `mrf_live_${b64}`;
-}
-
-async function sha256(input: string): Promise<string> {
-  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(input));
-  return Array.from(new Uint8Array(buf))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-}
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -90,22 +74,10 @@ serve(async (req) => {
       }, 503);
     }
 
-    // Rotate "Importação Catálogo" API key so n8n receives a usable plaintext key
-    await admin
-      .from("tenant_api_keys")
-      .update({ revoked_at: new Date().toISOString() })
-      .eq("tenant_id", tenantId)
-      .is("revoked_at", null)
-      .eq("name", "Importação Catálogo");
-
-    const plainKey = genApiKey();
-    const hash = await sha256(plainKey);
-    await admin.from("tenant_api_keys").insert({
-      tenant_id: tenantId,
-      name: "Importação Catálogo",
-      key_hash: hash,
-      key_prefix: plainKey.slice(0, 16),
-    });
+    // Reuse the latest active API key. Do not revoke/create keys implicitly,
+    // because the panel key can be used by multiple external automations.
+    const keyResult = await getLatestRecoverableTenantApiKey(admin, tenantId);
+    if (!keyResult.apiKey) return json(unrecoverableApiKeyPayload(keyResult), 409);
 
     const webhookPayload = {
       event: "upload-listings-catalog",
@@ -115,7 +87,9 @@ serve(async (req) => {
       authorization: `Basic ${integration.credentials_encrypted}`,
       callback: {
         base_url: `${SUPABASE_URL}/functions/v1`,
-        api_key: plainKey,
+        api_key: keyResult.apiKey,
+        api_key_status: keyResult.apiKeyStatus,
+        key_prefix: keyResult.keyPrefix,
         endpoints: {
           upsert_property: "/properties-api",
         },
