@@ -1,27 +1,11 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { corsHeaders } from "../_shared/cors.ts";
+import { getLatestRecoverableTenantApiKey, unrecoverableApiKeyPayload } from "../_shared/tenant-api-keys.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const ANON = Deno.env.get("SUPABASE_ANON_KEY")!;
-
-function genApiKey(): string {
-  const bytes = new Uint8Array(32);
-  crypto.getRandomValues(bytes);
-  const b64 = btoa(String.fromCharCode(...bytes))
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/, "");
-  return `mrf_live_${b64}`;
-}
-
-async function sha256(input: string): Promise<string> {
-  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(input));
-  return Array.from(new Uint8Array(buf))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -85,27 +69,10 @@ serve(async (req) => {
       );
     if (upErr) throw upErr;
 
-    // Ensure tenant has an api key (return new key if just created)
-    let plainKey: string | null = null;
-    const { data: existingKey } = await admin
-      .from("tenant_api_keys")
-      .select("id")
-      .eq("tenant_id", tenantId)
-      .is("revoked_at", null)
-      .limit(1)
-      .maybeSingle();
-
-    if (!existingKey) {
-      plainKey = genApiKey();
-      const hash = await sha256(plainKey);
-      const { error: keyErr } = await admin.from("tenant_api_keys").insert({
-        tenant_id: tenantId,
-        name: "Integração",
-        key_hash: hash,
-        key_prefix: plainKey.slice(0, 16),
-      });
-      if (keyErr) throw keyErr;
-    }
+    // Reuse the latest active API key. We do not rotate/revoke keys on reconnect,
+    // because the same key may be used by automations in other external flows.
+    const keyResult = await getLatestRecoverableTenantApiKey(admin, tenantId);
+    if (!keyResult.apiKey) return json(unrecoverableApiKeyPayload(keyResult), 409);
 
     // Fetch webhook url
     const { data: hook } = await admin
@@ -122,12 +89,6 @@ serve(async (req) => {
       }, 503);
     }
 
-    // Do NOT rotate existing keys. If the tenant already has an active key,
-    // we cannot recover the plain value (only hash stored) — n8n must keep
-    // using the key it already has configured. Only send a new key when we
-    // just created the very first one for this tenant.
-    const apiKeyStatus = plainKey ? "new" : "existing";
-
     // Fire webhook
     const webhookPayload = {
       event: "connection",
@@ -137,8 +98,9 @@ serve(async (req) => {
       authorization: `Basic ${credentials}`,
       callback: {
         base_url: `${SUPABASE_URL}/functions/v1`,
-        api_key: plainKey,
-        api_key_status: apiKeyStatus,
+        api_key: keyResult.apiKey,
+        api_key_status: keyResult.apiKeyStatus,
+        key_prefix: keyResult.keyPrefix,
       },
     };
 
@@ -158,7 +120,7 @@ serve(async (req) => {
       return json({ ok: false, error: "webhook_failed", status: hookRes.status }, 502);
     }
 
-    return json({ ok: true, api_key: plainKey });
+    return json({ ok: true, api_key_status: keyResult.apiKeyStatus, key_prefix: keyResult.keyPrefix });
   } catch (e: any) {
     console.error("integrations-connect error", e);
     return json({ error: e.message ?? "internal" }, 500);
