@@ -176,8 +176,8 @@ export default function Funcionalidades() {
                 Ver demonstração
               </a>
             </Button>
+          </div>
         </Reveal>
-        </div>
       </div>
     </section>
   );
