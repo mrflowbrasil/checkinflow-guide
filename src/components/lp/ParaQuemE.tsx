@@ -54,7 +54,7 @@ export default function ParaQuemE() {
   return (
     <section id="para-quem-e" className="py-20 lg:py-28 bg-gradient-to-b from-white via-[hsl(186_100%_98%)] to-white">
       <div className="container max-w-6xl mx-auto px-5 sm:px-8">
-        <header className="text-center max-w-3xl mx-auto mb-14 lg:mb-20">
+        <Reveal as="header" className="text-center max-w-3xl mx-auto mb-14 lg:mb-20">
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[hsl(186_100%_94%)] border border-[hsl(186_100%_32%)]/20 text-xs font-semibold tracking-wide uppercase text-[hsl(186_100%_24%)]">
             Para quem é
           </span>
@@ -67,14 +67,13 @@ export default function ParaQuemE() {
             dúvidas repetidas, profissionalizar a chegada do hóspede e organizar todas as informações da
             estadia em um só lugar.
           </p>
-        </header>
+        </Reveal>
 
         <div className="grid sm:grid-cols-2 gap-6 lg:gap-8">
-          {audiences.map((a) => {
+          {audiences.map((a, i) => {
             const Icon = a.icon;
             return (
-              <article
-                key={a.title}
+              <Reveal as="article" key={a.title} delay={Math.min(i, 3) * 80}
                 className="group relative flex flex-col rounded-3xl bg-white border border-slate-200/80 shadow-[0_10px_40px_-20px_rgba(15,23,42,0.15)] hover:shadow-[0_20px_50px_-20px_rgba(15,23,42,0.25)] transition-shadow overflow-hidden"
               >
                 <div className="relative h-40 sm:h-44 overflow-hidden">
