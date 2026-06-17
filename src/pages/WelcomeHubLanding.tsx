@@ -251,23 +251,25 @@ function ProblemSection() {
   return (
     <section id="beneficios" className="py-20 lg:py-28 bg-[#F8FAFC] border-y border-[rgba(15,23,42,0.08)]">
       <div className="container px-4 sm:px-6 lg:px-12 max-w-6xl mx-auto">
-        <div className="text-center max-w-3xl mx-auto mb-14">
+        <Reveal className="text-center max-w-3xl mx-auto mb-14">
           <h2 className="text-3xl lg:text-4xl font-bold tracking-tight text-[#0F172A] mb-4">
             Seu hóspede ainda precisa procurar informações espalhadas?
           </h2>
           <p className="text-[#475569] text-lg leading-relaxed">
             PDFs desatualizados, mensagens perdidas no WhatsApp e instruções enviadas manualmente criam ruído na experiência. Com o Mr Flow Welcome Hub, tudo fica organizado em um único link simples, bonito e fácil de acessar.
           </p>
-        </div>
+        </Reveal>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {problems.map((p) => (
-            <Card key={p.t} className="p-6 bg-white border-[rgba(15,23,42,0.08)] rounded-2xl shadow-sm hover:shadow-md hover:border-[#0F172A]/20 transition-all">
-              <div className="h-11 w-11 rounded-xl bg-[#0F172A]/5 grid place-items-center mb-4">
-                <p.icon className="h-5 w-5 text-[#0F172A]" />
-              </div>
-              <h3 className="font-semibold text-[#0F172A] mb-2">{p.t}</h3>
-              <p className="text-sm text-[#475569] leading-relaxed">{p.d}</p>
-            </Card>
+          {problems.map((p, i) => (
+            <Reveal key={p.t} delay={Math.min(i, 3) * 80}>
+              <Card className="p-6 bg-white border-[rgba(15,23,42,0.08)] rounded-2xl shadow-sm hover:shadow-md hover:border-[#0F172A]/20 transition-all">
+                <div className="h-11 w-11 rounded-xl bg-[#0F172A]/5 grid place-items-center mb-4">
+                  <p.icon className="h-5 w-5 text-[#0F172A]" />
+                </div>
+                <h3 className="font-semibold text-[#0F172A] mb-2">{p.t}</h3>
+                <p className="text-sm text-[#475569] leading-relaxed">{p.d}</p>
+              </Card>
+            </Reveal>
           ))}
         </div>
       </div>
