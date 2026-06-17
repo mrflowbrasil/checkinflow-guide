@@ -1,62 +1,62 @@
-## Novo bloco: Card (imagem + texto + botão)
+# Animações de entrada na landing page
 
-Sim, é totalmente viável. Vou criar um novo tipo de bloco chamado **`card`** que combina, em um único container, uma imagem com texto e (opcionalmente) um botão, com opção de alternar o lado da imagem.
+Adicionar fade + leve subida (translateY) quando elementos entram na viewport, usando apenas CSS + IntersectionObserver, com respeito a `prefers-reduced-motion`.
 
-### Estrutura do bloco
+## 1. Utilitário CSS global (`src/index.css`)
 
-Campos editáveis no editor:
-- **Imagem**: upload via o mesmo fluxo do bloco Imagem atual (storage do tenant).
-- **Formato da imagem**: `circle` (redondo) ou `rounded` (quadrado com bordas arredondadas).
-- **Posição da imagem**: `left` ou `right` (no mobile fica sempre acima do texto, para legibilidade).
-- **Título** (opcional, curto).
-- **Texto** (parágrafo, com a mesma toolbar de formatação inline já usada nos blocos de texto: negrito, itálico, sublinhado).
-- **Botão** (opcional, mesmo modelo do bloco Botão atual):
-  - Label
-  - Ação: `link`, `copy` ou `download`
-  - Valor (URL / texto a copiar / URL do arquivo)
+Adicionar uma classe `reveal` e um modificador `reveal-in`:
 
-### Onde encaixa no sistema
+```css
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 600ms cubic-bezier(0.22, 1, 0.36, 1),
+              transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.reveal.reveal-in {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+}
+```
 
-1. **`src/lib/blocks.ts`**
-   - Adicionar `"card"` em `BlockType`.
-   - Tipar `CardData` com os campos acima (reusando `ButtonData` opcional).
-   - `BLOCK_LABELS.card = "Card (imagem + texto)"`.
-   - `defaultDataFor("card")` com valores neutros (`imageShape: "rounded"`, `imagePosition: "left"`, sem botão).
+Sem nova lib. Apenas `opacity` e `transform` — sem layout thrashing.
 
-2. **`src/components/blocks/BlockEditor.tsx`** (menu "Adicionar bloco" + editor por tipo)
-   - Adicionar entrada no `AddBlockMenu` com ícone próprio (ex.: `LayoutPanelLeft` do lucide).
-   - Criar `CardBlockEditor`:
-     - Upload de imagem (reaproveitando o componente/util do bloco Imagem).
-     - Toggle de formato (Redondo / Arredondado) — botões segmentados.
-     - Toggle de posição (Imagem à esquerda / direita).
-     - Input de título + textarea com a toolbar inline já usada.
-     - Seção "Botão" colapsável: switch para ativar; quando ativo, reaproveita os mesmos campos do editor do bloco Botão.
+## 2. Hook `useReveal` (`src/hooks/useReveal.tsx`, novo)
 
-3. **`src/components/blocks/BlockRenderer.tsx`** (renderização no guia público)
-   - Novo `CardBlock`:
-     - Container `rounded-2xl border bg-card p-4 sm:p-5 flex flex-col sm:flex-row gap-4` com `sm:flex-row-reverse` quando `imagePosition === "right"`.
-     - Imagem com `aspect-square w-28 sm:w-32 object-cover` + `rounded-full` (circle) ou `rounded-xl` (rounded).
-     - Título com classe de subtítulo já usada; texto com `inline-format` (mesmo helper dos outros blocos) preservando quebras de linha.
-     - Botão, se ativo, renderizado pelo mesmo componente do bloco Botão (mesmas ações: copy, download, link) respeitando as cores do template (`cta` / `cta-text`).
+- Cria um único `IntersectionObserver` compartilhado (lazy), `rootMargin: "0px 0px -10% 0px"`, `threshold: 0.1`.
+- `data-reveal-delay` (ms) opcional → aplica `transition-delay` inline.
+- Ao intersectar, adiciona `reveal-in` e faz `unobserve` (anima uma vez).
+- Componente helper `<Reveal as="div" delay={0} className="...">children</Reveal>` que aplica `.reveal` e registra no observer via `ref`.
+- Se `matchMedia('(prefers-reduced-motion: reduce)').matches`, o hook não observa e marca como visível imediatamente.
 
-4. **`src/components/guest/GuestPagePreview.tsx`**
-   - Como o preview reusa o mesmo renderer, deve funcionar sem mudanças. Verifico após implementar.
+## 3. Aplicação nas seções da landing
 
-5. **Compatibilidade com templates**
-   - Usa apenas tokens semânticos (`bg-card`, `text-fg`, `border-border`, `--cta`/`--cta-text`) — respeita a convenção de 5 cores dos templates já registrada na memória do projeto.
+Envolver/marcar elementos com `<Reveal>` (ou `className="reveal"` + `ref`):
 
-6. **Sem migração de banco**
-   - `content_blocks.data` é JSONB e `type` é texto livre no app, então não há mudança de schema. Blocos antigos continuam funcionando.
+- `src/pages/WelcomeHubLanding.tsx`: hero (badge, h1, subtítulo, CTAs, mockup), seções de planos, depoimentos e blocos de conteúdo.
+- `src/components/lp/ParaQuemE.tsx`: header + cards (delay escalonado 0/80/160/240ms; teto 240ms).
+- `src/components/lp/Funcionalidades.tsx`: header + cards com delay escalonado.
+- `src/components/lp/VideoCriacao.tsx`: badge, h2, parágrafo, mockup, CTAs.
+- `src/components/lp/GarantiaSection.tsx`: bloco principal.
+- `src/components/lp/FaqSection.tsx`: header + cada item do accordion (delay escalonado ≤120ms entre itens).
+- `src/components/ui/sticky-scroll-cards-section.tsx`: manter animações próprias do header; **não** envolver os cards sticky para não conflitar com o efeito de pilha.
 
-### Comportamento responsivo
+Delay progressivo entre cards: **80ms por item, máximo 240ms** (mantém dentro da faixa pedida 100–150ms entre pares, sem somar atrasos longos).
 
-- Desktop/tablet: imagem e texto lado a lado, na ordem escolhida.
-- Mobile (< sm): imagem centralizada acima do texto (padrão de leitura mais confortável que metade-metade em telas estreitas). Posso, se preferir, manter sempre lado-a-lado também no mobile — me diga depois de aprovar o plano.
+## 4. Performance
 
-### Fora do escopo deste plano
+- Hero **não** recebe `.reveal` no badge/H1/subtítulo se quebrar LCP? → manter animação só com `opacity/transform`, que não bloqueiam render; o LCP (mockup) também recebe `.reveal`, mas com `transition` curta — aceitável. Alternativa segura: hero anima **on mount** via CSS keyframe (sem IO) para garantir disparo imediato no primeiro paint. **Vou usar a abordagem on-mount na hero** (classe `reveal-now` adicionada via `useEffect` no mount) e IntersectionObserver no restante. Isso evita esperar o IO no above-the-fold.
+- Sem mudanças em libs. Sem mudança de bundle relevante (~1KB).
 
-- Reordenar/converter blocos antigos para o novo formato.
-- Múltiplas imagens dentro do mesmo card (galeria) — pode virar bloco próprio depois.
-- Variantes pré-prontas (ex.: "depoimento", "destaque") — todas resolvidas pelo mesmo bloco via configurações.
+## 5. Acessibilidade
 
-Posso seguir com a implementação?
+- `prefers-reduced-motion: reduce` curto-circuita no CSS e no hook.
+- Sem mudanças de foco, ordem do DOM ou contraste.
+
+## Fora de escopo
+
+- Reordenar seções, alterar conteúdo/copy, animar componentes do dashboard, animações de hover novas, parallax.

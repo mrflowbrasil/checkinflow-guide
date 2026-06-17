@@ -5,6 +5,7 @@ import func1 from "@/assets/lp/features/func1.webp.asset.json";
 import func2 from "@/assets/lp/features/func2.webp.asset.json";
 import func3 from "@/assets/lp/features/func3.webp.asset.json";
 import func4 from "@/assets/lp/features/func4.webp.asset.json";
+import { Reveal } from "@/hooks/useReveal";
 
 const CYAN = "hsl(186 100% 32%)";
 
@@ -81,7 +82,7 @@ export default function Funcionalidades() {
   return (
     <section id="funcionalidades" className="py-20 lg:py-28 bg-gradient-to-b from-white via-[hsl(186_100%_98%)] to-white">
       <div className="container max-w-6xl mx-auto px-5 sm:px-8">
-        <header className="text-center max-w-3xl mx-auto mb-16 lg:mb-20">
+        <Reveal as="header" className="text-center max-w-3xl mx-auto mb-16 lg:mb-20">
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[hsl(186_100%_94%)] border border-[hsl(186_100%_32%)]/20 text-xs font-semibold tracking-wide uppercase text-[hsl(186_100%_24%)]">
             Funcionalidades
           </span>
@@ -93,15 +94,15 @@ export default function Funcionalidades() {
             Com o Welcome Hub, você centraliza a gestão dos imóveis, cria guias digitais personalizados e
             padroniza sua operação — tudo em uma plataforma pensada para anfitriões e gestores profissionais.
           </p>
-        </header>
+        </Reveal>
+
 
         <div className="space-y-20 lg:space-y-28">
           {features.map((f, idx) => {
             const Icon = f.icon;
             const reverse = idx % 2 === 1;
             return (
-              <article
-                key={f.title}
+              <Reveal as="article" key={f.title} delay={Math.min(idx, 3) * 60}
                 className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center"
               >
                 <div className={`relative ${reverse ? "lg:order-2" : ""}`}>
@@ -139,12 +140,12 @@ export default function Funcionalidades() {
                     ))}
                   </ul>
                 </div>
-              </article>
+              </Reveal>
             );
           })}
         </div>
 
-        <div className="mt-20 lg:mt-28 relative overflow-hidden rounded-[2.5rem] p-8 sm:p-12 lg:p-14 text-center bg-gradient-to-br from-[hsl(186_100%_94%)] via-white to-[#F3EBDD]/60 border border-[hsl(186_100%_32%)]/20 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.25)]">
+        <Reveal className="mt-20 lg:mt-28 relative overflow-hidden rounded-[2.5rem] p-8 sm:p-12 lg:p-14 text-center bg-gradient-to-br from-[hsl(186_100%_94%)] via-white to-[#F3EBDD]/60 border border-[hsl(186_100%_32%)]/20 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.25)]">
           <div className="absolute -top-24 -right-24 h-64 w-64 rounded-full bg-[hsl(186_100%_70%)]/25 blur-3xl pointer-events-none" />
           <h3 className="relative text-2xl lg:text-4xl font-bold text-slate-900 leading-tight">
             Pronto para criar seu primeiro guia digital?
@@ -176,7 +177,7 @@ export default function Funcionalidades() {
               </a>
             </Button>
           </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

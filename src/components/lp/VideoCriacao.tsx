@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Reveal } from "@/hooks/useReveal";
 
 const CYAN = "hsl(186 100% 32%)";
 const YOUTUBE_ID = "l8SxORuMqLU";
@@ -20,7 +21,7 @@ export default function VideoCriacao() {
         <div className="max-w-6xl mx-auto px-5 sm:px-8 py-16 lg:py-24">
           <div className="bg-white rounded-3xl border border-border shadow-sm p-6 sm:p-10 lg:p-14">
             {/* Topo centralizado */}
-            <div className="text-center max-w-2xl mx-auto mb-10 lg:mb-14">
+            <Reveal className="text-center max-w-2xl mx-auto mb-10 lg:mb-14">
               <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[hsl(186_100%_94%)] border border-[hsl(186_100%_32%)]/20 text-xs font-semibold tracking-wide uppercase text-[hsl(186_100%_24%)]">
                 Demonstração rápida
               </span>
@@ -34,10 +35,10 @@ export default function VideoCriacao() {
                 um guia digital bonito, organizado e pronto para enviar ao hóspede
                 por link ou QR Code.
               </p>
-            </div>
+            </Reveal>
 
             {/* Mockup centralizado */}
-            <div className="relative mx-auto w-full max-w-[760px] mb-10 lg:mb-14">
+            <Reveal delay={120} className="relative mx-auto w-full max-w-[760px] mb-10 lg:mb-14">
               {/* glow sutil atrás */}
               <div
                 aria-hidden
@@ -75,10 +76,10 @@ export default function VideoCriacao() {
                   className="mx-auto mt-3 h-6 w-3/4 rounded-[50%] bg-slate-900/15 blur-xl"
                 />
               </div>
-            </div>
+            </Reveal>
 
             {/* Botões centralizados */}
-            <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+            <Reveal delay={180} className="flex flex-col sm:flex-row gap-3 justify-center items-center">
               <Link
                 to="/auth"
                 className="inline-flex items-center justify-center h-14 px-7 rounded-2xl bg-[hsl(186_100%_32%)] hover:bg-[hsl(186_100%_27%)] text-white font-semibold shadow-[0_10px_30px_-10px_hsl(186_100%_32%/0.5)] text-base transition-colors"
@@ -92,7 +93,7 @@ export default function VideoCriacao() {
               >
                 Ver vídeo completo
               </button>
-            </div>
+            </Reveal>
 
             <p className="mt-4 text-sm text-muted-foreground text-center">
               Sem cartão. Sem instalação. Seu hóspede acessa pelo navegador.

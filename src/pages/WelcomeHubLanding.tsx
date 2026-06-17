@@ -26,6 +26,7 @@ import phoneMockup from "@/assets/welcome-hub-phone-mockup.webp";
 import heroLifestyle from "@/assets/hero-mockup-lifestyle.webp";
 import { StickyFeatureSection } from "@/components/ui/sticky-scroll-cards-section";
 import WhatsAppGuideDialog from "@/components/lp/WhatsAppGuideDialog";
+import { Reveal } from "@/hooks/useReveal";
 
 const DEMO_URL = "https://hub.mrflow.com.br/g/suite-premium-vila-serena-23515a";
 
@@ -167,32 +168,32 @@ function Hero() {
     <section id="top" className="relative pt-16 pb-20 lg:pt-24 lg:pb-32 overflow-hidden">
       <div className="container px-4 sm:px-6 lg:px-12 grid lg:grid-cols-2 gap-14 items-center">
         <div className="space-y-7 text-center lg:text-left">
-          <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
+          <Reveal immediate className="flex flex-wrap gap-2 justify-center lg:justify-start">
             {["Guia digital para hóspedes", "Acesso por QR Code", "Mobile-first", "Sem instalar app"].map((b) => (
               <Badge key={b} variant="outline" className="border-[rgba(148,163,184,0.30)] bg-white/5 text-[#CBD5E1] rounded-full px-3 py-1 text-[11px] font-medium">
                 {b}
               </Badge>
             ))}
-          </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05] text-[#F8FAFC]">
+          </Reveal>
+          <Reveal as="h1" immediate delay={80} className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05] text-[#F8FAFC]">
             Transforme cada estadia em uma{" "}
             <span className="text-[#00FF00]">
               experiência digital
             </span>{" "}
             de boas-vindas
-          </h1>
-          <p className="text-lg text-[#CBD5E1] leading-relaxed max-w-xl mx-auto lg:mx-0">
+          </Reveal>
+          <Reveal as="p" immediate delay={160} className="text-lg text-[#CBD5E1] leading-relaxed max-w-xl mx-auto lg:mx-0">
             Crie um hub personalizado para seus hóspedes acessarem pelo celular, com QR Code, link, instruções da hospedagem, dicas locais e tudo que eles precisam saber — sem depender de PDFs ou mensagens repetidas no WhatsApp.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
+          </Reveal>
+          <Reveal immediate delay={240} className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
             <Button asChild size="lg" className="h-12 px-8 rounded-xl bg-[#00FFFF] text-[#020617] hover:bg-[#00FFFF]/90 font-semibold shadow-lg shadow-[#00FFFF]/20">
               <Link to="/auth">Criar meu primeiro hub grátis <ArrowRight className="ml-2 h-4 w-4" /></Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="h-12 px-8 rounded-xl bg-white/5 border-[rgba(148,163,184,0.30)] text-white hover:bg-white/10">
               <a href="#demo">Ver demo real</a>
             </Button>
-          </div>
-          <div className="flex justify-center lg:justify-start">
+          </Reveal>
+          <Reveal immediate delay={300} className="flex justify-center lg:justify-start">
             <Button
               size="lg"
               onClick={() => setWaOpen(true)}
@@ -201,8 +202,9 @@ function Hero() {
               <MessageCircle className="mr-2 h-5 w-5" />
               Receber Guia no meu WhatsApp
             </Button>
-          </div>
+          </Reveal>
         </div>
+
 
         <div className="relative flex justify-center items-center min-h-[560px]">
           <div className="absolute -inset-10 bg-gradient-to-tr from-[#00FFFF]/25 via-transparent to-[#00FFFF]/10 blur-3xl rounded-full pointer-events-none" />
@@ -249,23 +251,25 @@ function ProblemSection() {
   return (
     <section id="beneficios" className="py-20 lg:py-28 bg-[#F8FAFC] border-y border-[rgba(15,23,42,0.08)]">
       <div className="container px-4 sm:px-6 lg:px-12 max-w-6xl mx-auto">
-        <div className="text-center max-w-3xl mx-auto mb-14">
+        <Reveal className="text-center max-w-3xl mx-auto mb-14">
           <h2 className="text-3xl lg:text-4xl font-bold tracking-tight text-[#0F172A] mb-4">
             Seu hóspede ainda precisa procurar informações espalhadas?
           </h2>
           <p className="text-[#475569] text-lg leading-relaxed">
             PDFs desatualizados, mensagens perdidas no WhatsApp e instruções enviadas manualmente criam ruído na experiência. Com o Mr Flow Welcome Hub, tudo fica organizado em um único link simples, bonito e fácil de acessar.
           </p>
-        </div>
+        </Reveal>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {problems.map((p) => (
-            <Card key={p.t} className="p-6 bg-white border-[rgba(15,23,42,0.08)] rounded-2xl shadow-sm hover:shadow-md hover:border-[#0F172A]/20 transition-all">
-              <div className="h-11 w-11 rounded-xl bg-[#0F172A]/5 grid place-items-center mb-4">
-                <p.icon className="h-5 w-5 text-[#0F172A]" />
-              </div>
-              <h3 className="font-semibold text-[#0F172A] mb-2">{p.t}</h3>
-              <p className="text-sm text-[#475569] leading-relaxed">{p.d}</p>
-            </Card>
+          {problems.map((p, i) => (
+            <Reveal key={p.t} delay={Math.min(i, 3) * 80}>
+              <Card className="p-6 bg-white border-[rgba(15,23,42,0.08)] rounded-2xl shadow-sm hover:shadow-md hover:border-[#0F172A]/20 transition-all">
+                <div className="h-11 w-11 rounded-xl bg-[#0F172A]/5 grid place-items-center mb-4">
+                  <p.icon className="h-5 w-5 text-[#0F172A]" />
+                </div>
+                <h3 className="font-semibold text-[#0F172A] mb-2">{p.t}</h3>
+                <p className="text-sm text-[#475569] leading-relaxed">{p.d}</p>
+              </Card>
+            </Reveal>
           ))}
         </div>
       </div>
@@ -663,17 +667,17 @@ function PricingSection() {
   return (
     <section id="planos" className="py-20 lg:py-28 bg-[#E6FBFC]/90 backdrop-blur-sm border-y border-[#00FFFF]/30">
       <div className="container px-4 sm:px-6 lg:px-12 max-w-7xl mx-auto">
-        <div className="text-center max-w-3xl mx-auto mb-14">
+        <Reveal className="text-center max-w-3xl mx-auto mb-14">
           <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">Planos para cada fase da sua operação</h2>
           <p className="text-slate-700 text-lg">Comece com um imóvel e evolua conforme sua operação cresce.</p>
-        </div>
+        </Reveal>
         <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-5">
-          {plans.map((p) => {
+          {plans.map((p, i) => {
             const isDark = p.featured;
             return (
+            <Reveal key={p.name} delay={Math.min(i, 3) * 70}>
             <Card
-              key={p.name}
-              className={`relative p-6 rounded-2xl flex flex-col ${
+              className={`relative p-6 rounded-2xl flex flex-col h-full ${
                 isDark
                   ? "bg-[#111827] border-[#00FFFF]/60 shadow-[0_0_40px_-10px_rgba(0,255,255,0.5)]"
                   : "bg-white border-[#0E7490]/15 shadow-sm"
@@ -722,6 +726,7 @@ function PricingSection() {
                 )}
               </Button>
             </Card>
+            </Reveal>
             );
           })}
         </div>
@@ -747,22 +752,23 @@ function FAQSection() {
   return (
     <section id="faq" className="py-20 lg:py-28">
       <div className="container px-4 sm:px-6 lg:px-12 max-w-3xl mx-auto">
-        <div className="text-center mb-12">
+        <Reveal className="text-center mb-12">
           <h2 className="text-3xl lg:text-4xl font-bold text-[#F8FAFC] mb-4">Dúvidas frequentes</h2>
           <p className="text-[#CBD5E1] text-lg">Veja as principais respostas sobre como funciona o Mr Flow Welcome Hub.</p>
-        </div>
+        </Reveal>
         <Accordion type="single" collapsible className="space-y-3">
           {faq.map(([q, a], i) => (
-            <AccordionItem
-              key={i}
-              value={`item-${i}`}
-              className="bg-[#111827] border border-[rgba(148,163,184,0.20)] rounded-2xl px-5 data-[state=open]:border-[#00FFFF]/40"
-            >
-              <AccordionTrigger className="text-left text-[#F8FAFC] hover:no-underline py-4">
-                {q}
-              </AccordionTrigger>
-              <AccordionContent className="text-[#CBD5E1] leading-relaxed pb-4">{a}</AccordionContent>
-            </AccordionItem>
+            <Reveal key={i} delay={Math.min(i, 3) * 60}>
+              <AccordionItem
+                value={`item-${i}`}
+                className="bg-[#111827] border border-[rgba(148,163,184,0.20)] rounded-2xl px-5 data-[state=open]:border-[#00FFFF]/40"
+              >
+                <AccordionTrigger className="text-left text-[#F8FAFC] hover:no-underline py-4">
+                  {q}
+                </AccordionTrigger>
+                <AccordionContent className="text-[#CBD5E1] leading-relaxed pb-4">{a}</AccordionContent>
+              </AccordionItem>
+            </Reveal>
           ))}
         </Accordion>
       </div>
@@ -774,7 +780,7 @@ function FinalCTA() {
   return (
     <section className="py-20 lg:py-28">
       <div className="container px-4 sm:px-6 lg:px-12 max-w-5xl mx-auto">
-        <div className="relative overflow-hidden rounded-3xl p-10 lg:p-16 text-center border border-[rgba(148,163,184,0.20)] bg-gradient-to-br from-[#0F172A] via-[#111827] to-[#020617]">
+        <Reveal className="relative overflow-hidden rounded-3xl p-10 lg:p-16 text-center border border-[rgba(148,163,184,0.20)] bg-gradient-to-br from-[#0F172A] via-[#111827] to-[#020617]">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(0,255,255,0.15),transparent_50%),radial-gradient(circle_at_80%_80%,rgba(0,255,0,0.12),transparent_50%)] pointer-events-none" />
           <div className="relative">
             <h2 className="text-3xl lg:text-5xl font-bold text-[#F8FAFC] mb-4 leading-tight">
@@ -797,7 +803,7 @@ function FinalCTA() {
               ))}
             </div>
           </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );
