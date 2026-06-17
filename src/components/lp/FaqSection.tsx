@@ -7,6 +7,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ArrowRight, HelpCircle } from "lucide-react";
 import { openQuickSignup } from "@/components/lp/QuickSignupDialog";
+import { Reveal } from "@/hooks/useReveal";
 
 const faqs = [
   {
