@@ -102,8 +102,7 @@ export default function Funcionalidades() {
             const Icon = f.icon;
             const reverse = idx % 2 === 1;
             return (
-              <article
-                key={f.title}
+              <Reveal as="article" key={f.title} delay={Math.min(idx, 3) * 60}
                 className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center"
               >
                 <div className={`relative ${reverse ? "lg:order-2" : ""}`}>
