@@ -13,6 +13,16 @@ type ObservedEl = HTMLElement;
 
 let sharedObserver: IntersectionObserver | null = null;
 
+function activate(el: HTMLElement) {
+  // Force a paint of the initial (.reveal) state before flipping to .reveal-in
+  // Two rAFs guarantee the browser commits the starting styles first.
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      el.classList.add("reveal-in");
+    });
+  });
+}
+
 function getObserver() {
   if (typeof window === "undefined") return null;
   if (sharedObserver) return sharedObserver;
@@ -21,7 +31,7 @@ function getObserver() {
       for (const entry of entries) {
         if (entry.isIntersecting) {
           const el = entry.target as ObservedEl;
-          el.classList.add("reveal-in");
+          activate(el);
           sharedObserver?.unobserve(el);
         }
       }
@@ -40,7 +50,7 @@ function prefersReducedMotion() {
 
 /**
  * Attach reveal-on-scroll behavior to an existing element ref.
- * Adds `.reveal` and, when in viewport, `.reveal-in`.
+ * Adds `.reveal` and, when in viewport (or immediately if requested), `.reveal-in`.
  */
 export function useReveal<T extends HTMLElement = HTMLElement>(
   delayMs = 0,
@@ -52,13 +62,17 @@ export function useReveal<T extends HTMLElement = HTMLElement>(
     if (!el) return;
     el.classList.add("reveal");
     if (delayMs) el.style.transitionDelay = `${delayMs}ms`;
-    if (prefersReducedMotion() || immediate) {
+    if (prefersReducedMotion()) {
       el.classList.add("reveal-in");
+      return;
+    }
+    if (immediate) {
+      activate(el);
       return;
     }
     const obs = getObserver();
     if (!obs) {
-      el.classList.add("reveal-in");
+      activate(el);
       return;
     }
     obs.observe(el);
@@ -77,15 +91,29 @@ type RevealProps = {
   style?: CSSProperties;
 } & Omit<HTMLAttributes<HTMLElement>, "children" | "className" | "style">;
 
+// Props that should never be forwarded to a generic wrapper element
+const INVALID_WRAPPER_PROPS = new Set([
+  "fetchPriority",
+  "fetchpriority",
+  "loading",
+  "decoding",
+  "srcSet",
+  "sizes",
+]);
+
 export const Reveal = forwardRef<HTMLElement, RevealProps>(function Reveal(
   { as, delay = 0, immediate = false, children, className, style, ...rest },
   _forwardedRef
 ) {
   const ref = useReveal<HTMLElement>(delay, immediate);
   const Tag: ElementType = as || "div";
+  const safeRest: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(rest)) {
+    if (!INVALID_WRAPPER_PROPS.has(k)) safeRest[k] = v;
+  }
   return createElement(
     Tag,
-    { ref, className, style, ...rest },
+    { ref, className, style, ...safeRest },
     children
   );
 });
