@@ -1,80 +1,62 @@
-## Estado atual
+## Novo bloco: Card (imagem + texto + botão)
 
-- O botão **"Importar da Stays / Hub"** abre o `ImportFromStaysDialog`, que **não chama webhook nenhum** — apenas mostra um texto explicativo e redireciona para `/app/integrations`.
-- O webhook real de importação fica na página **Integrações**, na função `integrations-trigger-import`, que envia `event: "upload_listings"` para o webhook configurado em `integration_webhooks` por provedor (stays / hostaway).
-- A função `properties-api` (usada pelo n8n para criar/atualizar imóveis no callback) **não aceita** os campos `max_guests`, `base_price` e `city`, que são justamente os campos exibidos no Catálogo.
+Sim, é totalmente viável. Vou criar um novo tipo de bloco chamado **`card`** que combina, em um único container, uma imagem com texto e (opcionalmente) um botão, com opção de alternar o lado da imagem.
 
-## O que vamos fazer
+### Estrutura do bloco
 
-### 1. Disparar webhook do catálogo a partir do botão
+Campos editáveis no editor:
+- **Imagem**: upload via o mesmo fluxo do bloco Imagem atual (storage do tenant).
+- **Formato da imagem**: `circle` (redondo) ou `rounded` (quadrado com bordas arredondadas).
+- **Posição da imagem**: `left` ou `right` (no mobile fica sempre acima do texto, para legibilidade).
+- **Título** (opcional, curto).
+- **Texto** (parágrafo, com a mesma toolbar de formatação inline já usada nos blocos de texto: negrito, itálico, sublinhado).
+- **Botão** (opcional, mesmo modelo do bloco Botão atual):
+  - Label
+  - Ação: `link`, `copy` ou `download`
+  - Valor (URL / texto a copiar / URL do arquivo)
 
-Transformar o botão em um disparo real, reutilizando os webhooks já cadastrados de **stays** e **hostaway** (tabela `integration_webhooks`), mas com um `event` próprio.
+### Onde encaixa no sistema
 
-- Nova edge function **`catalog-trigger-import`** (espelho enxuto da `integrations-trigger-import`):
-  - Identifica o tenant logado.
-  - Localiza a integração ativa (`stays` ou `hostaway`) em `tenant_integrations` com `status = 'connected'`.
-  - Gera/rotaciona uma API key (nome `Importação Catálogo`) para o n8n usar nos callbacks via `properties-api`.
-  - Faz POST no `webhook_url` correspondente ao provider em `integration_webhooks`.
-  - Payload com `event: "upload-listings-catalog"` (formato detalhado abaixo).
-- `ImportFromStaysDialog`:
-  - Manter a explicação, mas trocar o botão final por **"Iniciar importação"** que invoca `catalog-trigger-import`.
-  - Se não houver integração conectada, mostrar mensagem e manter o link para `/app/integrations`.
-  - Em caso de sucesso, fechar dialog e mostrar toast "Importação iniciada".
+1. **`src/lib/blocks.ts`**
+   - Adicionar `"card"` em `BlockType`.
+   - Tipar `CardData` com os campos acima (reusando `ButtonData` opcional).
+   - `BLOCK_LABELS.card = "Card (imagem + texto)"`.
+   - `defaultDataFor("card")` com valores neutros (`imageShape: "rounded"`, `imagePosition: "left"`, sem botão).
 
-### 2. Estender `properties-api` para aceitar campos do catálogo
+2. **`src/components/blocks/BlockEditor.tsx`** (menu "Adicionar bloco" + editor por tipo)
+   - Adicionar entrada no `AddBlockMenu` com ícone próprio (ex.: `LayoutPanelLeft` do lucide).
+   - Criar `CardBlockEditor`:
+     - Upload de imagem (reaproveitando o componente/util do bloco Imagem).
+     - Toggle de formato (Redondo / Arredondado) — botões segmentados.
+     - Toggle de posição (Imagem à esquerda / direita).
+     - Input de título + textarea com a toolbar inline já usada.
+     - Seção "Botão" colapsável: switch para ativar; quando ativo, reaproveita os mesmos campos do editor do bloco Botão.
 
-Atualmente `properties-api` (POST/PUT) ignora `max_guests`, `base_price` e `city`. Vamos adicionar esses três campos ao `propertyPayload` (são colunas existentes em `properties`). Sem isso, o n8n consegue mandar os dados mas o número de hóspedes e o preço não chegam.
+3. **`src/components/blocks/BlockRenderer.tsx`** (renderização no guia público)
+   - Novo `CardBlock`:
+     - Container `rounded-2xl border bg-card p-4 sm:p-5 flex flex-col sm:flex-row gap-4` com `sm:flex-row-reverse` quando `imagePosition === "right"`.
+     - Imagem com `aspect-square w-28 sm:w-32 object-cover` + `rounded-full` (circle) ou `rounded-xl` (rounded).
+     - Título com classe de subtítulo já usada; texto com `inline-format` (mesmo helper dos outros blocos) preservando quebras de linha.
+     - Botão, se ativo, renderizado pelo mesmo componente do bloco Botão (mesmas ações: copy, download, link) respeitando as cores do template (`cta` / `cta-text`).
 
-### 3. JSON enviado ao webhook (resposta para o usuário)
+4. **`src/components/guest/GuestPagePreview.tsx`**
+   - Como o preview reusa o mesmo renderer, deve funcionar sem mudanças. Verifico após implementar.
 
-**Request → webhook do provider (saída de `catalog-trigger-import`):**
+5. **Compatibilidade com templates**
+   - Usa apenas tokens semânticos (`bg-card`, `text-fg`, `border-border`, `--cta`/`--cta-text`) — respeita a convenção de 5 cores dos templates já registrada na memória do projeto.
 
-```json
-{
-  "event": "upload-listings-catalog",
-  "tenant_id": "<uuid do tenant>",
-  "provider": "stays",
-  "system_url": "https://<url da integração cadastrada>",
-  "authorization": "Basic <credencial do tenant_integrations>",
-  "callback": {
-    "base_url": "https://<projeto>.supabase.co/functions/v1",
-    "api_key": "mrf_live_xxx",
-    "endpoints": {
-      "upsert_property": "/properties-api"
-    }
-  }
-}
-```
+6. **Sem migração de banco**
+   - `content_blocks.data` é JSONB e `type` é texto livre no app, então não há mudança de schema. Blocos antigos continuam funcionando.
 
-**Callback que o n8n deve fazer por imóvel** — `POST {base_url}/properties-api` com header `X-API-Key: <api_key>`:
+### Comportamento responsivo
 
-```json
-{
-  "external_id": "12345",
-  "external_provider": "stays",
-  "name": "Apto no B. Universitário",
-  "status": "active",
-  "city": "Palmas",
-  "max_guests": 4,
-  "base_price": 250.00,
-  "cover_image_url": "https://...jpg",
-  "booking_url": "https://...",
-  "images": ["https://...", "https://..."],
-  "address": "Rua X, 100",
-  "latitude": -10.18,
-  "longitude": -48.33
-}
-```
+- Desktop/tablet: imagem e texto lado a lado, na ordem escolhida.
+- Mobile (< sm): imagem centralizada acima do texto (padrão de leitura mais confortável que metade-metade em telas estreitas). Posso, se preferir, manter sempre lado-a-lado também no mobile — me diga depois de aprovar o plano.
 
-Campos relevantes para o catálogo: **`name`, `city`, `max_guests`, `base_price`, `cover_image_url`, `booking_url`, `external_id`, `external_provider`, `status`**. O resto é opcional.
+### Fora do escopo deste plano
 
-## Detalhes técnicos
+- Reordenar/converter blocos antigos para o novo formato.
+- Múltiplas imagens dentro do mesmo card (galeria) — pode virar bloco próprio depois.
+- Variantes pré-prontas (ex.: "depoimento", "destaque") — todas resolvidas pelo mesmo bloco via configurações.
 
-- **Arquivos editados:**
-  - `src/components/catalog/ImportFromStaysDialog.tsx` — trocar CTA por disparo real.
-  - `supabase/functions/properties-api/index.ts` — aceitar `max_guests`, `base_price`, `city` no upsert.
-  - `public/version.json` — bump.
-- **Arquivo novo:**
-  - `supabase/functions/catalog-trigger-import/index.ts` — registrada em `supabase/config.toml` com `verify_jwt = true`.
-- **Sem mudanças de schema** — todas as colunas já existem.
-- **Webhooks:** reutilizam linhas existentes da `integration_webhooks` com `provider IN ('stays','hostaway')`. Nada precisa ser cadastrado a mais; o `event` no payload diferencia a chamada do PMS-import tradicional.
+Posso seguir com a implementação?
