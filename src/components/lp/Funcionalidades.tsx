@@ -140,7 +140,7 @@ export default function Funcionalidades() {
                     ))}
                   </ul>
                 </div>
-              </article>
+              </Reveal>
             );
           })}
         </div>
