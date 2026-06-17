@@ -1,62 +1,19 @@
-# Animações de entrada na landing page
+## Diagnóstico
 
-Adicionar fade + leve subida (translateY) quando elementos entram na viewport, usando apenas CSS + IntersectionObserver, com respeito a `prefers-reduced-motion`.
+A rota `/` é servida por `src/pages/LpAnuncio.tsx`, não por `WelcomeHubLanding.tsx`. As animações que foram adicionadas no hero do `WelcomeHubLanding` nunca aparecem em `/`. As seções compartilhadas (`ParaQuemE`, `Funcionalidades`, `VideoCriacao`, `GarantiaSection`, `FaqSection`) já usam `<Reveal>`, então elas animam ao scrollar — mas o hero (primeira dobra) fica estático, dando a impressão de "nada mudou".
 
-## 1. Utilitário CSS global (`src/index.css`)
+## Plano
 
-Adicionar uma classe `reveal` e um modificador `reveal-in`:
+1. **`src/pages/LpAnuncio.tsx`** — envolver os elementos do hero (badge, h1, subtítulo, parágrafo de apoio, CTA, mockup/imagem lateral, banner de prova social se houver) com `<Reveal immediate>` e pequenos `delay` escalonados (0 / 80 / 160 / 240 ms) para uma entrada suave em cascata sem esperar scroll.
+2. Aplicar `<Reveal>` (sem `immediate`) em quaisquer outras seções de LpAnuncio que ainda não usem (ex.: faixa de logos de OTAs, blocos intermediários entre `VideoCriacao` e `GarantiaSection`), com stagger curto.
+3. **`public/version.json`** — bump para forçar invalidação do `VersionWatcher` no preview.
+4. Verificar no preview (`browser--view_preview` em `/`) que:
+   - elementos do hero entram com fade + translateY logo no load;
+   - ao scrollar, as seções aparecem progressivamente;
+   - com `prefers-reduced-motion`, tudo aparece imediato (já garantido pelo CSS global).
 
-```css
-.reveal {
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 600ms cubic-bezier(0.22, 1, 0.36, 1),
-              transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: opacity, transform;
-}
-.reveal.reveal-in {
-  opacity: 1;
-  transform: none;
-}
-@media (prefers-reduced-motion: reduce) {
-  .reveal { opacity: 1; transform: none; transition: none; }
-}
-```
+## Fora do escopo
 
-Sem nova lib. Apenas `opacity` e `transform` — sem layout thrashing.
-
-## 2. Hook `useReveal` (`src/hooks/useReveal.tsx`, novo)
-
-- Cria um único `IntersectionObserver` compartilhado (lazy), `rootMargin: "0px 0px -10% 0px"`, `threshold: 0.1`.
-- `data-reveal-delay` (ms) opcional → aplica `transition-delay` inline.
-- Ao intersectar, adiciona `reveal-in` e faz `unobserve` (anima uma vez).
-- Componente helper `<Reveal as="div" delay={0} className="...">children</Reveal>` que aplica `.reveal` e registra no observer via `ref`.
-- Se `matchMedia('(prefers-reduced-motion: reduce)').matches`, o hook não observa e marca como visível imediatamente.
-
-## 3. Aplicação nas seções da landing
-
-Envolver/marcar elementos com `<Reveal>` (ou `className="reveal"` + `ref`):
-
-- `src/pages/WelcomeHubLanding.tsx`: hero (badge, h1, subtítulo, CTAs, mockup), seções de planos, depoimentos e blocos de conteúdo.
-- `src/components/lp/ParaQuemE.tsx`: header + cards (delay escalonado 0/80/160/240ms; teto 240ms).
-- `src/components/lp/Funcionalidades.tsx`: header + cards com delay escalonado.
-- `src/components/lp/VideoCriacao.tsx`: badge, h2, parágrafo, mockup, CTAs.
-- `src/components/lp/GarantiaSection.tsx`: bloco principal.
-- `src/components/lp/FaqSection.tsx`: header + cada item do accordion (delay escalonado ≤120ms entre itens).
-- `src/components/ui/sticky-scroll-cards-section.tsx`: manter animações próprias do header; **não** envolver os cards sticky para não conflitar com o efeito de pilha.
-
-Delay progressivo entre cards: **80ms por item, máximo 240ms** (mantém dentro da faixa pedida 100–150ms entre pares, sem somar atrasos longos).
-
-## 4. Performance
-
-- Hero **não** recebe `.reveal` no badge/H1/subtítulo se quebrar LCP? → manter animação só com `opacity/transform`, que não bloqueiam render; o LCP (mockup) também recebe `.reveal`, mas com `transition` curta — aceitável. Alternativa segura: hero anima **on mount** via CSS keyframe (sem IO) para garantir disparo imediato no primeiro paint. **Vou usar a abordagem on-mount na hero** (classe `reveal-now` adicionada via `useEffect` no mount) e IntersectionObserver no restante. Isso evita esperar o IO no above-the-fold.
-- Sem mudanças em libs. Sem mudança de bundle relevante (~1KB).
-
-## 5. Acessibilidade
-
-- `prefers-reduced-motion: reduce` curto-circuita no CSS e no hook.
-- Sem mudanças de foco, ordem do DOM ou contraste.
-
-## Fora de escopo
-
-- Reordenar seções, alterar conteúdo/copy, animar componentes do dashboard, animações de hover novas, parallax.
+- Sem mudanças de layout, copy ou cores.
+- Sem alterar `WelcomeHubLanding.tsx` (rota `/lp`) — já está animado.
+- Sem novas libs.

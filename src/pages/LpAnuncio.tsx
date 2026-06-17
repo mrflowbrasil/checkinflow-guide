@@ -55,6 +55,7 @@ import Funcionalidades from "@/components/lp/Funcionalidades";
 import ParaQuemE from "@/components/lp/ParaQuemE";
 import FaqSection from "@/components/lp/FaqSection";
 import GarantiaSection from "@/components/lp/GarantiaSection";
+import { Reveal } from "@/hooks/useReveal";
 
 const DEMO_URL = "https://hub.mrflow.com.br/g/suite-premium-vila-serena-23515a";
 const CYAN = "hsl(186 100% 32%)"; // ciano Mr Flow acessível em fundo claro
@@ -202,25 +203,31 @@ function HeroLp() {
       <div className="container relative max-w-6xl mx-auto px-5 sm:px-8 pt-12 pb-16 lg:pt-20 lg:pb-24">
         <div className="grid lg:grid-cols-[1.05fr_1fr] gap-10 lg:gap-14 items-center">
           <div>
-            <span className="inline-flex items-center gap-2 mb-5 px-4 py-1.5 rounded-full bg-[hsl(186_100%_94%)] border border-[hsl(186_100%_32%)]/20 text-xs font-semibold tracking-wide uppercase text-[hsl(186_100%_24%)]">
+            <Reveal immediate as="span" className="inline-flex items-center gap-2 mb-5 px-4 py-1.5 rounded-full bg-[hsl(186_100%_94%)] border border-[hsl(186_100%_32%)]/20 text-xs font-semibold tracking-wide uppercase text-[hsl(186_100%_24%)]">
               <Sparkles className="h-3.5 w-3.5" /> Para anfitriões Superhost e gestores de temporada
-            </span>
-            <h1 className="text-4xl sm:text-5xl lg:text-[3.4rem] font-bold tracking-tight leading-[1.08] text-slate-900">
-              Pare de responder as mesmas dúvidas no WhatsApp.
-            </h1>
-            <p className="mt-3 text-2xl sm:text-3xl lg:text-[2.1rem] font-semibold tracking-tight leading-snug text-slate-800">
-              Envie um <span style={{ color: CYAN }}>guia digital completo</span> pro seu hóspede.
-            </p>
-            <p className="mt-6 text-lg lg:text-xl text-slate-600 leading-relaxed max-w-xl">
-              Wi-Fi, check-in, senha da fechadura, regras da casa, localização e dicas locais em um único link. O hóspede acessa no celular em segundos. Você para de receber mensagem às 23h.
-            </p>
+            </Reveal>
+            <Reveal immediate delay={80}>
+              <h1 className="text-4xl sm:text-5xl lg:text-[3.4rem] font-bold tracking-tight leading-[1.08] text-slate-900">
+                Pare de responder as mesmas dúvidas no WhatsApp.
+              </h1>
+            </Reveal>
+            <Reveal immediate delay={160}>
+              <p className="mt-3 text-2xl sm:text-3xl lg:text-[2.1rem] font-semibold tracking-tight leading-snug text-slate-800">
+                Envie um <span style={{ color: CYAN }}>guia digital completo</span> pro seu hóspede.
+              </p>
+            </Reveal>
+            <Reveal immediate delay={240}>
+              <p className="mt-6 text-lg lg:text-xl text-slate-600 leading-relaxed max-w-xl">
+                Wi-Fi, check-in, senha da fechadura, regras da casa, localização e dicas locais em um único link. O hóspede acessa no celular em segundos. Você para de receber mensagem às 23h.
+              </p>
+            </Reveal>
 
             {/* Botões mobile (dentro da coluna). No desktop ficam abaixo do grid. */}
-            <div className="mt-8 flex flex-col sm:flex-row sm:flex-wrap gap-3 lg:hidden">
+            <Reveal immediate delay={320} className="mt-8 flex flex-col sm:flex-row sm:flex-wrap gap-3 lg:hidden">
               <Button type="button" onClick={openQuickSignup} className={ctaPrimary}>
                 Criar meu guia grátis <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-            </div>
+            </Reveal>
             <p className="mt-4 text-sm text-slate-500 lg:hidden">
               Leva menos de 5 minutos. Não precisa de cartão de crédito.
             </p>
@@ -238,7 +245,7 @@ function HeroLp() {
             </div>
           </div>
 
-          <div className="relative w-full">
+          <Reveal immediate delay={200} className="relative w-full">
             <img
               src={heroImg}
               alt="Hóspede sorrindo olhando o guia digital no celular em apartamento moderno"
@@ -261,12 +268,12 @@ function HeroLp() {
               </div>
             </div>
 
-          </div>
+          </Reveal>
         </div>
 
 
         {/* Botões desktop (full-width abaixo do grid hero) */}
-        <div className="hidden lg:block mt-12">
+        <Reveal immediate delay={360} className="hidden lg:block mt-12">
           <div className="flex flex-row flex-nowrap gap-3 justify-start">
             <Button type="button" onClick={openQuickSignup} className={ctaPrimary}>
               Criar meu guia grátis <ArrowRight className="ml-2 h-5 w-5" />
@@ -286,7 +293,8 @@ function HeroLp() {
               <Check className="h-4 w-4 text-[hsl(186_100%_32%)]" /> Atualização em tempo real
             </span>
           </div>
-        </div>
+        </Reveal>
+
       </div>
       <WhatsAppGuideDialog open={waOpen} onOpenChange={setWaOpen} />
     </section>
