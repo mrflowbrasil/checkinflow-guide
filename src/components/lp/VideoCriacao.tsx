@@ -76,10 +76,10 @@ export default function VideoCriacao() {
                   className="mx-auto mt-3 h-6 w-3/4 rounded-[50%] bg-slate-900/15 blur-xl"
                 />
               </div>
-            </div>
+            </Reveal>
 
             {/* Botões centralizados */}
-            <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+            <Reveal delay={180} className="flex flex-col sm:flex-row gap-3 justify-center items-center">
               <Link
                 to="/auth"
                 className="inline-flex items-center justify-center h-14 px-7 rounded-2xl bg-[hsl(186_100%_32%)] hover:bg-[hsl(186_100%_27%)] text-white font-semibold shadow-[0_10px_30px_-10px_hsl(186_100%_32%/0.5)] text-base transition-colors"
