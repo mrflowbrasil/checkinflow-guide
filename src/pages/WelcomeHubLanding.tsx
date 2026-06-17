@@ -667,17 +667,17 @@ function PricingSection() {
   return (
     <section id="planos" className="py-20 lg:py-28 bg-[#E6FBFC]/90 backdrop-blur-sm border-y border-[#00FFFF]/30">
       <div className="container px-4 sm:px-6 lg:px-12 max-w-7xl mx-auto">
-        <div className="text-center max-w-3xl mx-auto mb-14">
+        <Reveal className="text-center max-w-3xl mx-auto mb-14">
           <h2 className="text-3xl lg:text-4xl font-bold text-slate-900 mb-4">Planos para cada fase da sua operação</h2>
           <p className="text-slate-700 text-lg">Comece com um imóvel e evolua conforme sua operação cresce.</p>
-        </div>
+        </Reveal>
         <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-5">
-          {plans.map((p) => {
+          {plans.map((p, i) => {
             const isDark = p.featured;
             return (
+            <Reveal key={p.name} delay={Math.min(i, 3) * 70}>
             <Card
-              key={p.name}
-              className={`relative p-6 rounded-2xl flex flex-col ${
+              className={`relative p-6 rounded-2xl flex flex-col h-full ${
                 isDark
                   ? "bg-[#111827] border-[#00FFFF]/60 shadow-[0_0_40px_-10px_rgba(0,255,255,0.5)]"
                   : "bg-white border-[#0E7490]/15 shadow-sm"
