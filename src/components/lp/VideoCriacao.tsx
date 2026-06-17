@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Reveal } from "@/hooks/useReveal";
 
 const CYAN = "hsl(186 100% 32%)";
 const YOUTUBE_ID = "l8SxORuMqLU";
