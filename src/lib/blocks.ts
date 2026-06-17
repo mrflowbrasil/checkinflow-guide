@@ -23,6 +23,7 @@ export interface CardData {
   imageUrl?: string;
   imageShape?: "circle" | "rounded";
   imagePosition?: "left" | "right";
+  showBorder?: boolean;
   title?: string;
   content?: string;
   buttonEnabled?: boolean;
@@ -61,6 +62,7 @@ export function defaultDataFor(type: BlockType): any {
       imageUrl: "",
       imageShape: "rounded",
       imagePosition: "left",
+      showBorder: true,
       title: "",
       content: "",
       buttonEnabled: false,

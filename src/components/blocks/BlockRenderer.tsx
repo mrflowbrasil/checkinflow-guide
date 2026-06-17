@@ -136,6 +136,7 @@ export function BlockRenderer({ block, primaryColor, translate }: { block: Block
       const d = block.data ?? {};
       const shape: "circle" | "rounded" = d.imageShape ?? "rounded";
       const position: "left" | "right" = d.imagePosition ?? "left";
+      const showBorder: boolean = d.showBorder !== false;
       const hasButton = !!d.buttonEnabled && !!d.buttonLabel;
       const handleBtn = () => {
         const action = d.buttonAction ?? "link";
@@ -150,25 +151,34 @@ export function BlockRenderer({ block, primaryColor, translate }: { block: Block
       const BtnIcon = d.buttonAction === "copy" ? Copy : d.buttonAction === "download" ? Download : ExternalLink;
       return (
         <div
-          className="rounded-2xl border p-4 sm:p-5"
-          style={{ background: "hsl(var(--guide-card, var(--card)))", borderColor: "hsl(var(--guide-fg) / 0.1)" }}
+          className={"rounded-2xl p-4 sm:p-5 " + (showBorder ? "border" : "")}
+          style={{
+            background: "hsl(var(--guide-card, var(--card)))",
+            borderColor: showBorder ? "hsl(var(--guide-fg) / 0.15)" : "transparent",
+          }}
         >
-          <div className={`flex flex-col gap-4 sm:gap-5 sm:items-center ${position === "right" ? "sm:flex-row-reverse" : "sm:flex-row"}`}>
+          <div className={`flex flex-row gap-4 sm:gap-5 items-center ${position === "right" ? "flex-row-reverse" : ""}`}>
             {d.imageUrl && (
-              <img
-                src={sbImage(d.imageUrl, { width: 480 })}
-                srcSet={sbImageSrcSet(d.imageUrl, [240, 480, 720])}
-                sizes="(max-width: 640px) 50vw, 200px"
-                alt={tr(d.title ?? "")}
-                className={
-                  "shrink-0 mx-auto sm:mx-0 object-cover w-28 h-28 sm:w-32 sm:h-32 " +
-                  (shape === "circle" ? "rounded-full" : "rounded-xl")
-                }
-                loading="lazy"
-                decoding="async"
-              />
+              <div className="shrink-0 basis-[30%] max-w-[30%]">
+                <div
+                  className={
+                    "relative w-full aspect-square overflow-hidden " +
+                    (shape === "circle" ? "rounded-full" : "rounded-xl")
+                  }
+                >
+                  <img
+                    src={sbImage(d.imageUrl, { width: 480 })}
+                    srcSet={sbImageSrcSet(d.imageUrl, [240, 480, 720])}
+                    sizes="30vw"
+                    alt={tr(d.title ?? "")}
+                    className="absolute inset-0 w-full h-full object-cover object-center"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              </div>
             )}
-            <div className="flex-1 min-w-0 space-y-2 text-center sm:text-left">
+            <div className="flex-1 min-w-0 basis-[70%] space-y-2 text-left">
               {d.title && (
                 <h4 className="text-lg font-semibold break-words">{tr(d.title)}</h4>
               )}
