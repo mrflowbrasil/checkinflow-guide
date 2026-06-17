@@ -1,4 +1,4 @@
-export type BlockType = "text" | "subtitle" | "image" | "video" | "steps" | "tip" | "button" | "list" | "password" | "divider";
+export type BlockType = "text" | "subtitle" | "image" | "video" | "steps" | "tip" | "button" | "list" | "password" | "divider" | "card";
 
 export interface BlockBase {
   id: string;
@@ -19,6 +19,17 @@ export interface TipData { content: string; variant?: "info" | "warning" | "succ
 export interface ButtonData { label: string; action: "copy" | "download" | "link"; value: string }
 export interface ListData { items: { text: string; icon?: string }[] }
 export interface PasswordData { label?: string; value: string }
+export interface CardData {
+  imageUrl?: string;
+  imageShape?: "circle" | "rounded";
+  imagePosition?: "left" | "right";
+  title?: string;
+  content?: string;
+  buttonEnabled?: boolean;
+  buttonLabel?: string;
+  buttonAction?: "copy" | "download" | "link";
+  buttonValue?: string;
+}
 
 export const BLOCK_LABELS: Record<BlockType, string> = {
   text: "Texto",
@@ -31,6 +42,7 @@ export const BLOCK_LABELS: Record<BlockType, string> = {
   list: "Lista",
   password: "Senha",
   divider: "Linha divisória",
+  card: "Card (imagem + texto)",
 };
 
 export function defaultDataFor(type: BlockType): any {
@@ -45,6 +57,17 @@ export function defaultDataFor(type: BlockType): any {
     case "list": return { items: [{ text: "" }] };
     case "password": return { label: "Senha", value: "" };
     case "divider": return {};
+    case "card": return {
+      imageUrl: "",
+      imageShape: "rounded",
+      imagePosition: "left",
+      title: "",
+      content: "",
+      buttonEnabled: false,
+      buttonLabel: "",
+      buttonAction: "link",
+      buttonValue: "",
+    };
   }
 }
 
