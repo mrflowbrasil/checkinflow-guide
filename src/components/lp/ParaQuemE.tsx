@@ -3,6 +3,7 @@ import airbnbImg from "@/assets/lp/audience/airbnb.jpg";
 import gestoresImg from "@/assets/lp/audience/gestores.jpg";
 import pousadaImg from "@/assets/lp/audience/pousada.jpg";
 import boutiqueImg from "@/assets/lp/audience/boutique.jpg";
+import { Reveal } from "@/hooks/useReveal";
 
 const CYAN = "hsl(186 100% 32%)";
 
