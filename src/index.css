@@ -491,9 +491,9 @@
 /* Scroll reveal — fade + subtle translateY, GPU-only properties */
 .reveal {
   opacity: 0;
-  transform: translate3d(0, 20px, 0);
-  transition: opacity 600ms cubic-bezier(0.22, 1, 0.36, 1),
-              transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  transform: translate3d(0, 16px, 0);
+  transition: opacity 500ms cubic-bezier(0.22, 1, 0.36, 1),
+              transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
   will-change: opacity, transform;
 }
 .reveal.reveal-in {
