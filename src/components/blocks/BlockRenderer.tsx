@@ -132,6 +132,70 @@ export function BlockRenderer({ block, primaryColor, translate }: { block: Block
     case "password":
       return <PasswordBlock data={block.data} primaryColor={primaryColor} translate={translate} />;
 
+    case "card": {
+      const d = block.data ?? {};
+      const shape: "circle" | "rounded" = d.imageShape ?? "rounded";
+      const position: "left" | "right" = d.imagePosition ?? "left";
+      const hasButton = !!d.buttonEnabled && !!d.buttonLabel;
+      const handleBtn = () => {
+        const action = d.buttonAction ?? "link";
+        const value = d.buttonValue ?? "";
+        if (action === "copy") {
+          navigator.clipboard.writeText(value);
+          toast.success(tr("Copiado!"));
+        } else {
+          window.open(value, "_blank", "noopener,noreferrer");
+        }
+      };
+      const BtnIcon = d.buttonAction === "copy" ? Copy : d.buttonAction === "download" ? Download : ExternalLink;
+      return (
+        <div
+          className="rounded-2xl border p-4 sm:p-5"
+          style={{ background: "hsl(var(--guide-card, var(--card)))", borderColor: "hsl(var(--guide-fg) / 0.1)" }}
+        >
+          <div className={`flex flex-col gap-4 sm:gap-5 sm:items-center ${position === "right" ? "sm:flex-row-reverse" : "sm:flex-row"}`}>
+            {d.imageUrl && (
+              <img
+                src={sbImage(d.imageUrl, { width: 480 })}
+                srcSet={sbImageSrcSet(d.imageUrl, [240, 480, 720])}
+                sizes="(max-width: 640px) 50vw, 200px"
+                alt={tr(d.title ?? "")}
+                className={
+                  "shrink-0 mx-auto sm:mx-0 object-cover w-28 h-28 sm:w-32 sm:h-32 " +
+                  (shape === "circle" ? "rounded-full" : "rounded-xl")
+                }
+                loading="lazy"
+                decoding="async"
+              />
+            )}
+            <div className="flex-1 min-w-0 space-y-2 text-center sm:text-left">
+              {d.title && (
+                <h4 className="text-lg font-semibold break-words">{tr(d.title)}</h4>
+              )}
+              {d.content && (
+                <FormattedText
+                  content={tr(d.content)}
+                  className="text-sm leading-relaxed whitespace-pre-wrap break-words"
+                />
+              )}
+              {hasButton && (
+                <div className="pt-2">
+                  <Button
+                    onClick={handleBtn}
+                    size="sm"
+                    className="w-full sm:w-auto"
+                    style={{ background: primaryColor ?? "hsl(var(--guide-fg))", color: "#fff" }}
+                  >
+                    <BtnIcon className="mr-2 h-4 w-4" /> {tr(d.buttonLabel)}
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     case "divider":
       return (
         <div role="separator" aria-orientation="horizontal" className="py-2">
