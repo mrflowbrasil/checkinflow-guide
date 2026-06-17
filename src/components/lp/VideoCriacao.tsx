@@ -93,7 +93,7 @@ export default function VideoCriacao() {
               >
                 Ver vídeo completo
               </button>
-            </div>
+            </Reveal>
 
             <p className="mt-4 text-sm text-muted-foreground text-center">
               Sem cartão. Sem instalação. Seu hóspede acessa pelo navegador.
