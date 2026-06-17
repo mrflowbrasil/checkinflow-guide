@@ -752,22 +752,23 @@ function FAQSection() {
   return (
     <section id="faq" className="py-20 lg:py-28">
       <div className="container px-4 sm:px-6 lg:px-12 max-w-3xl mx-auto">
-        <div className="text-center mb-12">
+        <Reveal className="text-center mb-12">
           <h2 className="text-3xl lg:text-4xl font-bold text-[#F8FAFC] mb-4">Dúvidas frequentes</h2>
           <p className="text-[#CBD5E1] text-lg">Veja as principais respostas sobre como funciona o Mr Flow Welcome Hub.</p>
-        </div>
+        </Reveal>
         <Accordion type="single" collapsible className="space-y-3">
           {faq.map(([q, a], i) => (
-            <AccordionItem
-              key={i}
-              value={`item-${i}`}
-              className="bg-[#111827] border border-[rgba(148,163,184,0.20)] rounded-2xl px-5 data-[state=open]:border-[#00FFFF]/40"
-            >
-              <AccordionTrigger className="text-left text-[#F8FAFC] hover:no-underline py-4">
-                {q}
-              </AccordionTrigger>
-              <AccordionContent className="text-[#CBD5E1] leading-relaxed pb-4">{a}</AccordionContent>
-            </AccordionItem>
+            <Reveal key={i} delay={Math.min(i, 3) * 60}>
+              <AccordionItem
+                value={`item-${i}`}
+                className="bg-[#111827] border border-[rgba(148,163,184,0.20)] rounded-2xl px-5 data-[state=open]:border-[#00FFFF]/40"
+              >
+                <AccordionTrigger className="text-left text-[#F8FAFC] hover:no-underline py-4">
+                  {q}
+                </AccordionTrigger>
+                <AccordionContent className="text-[#CBD5E1] leading-relaxed pb-4">{a}</AccordionContent>
+              </AccordionItem>
+            </Reveal>
           ))}
         </Accordion>
       </div>
