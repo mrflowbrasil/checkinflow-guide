@@ -1,19 +1,30 @@
-## Diagnóstico
+## Diagnóstico definitivo
 
-A rota `/` é servida por `src/pages/LpAnuncio.tsx`, não por `WelcomeHubLanding.tsx`. As animações que foram adicionadas no hero do `WelcomeHubLanding` nunca aparecem em `/`. As seções compartilhadas (`ParaQuemE`, `Funcionalidades`, `VideoCriacao`, `GarantiaSection`, `FaqSection`) já usam `<Reveal>`, então elas animam ao scrollar — mas o hero (primeira dobra) fica estático, dando a impressão de "nada mudou".
+A página `/` está renderizando `src/pages/LpAnuncio.tsx`, e os componentes `<Reveal>` existem no código. Porém, no preview atual o DOM estava com `0` elementos `.reveal` detectáveis após o carregamento, e visualmente o hero já aparece totalmente renderizado. A causa mais provável é o hook atual: ele adiciona `.reveal` e `.reveal-in` praticamente no mesmo ciclo de renderização para elementos `immediate`, então o navegador não tem tempo de pintar o estado inicial (`opacity: 0 + translateY`) antes do estado final. Resultado: a animação tecnicamente é aplicada, mas fica imperceptível.
 
-## Plano
+## Plano de correção
 
-1. **`src/pages/LpAnuncio.tsx`** — envolver os elementos do hero (badge, h1, subtítulo, parágrafo de apoio, CTA, mockup/imagem lateral, banner de prova social se houver) com `<Reveal immediate>` e pequenos `delay` escalonados (0 / 80 / 160 / 240 ms) para uma entrada suave em cascata sem esperar scroll.
-2. Aplicar `<Reveal>` (sem `immediate`) em quaisquer outras seções de LpAnuncio que ainda não usem (ex.: faixa de logos de OTAs, blocos intermediários entre `VideoCriacao` e `GarantiaSection`), com stagger curto.
-3. **`public/version.json`** — bump para forçar invalidação do `VersionWatcher` no preview.
-4. Verificar no preview (`browser--view_preview` em `/`) que:
-   - elementos do hero entram com fade + translateY logo no load;
-   - ao scrollar, as seções aparecem progressivamente;
-   - com `prefers-reduced-motion`, tudo aparece imediato (já garantido pelo CSS global).
+1. Ajustar `src/hooks/useReveal.tsx` para separar em dois frames:
+   - primeiro aplicar `.reveal`;
+   - depois, via `requestAnimationFrame`, aplicar `.reveal-in` quando for `immediate` ou quando o elemento já estiver na viewport.
+
+2. Tornar a entrada mais visível em `src/index.css`:
+   - aumentar levemente o deslocamento inicial de `16px` para algo mais perceptível;
+   - aumentar a duração de `500ms` para cerca de `700ms`;
+   - manter `prefers-reduced-motion` respeitado.
+
+3. Corrigir o aviso de DOM no `Reveal`:
+   - impedir que props inválidas como `fetchPriority` vazem para o wrapper `<div>` quando `Reveal` envolve a imagem do hero.
+
+4. Verificar no navegador:
+   - em `/`, confirmar que existem elementos `.reveal` e `.reveal-in` no DOM;
+   - recarregar a página e observar a entrada do hero;
+   - scrollar até seções abaixo e confirmar que cards/seções entram ao alcançar a viewport.
+
+5. Atualizar `public/version.json` para forçar invalidação/cache no preview/publicado.
 
 ## Fora do escopo
 
-- Sem mudanças de layout, copy ou cores.
-- Sem alterar `WelcomeHubLanding.tsx` (rota `/lp`) — já está animado.
-- Sem novas libs.
+- Sem alterar layout, copy, cores ou imagens.
+- Sem mexer em rotas que não sejam necessárias para o fade-in.
+- Sem novas bibliotecas.
