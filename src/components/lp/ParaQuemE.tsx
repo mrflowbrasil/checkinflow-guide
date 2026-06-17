@@ -98,7 +98,7 @@ export default function ParaQuemE() {
                     {a.description}
                   </p>
                 </div>
-              </article>
+              </Reveal>
             );
           })}
         </div>
