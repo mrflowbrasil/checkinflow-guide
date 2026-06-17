@@ -21,7 +21,7 @@ export default function VideoCriacao() {
         <div className="max-w-6xl mx-auto px-5 sm:px-8 py-16 lg:py-24">
           <div className="bg-white rounded-3xl border border-border shadow-sm p-6 sm:p-10 lg:p-14">
             {/* Topo centralizado */}
-            <div className="text-center max-w-2xl mx-auto mb-10 lg:mb-14">
+            <Reveal className="text-center max-w-2xl mx-auto mb-10 lg:mb-14">
               <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[hsl(186_100%_94%)] border border-[hsl(186_100%_32%)]/20 text-xs font-semibold tracking-wide uppercase text-[hsl(186_100%_24%)]">
                 Demonstração rápida
               </span>
