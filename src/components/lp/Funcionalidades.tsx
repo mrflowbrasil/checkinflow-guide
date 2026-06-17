@@ -5,6 +5,7 @@ import func1 from "@/assets/lp/features/func1.webp.asset.json";
 import func2 from "@/assets/lp/features/func2.webp.asset.json";
 import func3 from "@/assets/lp/features/func3.webp.asset.json";
 import func4 from "@/assets/lp/features/func4.webp.asset.json";
+import { Reveal } from "@/hooks/useReveal";
 
 const CYAN = "hsl(186 100% 32%)";
 
