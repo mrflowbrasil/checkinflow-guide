@@ -802,7 +802,7 @@ function FinalCTA() {
                 <span key={d} className="px-3 py-1.5 rounded-full bg-white/5 border border-[rgba(148,163,184,0.20)]">{d}</span>
               ))}
             </div>
-          </div>
+        </Reveal>
         </div>
       </div>
     </section>
