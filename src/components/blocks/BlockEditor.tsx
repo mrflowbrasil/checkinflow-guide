@@ -9,8 +9,9 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { GripVertical, Trash2, Plus, X, Upload, Loader2, Bold, Italic, Underline, Copy, CopyPlus } from "lucide-react";
+import { GripVertical, Trash2, Plus, X, Upload, Loader2, Bold, Italic, Underline, Copy, CopyPlus, AlignLeft, AlignRight, Circle, Square } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
