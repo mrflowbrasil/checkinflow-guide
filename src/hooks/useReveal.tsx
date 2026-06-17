@@ -67,8 +67,8 @@ export function useReveal<T extends HTMLElement = HTMLElement>(
   return ref;
 }
 
-type RevealProps<T extends ElementType = "div"> = {
-  as?: T;
+type RevealProps = {
+  as?: ElementType;
   delay?: number;
   /** Force immediate reveal on mount (useful for above-the-fold hero) */
   immediate?: boolean;
@@ -82,7 +82,7 @@ export const Reveal = forwardRef<HTMLElement, RevealProps>(function Reveal(
   _forwardedRef
 ) {
   const ref = useReveal<HTMLElement>(delay, immediate);
-  const Tag = (as || "div") as ElementType;
+  const Tag: ElementType = as || "div";
   return createElement(
     Tag,
     { ref, className, style, ...rest },
