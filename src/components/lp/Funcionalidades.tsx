@@ -82,7 +82,7 @@ export default function Funcionalidades() {
   return (
     <section id="funcionalidades" className="py-20 lg:py-28 bg-gradient-to-b from-white via-[hsl(186_100%_98%)] to-white">
       <div className="container max-w-6xl mx-auto px-5 sm:px-8">
-        <header className="text-center max-w-3xl mx-auto mb-16 lg:mb-20">
+        <Reveal as="header" className="text-center max-w-3xl mx-auto mb-16 lg:mb-20">
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[hsl(186_100%_94%)] border border-[hsl(186_100%_32%)]/20 text-xs font-semibold tracking-wide uppercase text-[hsl(186_100%_24%)]">
             Funcionalidades
           </span>
@@ -94,7 +94,8 @@ export default function Funcionalidades() {
             Com o Welcome Hub, você centraliza a gestão dos imóveis, cria guias digitais personalizados e
             padroniza sua operação — tudo em uma plataforma pensada para anfitriões e gestores profissionais.
           </p>
-        </header>
+        </Reveal>
+
 
         <div className="space-y-20 lg:space-y-28">
           {features.map((f, idx) => {
