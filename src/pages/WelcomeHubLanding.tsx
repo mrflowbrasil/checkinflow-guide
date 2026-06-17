@@ -726,6 +726,7 @@ function PricingSection() {
                 )}
               </Button>
             </Card>
+            </Reveal>
             );
           })}
         </div>
