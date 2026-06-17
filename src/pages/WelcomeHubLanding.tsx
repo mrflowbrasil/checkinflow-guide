@@ -168,32 +168,32 @@ function Hero() {
     <section id="top" className="relative pt-16 pb-20 lg:pt-24 lg:pb-32 overflow-hidden">
       <div className="container px-4 sm:px-6 lg:px-12 grid lg:grid-cols-2 gap-14 items-center">
         <div className="space-y-7 text-center lg:text-left">
-          <div className="flex flex-wrap gap-2 justify-center lg:justify-start">
+          <Reveal immediate className="flex flex-wrap gap-2 justify-center lg:justify-start">
             {["Guia digital para hóspedes", "Acesso por QR Code", "Mobile-first", "Sem instalar app"].map((b) => (
               <Badge key={b} variant="outline" className="border-[rgba(148,163,184,0.30)] bg-white/5 text-[#CBD5E1] rounded-full px-3 py-1 text-[11px] font-medium">
                 {b}
               </Badge>
             ))}
-          </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05] text-[#F8FAFC]">
+          </Reveal>
+          <Reveal as="h1" immediate delay={80} className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05] text-[#F8FAFC]">
             Transforme cada estadia em uma{" "}
             <span className="text-[#00FF00]">
               experiência digital
             </span>{" "}
             de boas-vindas
-          </h1>
-          <p className="text-lg text-[#CBD5E1] leading-relaxed max-w-xl mx-auto lg:mx-0">
+          </Reveal>
+          <Reveal as="p" immediate delay={160} className="text-lg text-[#CBD5E1] leading-relaxed max-w-xl mx-auto lg:mx-0">
             Crie um hub personalizado para seus hóspedes acessarem pelo celular, com QR Code, link, instruções da hospedagem, dicas locais e tudo que eles precisam saber — sem depender de PDFs ou mensagens repetidas no WhatsApp.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
+          </Reveal>
+          <Reveal immediate delay={240} className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
             <Button asChild size="lg" className="h-12 px-8 rounded-xl bg-[#00FFFF] text-[#020617] hover:bg-[#00FFFF]/90 font-semibold shadow-lg shadow-[#00FFFF]/20">
               <Link to="/auth">Criar meu primeiro hub grátis <ArrowRight className="ml-2 h-4 w-4" /></Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="h-12 px-8 rounded-xl bg-white/5 border-[rgba(148,163,184,0.30)] text-white hover:bg-white/10">
               <a href="#demo">Ver demo real</a>
             </Button>
-          </div>
-          <div className="flex justify-center lg:justify-start">
+          </Reveal>
+          <Reveal immediate delay={300} className="flex justify-center lg:justify-start">
             <Button
               size="lg"
               onClick={() => setWaOpen(true)}
@@ -202,8 +202,9 @@ function Hero() {
               <MessageCircle className="mr-2 h-5 w-5" />
               Receber Guia no meu WhatsApp
             </Button>
-          </div>
+          </Reveal>
         </div>
+
 
         <div className="relative flex justify-center items-center min-h-[560px]">
           <div className="absolute -inset-10 bg-gradient-to-tr from-[#00FFFF]/25 via-transparent to-[#00FFFF]/10 blur-3xl rounded-full pointer-events-none" />
