@@ -459,6 +459,18 @@ function CardBlockBody({ data, tenantId, onChange }: any) {
         </div>
       </div>
 
+      {/* Borda */}
+      <div className="flex items-center justify-between rounded-md border px-3 py-2">
+        <Label className="text-xs cursor-pointer" htmlFor={`card-border-${data.imageUrl ?? "x"}`}>
+          Exibir borda do card
+        </Label>
+        <Switch
+          id={`card-border-${data.imageUrl ?? "x"}`}
+          checked={data.showBorder !== false}
+          onCheckedChange={(v) => onChange({ ...data, showBorder: v })}
+        />
+      </div>
+
       {/* Texto */}
       <div className="space-y-2">
         <Label className="text-xs">Título (opcional)</Label>
