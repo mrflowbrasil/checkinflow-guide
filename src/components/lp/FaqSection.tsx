@@ -134,7 +134,7 @@ export default function FaqSection() {
               </Button>
             </div>
           </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );
