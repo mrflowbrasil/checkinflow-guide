@@ -341,7 +341,7 @@ function ListBody({ data, onChange }: any) {
 }
 
 export function AddBlockMenu({ onAdd }: { onAdd: (type: BlockBase["type"]) => void }) {
-  const types: BlockBase["type"][] = ["text", "subtitle", "image", "video", "steps", "tip", "button", "list", "password", "divider"];
+  const types: BlockBase["type"][] = ["text", "subtitle", "image", "video", "card", "steps", "tip", "button", "list", "password", "divider"];
   return (
     <div className="grid grid-cols-2 gap-2 p-3 w-full">
       {types.map((t) => (
@@ -356,6 +356,164 @@ export function AddBlockMenu({ onAdd }: { onAdd: (type: BlockBase["type"]) => vo
           <span className="truncate">{BLOCK_LABELS[t]}</span>
         </Button>
       ))}
+    </div>
+  );
+}
+
+function CardBlockBody({ data, tenantId, onChange }: any) {
+  const [busy, setBusy] = useState(false);
+  const upload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    e.target.value = "";
+    if (!f) return;
+    if (f.size > 5 * 1024 * 1024) return toast.error("Imagem maior que 5MB");
+    setBusy(true);
+    const ext = f.name.split(".").pop() ?? "jpg";
+    const path = `${tenantId}/${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabase.storage.from("block-media").upload(path, f, { upsert: true });
+    setBusy(false);
+    if (error) return toast.error(error.message);
+    const url = supabase.storage.from("block-media").getPublicUrl(path).data.publicUrl;
+    onChange({ ...data, imageUrl: url });
+  };
+
+  const shape: "circle" | "rounded" = data.imageShape ?? "rounded";
+  const position: "left" | "right" = data.imagePosition ?? "left";
+  const buttonEnabled: boolean = !!data.buttonEnabled;
+
+  return (
+    <div className="space-y-4">
+      {/* Imagem */}
+      <div className="space-y-2">
+        <Label className="text-xs">Imagem</Label>
+        <div className="flex items-start gap-3">
+          {data.imageUrl ? (
+            <img
+              src={data.imageUrl}
+              alt=""
+              className={
+                "h-20 w-20 object-cover border " +
+                (shape === "circle" ? "rounded-full" : "rounded-xl")
+              }
+            />
+          ) : (
+            <div
+              className={
+                "h-20 w-20 border-2 border-dashed grid place-items-center text-muted-foreground " +
+                (shape === "circle" ? "rounded-full" : "rounded-xl")
+              }
+            >
+              <Upload className="h-5 w-5" />
+            </div>
+          )}
+          <div className="flex-1 space-y-2">
+            <Button type="button" variant="outline" size="sm" disabled={busy} asChild>
+              <label className="cursor-pointer">
+                {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+                {data.imageUrl ? "Trocar imagem" : "Enviar imagem"}
+                <input type="file" accept="image/*" className="hidden" onChange={upload} />
+              </label>
+            </Button>
+            <div className="flex gap-1">
+              <Button
+                type="button"
+                size="sm"
+                variant={shape === "rounded" ? "default" : "outline"}
+                onClick={() => onChange({ ...data, imageShape: "rounded" })}
+              >
+                <Square className="mr-1.5 h-3.5 w-3.5" /> Arredondada
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant={shape === "circle" ? "default" : "outline"}
+                onClick={() => onChange({ ...data, imageShape: "circle" })}
+              >
+                <Circle className="mr-1.5 h-3.5 w-3.5" /> Redonda
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Posição */}
+      <div className="space-y-2">
+        <Label className="text-xs">Posição da imagem</Label>
+        <div className="flex gap-1">
+          <Button
+            type="button"
+            size="sm"
+            variant={position === "left" ? "default" : "outline"}
+            onClick={() => onChange({ ...data, imagePosition: "left" })}
+          >
+            <AlignLeft className="mr-1.5 h-3.5 w-3.5" /> Esquerda
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant={position === "right" ? "default" : "outline"}
+            onClick={() => onChange({ ...data, imagePosition: "right" })}
+          >
+            <AlignRight className="mr-1.5 h-3.5 w-3.5" /> Direita
+          </Button>
+        </div>
+      </div>
+
+      {/* Texto */}
+      <div className="space-y-2">
+        <Label className="text-xs">Título (opcional)</Label>
+        <Input
+          value={data.title ?? ""}
+          onChange={(e) => onChange({ ...data, title: e.target.value })}
+          placeholder="Título do card"
+        />
+      </div>
+      <div className="space-y-1">
+        <Label className="text-xs">Texto</Label>
+        <FormattableTextarea
+          value={data.content ?? ""}
+          onChange={(v) => onChange({ ...data, content: v })}
+          placeholder="Conteúdo do card..."
+        />
+      </div>
+
+      {/* Botão opcional */}
+      <div className="space-y-2 rounded-lg border p-3">
+        <div className="flex items-center justify-between">
+          <Label className="text-xs font-semibold">Botão</Label>
+          <Switch
+            checked={buttonEnabled}
+            onCheckedChange={(v) => onChange({ ...data, buttonEnabled: v })}
+          />
+        </div>
+        {buttonEnabled && (
+          <div className="space-y-2">
+            <div className="grid grid-cols-2 gap-2">
+              <Input
+                value={data.buttonLabel ?? ""}
+                onChange={(e) => onChange({ ...data, buttonLabel: e.target.value })}
+                placeholder="Texto do botão"
+              />
+              <Select
+                value={data.buttonAction ?? "link"}
+                onValueChange={(v) => onChange({ ...data, buttonAction: v })}
+              >
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="link">Abrir link</SelectItem>
+                  <SelectItem value="copy">Copiar texto</SelectItem>
+                  <SelectItem value="download">Baixar arquivo</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Input
+              value={data.buttonValue ?? ""}
+              onChange={(e) => onChange({ ...data, buttonValue: e.target.value })}
+              placeholder={data.buttonAction === "copy" ? "Texto a copiar" : "URL"}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
