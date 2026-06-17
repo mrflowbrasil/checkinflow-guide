@@ -23,6 +23,7 @@ export interface CardData {
   imageUrl?: string;
   imageShape?: "circle" | "rounded";
   imagePosition?: "left" | "right";
+  showBorder?: boolean;
   title?: string;
   content?: string;
   buttonEnabled?: boolean;
