@@ -161,6 +161,8 @@ function BlockBody({ block, tenantId, onChange }: { block: BlockBase; tenantId: 
           />
         </div>
       );
+    case "card":
+      return <CardBlockBody data={d} tenantId={tenantId} onChange={onChange} />;
   }
 }
 
