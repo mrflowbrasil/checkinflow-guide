@@ -35,10 +35,10 @@ export default function VideoCriacao() {
                 um guia digital bonito, organizado e pronto para enviar ao hóspede
                 por link ou QR Code.
               </p>
-            </div>
+            </Reveal>
 
             {/* Mockup centralizado */}
-            <div className="relative mx-auto w-full max-w-[760px] mb-10 lg:mb-14">
+            <Reveal delay={120} className="relative mx-auto w-full max-w-[760px] mb-10 lg:mb-14">
               {/* glow sutil atrás */}
               <div
                 aria-hidden
