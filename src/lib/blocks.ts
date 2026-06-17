@@ -62,6 +62,7 @@ export function defaultDataFor(type: BlockType): any {
       imageUrl: "",
       imageShape: "rounded",
       imagePosition: "left",
+      showBorder: true,
       title: "",
       content: "",
       buttonEnabled: false,
