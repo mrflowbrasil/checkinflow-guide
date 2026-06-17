@@ -26,6 +26,7 @@ import phoneMockup from "@/assets/welcome-hub-phone-mockup.webp";
 import heroLifestyle from "@/assets/hero-mockup-lifestyle.webp";
 import { StickyFeatureSection } from "@/components/ui/sticky-scroll-cards-section";
 import WhatsAppGuideDialog from "@/components/lp/WhatsAppGuideDialog";
+import { Reveal } from "@/hooks/useReveal";
 
 const DEMO_URL = "https://hub.mrflow.com.br/g/suite-premium-vila-serena-23515a";
 
