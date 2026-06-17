@@ -780,7 +780,7 @@ function FinalCTA() {
   return (
     <section className="py-20 lg:py-28">
       <div className="container px-4 sm:px-6 lg:px-12 max-w-5xl mx-auto">
-        <div className="relative overflow-hidden rounded-3xl p-10 lg:p-16 text-center border border-[rgba(148,163,184,0.20)] bg-gradient-to-br from-[#0F172A] via-[#111827] to-[#020617]">
+        <Reveal className="relative overflow-hidden rounded-3xl p-10 lg:p-16 text-center border border-[rgba(148,163,184,0.20)] bg-gradient-to-br from-[#0F172A] via-[#111827] to-[#020617]">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(0,255,255,0.15),transparent_50%),radial-gradient(circle_at_80%_80%,rgba(0,255,0,0.12),transparent_50%)] pointer-events-none" />
           <div className="relative">
             <h2 className="text-3xl lg:text-5xl font-bold text-[#F8FAFC] mb-4 leading-tight">
