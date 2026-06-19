@@ -152,7 +152,6 @@ export default function LpAnuncio() {
         <RealDemoLight />
         <AntesDepois />
         <Depoimentos />
-        <BulletsPro />
         <Funcionalidades />
         <ParaQuemE />
         <VideoCriacao />
