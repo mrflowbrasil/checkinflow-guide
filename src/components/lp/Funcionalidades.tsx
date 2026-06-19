@@ -1,6 +1,4 @@
-import { Button } from "@/components/ui/button";
-import { ArrowRight, Building2, Smartphone, Palette, Plug, Check } from "lucide-react";
-import { openQuickSignup } from "@/components/lp/QuickSignupDialog";
+import { Building2, Smartphone, Palette, Plug, Check } from "lucide-react";
 import func1 from "@/assets/lp/features/func1.webp.asset.json";
 import func2 from "@/assets/lp/features/func2.webp.asset.json";
 import func3 from "@/assets/lp/features/func3.webp.asset.json";
