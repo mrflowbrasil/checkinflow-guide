@@ -142,40 +142,6 @@ export default function Funcionalidades() {
             );
           })}
         </div>
-
-        <Reveal className="mt-20 lg:mt-28 relative overflow-hidden rounded-[2.5rem] p-8 sm:p-12 lg:p-14 text-center bg-gradient-to-br from-[hsl(186_100%_94%)] via-white to-[#F3EBDD]/60 border border-[hsl(186_100%_32%)]/20 shadow-[0_30px_80px_-40px_rgba(15,23,42,0.25)]">
-          <div className="absolute -top-24 -right-24 h-64 w-64 rounded-full bg-[hsl(186_100%_70%)]/25 blur-3xl pointer-events-none" />
-          <h3 className="relative text-2xl lg:text-4xl font-bold text-slate-900 leading-tight">
-            Pronto para criar seu primeiro guia digital?
-          </h3>
-          <p className="relative mt-4 text-base lg:text-lg text-slate-600 max-w-2xl mx-auto">
-            Comece grátis e veja como é simples organizar seus imóveis e entregar uma experiência mais
-            profissional para seus hóspedes.
-          </p>
-          <div className="relative mt-7 flex flex-col sm:flex-row gap-3 justify-center">
-            <Button
-              type="button"
-              onClick={openQuickSignup}
-              className="h-14 px-7 rounded-2xl bg-[hsl(186_100%_32%)] hover:bg-[hsl(186_100%_27%)] text-white font-semibold shadow-[0_10px_30px_-10px_hsl(186_100%_32%/0.5)] text-base"
-            >
-              Criar meu guia grátis <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-            <Button
-              asChild
-              className="h-14 px-7 rounded-2xl bg-white border-2 border-[hsl(186_100%_32%)]/30 text-[hsl(186_100%_24%)] hover:bg-[hsl(186_100%_32%)]/5 font-semibold text-base"
-            >
-              <a
-                href="#demo"
-                onClick={(e) => {
-                  e.preventDefault();
-                  document.getElementById("demo")?.scrollIntoView({ behavior: "smooth", block: "start" });
-                }}
-              >
-                Ver demonstração
-              </a>
-            </Button>
-          </div>
-        </Reveal>
       </div>
     </section>
   );
