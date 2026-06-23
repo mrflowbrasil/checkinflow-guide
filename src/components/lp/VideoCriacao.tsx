@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { openLaunchCheckout } from "@/components/lp/LaunchOffer";
 import teaserVideo from "@/assets/lp/primeiro-imovel-teaser.mp4.asset.json";
 import {
   Dialog,
@@ -80,12 +81,13 @@ export default function VideoCriacao() {
 
             {/* Botões centralizados */}
             <Reveal delay={180} className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-              <Link
-                to="/auth"
+              <button
+                type="button"
+                onClick={() => openLaunchCheckout()}
                 className="inline-flex items-center justify-center h-14 px-7 rounded-2xl bg-[hsl(186_100%_32%)] hover:bg-[hsl(186_100%_27%)] text-white font-semibold shadow-[0_10px_30px_-10px_hsl(186_100%_32%/0.5)] text-base transition-colors"
               >
-                Criar meu guia grátis
-              </Link>
+                Garantir 1 ano por R$ 89,90
+              </button>
               <button
                 type="button"
                 onClick={() => setVideoOpen(true)}

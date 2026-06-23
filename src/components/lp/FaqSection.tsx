@@ -7,6 +7,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ArrowRight, HelpCircle } from "lucide-react";
 import { openQuickSignup } from "@/components/lp/QuickSignupDialog";
+import { openLaunchCheckout } from "@/components/lp/LaunchOffer";
 import { Reveal } from "@/hooks/useReveal";
 
 const faqs = [
@@ -119,10 +120,10 @@ export default function FaqSection() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <Button
                 type="button"
-                onClick={openQuickSignup}
+                onClick={openLaunchCheckout}
                 className={ctaPrimary}
               >
-                Criar meu guia grátis <ArrowRight className="ml-2 h-5 w-5" />
+                Garantir 1 ano por R$ 89,90 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <Button
                 type="button"
