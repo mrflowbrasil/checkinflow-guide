@@ -85,11 +85,27 @@ export default {
           "0%": { opacity: "0", transform: "translateY(8px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
+        "pulse-glow": {
+          "0%, 100%": {
+            boxShadow: "0 20px 60px -30px rgba(234,88,12,0.35)",
+            transform: "scale(1)",
+          },
+          "50%": {
+            boxShadow: "0 25px 70px -24px rgba(234,88,12,0.55)",
+            transform: "scale(1.01)",
+          },
+        },
+        "pulse-badge": {
+          "0%, 100%": { opacity: "1", transform: "scale(1)" },
+          "50%": { opacity: "0.85", transform: "scale(1.03)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.4s ease-out",
+        "pulse-glow": "pulse-glow 2.2s ease-in-out infinite",
+        "pulse-badge": "pulse-badge 1.8s ease-in-out infinite",
       },
     },
   },
