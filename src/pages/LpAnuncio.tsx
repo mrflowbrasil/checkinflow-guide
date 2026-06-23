@@ -157,10 +157,10 @@ export default function LpAnuncio() {
 
         <ParaQuemE />
         <VideoCriacao />
-        <QuemSomos />
         <LaunchOffer />
         <PromoMarquee />
         <GarantiaSection />
+        <QuemSomos />
         <FaqSection />
 
       </main>
