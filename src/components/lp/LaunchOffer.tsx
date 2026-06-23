@@ -8,7 +8,7 @@ import { Reveal } from "@/hooks/useReveal";
 import { supabase } from "@/integrations/supabase/client";
 import { StripeEmbeddedCheckout } from "@/components/billing/StripeEmbeddedCheckout";
 
-import { toast } from "sonner";
+
 
 const LAUNCH_CHECKOUT_EVENT = "lp:open-launch-checkout";
 
