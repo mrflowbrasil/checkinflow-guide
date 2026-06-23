@@ -81,6 +81,31 @@ export default function LaunchOffer() {
     }
   }
 
+  useEffect(() => {
+    const handler = () => { handleCta(); };
+    window.addEventListener(LAUNCH_CHECKOUT_EVENT, handler);
+    return () => window.removeEventListener(LAUNCH_CHECKOUT_EVENT, handler);
+  }, [soldOut]);
+
+  async function _unused() {
+    track("click_launch_checkout", { remaining_slots: remaining });
+    if (soldOut) return;
+    setStarting(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
+        setStarting(false);
+        toast.message("Crie sua conta para garantir o plano de lançamento.");
+        openQuickSignup();
+        return;
+      }
+      setCheckoutOpen(true);
+      track("launch_checkout_created");
+    } finally {
+      setStarting(false);
+    }
+  }
+
   return (
     <section id="lancamento" className="relative py-20 lg:py-28 bg-gradient-to-b from-white via-[#FAFAF7] to-white border-y border-slate-200/60">
       <div className="container max-w-3xl mx-auto px-5 sm:px-8">
