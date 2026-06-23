@@ -67,13 +67,6 @@ export default function LaunchOffer() {
     if (soldOut) return;
     setStarting(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) {
-        setStarting(false);
-        toast.message("Crie sua conta para garantir o plano de lançamento.");
-        openQuickSignup();
-        return;
-      }
       setCheckoutOpen(true);
       track("launch_checkout_created");
     } finally {
