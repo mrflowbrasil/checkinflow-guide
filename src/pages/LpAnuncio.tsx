@@ -113,10 +113,10 @@ export default function LpAnuncio() {
           <Button
             type="button"
             size="sm"
-            onClick={openQuickSignup}
+            onClick={openLaunchCheckout}
             className="bg-[hsl(186_100%_32%)] hover:bg-[hsl(186_100%_27%)] text-white font-semibold rounded-xl shadow-[0_8px_24px_-10px_hsl(186_100%_32%/0.5)]"
           >
-            Aproveitar agora
+            Garantir minha vaga
           </Button>
         </div>
       </header>
@@ -255,8 +255,8 @@ function HeroLp() {
 
             {/* Botões mobile (dentro da coluna). No desktop ficam abaixo do grid. */}
             <Reveal immediate delay={320} className="mt-8 flex flex-col sm:flex-row sm:flex-wrap gap-3 lg:hidden">
-              <Button type="button" onClick={openQuickSignup} className={ctaPrimary}>
-                Criar meu guia grátis <ArrowRight className="ml-2 h-5 w-5" />
+              <Button type="button" onClick={openLaunchCheckout} className={ctaPrimary}>
+                Garantir 1 ano por R$ 89,90 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Reveal>
             <p className="mt-4 text-sm text-slate-500 lg:hidden">
@@ -306,8 +306,8 @@ function HeroLp() {
         {/* Botões desktop (full-width abaixo do grid hero) */}
         <Reveal immediate delay={360} className="hidden lg:block mt-12">
           <div className="flex flex-row flex-nowrap gap-3 justify-start">
-            <Button type="button" onClick={openQuickSignup} className={ctaPrimary}>
-              Criar meu guia grátis <ArrowRight className="ml-2 h-5 w-5" />
+            <Button type="button" onClick={openLaunchCheckout} className={ctaPrimary}>
+              Garantir 1 ano por R$ 89,90 <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </div>
           <p className="mt-4 text-sm text-slate-500">
@@ -473,8 +473,8 @@ function Beneficios() {
         </div>
 
         <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
-          <Button type="button" onClick={openQuickSignup} className={ctaPrimary}>
-            Criar meu guia grátis <ArrowRight className="ml-2 h-5 w-5" />
+          <Button type="button" onClick={openLaunchCheckout} className={ctaPrimary}>
+            Garantir 1 ano por R$ 89,90 <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
           <Button asChild className={ctaSecondary}>
             <a href="#demo" onClick={scrollToDemo}>
@@ -548,8 +548,8 @@ function RealDemoLight() {
                   Abrir demo completa <ExternalLink className="ml-2 h-4 w-4" />
                 </a>
               </Button>
-              <Button type="button" onClick={openQuickSignup} className={ctaSecondary}>
-                Criar meu guia grátis
+              <Button type="button" onClick={openLaunchCheckout} className={ctaSecondary}>
+                Garantir 1 ano por R$ 89,90
               </Button>
             </div>
           </div>
@@ -596,10 +596,10 @@ function RealDemoLight() {
                 <div className="flex items-center gap-2 sm:shrink-0">
                   <Button
                     type="button"
-                    onClick={openQuickSignup}
+                    onClick={openLaunchCheckout}
                     className="h-11 px-5 rounded-xl bg-[hsl(186_100%_32%)] hover:bg-[hsl(186_100%_27%)] text-white font-semibold text-sm shadow-[0_10px_25px_-10px_hsl(186_100%_32%/0.6)]"
                   >
-                    Criar Meu Guia Grátis <ArrowRight className="ml-1.5 h-4 w-4" />
+                    Garantir 1 ano por R$ 89,90 <ArrowRight className="ml-1.5 h-4 w-4" />
                   </Button>
                   <button
                     type="button"
@@ -655,8 +655,8 @@ function BulletsPro() {
               O hóspede sente organização. Você ganha tempo. A estadia começa melhor.
             </p>
             <div className="mt-7 flex flex-col sm:flex-row gap-3">
-              <Button type="button" onClick={openQuickSignup} className={ctaPrimary}>
-                Criar meu guia grátis <ArrowRight className="ml-2 h-5 w-5" />
+              <Button type="button" onClick={openLaunchCheckout} className={ctaPrimary}>
+                Garantir 1 ano por R$ 89,90 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <Button asChild className={ctaSecondary}>
                 <a href="#demo" onClick={scrollToDemo}>
@@ -747,8 +747,8 @@ function CtaFinal() {
             Sem cartão. Sem app para o hóspede. Sem complicação. Você cria, compartilha e atualiza quando quiser.
           </p>
           <div className="relative mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-            <Button type="button" onClick={openQuickSignup} className={ctaPrimary}>
-              Criar meu guia grátis <ArrowRight className="ml-2 h-5 w-5" />
+            <Button type="button" onClick={openLaunchCheckout} className={ctaPrimary}>
+              Garantir 1 ano por R$ 89,90 <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
             <Button asChild className={ctaSecondary}>
               <a href="#demo" onClick={scrollToDemo}>
@@ -1224,10 +1224,10 @@ function PlanosSection() {
                 </div>
                 <Button
                   type="button"
-                  onClick={openQuickSignup}
+                  onClick={openLaunchCheckout}
                   className="mt-auto w-full h-12 rounded-xl font-semibold bg-[hsl(186_100%_32%)] hover:bg-[hsl(186_100%_27%)] text-white"
                 >
-                  Criar Meu Guia Grátis
+                  Garantir 1 ano por R$ 89,90
                 </Button>
               </Card>
             ))}
