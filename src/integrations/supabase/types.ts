@@ -994,6 +994,7 @@ export type Database = {
           revoked_at: string
         }[]
       }
+      get_launch_slots: { Args: never; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
