@@ -39,6 +39,7 @@ const Help = lazy(() => import("./pages/dashboard/Help"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
+const LaunchSuccess = lazy(() => import("./pages/LaunchSuccess"));
 
 const SeoLandings = {
   GuiaDigitalAirbnb: lazy(() => import("./pages/seo/landings").then(m => ({ default: m.GuiaDigitalAirbnb }))),
@@ -125,6 +126,7 @@ const App = () => (
               <Route path="/termos" element={<Terms />} />
               <Route path="/privacidade" element={<Privacy />} />
               <Route path="/unsubscribe" element={<Unsubscribe />} />
+              <Route path="/lancamento/sucesso" element={<LaunchSuccess />} />
 
               <Route path="/app" element={<RequireAuth><AppShell /></RequireAuth>}>
                 <Route index element={<DashboardHome />} />

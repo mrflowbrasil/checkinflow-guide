@@ -55,6 +55,7 @@ import QuickSignupDialog, { openQuickSignup } from "@/components/lp/QuickSignupD
 import ParaQuemE from "@/components/lp/ParaQuemE";
 import FaqSection from "@/components/lp/FaqSection";
 import GarantiaSection from "@/components/lp/GarantiaSection";
+import LaunchOffer from "@/components/lp/LaunchOffer";
 import { Reveal } from "@/hooks/useReveal";
 
 const DEMO_URL = "https://hub.mrflow.com.br/g/suite-premium-vila-serena-23515a";
@@ -156,6 +157,7 @@ export default function LpAnuncio() {
         <ParaQuemE />
         <VideoCriacao />
         <QuemSomos />
+        <LaunchOffer />
         <GarantiaSection />
         <FaqSection />
 
