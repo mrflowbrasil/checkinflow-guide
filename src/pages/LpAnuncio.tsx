@@ -158,6 +158,7 @@ export default function LpAnuncio() {
         <VideoCriacao />
         <QuemSomos />
         <LaunchOffer />
+        <PromoMarquee />
         <GarantiaSection />
         <FaqSection />
 
@@ -184,6 +185,34 @@ export default function LpAnuncio() {
         </p>
       </footer>
       <QuickSignupDialog />
+    </div>
+  );
+}
+
+function PromoMarquee() {
+  return (
+    <div
+      aria-label="Oferta promocional"
+      className="w-full overflow-hidden bg-[#00FFFF] h-[42px] md:h-[46px] flex items-center"
+    >
+      <div
+        className="flex whitespace-nowrap"
+        style={{ animation: "lp-marquee 65s linear infinite", willChange: "transform" }}
+      >
+        {[0, 1].map((i) => (
+          <div
+            key={i}
+            aria-hidden={i === 1}
+            className="flex shrink-0 items-center text-[#006B6B] font-semibold tracking-wide text-[12px] md:text-[14px]"
+          >
+            {Array.from({ length: 6 }).map((_, j) => (
+              <span key={j} className="px-6">
+                Oferta de lançamento • 30 dias grátis • Apenas para os 100 primeiros •
+              </span>
+            ))}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
