@@ -7,8 +7,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Reveal } from "@/hooks/useReveal";
 import { supabase } from "@/integrations/supabase/client";
 import { StripeEmbeddedCheckout } from "@/components/billing/StripeEmbeddedCheckout";
-import { openQuickSignup } from "@/components/lp/QuickSignupDialog";
-import { toast } from "sonner";
+
+
 
 const LAUNCH_CHECKOUT_EVENT = "lp:open-launch-checkout";
 
@@ -67,13 +67,6 @@ export default function LaunchOffer() {
     if (soldOut) return;
     setStarting(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) {
-        setStarting(false);
-        toast.message("Crie sua conta para garantir o plano de lançamento.");
-        openQuickSignup();
-        return;
-      }
       setCheckoutOpen(true);
       track("launch_checkout_created");
     } finally {
