@@ -23,7 +23,6 @@ const NAV = [
   { to: "/app/catalog", label: "Catálogo", icon: LayoutGrid, comingSoonInProd: true },
   { to: "/app/templates", label: "Templates", icon: Sparkles },
   { to: "/app/integrations", label: "Integrações", icon: Plug },
-  { to: "/app/billing", label: "Planos", icon: CreditCard },
   { to: "/app/help", label: "Ajuda", icon: HelpCircle },
   { to: "/app/settings", label: "Configurações", icon: Settings },
 ];
