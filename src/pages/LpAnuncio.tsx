@@ -138,7 +138,7 @@ export default function LpAnuncio() {
             >
               {Array.from({ length: 6 }).map((_, j) => (
                 <span key={j} className="px-6">
-                  Oferta de lançamento • 30 dias grátis • Apenas para os 100 primeiros •
+                  PLANO EXCLUSIVO DE LANÇAMENTO • 1 ANO POR R$ 89,90 • APENAS PARA OS 100 PRIMEIROS •
                 </span>
               ))}
             </div>
@@ -207,7 +207,7 @@ function PromoMarquee() {
           >
             {Array.from({ length: 6 }).map((_, j) => (
               <span key={j} className="px-6">
-                Oferta de lançamento • 30 dias grátis • Apenas para os 100 primeiros •
+                PLANO EXCLUSIVO DE LANÇAMENTO • 1 ANO POR R$ 89,90 • APENAS PARA OS 100 PRIMEIROS •
               </span>
             ))}
           </div>
