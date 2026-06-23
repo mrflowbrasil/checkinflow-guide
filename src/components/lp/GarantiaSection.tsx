@@ -21,7 +21,7 @@ const supportCards = [
   {
     icon: CheckCircle2,
     title: "Cancelamento simples",
-    text: "Não gostou? Basta não continuar após o período gratuito.",
+    text: "Não gostou? Basta solicitar o reembolso diretamente pela plataforma. Sem burocracia.",
     bg: "bg-[#F3EBDD]/70",
     ring: "ring-[#C9A56A]/25",
     iconColor: "text-[#8a6a35]",
@@ -29,7 +29,7 @@ const supportCards = [
   {
     icon: Lock,
     title: "Risco zero",
-    text: "Você testa a solução antes de tomar qualquer decisão de pagamento.",
+    text: "Você testa durante os 7 dias, se não fizer sentido pra você, basta solicitar o reembolso.",
     bg: "bg-[#D8EBD9]/70",
     ring: "ring-[#7BA17F]/25",
     iconColor: "text-[#3f7a48]",
