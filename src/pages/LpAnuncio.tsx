@@ -158,6 +158,7 @@ export default function LpAnuncio() {
         <VideoCriacao />
         <QuemSomos />
         <LaunchOffer />
+        <PromoMarquee />
         <GarantiaSection />
         <FaqSection />
 
