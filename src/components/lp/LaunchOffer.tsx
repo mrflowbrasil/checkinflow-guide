@@ -10,6 +10,12 @@ import { StripeEmbeddedCheckout } from "@/components/billing/StripeEmbeddedCheck
 import { openQuickSignup } from "@/components/lp/QuickSignupDialog";
 import { toast } from "sonner";
 
+const LAUNCH_CHECKOUT_EVENT = "lp:open-launch-checkout";
+
+export function openLaunchCheckout() {
+  window.dispatchEvent(new Event(LAUNCH_CHECKOUT_EVENT));
+}
+
 const LAUNCH_FEATURES = [
   "Até 20 imóveis cadastrados",
   "Guia digital personalizado para hóspedes",
