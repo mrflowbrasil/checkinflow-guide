@@ -14,6 +14,7 @@ function getSupabase() {
 
 // Map Stripe lookup_key -> plan_code in our DB
 function planCodeFromPriceId(priceId: string): string {
+  if (priceId.startsWith("launch")) return "launch";
   if (priceId.startsWith("free")) return "free";
   if (priceId.startsWith("starter")) return "starter";
   if (priceId.startsWith("pro")) return "pro";
