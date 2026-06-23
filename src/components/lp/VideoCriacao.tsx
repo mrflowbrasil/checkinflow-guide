@@ -96,7 +96,7 @@ export default function VideoCriacao() {
             </Reveal>
 
             <p className="mt-4 text-sm text-muted-foreground text-center">
-              Sem cartão. Sem instalação. Seu hóspede acessa pelo navegador.
+              Sem instalação. Seu hóspede acessa pelo navegador.
             </p>
           </div>
         </div>

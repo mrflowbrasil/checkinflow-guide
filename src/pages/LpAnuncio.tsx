@@ -259,7 +259,7 @@ function HeroLp() {
               </Button>
             </Reveal>
             <p className="mt-4 text-sm text-slate-500 lg:hidden">
-              Leva menos de 5 minutos. Não precisa de cartão de crédito.
+              Leva menos de 5 minutos.&nbsp;
             </p>
 
             <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-600 lg:hidden">
@@ -310,7 +310,7 @@ function HeroLp() {
             </Button>
           </div>
           <p className="mt-4 text-sm text-slate-500">
-            Leva menos de 5 minutos. Não precisa de cartão de crédito.
+            Leva menos de 5 minutos.&nbsp;
           </p>
           <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-600">
             <span className="inline-flex items-center gap-1.5">
