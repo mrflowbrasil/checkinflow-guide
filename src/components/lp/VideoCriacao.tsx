@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { openLaunchCheckout } from "@/components/lp/LaunchOffer";
 import teaserVideo from "@/assets/lp/primeiro-imovel-teaser.mp4.asset.json";
 import {
   Dialog,
