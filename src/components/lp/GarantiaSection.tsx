@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, CalendarDays, ShieldCheck, Lock, CheckCircle2 } from "lucide-react";
-import { openQuickSignup } from "@/components/lp/QuickSignupDialog";
+import { openLaunchCheckout } from "@/components/lp/LaunchOffer";
 import { Reveal } from "@/hooks/useReveal";
 
 const CYAN = "hsl(186 100% 32%)";
@@ -146,8 +146,8 @@ export default function GarantiaSection() {
             Você só continua se o Welcome Hub realmente ajudar você a economizar tempo e melhorar
             a experiência dos seus hóspedes.
           </p>
-          <Button type="button" onClick={openQuickSignup} className={ctaPrimary}>
-            Começar meu teste grátis <ArrowRight className="ml-2 h-5 w-5" />
+          <Button type="button" onClick={openLaunchCheckout} className={ctaPrimary}>
+            Garantir minha vaga <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </Reveal>
       </div>
