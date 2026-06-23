@@ -43,6 +43,23 @@ Deno.serve(async (req) => {
       .maybeSingle();
     if (!profile?.tenant_id) throw new Error("No tenant for user");
 
+    // Launch plan: enforce 100-slot limit + prevent duplicate purchase by same tenant.
+    if (priceId === "launch_yearly") {
+      const { data: slots } = await supabase.rpc("get_launch_slots");
+      const remaining = (slots as any)?.remaining ?? 0;
+      if (remaining <= 0) throw new Error("launch_sold_out");
+
+      const { data: ownLaunch } = await supabase
+        .from("subscriptions")
+        .select("id")
+        .eq("tenant_id", profile.tenant_id)
+        .eq("plan_code", "launch")
+        .in("status", ["active", "trialing", "past_due"])
+        .limit(1)
+        .maybeSingle();
+      if (ownLaunch) throw new Error("launch_already_owned");
+    }
+
     const stripe = createStripeClient(environment);
 
     const prices = await stripe.prices.list({ lookup_keys: [priceId] });
