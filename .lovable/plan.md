@@ -1,30 +1,31 @@
-## Diagnóstico definitivo
+Problema identificado
+O checkout da seção de lançamento em src/components/lp/LaunchOffer.tsx usa priceId="launch_yearly" (R$ 89,90/ano). O edge function create-checkout procura esse preço no Stripe por lookup_key, mas ele ainda não existe no catálogo — no dashboard só aparecem os preços do plano Pro regular (R$ 89,90/mês, R$ 899,00/ano etc.).
 
-A página `/` está renderizando `src/pages/LpAnuncio.tsx`, e os componentes `<Reveal>` existem no código. Porém, no preview atual o DOM estava com `0` elementos `.reveal` detectáveis após o carregamento, e visualmente o hero já aparece totalmente renderizado. A causa mais provável é o hook atual: ele adiciona `.reveal` e `.reveal-in` praticamente no mesmo ciclo de renderização para elementos `immediate`, então o navegador não tem tempo de pintar o estado inicial (`opacity: 0 + translateY`) antes do estado final. Resultado: a animação tecnicamente é aplicada, mas fica imperceptível.
+Solução
+Criar o produto e o preço do plano de lançamento via Lovable managed payments, usando o ID que o código já espera. Isso evita alterar o frontend e mantém o checkout embed funcionando.
 
-## Plano de correção
+Passos
+1. Verificar status do Stripe payments no projeto (confirmar que está habilitado e em qual ambiente).
+2. Criar o produto "Plano Lançamento Welcome Hub" com os dados abaixo.
+3. Validar no Stripe (sandbox) que o preço aparece com lookup_key="launch_yearly".
+4. Testar o checkout end-to-end no preview da landing, garantindo que o modal embed abre sem erro "Price not found".
+5. Ajustar o edge function create-checkout se houver alguma incompatibilidade de metadata/subscription_data para o novo produto.
 
-1. Ajustar `src/hooks/useReveal.tsx` para separar em dois frames:
-   - primeiro aplicar `.reveal`;
-   - depois, via `requestAnimationFrame`, aplicar `.reveal-in` quando for `immediate` ou quando o elemento já estiver na viewport.
+Dados do produto/preço a criar
+- product_id: launch_plan
+- product_name: Plano Lançamento Welcome Hub
+- product_description: Acesso completo ao Welcome Hub por 1 ano na condição especial de lançamento.
+- price_id: launch_yearly
+- amount: 8990 (R$ 89,90 em centavos)
+- currency: brl
+- recurring_interval: year
+- quantity_min / quantity_max: 1 (plano flat, uma compra por vez)
+- tax_code: txcd_10103001 (SaaS / electronic services)
 
-2. Tornar a entrada mais visível em `src/index.css`:
-   - aumentar levemente o deslocamento inicial de `16px` para algo mais perceptível;
-   - aumentar a duração de `500ms` para cerca de `700ms`;
-   - manter `prefers-reduced-motion` respeitado.
+Observação
+Como o Brasil não está entre os países elegíveis para full compliance handling do Stripe, o checkout continuará usando automatic_tax/sem managed_payments. O edge function atual já não define managed_payments, então nenhuma mudança de código é necessária nesse ponto.
 
-3. Corrigir o aviso de DOM no `Reveal`:
-   - impedir que props inválidas como `fetchPriority` vazem para o wrapper `<div>` quando `Reveal` envolve a imagem do hero.
-
-4. Verificar no navegador:
-   - em `/`, confirmar que existem elementos `.reveal` e `.reveal-in` no DOM;
-   - recarregar a página e observar a entrada do hero;
-   - scrollar até seções abaixo e confirmar que cards/seções entram ao alcançar a viewport.
-
-5. Atualizar `public/version.json` para forçar invalidação/cache no preview/publicado.
-
-## Fora do escopo
-
-- Sem alterar layout, copy, cores ou imagens.
-- Sem mexer em rotas que não sejam necessárias para o fade-in.
-- Sem novas bibliotecas.
+Validação
+- screenshot do checkout embed abrindo na landing /lp
+- confirmação de que o preço foi criado no ambiente sandbox do Stripe
+- teste com cartão 4242 4242 4242 4242 opcional, se o usuário quiser validar o fluxo completo
