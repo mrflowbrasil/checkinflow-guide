@@ -184,7 +184,7 @@ export default function LaunchOffer() {
                 </p>
               )}
 
-              {soldOut ? (
+              {soldOut && (
                 <div className="mt-5 w-full rounded-2xl border border-slate-200 bg-slate-50 p-5 text-center">
                   <p className="text-sm text-slate-700 font-medium">
                     Os 100 acessos promocionais já foram adquiridos. Confira os demais planos disponíveis.
@@ -193,20 +193,7 @@ export default function LaunchOffer() {
                     <Link to="/app/billing">Ver planos disponíveis</Link>
                   </Button>
                 </div>
-              ) : remaining !== null ? (
-                <div className="mt-5 flex items-center gap-2 rounded-full bg-orange-50 border border-orange-200/70 px-4 py-2">
-                  <Flame className="h-4 w-4 text-orange-600" />
-                  <span className="text-sm font-semibold text-orange-700">
-                    {remaining > 0
-                      ? <>Restam apenas <span className="tabular-nums">{remaining}</span> acessos promocionais</>
-                      : "Lote encerrando agora"}
-                  </span>
-                </div>
-              ) : null}
-
-              <p className="mt-3 text-[11px] text-slate-400 text-center max-w-md">
-                Esta condição será encerrada quando os 100 acessos promocionais forem adquiridos.
-              </p>
+              )}
             </div>
           </Card>
         </Reveal>
