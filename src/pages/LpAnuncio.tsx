@@ -51,7 +51,7 @@ import qrFrame from "@/assets/lp/qrcode-frame.webp";
 import VideoCriacao from "@/components/lp/VideoCriacao";
 import WhatsAppGuideDialog from "@/components/lp/WhatsAppGuideDialog";
 import QuickSignupDialog, { openQuickSignup } from "@/components/lp/QuickSignupDialog";
-import Funcionalidades from "@/components/lp/Funcionalidades";
+
 import ParaQuemE from "@/components/lp/ParaQuemE";
 import FaqSection from "@/components/lp/FaqSection";
 import GarantiaSection from "@/components/lp/GarantiaSection";
@@ -152,7 +152,7 @@ export default function LpAnuncio() {
         <RealDemoLight />
         <AntesDepois />
         <Depoimentos />
-        <Funcionalidades />
+        
         <ParaQuemE />
         <VideoCriacao />
         <QuemSomos />
