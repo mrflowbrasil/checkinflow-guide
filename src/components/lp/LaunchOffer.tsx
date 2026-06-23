@@ -95,7 +95,7 @@ export default function LaunchOffer() {
       <div className="container max-w-3xl mx-auto px-5 sm:px-8">
         {/* Alerta superior */}
         <Reveal>
-          <div className="relative rounded-3xl border border-orange-200/80 bg-gradient-to-br from-orange-50 via-amber-50 to-orange-50/60 p-6 sm:p-7 text-center shadow-[0_20px_60px_-30px_rgba(234,88,12,0.35)]">
+          <div className="relative rounded-3xl border border-orange-200/80 bg-gradient-to-br from-orange-50 via-amber-50 to-orange-50/60 p-6 sm:p-7 text-center shadow-[0_20px_60px_-30px_rgba(234,88,12,0.35)] animate-pulse-glow">
             <div className="flex items-center justify-center gap-3 mb-2">
               <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 ring-1 ring-orange-200">
                 <Flame className="h-5 w-5 text-orange-600" />
@@ -123,7 +123,7 @@ export default function LaunchOffer() {
 
             {/* Selo */}
             <div className="flex justify-center">
-              <span className="inline-flex items-center gap-2 rounded-full bg-orange-50 border border-orange-200 px-4 py-1.5 text-[11px] sm:text-xs font-bold tracking-wider uppercase text-orange-700">
+              <span className="inline-flex items-center gap-2 rounded-full bg-orange-50 border border-orange-200 px-4 py-1.5 text-[11px] sm:text-xs font-bold tracking-wider uppercase text-orange-700 animate-pulse-badge">
                 <Flame className="h-3.5 w-3.5" />
                 Lote promocional — apenas 100 acessos
               </span>
