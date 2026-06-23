@@ -120,7 +120,7 @@ export default function LaunchOffer() {
                 Plano Lançamento
               </p>
               <h3 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">
-                1 ano completo de GuestFlow Hub
+                1 ano completo de Welcome Hub
               </h3>
             </div>
 
@@ -145,7 +145,7 @@ export default function LaunchOffer() {
 
             {/* Texto de apoio */}
             <p className="mt-6 text-center text-sm sm:text-base text-slate-600 max-w-lg mx-auto">
-              Garanta 1 ano de acesso com todos os recursos do plano Pro do GuestFlow Hub.
+              Garanta 1 ano de acesso com todos os recursos do plano Pro do Welcome Hub.
             </p>
 
             {/* Features */}

@@ -12,7 +12,7 @@ const ctaPrimary =
 const supportCards = [
   {
     icon: CalendarDays,
-    title: "30 dias grátis",
+    title: "7 dias grátis",
     text: "Tempo suficiente para criar seu guia, testar com hóspedes reais e sentir a diferença na rotina.",
     bg: "bg-[hsl(186_100%_96%)]",
     ring: "ring-[hsl(186_100%_32%)]/15",
@@ -44,10 +44,10 @@ export default function GarantiaSection() {
         <Reveal as="header" className="text-center max-w-3xl mx-auto mb-14 lg:mb-20">
           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[hsl(186_100%_94%)] border border-[hsl(186_100%_32%)]/20 text-xs font-semibold tracking-wide uppercase text-[hsl(186_100%_24%)]">
             <ShieldCheck className="h-3.5 w-3.5" />
-            GARANTIA DE 30 DIAS
+            GARANTIA DE 7 DIAS
           </span>
           <h2 className="mt-5 text-3xl sm:text-4xl lg:text-[2.6rem] font-bold tracking-tight leading-[1.1] text-slate-900">
-            Teste por 30 dias. Se não fizer sentido para você,{" "}
+            Teste por 7 dias. Se não fizer sentido para você,{" "}
             <span style={{ color: CYAN }}>não paga nada.</span>
           </h2>
           <p className="mt-5 text-lg text-slate-600 leading-relaxed">
@@ -70,7 +70,7 @@ export default function GarantiaSection() {
                   Garantia de Satisfação Incondicional
                 </h3>
                 <p className="text-slate-600 leading-relaxed mb-5">
-                  Durante os primeiros 30 dias, você pode cadastrar seus imóveis, montar seus guias
+                  Durante os primeiros 7 dias, você pode cadastrar seus imóveis, montar seus guias
                   digitais, compartilhar com hóspedes e testar o Welcome Hub na prática.
                 </p>
                 <p className="text-slate-600 leading-relaxed mb-6">
@@ -88,7 +88,7 @@ export default function GarantiaSection() {
                     <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[hsl(186_100%_94%)]">
                       <CheckCircle2 className="h-3.5 w-3.5 text-[hsl(186_100%_32%)]" />
                     </span>
-                    Sem cartão de crédito.
+                    
                   </span>
                   <span className="inline-flex items-center gap-2">
                     <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-[hsl(186_100%_94%)]">
@@ -111,7 +111,7 @@ export default function GarantiaSection() {
                       GARANTIA
                     </p>
                     <p className="mt-1 text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900">
-                      30 DIAS
+                      7 DIAS
                     </p>
                     <p className="mt-1 text-sm font-semibold tracking-widest uppercase text-[hsl(186_100%_32%)]">
                       RISCO ZERO
