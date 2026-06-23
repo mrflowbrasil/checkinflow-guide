@@ -12,7 +12,7 @@ const ctaPrimary =
 const supportCards = [
   {
     icon: CalendarDays,
-    title: "7 dias grátis",
+    title: "7 dias de teste",
     text: "Tempo suficiente para criar seu guia, testar com hóspedes reais e sentir a diferença na rotina.",
     bg: "bg-[hsl(186_100%_96%)]",
     ring: "ring-[hsl(186_100%_32%)]/15",
