@@ -152,13 +152,13 @@ export default function LpAnuncio() {
         <RealDemoLight />
         <AntesDepois />
         <Depoimentos />
-        
+
         <ParaQuemE />
         <VideoCriacao />
         <QuemSomos />
-        <PlanosSection />
         <GarantiaSection />
         <FaqSection />
+
       </main>
 
       <footer className="border-t border-slate-200 py-8 text-center text-xs text-slate-500 px-4 space-y-3">
