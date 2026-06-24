@@ -176,24 +176,15 @@ export default function Auth() {
               </div>
             ) : (
               <div className="space-y-5 lg:space-y-7">
-                <div className="flex justify-start lg:justify-end">
-                  <span className="inline-flex items-center gap-2 text-[10px] tracking-[0.22em] uppercase font-semibold px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-[#5EEAD4]">
-                    30 dias grátis · Sem cartão
-                  </span>
-                </div>
                 <h1 className="text-3xl sm:text-4xl lg:text-[44px] leading-[1.1] tracking-tight font-bold text-white">
                   Falta apenas um passo para{" "}
-                  <span style={{ color: "#5EEAD4" }}>profissionalizar</span> seu imóvel
+                  <span style={{ color: "#00FFFF" }}>profissionalizar</span> seu imóvel
                 </h1>
                 <p className="text-sm sm:text-base lg:text-lg text-white/85 leading-relaxed">
                   Monte o seu guia digital hoje e garanta acesso imediato a todas as vantagens:
                 </p>
                 <ul className="space-y-3 lg:space-y-4 pt-1">
                   {[
-                    {
-                      title: "30 dias grátis no plano Single",
-                      desc: "Sem pegadinhas e sem precisar de cartão de crédito.",
-                    },
                     {
                       title: "Bônus 1: Scripts de Mensagens para WhatsApp",
                       desc: "Modelos prontos, copia e cola.",
@@ -208,8 +199,8 @@ export default function Auth() {
                     },
                   ].map((item) => (
                     <li key={item.title} className="flex items-start gap-3">
-                      <span className="mt-0.5 flex h-5 w-5 lg:h-6 lg:w-6 shrink-0 items-center justify-center rounded-full bg-[#5EEAD4]/15 border border-[#5EEAD4]/40">
-                        <Check className="h-3 w-3 lg:h-3.5 lg:w-3.5 text-[#5EEAD4]" strokeWidth={3} />
+                      <span className="mt-0.5 flex h-5 w-5 lg:h-6 lg:w-6 shrink-0 items-center justify-center rounded-full bg-[#00FFFF]/15 border border-[#00FFFF]/40">
+                        <Check className="h-3 w-3 lg:h-3.5 lg:w-3.5 text-[#00FFFF]" strokeWidth={3} />
                       </span>
                       <div className="leading-snug">
                         <p className="text-sm lg:text-[15px] font-semibold text-white">{item.title}</p>
