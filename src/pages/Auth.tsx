@@ -168,7 +168,7 @@ export default function Auth() {
             {tab === "signin" ? (
               <div className="space-y-5 lg:space-y-6">
                 <h1 className="text-3xl sm:text-4xl lg:text-5xl leading-[1.1] tracking-tight font-bold text-white">
-                  Hub de Boas Vindas <span style={{ color: "#5EEAD4" }}>Inteligente</span>
+                  Hub de Boas Vindas <span style={{ color: "#00FFFF" }}>Inteligente</span>
                 </h1>
                 <p className="text-base lg:text-lg text-white/85 leading-relaxed max-w-md">
                   Encante seu hóspede desde o primeiro momento com um guia digital completo da sua hospedagem.
