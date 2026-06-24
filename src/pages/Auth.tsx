@@ -294,11 +294,8 @@ export default function Auth() {
                 </div>
                 <Button type="submit" className="w-full h-11 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold" disabled={busy}>
                   {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Criar conta gratuita
+                  Criar minha conta
                 </Button>
-                <p className="text-xs text-center text-muted-foreground">
-                  Você começa com 30 dias grátis no plano Single. Sem pegadinhas.
-                </p>
               </form>
             </TabsContent>
           </Tabs>
