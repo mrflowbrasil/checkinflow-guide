@@ -167,12 +167,10 @@ export default function LaunchOffer() {
               <Button
                 type="button"
                 onClick={handleCta}
-                disabled={starting || soldOut}
+                disabled={soldOut}
                 className="w-full sm:w-auto h-14 px-8 rounded-2xl text-base font-bold bg-[hsl(186_100%_32%)] hover:bg-[hsl(186_100%_27%)] text-white shadow-[0_15px_40px_-15px_hsl(186_100%_32%/0.6)] transition-transform hover:-translate-y-0.5 disabled:opacity-60 disabled:hover:translate-y-0"
               >
-                {starting ? (
-                  <><Loader2 className="h-5 w-5 mr-2 animate-spin" /> Abrindo checkout…</>
-                ) : soldOut ? (
+                {soldOut ? (
                   "LOTE PROMOCIONAL ENCERRADO"
                 ) : (
                   <>GARANTIR 1 ANO POR R$ 89,90 <ArrowRight className="ml-2 h-5 w-5" /></>
@@ -200,20 +198,7 @@ export default function LaunchOffer() {
           </Card>
         </Reveal>
       </div>
-
-      <Dialog open={checkoutOpen} onOpenChange={setCheckoutOpen}>
-        <DialogContent className="max-w-2xl p-0 overflow-hidden">
-          <DialogHeader className="px-6 pt-6">
-            <DialogTitle>Finalizar plano Lançamento</DialogTitle>
-          </DialogHeader>
-          <div className="max-h-[80vh] overflow-y-auto">
-            <StripeEmbeddedCheckout
-              priceId="launch_yearly"
-              returnUrl={`${window.location.origin}/lancamento/sucesso?session_id={CHECKOUT_SESSION_ID}`}
-            />
-          </div>
-        </DialogContent>
-      </Dialog>
     </section>
+
   );
 }
