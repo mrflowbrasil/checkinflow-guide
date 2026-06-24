@@ -1,98 +1,93 @@
-import { useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
-import { CheckCircle2, Loader2, Sparkles } from "lucide-react";
+import { useEffect } from "react";
+import { Link } from "react-router-dom";
+import { CheckCircle2, ArrowRight, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
-import { getStripeEnvironment } from "@/lib/stripe";
 
-const formatDate = (iso?: string | null) =>
-  iso ? new Date(iso).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" }) : "—";
+const PURCHASE_PIXEL_ID = "1511762026462042";
+const STORAGE_KEY = "launch_purchase_tracked";
 
 export default function LaunchSuccess() {
-  const [params] = useSearchParams();
-  const sessionId = params.get("session_id");
-  const { user } = useAuth();
-  const [loading, setLoading] = useState(true);
-  const [sub, setSub] = useState<any>(null);
-
   useEffect(() => {
-    let attempts = 0;
-    let cancelled = false;
-    const poll = async () => {
-      if (!user) return;
-      attempts++;
-      const { data: profile } = await supabase
-        .from("profiles").select("tenant_id").eq("id", user.id).maybeSingle();
-      if (!profile?.tenant_id) { schedule(); return; }
-      const { data } = await supabase
-        .from("subscriptions")
-        .select("*")
-        .eq("tenant_id", profile.tenant_id)
-        .eq("plan_code", "launch")
-        .eq("environment", getStripeEnvironment())
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      if (cancelled) return;
-      if (data && ["active", "trialing"].includes(data.status)) {
-        setSub(data); setLoading(false);
-      } else schedule();
-    };
-    const schedule = () => {
-      if (cancelled) return;
-      if (attempts > 20) { setLoading(false); return; }
-      setTimeout(poll, 2000);
-    };
-    poll();
-    return () => { cancelled = true; };
-  }, [user]);
+    // Inicializa o pixel dedicado de Purchase e dispara o evento (uma única vez por sessão).
+    try {
+      const w = window as any;
+      if (typeof w.fbq !== "function") return;
+
+      w.fbq("init", PURCHASE_PIXEL_ID);
+
+      if (!sessionStorage.getItem(STORAGE_KEY)) {
+        w.fbq("track", "Purchase", {
+          value: 89.9,
+          currency: "BRL",
+          content_name: "Welcome Hub - Launch",
+          content_ids: ["launch_yearly"],
+          content_type: "product",
+        });
+        sessionStorage.setItem(STORAGE_KEY, "1");
+      }
+
+      // dataLayer (GA4/GTM) opcional
+      w.dataLayer?.push({
+        event: "purchase",
+        value: 89.9,
+        currency: "BRL",
+        plan: "launch",
+      });
+    } catch {
+      /* noop */
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#FAFAF7] grid place-items-center px-5 py-12">
       <Card className="w-full max-w-xl p-8 sm:p-10 rounded-3xl border-[hsl(186_100%_32%)]/20 shadow-[0_30px_80px_-40px_hsl(186_100%_32%/0.4)]">
         <div className="text-center">
           <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-[hsl(186_100%_94%)] mb-4">
-            {loading ? (
-              <Loader2 className="h-8 w-8 text-[hsl(186_100%_28%)] animate-spin" />
-            ) : (
-              <CheckCircle2 className="h-8 w-8 text-[hsl(186_100%_28%)]" />
-            )}
+            <CheckCircle2 className="h-8 w-8 text-[hsl(186_100%_28%)]" />
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-            {loading ? "Confirmando seu pagamento…" : "Seu acesso foi liberado!"}
+            Pagamento confirmado! 🎉
           </h1>
-          <p className="mt-2 text-slate-600">
-            {loading
-              ? "Estamos aguardando a confirmação do Stripe. Isso leva alguns segundos."
-              : "Você agora possui 1 ano de acesso ao GuestFlow Hub com todos os recursos do plano Pro."}
+          <p className="mt-3 text-slate-600">
+            Obrigado pela sua compra! Seu plano <strong>Lançamento</strong> está ativo
+            com 1 ano completo de acesso ao Welcome Hub.
           </p>
         </div>
 
-        {!loading && sub && (
-          <dl className="mt-7 grid grid-cols-2 gap-x-4 gap-y-3 rounded-2xl bg-slate-50 p-5 text-sm">
-            <dt className="text-slate-500">Plano</dt>
-            <dd className="font-semibold text-slate-900 inline-flex items-center gap-1">
-              <Sparkles className="h-3.5 w-3.5 text-[hsl(186_100%_28%)]" /> Lançamento
-            </dd>
-            <dt className="text-slate-500">Valor</dt>
-            <dd className="font-semibold text-slate-900">R$ 89,90</dd>
-            <dt className="text-slate-500">Status</dt>
-            <dd className="font-semibold text-green-700">Ativo</dd>
-            <dt className="text-slate-500">Início</dt>
-            <dd className="text-slate-800">{formatDate(sub.current_period_start)}</dd>
-            <dt className="text-slate-500">Expira em</dt>
-            <dd className="text-slate-800">{formatDate(sub.current_period_end)}</dd>
-          </dl>
-        )}
+        <div className="mt-7 rounded-2xl bg-[hsl(186_100%_96%)] border border-[hsl(186_100%_32%)]/20 p-5 text-sm text-slate-700">
+          <p className="font-semibold text-slate-900 mb-1">Próximo passo</p>
+          <p>
+            Crie sua conta usando o <strong>mesmo e-mail</strong> do pagamento para
+            liberar o acesso ao seu painel e cadastrar seu primeiro imóvel.
+          </p>
+        </div>
 
-        <Button asChild className="w-full mt-7 h-12 rounded-xl bg-[hsl(186_100%_32%)] hover:bg-[hsl(186_100%_27%)] text-white font-semibold">
-          <Link to="/app">ACESSAR MEU GUESTFLOW HUB</Link>
-        </Button>
-        {sessionId && (
-          <p className="mt-3 text-[11px] text-slate-400 text-center break-all">Sessão: {sessionId}</p>
-        )}
+        <div className="mt-6 flex flex-col gap-3">
+          <Button
+            asChild
+            className="w-full h-12 rounded-xl bg-[hsl(186_100%_32%)] hover:bg-[hsl(186_100%_27%)] text-white font-semibold"
+          >
+            <Link to="/auth?mode=signup&plan=launch">
+              CRIAR MEU PRIMEIRO IMÓVEL
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Link>
+          </Button>
+          <Button
+            asChild
+            variant="outline"
+            className="w-full h-12 rounded-xl font-semibold"
+          >
+            <Link to="/auth">
+              <LogIn className="mr-2 h-5 w-5" />
+              Já tenho conta — Entrar
+            </Link>
+          </Button>
+        </div>
+
+        <p className="mt-6 text-xs text-slate-500 text-center">
+          Você receberá o recibo da Stripe no e-mail informado durante o pagamento.
+        </p>
       </Card>
     </div>
   );

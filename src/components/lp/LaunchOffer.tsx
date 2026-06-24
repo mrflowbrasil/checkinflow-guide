@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Flame, Check, ShieldCheck, Loader2, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Flame, Check, ShieldCheck, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Reveal } from "@/hooks/useReveal";
 import { supabase } from "@/integrations/supabase/client";
-import { StripeEmbeddedCheckout } from "@/components/billing/StripeEmbeddedCheckout";
+
+const PAYMENT_LINK_URL = "https://buy.stripe.com/00w7sL3qZcfK4DLdeobjW00";
+
 
 
 
@@ -39,9 +40,6 @@ function track(event: string, payload: Record<string, unknown> = {}) {
 
 export default function LaunchOffer() {
   const [slots, setSlots] = useState<Slots | null>(null);
-  const [checkoutOpen, setCheckoutOpen] = useState(false);
-  const [starting, setStarting] = useState(false);
-  const navigate = useNavigate();
   const viewedRef = useMemo(() => ({ done: false }), []);
 
   useEffect(() => {
@@ -62,16 +60,11 @@ export default function LaunchOffer() {
   const remaining = slots?.remaining ?? null;
   const soldOut = slots ? !slots.available : false;
 
-  async function handleCta() {
+  function handleCta() {
     track("click_launch_checkout", { remaining_slots: remaining });
     if (soldOut) return;
-    setStarting(true);
-    try {
-      setCheckoutOpen(true);
-      track("launch_checkout_created");
-    } finally {
-      setStarting(false);
-    }
+    track("launch_checkout_created");
+    window.location.href = PAYMENT_LINK_URL;
   }
 
   useEffect(() => {
@@ -79,6 +72,7 @@ export default function LaunchOffer() {
     window.addEventListener(LAUNCH_CHECKOUT_EVENT, handler);
     return () => window.removeEventListener(LAUNCH_CHECKOUT_EVENT, handler);
   }, [soldOut]);
+
 
 
 
@@ -173,12 +167,10 @@ export default function LaunchOffer() {
               <Button
                 type="button"
                 onClick={handleCta}
-                disabled={starting || soldOut}
+                disabled={soldOut}
                 className="w-full sm:w-auto h-14 px-8 rounded-2xl text-base font-bold bg-[hsl(186_100%_32%)] hover:bg-[hsl(186_100%_27%)] text-white shadow-[0_15px_40px_-15px_hsl(186_100%_32%/0.6)] transition-transform hover:-translate-y-0.5 disabled:opacity-60 disabled:hover:translate-y-0"
               >
-                {starting ? (
-                  <><Loader2 className="h-5 w-5 mr-2 animate-spin" /> Abrindo checkout…</>
-                ) : soldOut ? (
+                {soldOut ? (
                   "LOTE PROMOCIONAL ENCERRADO"
                 ) : (
                   <>GARANTIR 1 ANO POR R$ 89,90 <ArrowRight className="ml-2 h-5 w-5" /></>
@@ -206,20 +198,7 @@ export default function LaunchOffer() {
           </Card>
         </Reveal>
       </div>
-
-      <Dialog open={checkoutOpen} onOpenChange={setCheckoutOpen}>
-        <DialogContent className="max-w-2xl p-0 overflow-hidden">
-          <DialogHeader className="px-6 pt-6">
-            <DialogTitle>Finalizar plano Lançamento</DialogTitle>
-          </DialogHeader>
-          <div className="max-h-[80vh] overflow-y-auto">
-            <StripeEmbeddedCheckout
-              priceId="launch_yearly"
-              returnUrl={`${window.location.origin}/lancamento/sucesso?session_id={CHECKOUT_SESSION_ID}`}
-            />
-          </div>
-        </DialogContent>
-      </Dialog>
     </section>
+
   );
 }
