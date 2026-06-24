@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Flame, Check, ShieldCheck, Loader2, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Flame, Check, ShieldCheck, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Reveal } from "@/hooks/useReveal";
 import { supabase } from "@/integrations/supabase/client";
-import { StripeEmbeddedCheckout } from "@/components/billing/StripeEmbeddedCheckout";
+
+const PAYMENT_LINK_URL = "https://buy.stripe.com/00w7sL3qZcfK4DLdeobjW00";
+
 
 
 
