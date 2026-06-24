@@ -336,6 +336,63 @@ export type Database = {
         }
         Relationships: []
       }
+      pending_purchases: {
+        Row: {
+          billing_interval: string
+          claimed_at: string | null
+          claimed_by_user_id: string | null
+          created_at: string
+          current_period_end: string | null
+          current_period_start: string | null
+          email: string
+          environment: string
+          id: string
+          plan_code: string
+          price_id: string
+          product_id: string | null
+          status: string
+          stripe_customer_id: string
+          stripe_subscription_id: string
+          updated_at: string
+        }
+        Insert: {
+          billing_interval?: string
+          claimed_at?: string | null
+          claimed_by_user_id?: string | null
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          email: string
+          environment?: string
+          id?: string
+          plan_code: string
+          price_id: string
+          product_id?: string | null
+          status?: string
+          stripe_customer_id: string
+          stripe_subscription_id: string
+          updated_at?: string
+        }
+        Update: {
+          billing_interval?: string
+          claimed_at?: string | null
+          claimed_by_user_id?: string | null
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          email?: string
+          environment?: string
+          id?: string
+          plan_code?: string
+          price_id?: string
+          product_id?: string | null
+          status?: string
+          stripe_customer_id?: string
+          stripe_subscription_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
