@@ -1,26 +1,33 @@
-## Problema
+## Ajustes na tela de Autenticação pós-compra
 
-No `LaunchOffer.handleCta`, quando o usuário não está logado, abrimos o `QuickSignupDialog` ("Comece seu guia grátis") em vez de levar direto para o checkout do Stripe do plano de lançamento. Isso é inconsistente com a proposta dos CTAs "Garantir minha vaga / Garantir 1 ano por R$ 89,90", que devem ir direto para pagamento.
+### 1. Nova rota `/signup`
+- Em `src/App.tsx`, registrar `<Route path="/signup" element={<Auth />} />` apontando para o mesmo componente `Auth`.
+- Em `src/pages/Auth.tsx`:
+  - Detectar a rota atual via `useLocation()`. Se `pathname === "/signup"` (ou se houver `?mode=signup` para compatibilidade), inicializar `tab` como `"signup"` em vez de `"signin"`.
+  - Quando o usuário clicar na aba "Entrar"/"Criar conta", atualizar a URL com `navigate("/auth")` ou `navigate("/signup")` para manter slug e estado sincronizados (sem recarregar).
 
-## Solução
+### 2. Redirecionar comprador para `/signup`
+- Em `src/pages/LaunchSuccess.tsx`, trocar o botão principal:
+  - De: `/auth?mode=signup&plan=launch`
+  - Para: `/signup?plan=launch`
+- Botão secundário "Já tenho conta — Entrar" permanece em `/auth`.
 
-Permitir que o checkout embedded do Stripe seja aberto para qualquer visitante (logado ou não), coletando o e-mail no próprio Stripe Checkout. O `userId` vira opcional na criação da sessão.
+### 3. Remover menções "30 dias grátis"
+- Em `src/pages/Auth.tsx` (aba "Criar conta"):
+  - Remover o badge `"30 dias grátis · Sem cartão"` (linhas ~162-166).
+  - Remover o item da lista `"30 dias grátis no plano Single"` (substituir por algo neutro como `"Acesso completo ao Welcome Hub"` ou simplesmente remover o item — recomendo remover).
+  - Remover o rodapé `"Você começa com 30 dias grátis no plano Single. Sem pegadinhas."` abaixo do botão "Criar conta gratuita".
+  - Alterar o texto do botão de `"Criar conta gratuita"` → `"Criar minha conta"` (já que não é mais "grátis").
 
-### Mudanças
+### 4. Cor de destaque #00FFFF
+- Em `src/pages/Auth.tsx`, substituir `color: "#5EEAD4"` por `color: "#00FFFF"` nos dois `<span>` de destaque ("Inteligente" e "profissionalizar"). Não alterar os checks/ícones (manter o verde-água atual para os ícones de lista, já que aqueles itens serão removidos/reduzidos).
 
-1. **`src/components/lp/LaunchOffer.tsx`**
-   - Em `handleCta`: remover o bloco que chama `openQuickSignup` quando não há sessão. Sempre abrir o `checkoutOpen` modal com o `StripeEmbeddedCheckout`.
-   - Remover import não utilizado de `openQuickSignup`.
-   - Se houver sessão, ainda passamos `userId`/`customerEmail` para vincular a compra ao usuário existente. Sem sessão, o Stripe coleta o e-mail e a vinculação é feita posteriormente pelo webhook (via e-mail/`metadata`).
+### Detalhes técnicos
+- `useLocation` do `react-router-dom` para ler `pathname`.
+- O `Tabs onValueChange` faz `navigate(value === "signup" ? "/signup" : "/auth", { replace: true })` preservando `search` (querystring com `plan=launch`).
+- Nenhuma mudança em lógica de signup/login, webhook ou trigger.
 
-2. **`src/components/billing/StripeEmbeddedCheckout.tsx`** (verificar)
-   - Confirmar que `userId` e `customerEmail` já são opcionais. Se não forem, ajustar tipos para aceitar undefined.
-
-3. **`supabase/functions/create-checkout/index.ts`** (verificar)
-   - Confirmar que aceita requisição sem `userId`. Se exigir auth/userId, ajustar para permitir checkout anônimo do plano `launch_yearly` (Stripe coleta e-mail; pós-pagamento, webhook cria/associa a conta usando o e-mail informado).
-
-4. **Pós-pagamento (`/lancamento/sucesso`)**: já existe `LaunchSuccess.tsx` — garantir que, se o comprador não tinha conta, o fluxo de criação/vinculação aconteça lá (ou via webhook) usando o e-mail do checkout. (A revisar antes de implementar — pode já estar tratado.)
-
-### Resultado
-
-Clicar em "Garantir minha vaga" / "Garantir 1 ano por R$ 89,90" abre imediatamente o checkout do Stripe (modal embedded), sem passar pelo dialog de cadastro grátis.
+### Arquivos alterados
+- `src/App.tsx` — adiciona rota `/signup`.
+- `src/pages/Auth.tsx` — slug-driven tab, remoção de 30 dias, cor #00FFFF, texto do botão.
+- `src/pages/LaunchSuccess.tsx` — botão aponta para `/signup?plan=launch`.

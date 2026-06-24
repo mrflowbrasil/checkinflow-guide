@@ -1,5 +1,5 @@
-import { useState, type FormEvent } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { useState, useEffect, type FormEvent } from "react";
+import { Link, Navigate, useNavigate, useLocation } from "react-router-dom";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -38,8 +38,25 @@ function traduzErroAuth(msg: string): string {
 export default function Auth() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [busy, setBusy] = useState(false);
-  const [tab, setTab] = useState<"signin" | "signup">("signin");
+  const isSignupRoute =
+    location.pathname === "/signup" ||
+    new URLSearchParams(location.search).get("mode") === "signup";
+  const [tab, setTab] = useState<"signin" | "signup">(isSignupRoute ? "signup" : "signin");
+
+  useEffect(() => {
+    setTab(isSignupRoute ? "signup" : "signin");
+  }, [isSignupRoute]);
+
+  const handleTabChange = (v: string) => {
+    const next = v as "signin" | "signup";
+    setTab(next);
+    const targetPath = next === "signup" ? "/signup" : "/auth";
+    if (location.pathname !== targetPath) {
+      navigate({ pathname: targetPath, search: location.search }, { replace: true });
+    }
+  };
 
   if (loading) {
     return (
@@ -95,7 +112,7 @@ export default function Auth() {
       return toast.error("Não foi possível usar este email. Verifique o endereço ou tente outro.");
     }
     toast.success("Conta criada com sucesso! Faça login com seu email e senha para continuar.");
-    setTab("signin");
+    handleTabChange("signin");
   };
 
   const handleGoogle = async () => {
@@ -151,7 +168,7 @@ export default function Auth() {
             {tab === "signin" ? (
               <div className="space-y-5 lg:space-y-6">
                 <h1 className="text-3xl sm:text-4xl lg:text-5xl leading-[1.1] tracking-tight font-bold text-white">
-                  Hub de Boas Vindas <span style={{ color: "#5EEAD4" }}>Inteligente</span>
+                  Hub de Boas Vindas <span style={{ color: "#00FFFF" }}>Inteligente</span>
                 </h1>
                 <p className="text-base lg:text-lg text-white/85 leading-relaxed max-w-md">
                   Encante seu hóspede desde o primeiro momento com um guia digital completo da sua hospedagem.
@@ -159,24 +176,15 @@ export default function Auth() {
               </div>
             ) : (
               <div className="space-y-5 lg:space-y-7">
-                <div className="flex justify-start lg:justify-end">
-                  <span className="inline-flex items-center gap-2 text-[10px] tracking-[0.22em] uppercase font-semibold px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-[#5EEAD4]">
-                    30 dias grátis · Sem cartão
-                  </span>
-                </div>
                 <h1 className="text-3xl sm:text-4xl lg:text-[44px] leading-[1.1] tracking-tight font-bold text-white">
                   Falta apenas um passo para{" "}
-                  <span style={{ color: "#5EEAD4" }}>profissionalizar</span> seu imóvel
+                  <span style={{ color: "#00FFFF" }}>profissionalizar</span> seu imóvel
                 </h1>
                 <p className="text-sm sm:text-base lg:text-lg text-white/85 leading-relaxed">
                   Monte o seu guia digital hoje e garanta acesso imediato a todas as vantagens:
                 </p>
                 <ul className="space-y-3 lg:space-y-4 pt-1">
                   {[
-                    {
-                      title: "30 dias grátis no plano Single",
-                      desc: "Sem pegadinhas e sem precisar de cartão de crédito.",
-                    },
                     {
                       title: "Bônus 1: Scripts de Mensagens para WhatsApp",
                       desc: "Modelos prontos, copia e cola.",
@@ -191,8 +199,8 @@ export default function Auth() {
                     },
                   ].map((item) => (
                     <li key={item.title} className="flex items-start gap-3">
-                      <span className="mt-0.5 flex h-5 w-5 lg:h-6 lg:w-6 shrink-0 items-center justify-center rounded-full bg-[#5EEAD4]/15 border border-[#5EEAD4]/40">
-                        <Check className="h-3 w-3 lg:h-3.5 lg:w-3.5 text-[#5EEAD4]" strokeWidth={3} />
+                      <span className="mt-0.5 flex h-5 w-5 lg:h-6 lg:w-6 shrink-0 items-center justify-center rounded-full bg-[#00FFFF]/15 border border-[#00FFFF]/40">
+                        <Check className="h-3 w-3 lg:h-3.5 lg:w-3.5 text-[#00FFFF]" strokeWidth={3} />
                       </span>
                       <div className="leading-snug">
                         <p className="text-sm lg:text-[15px] font-semibold text-white">{item.title}</p>
@@ -221,7 +229,7 @@ export default function Auth() {
         <Card className="w-full max-w-md p-8 sm:p-10 rounded-3xl shadow-2xl border-0 bg-white">
 
 
-          <Tabs value={tab} onValueChange={(v) => setTab(v as "signin" | "signup")} className="w-full">
+          <Tabs value={tab} onValueChange={handleTabChange} className="w-full">
             <TabsList className="grid grid-cols-2 w-full mb-6">
               <TabsTrigger value="signin">Entrar</TabsTrigger>
               <TabsTrigger value="signup">Criar conta</TabsTrigger>
@@ -286,11 +294,8 @@ export default function Auth() {
                 </div>
                 <Button type="submit" className="w-full h-11 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold" disabled={busy}>
                   {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Criar conta gratuita
+                  Criar minha conta
                 </Button>
-                <p className="text-xs text-center text-muted-foreground">
-                  Você começa com 30 dias grátis no plano Single. Sem pegadinhas.
-                </p>
               </form>
             </TabsContent>
           </Tabs>

@@ -118,6 +118,7 @@ const App = () => (
               <Route path="/como-modernizar-sua-hospedagem" element={<SeoExtras.ComoModernizarSuaHospedagem />} />
               <Route path="/checklist-inspecao-5-estrelas-airbnb" element={<SeoExtras.ChecklistInspecao5EstrelasAirbnb />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/signup" element={<Auth />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/invite/:token" element={<Invite />} />

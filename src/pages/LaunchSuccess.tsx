@@ -68,7 +68,7 @@ export default function LaunchSuccess() {
             asChild
             className="w-full h-12 rounded-xl bg-[hsl(186_100%_32%)] hover:bg-[hsl(186_100%_27%)] text-white font-semibold"
           >
-            <Link to="/auth?mode=signup&plan=launch">
+            <Link to="/signup?plan=launch">
               CRIAR MEU PRIMEIRO IMÓVEL
               <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
