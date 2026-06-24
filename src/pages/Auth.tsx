@@ -112,7 +112,7 @@ export default function Auth() {
       return toast.error("Não foi possível usar este email. Verifique o endereço ou tente outro.");
     }
     toast.success("Conta criada com sucesso! Faça login com seu email e senha para continuar.");
-    setTab("signin");
+    handleTabChange("signin");
   };
 
   const handleGoogle = async () => {
