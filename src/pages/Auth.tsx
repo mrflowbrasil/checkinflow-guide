@@ -38,8 +38,25 @@ function traduzErroAuth(msg: string): string {
 export default function Auth() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [busy, setBusy] = useState(false);
-  const [tab, setTab] = useState<"signin" | "signup">("signin");
+  const isSignupRoute =
+    location.pathname === "/signup" ||
+    new URLSearchParams(location.search).get("mode") === "signup";
+  const [tab, setTab] = useState<"signin" | "signup">(isSignupRoute ? "signup" : "signin");
+
+  useEffect(() => {
+    setTab(isSignupRoute ? "signup" : "signin");
+  }, [isSignupRoute]);
+
+  const handleTabChange = (v: string) => {
+    const next = v as "signin" | "signup";
+    setTab(next);
+    const targetPath = next === "signup" ? "/signup" : "/auth";
+    if (location.pathname !== targetPath) {
+      navigate({ pathname: targetPath, search: location.search }, { replace: true });
+    }
+  };
 
   if (loading) {
     return (
