@@ -229,7 +229,7 @@ export default function Auth() {
         <Card className="w-full max-w-md p-8 sm:p-10 rounded-3xl shadow-2xl border-0 bg-white">
 
 
-          <Tabs value={tab} onValueChange={(v) => setTab(v as "signin" | "signup")} className="w-full">
+          <Tabs value={tab} onValueChange={handleTabChange} className="w-full">
             <TabsList className="grid grid-cols-2 w-full mb-6">
               <TabsTrigger value="signin">Entrar</TabsTrigger>
               <TabsTrigger value="signup">Criar conta</TabsTrigger>
