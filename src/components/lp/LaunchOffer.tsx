@@ -40,9 +40,6 @@ function track(event: string, payload: Record<string, unknown> = {}) {
 
 export default function LaunchOffer() {
   const [slots, setSlots] = useState<Slots | null>(null);
-  const [checkoutOpen, setCheckoutOpen] = useState(false);
-  const [starting, setStarting] = useState(false);
-  const navigate = useNavigate();
   const viewedRef = useMemo(() => ({ done: false }), []);
 
   useEffect(() => {
@@ -63,16 +60,11 @@ export default function LaunchOffer() {
   const remaining = slots?.remaining ?? null;
   const soldOut = slots ? !slots.available : false;
 
-  async function handleCta() {
+  function handleCta() {
     track("click_launch_checkout", { remaining_slots: remaining });
     if (soldOut) return;
-    setStarting(true);
-    try {
-      setCheckoutOpen(true);
-      track("launch_checkout_created");
-    } finally {
-      setStarting(false);
-    }
+    track("launch_checkout_created");
+    window.location.href = PAYMENT_LINK_URL;
   }
 
   useEffect(() => {
@@ -80,6 +72,7 @@ export default function LaunchOffer() {
     window.addEventListener(LAUNCH_CHECKOUT_EVENT, handler);
     return () => window.removeEventListener(LAUNCH_CHECKOUT_EVENT, handler);
   }, [soldOut]);
+
 
 
 
