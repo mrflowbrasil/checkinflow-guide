@@ -79,11 +79,11 @@ export function getTemplate(key: string | null | undefined): TemplateDef {
 }
 
 export function canUseProTemplates(planCode: string | null | undefined): boolean {
-  return planCode === "pro" || planCode === "business";
+  return planCode === "pro" || planCode === "business" || planCode === "launch";
 }
 
 export function isPlanProOrAbove(planCode: string | null | undefined): boolean {
-  return planCode === "pro" || planCode === "business";
+  return planCode === "pro" || planCode === "business" || planCode === "launch";
 }
 
 export function isPlanBusiness(planCode: string | null | undefined): boolean {
