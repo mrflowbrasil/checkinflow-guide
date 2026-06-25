@@ -95,11 +95,11 @@ export type PlanFeatures = {
 export function usePlanFeatures(): PlanFeatures {
   const { data: tenant } = useTenant();
   const plan = tenant?.plan_code;
-  const proOrAbove = plan === "pro" || plan === "business";
+  const proOrAbove = plan === "pro" || plan === "business" || plan === "launch";
   return {
     proTemplates: proOrAbove,
     customLogo: proOrAbove,
     slugRotation: proOrAbove,
-    pmsIntegrations: plan === "pro" || plan === "business",
+    pmsIntegrations: proOrAbove,
   };
 }
