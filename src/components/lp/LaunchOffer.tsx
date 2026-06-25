@@ -28,6 +28,7 @@ const LAUNCH_FEATURES = [
   "URL rotativa (revoga acesso de hóspedes anteriores)",
   "Atualização em tempo real do conteúdo",
   "Suporte equivalente ao plano Pro",
+  "Integração com Stays e Hostaway",
 ];
 
 type Slots = { limit: number; sold: number; remaining: number; available: boolean };
