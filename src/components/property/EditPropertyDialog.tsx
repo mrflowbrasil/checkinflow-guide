@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Loader2, Upload } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Loader2, Upload, Lock } from "lucide-react";
 import { toast } from "sonner";
 
 type Props = {
@@ -22,6 +23,8 @@ type Props = {
     cover_image_url: string | null;
     public_slug: string;
     tenant_id: string;
+    access_password_enabled?: boolean | null;
+    access_password?: string | null;
   };
 };
 
@@ -30,6 +33,8 @@ export function EditPropertyDialog({ open, onOpenChange, property }: Props) {
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(property.cover_image_url);
   const [busy, setBusy] = useState(false);
+  const [pwdEnabled, setPwdEnabled] = useState<boolean>(!!property.access_password_enabled);
+  const [pwd, setPwd] = useState<string>(property.access_password ?? "");
 
   const onCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
