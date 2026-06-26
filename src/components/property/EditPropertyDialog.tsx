@@ -159,6 +159,33 @@ export function EditPropertyDialog({ open, onOpenChange, property }: Props) {
             <Textarea id="description" name="description" rows={3} defaultValue={property.description ?? ""} />
           </div>
 
+          <div className="space-y-3 rounded-lg border p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="space-y-1">
+                <Label className="flex items-center gap-2 text-sm font-semibold">
+                  <Lock className="h-4 w-4" /> Acesso ao hub
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  Exigir uma senha simples para o hóspede abrir o guia.
+                </p>
+              </div>
+              <Switch checked={pwdEnabled} onCheckedChange={setPwdEnabled} />
+            </div>
+            {pwdEnabled && (
+              <div className="space-y-2">
+                <Label htmlFor="access_password" className="text-xs">Senha de acesso</Label>
+                <Input
+                  id="access_password"
+                  type="text"
+                  value={pwd}
+                  onChange={(e) => setPwd(e.target.value)}
+                  placeholder="Ex.: 1234"
+                  autoComplete="off"
+                />
+              </div>
+            )}
+          </div>
+
           <DialogFooter>
             <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>Cancelar</Button>
             <Button type="submit" disabled={busy}>
