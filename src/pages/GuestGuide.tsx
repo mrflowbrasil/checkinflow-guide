@@ -12,6 +12,7 @@ import { InstallAppButton } from "@/components/guest/InstallAppButton";
 import { LanguageSwitcher } from "@/components/guest/LanguageSwitcher";
 import { SocialLinks } from "@/components/guest/SocialLinks";
 import { LeadCaptureBar } from "@/components/guest/LeadCaptureBar";
+import { GuestIntroSplash } from "@/components/guest/GuestIntroSplash";
 import { GuideI18nProvider, useGuideT, type GuideLocale } from "@/lib/i18n-guide";
 import { Seo } from "@/components/Seo";
 import { Helmet } from "react-helmet-async";
