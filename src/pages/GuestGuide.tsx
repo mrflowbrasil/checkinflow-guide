@@ -146,8 +146,26 @@ export default function GuestGuide() {
   const primaryColor = tenant?.primary_color ?? "#0F1E3D";
   const activePage = pages.find((p) => p.page_key === activePageKey);
 
+  const passwordRequired = !!data.access_password_enabled && !!data.access_password;
+  const showSplash = !unlocked;
+  const handleUnlock = () => {
+    try {
+      sessionStorage.setItem(`guide-unlocked-${slug ?? ""}`, "1");
+    } catch {}
+    setUnlocked(true);
+  };
+
   return (
     <GuideI18nProvider slug={slug!} locale={locale}>
+      {showSplash && (
+        <GuestIntroSplash
+          coverUrl={data.cover_image_url}
+          propertyName={data.name}
+          passwordRequired={passwordRequired}
+          expectedPassword={data.access_password}
+          onUnlock={handleUnlock}
+        />
+      )}
       <GuideBody
         showLeadBar={slug === "suite-premium-vila-serena-23515a"}
         data={data}
