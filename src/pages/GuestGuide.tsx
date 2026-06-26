@@ -12,6 +12,7 @@ import { InstallAppButton } from "@/components/guest/InstallAppButton";
 import { LanguageSwitcher } from "@/components/guest/LanguageSwitcher";
 import { SocialLinks } from "@/components/guest/SocialLinks";
 import { LeadCaptureBar } from "@/components/guest/LeadCaptureBar";
+import { GuestIntroSplash } from "@/components/guest/GuestIntroSplash";
 import { GuideI18nProvider, useGuideT, type GuideLocale } from "@/lib/i18n-guide";
 import { Seo } from "@/components/Seo";
 import { Helmet } from "react-helmet-async";
@@ -21,6 +22,10 @@ import { sbImage, sbImageSrcSet } from "@/lib/supabase-image";
 export default function GuestGuide() {
   const { slug } = useParams<{ slug: string }>();
   const [activePageKey, setActivePageKey] = useState<string | null>(null);
+  const [unlocked, setUnlocked] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return sessionStorage.getItem(`guide-unlocked-${slug ?? ""}`) === "1";
+  });
   const [locale, setLocale] = useState<GuideLocale>(() => {
     if (typeof window === "undefined") return "pt";
     const saved = localStorage.getItem(`guide-locale-${slug ?? ""}`);
@@ -41,7 +46,7 @@ export default function GuestGuide() {
       const { data: property, error } = await supabase
         .from("properties")
         .select(`
-          id, name, address, booking_url, cover_image_url, public_slug, status,
+          id, name, address, booking_url, cover_image_url, public_slug, status, access_password_enabled, access_password,
           tenants!inner(id, name, primary_color, secondary_color, template, is_active, logo_url, show_logo, plan_code, instagram_url, facebook_url),
           property_pages(id, page_key, title, icon, position, is_enabled)
         `)
@@ -141,8 +146,26 @@ export default function GuestGuide() {
   const primaryColor = tenant?.primary_color ?? "#0F1E3D";
   const activePage = pages.find((p) => p.page_key === activePageKey);
 
+  const passwordRequired = !!data.access_password_enabled && !!data.access_password;
+  const showSplash = !unlocked;
+  const handleUnlock = () => {
+    try {
+      sessionStorage.setItem(`guide-unlocked-${slug ?? ""}`, "1");
+    } catch {}
+    setUnlocked(true);
+  };
+
   return (
     <GuideI18nProvider slug={slug!} locale={locale}>
+      {showSplash && (
+        <GuestIntroSplash
+          coverUrl={data.cover_image_url}
+          propertyName={data.name}
+          passwordRequired={passwordRequired}
+          expectedPassword={data.access_password}
+          onUnlock={handleUnlock}
+        />
+      )}
       <GuideBody
         showLeadBar={slug === "suite-premium-vila-serena-23515a"}
         data={data}

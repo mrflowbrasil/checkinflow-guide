@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Loader2, Upload } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Loader2, Upload, Lock } from "lucide-react";
 import { toast } from "sonner";
 
 type Props = {
@@ -22,6 +23,8 @@ type Props = {
     cover_image_url: string | null;
     public_slug: string;
     tenant_id: string;
+    access_password_enabled?: boolean | null;
+    access_password?: string | null;
   };
 };
 
@@ -30,6 +33,8 @@ export function EditPropertyDialog({ open, onOpenChange, property }: Props) {
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(property.cover_image_url);
   const [busy, setBusy] = useState(false);
+  const [pwdEnabled, setPwdEnabled] = useState<boolean>(!!property.access_password_enabled);
+  const [pwd, setPwd] = useState<string>(property.access_password ?? "");
 
   const onCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
@@ -70,6 +75,8 @@ export function EditPropertyDialog({ open, onOpenChange, property }: Props) {
           booking_url: values.booking_url || null,
           external_id: values.external_id || null,
           cover_image_url: coverUrl,
+          access_password_enabled: pwdEnabled,
+          access_password: pwdEnabled ? (pwd.trim() || null) : null,
         })
         .eq("id", property.id);
       if (error) throw error;
@@ -150,6 +157,33 @@ export function EditPropertyDialog({ open, onOpenChange, property }: Props) {
           <div className="space-y-2">
             <Label htmlFor="description">Descrição</Label>
             <Textarea id="description" name="description" rows={3} defaultValue={property.description ?? ""} />
+          </div>
+
+          <div className="space-y-3 rounded-lg border p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="space-y-1">
+                <Label className="flex items-center gap-2 text-sm font-semibold">
+                  <Lock className="h-4 w-4" /> Acesso ao hub
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  Exigir uma senha simples para o hóspede abrir o guia.
+                </p>
+              </div>
+              <Switch checked={pwdEnabled} onCheckedChange={setPwdEnabled} />
+            </div>
+            {pwdEnabled && (
+              <div className="space-y-2">
+                <Label htmlFor="access_password" className="text-xs">Senha de acesso</Label>
+                <Input
+                  id="access_password"
+                  type="text"
+                  value={pwd}
+                  onChange={(e) => setPwd(e.target.value)}
+                  placeholder="Ex.: 1234"
+                  autoComplete="off"
+                />
+              </div>
+            )}
           </div>
 
           <DialogFooter>
