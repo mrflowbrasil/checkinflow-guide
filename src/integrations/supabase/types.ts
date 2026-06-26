@@ -430,6 +430,8 @@ export type Database = {
       }
       properties: {
         Row: {
+          access_password: string | null
+          access_password_enabled: boolean
           address: string | null
           base_price: number | null
           booking_url: string | null
@@ -450,6 +452,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          access_password?: string | null
+          access_password_enabled?: boolean
           address?: string | null
           base_price?: number | null
           booking_url?: string | null
@@ -470,6 +474,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          access_password?: string | null
+          access_password_enabled?: boolean
           address?: string | null
           base_price?: number | null
           booking_url?: string | null
