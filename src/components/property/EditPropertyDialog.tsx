@@ -75,6 +75,8 @@ export function EditPropertyDialog({ open, onOpenChange, property }: Props) {
           booking_url: values.booking_url || null,
           external_id: values.external_id || null,
           cover_image_url: coverUrl,
+          access_password_enabled: pwdEnabled,
+          access_password: pwdEnabled ? (pwd.trim() || null) : null,
         })
         .eq("id", property.id);
       if (error) throw error;
