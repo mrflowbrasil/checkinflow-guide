@@ -66,6 +66,7 @@ import {
   type DateBasis,
 } from "@/hooks/useInteligencia";
 import { InsightsWidget } from "@/components/inteligencia/InsightsWidget";
+import { ChannelRevenueCard } from "@/components/inteligencia/ChannelRevenueCard";
 
 const BRL = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 const BRL2 = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
