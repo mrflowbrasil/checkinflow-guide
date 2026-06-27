@@ -27,19 +27,24 @@ export function useHasReservationsIntegration() {
   });
 }
 
+const keepPrev = <T,>(prev: T | undefined) => prev;
+
 export function useReservationsRange(start: string, end: string) {
   const { data: tenant } = useTenant();
   return useQuery({
     queryKey: ["v_reservations_dashboard", tenant?.id, start, end],
     enabled: !!tenant?.id,
     staleTime: 60_000,
+    placeholderData: keepPrev,
+    retry: 1,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("v_reservations_dashboard" as any)
         .select("*")
         .gte("check_in", start)
         .lte("check_in", end)
-        .order("check_in", { ascending: true });
+        .order("check_in", { ascending: true })
+        .limit(10000);
       if (error) throw error;
       return (data ?? []) as any[];
     },
@@ -53,6 +58,8 @@ export function useUpcomingCheckins(limit = 20) {
     queryKey: ["v_reservations_upcoming", tenant?.id, today],
     enabled: !!tenant?.id,
     staleTime: 60_000,
+    placeholderData: keepPrev,
+    retry: 1,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("v_reservations_dashboard" as any)
@@ -73,6 +80,8 @@ export function useMonthlyMetrics() {
     queryKey: ["v_dashboard_monthly_metrics", tenant?.id],
     enabled: !!tenant?.id,
     staleTime: 60_000,
+    placeholderData: keepPrev,
+    retry: 1,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("v_dashboard_monthly_metrics" as any)
@@ -90,6 +99,8 @@ export function usePropertyMetrics() {
     queryKey: ["v_dashboard_property_metrics", tenant?.id],
     enabled: !!tenant?.id,
     staleTime: 60_000,
+    placeholderData: keepPrev,
+    retry: 1,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("v_dashboard_property_metrics" as any)
