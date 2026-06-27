@@ -269,6 +269,156 @@ export default function Inteligencia() {
         .map((p) => ({ name: p.property_name || p.property_external_id || "—", nights: Number(p.nights) })),
     [propMetrics.data],
   );
+  // History-based aggregations (Sub-etapa 2.2)
+  const historyFiltered = useMemo(() => applyClientFilters(allHistory.data ?? []), [allHistory.data, propertyFilter, channelFilter]);
+
+  // Per year × month aggregation
+  const yearMonthAgg = useMemo(() => {
+    const map = new Map<string, { gross: number; net: number; fees: number; commission: number; count: number; nights: number }>();
+    const num = (v: any) => Number(v ?? 0) || 0;
+    historyFiltered.forEach((r) => {
+      if (r.status === "canceled") return;
+      const basis = dateBasis === "booked_at" ? r.booked_at : r.check_in;
+      if (!basis) return;
+      const key = String(basis).slice(0, 7); // YYYY-MM
+      const cur = map.get(key) ?? { gross: 0, net: 0, fees: 0, commission: 0, count: 0, nights: 0 };
+      const gross = num(r.sell_price_corrected ?? r.total_amount);
+      const fees = num(r.fees_amount);
+      const commission = num(r.company_commission);
+      cur.gross += gross;
+      cur.fees += fees;
+      cur.commission += commission;
+      cur.net += gross - fees - commission;
+      cur.count += 1;
+      cur.nights += num(r.nights);
+      map.set(key, cur);
+    });
+    return map;
+  }, [historyFiltered, dateBasis]);
+
+  const annualSeries = useMemo(() => {
+    const years = new Set<number>();
+    yearMonthAgg.forEach((_, k) => years.add(Number(k.slice(0, 4))));
+    const sortedYears = Array.from(years).sort();
+    const monthLabels = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+    const data = monthLabels.map((label, i) => {
+      const row: Record<string, any> = { month: label };
+      sortedYears.forEach((y) => {
+        const key = `${y}-${String(i + 1).padStart(2, "0")}`;
+        const agg = yearMonthAgg.get(key);
+        let value = 0;
+        if (agg) {
+          switch (yearMetric) {
+            case "grossRevenue": value = agg.gross; break;
+            case "netRevenue": value = agg.net; break;
+            case "count": value = agg.count; break;
+            case "nights": value = agg.nights; break;
+            case "avg": value = agg.count > 0 ? agg.gross / agg.count : 0; break;
+          }
+        }
+        row[String(y)] = value;
+      });
+      return row;
+    });
+    return { years: sortedYears, data };
+  }, [yearMonthAgg, yearMetric]);
+
+  // Seasonality matrix (year × month) with intensity by net revenue
+  const seasonality = useMemo(() => {
+    const years = annualSeries.years;
+    const monthLabels = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+    let max = 0;
+    years.forEach((y) => {
+      for (let m = 1; m <= 12; m++) {
+        const key = `${y}-${String(m).padStart(2, "0")}`;
+        const v = yearMonthAgg.get(key)?.net ?? 0;
+        if (v > max) max = v;
+      }
+    });
+    return { years, monthLabels, max };
+  }, [annualSeries.years, yearMonthAgg]);
+
+  // Channel × month stacked (last 12 months from today, basis = check_in/booked_at filter)
+  const channelMonthly = useMemo(() => {
+    const today = new Date();
+    const months: string[] = [];
+    for (let i = 11; i >= 0; i--) {
+      const d = subMonths(today, i);
+      months.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+    }
+    const channelSet = new Set<string>();
+    const num = (v: any) => Number(v ?? 0) || 0;
+    const byMonth = new Map<string, Map<string, number>>();
+    historyFiltered.forEach((r) => {
+      if (r.status === "canceled") return;
+      const basis = dateBasis === "booked_at" ? r.booked_at : r.check_in;
+      if (!basis) return;
+      const key = String(basis).slice(0, 7);
+      if (!months.includes(key)) return;
+      const ch = r.channel || "Direto";
+      channelSet.add(ch);
+      const m = byMonth.get(key) ?? new Map<string, number>();
+      m.set(ch, (m.get(ch) ?? 0) + (num(r.sell_price_corrected ?? r.total_amount) - num(r.fees_amount) - num(r.company_commission)));
+      byMonth.set(key, m);
+    });
+    const channels = Array.from(channelSet).sort();
+    const data = months.map((k) => {
+      const row: Record<string, any> = { label: format(parseISO(`${k}-01`), "MMM/yy", { locale: ptBR }) };
+      const m = byMonth.get(k) ?? new Map();
+      channels.forEach((c) => { row[c] = Math.round(m.get(c) ?? 0); });
+      return row;
+    });
+    return { data, channels };
+  }, [historyFiltered, dateBasis]);
+
+  // Channel summary table (current filtered period)
+  const channelSummary = useMemo(() => {
+    const num = (v: any) => Number(v ?? 0) || 0;
+    const map = new Map<string, { gross: number; net: number; count: number; leadSum: number; leadN: number }>();
+    filteredCurrent.forEach((r) => {
+      if (r.status === "canceled") return;
+      const ch = r.channel || "Direto";
+      const cur = map.get(ch) ?? { gross: 0, net: 0, count: 0, leadSum: 0, leadN: 0 };
+      const gross = num(r.sell_price_corrected ?? r.total_amount);
+      cur.gross += gross;
+      cur.net += gross - num(r.fees_amount) - num(r.company_commission);
+      cur.count += 1;
+      if (r.lead_time_days != null) { cur.leadSum += num(r.lead_time_days); cur.leadN += 1; }
+      map.set(ch, cur);
+    });
+    const totalNet = Array.from(map.values()).reduce((s, x) => s + x.net, 0);
+    return Array.from(map.entries())
+      .map(([name, v]) => ({
+        name,
+        gross: v.gross,
+        net: v.net,
+        count: v.count,
+        avg: v.count > 0 ? v.gross / v.count : 0,
+        share: totalNet > 0 ? (v.net / totalNet) * 100 : 0,
+        lead: v.leadN > 0 ? v.leadSum / v.leadN : 0,
+      }))
+      .sort((a, b) => b.net - a.net);
+  }, [filteredCurrent]);
+
+  // Lead time histogram (current filtered)
+  const leadHistogram = useMemo(() => {
+    const buckets = [
+      { name: "0–7 dias", min: 0, max: 7, count: 0 },
+      { name: "8–30 dias", min: 8, max: 30, count: 0 },
+      { name: "31–60 dias", min: 31, max: 60, count: 0 },
+      { name: "61–90 dias", min: 61, max: 90, count: 0 },
+      { name: "90+ dias", min: 91, max: Infinity, count: 0 },
+    ];
+    let total = 0;
+    filteredCurrent.forEach((r) => {
+      if (r.status === "canceled") return;
+      if (r.lead_time_days == null) return;
+      const v = Number(r.lead_time_days);
+      const b = buckets.find((x) => v >= x.min && v <= x.max);
+      if (b) { b.count += 1; total += 1; }
+    });
+    return buckets.map((b) => ({ name: b.name, count: b.count, pct: total > 0 ? (b.count / total) * 100 : 0 }));
+  }, [filteredCurrent]);
 
   if (integration.isLoading) {
     return (
