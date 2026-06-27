@@ -65,6 +65,7 @@ import {
   useUpcomingCheckins,
   type DateBasis,
 } from "@/hooks/useInteligencia";
+import { InsightsWidget } from "@/components/inteligencia/InsightsWidget";
 
 const BRL = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 const BRL2 = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
