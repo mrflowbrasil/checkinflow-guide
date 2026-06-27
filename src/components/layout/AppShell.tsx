@@ -1,9 +1,10 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Home, Settings, LogOut, Shield, Menu, Plug, Sparkles, UserCog, HelpCircle, LayoutGrid } from "lucide-react";
+import { LayoutDashboard, Home, Settings, LogOut, Shield, Menu, Plug, Sparkles, UserCog, HelpCircle, LayoutGrid, BarChart3 } from "lucide-react";
 import { PaymentTestModeBanner } from "@/components/billing/PaymentTestModeBanner";
 import { MrFlowLogo } from "@/components/brand/MrFlowLogo";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsSuperAdmin, useTenant } from "@/hooks/useTenant";
+import { useHasReservationsIntegration } from "@/hooks/useInteligencia";
 import { useOnboardingStatus } from "@/hooks/useOnboardingStatus";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,8 +18,9 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 
 const isProduction = typeof window !== "undefined" && window.location.hostname === "hub.mrflow.com.br";
 
-const NAV = [
+const NAV: Array<{ to: string; label: string; icon: any; end?: boolean; comingSoonInProd?: boolean; requiresIntegration?: boolean }> = [
   { to: "/app", label: "Dashboard", icon: LayoutDashboard, end: true },
+  { to: "/app/inteligencia", label: "Inteligência", icon: BarChart3, requiresIntegration: true },
   { to: "/app/properties", label: "Imóveis", icon: Home },
   { to: "/app/catalog", label: "Catálogo", icon: LayoutGrid, comingSoonInProd: true },
   { to: "/app/templates", label: "Templates", icon: Sparkles },
@@ -29,10 +31,12 @@ const NAV = [
 
 function NavItems({ onClick }: { onClick?: () => void }) {
   const { data: isAdmin } = useIsSuperAdmin();
+  const { data: integration } = useHasReservationsIntegration();
   return (
     <TooltipProvider delayDuration={150}>
       <nav className="flex flex-col gap-1 p-3">
         {NAV.map((item) => {
+          if (item.requiresIntegration && !integration?.connected) return null;
           const disabled = item.comingSoonInProd && isProduction && !isAdmin;
           if (disabled) {
             return (

@@ -36,6 +36,7 @@ const Templates = lazy(() => import("./pages/dashboard/Templates"));
 const Catalog = lazy(() => import("./pages/dashboard/Catalog"));
 const PublicCatalog = lazy(() => import("./pages/PublicCatalog"));
 const Help = lazy(() => import("./pages/dashboard/Help"));
+const Inteligencia = lazy(() => import("./pages/dashboard/Inteligencia"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Unsubscribe = lazy(() => import("./pages/Unsubscribe"));
@@ -141,6 +142,7 @@ const App = () => (
                 <Route path="templates" element={<Templates />} />
                 <Route path="catalog" element={<Catalog />} />
                 <Route path="help" element={<Help />} />
+                <Route path="inteligencia" element={<Inteligencia />} />
               </Route>
 
               <Route path="/admin" element={<RequireAuth><AppShell /></RequireAuth>}>
