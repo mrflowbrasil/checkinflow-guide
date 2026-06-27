@@ -199,7 +199,9 @@ export default function Inteligencia() {
     );
   }
 
-  const loading = current.isLoading || monthly.isLoading || propMetrics.isLoading;
+  const firstLoad = (current.isLoading && !current.data) || (monthly.isLoading && !monthly.data) || (propMetrics.isLoading && !propMetrics.data);
+  const fetching = current.isFetching || monthly.isFetching || propMetrics.isFetching || upcoming.isFetching;
+  const loading = firstLoad;
   const error = current.error || monthly.error || propMetrics.error;
 
   return (
