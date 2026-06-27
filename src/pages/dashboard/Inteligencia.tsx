@@ -58,6 +58,7 @@ import {
 import {
   useHasReservationsIntegration,
   useReservationsRange,
+  useReservationsAll,
   useMonthlyMetrics,
   usePropertyMetrics,
   useLastSyncedAt,
