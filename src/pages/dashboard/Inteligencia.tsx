@@ -913,7 +913,7 @@ export default function Inteligencia() {
                   />
                   <Legend />
                   {channelMonthly.channels.map((c, i) => (
-                    <Bar key={c} dataKey={c} stackId="ch" fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                    <Bar key={c} dataKey={c} stackId="ch" fill={channelColor(c, i)} />
                   ))}
                 </BarChart>
               </ResponsiveContainer>
