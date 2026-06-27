@@ -747,10 +747,10 @@ export default function Inteligencia() {
 
         <Card className="p-5 shadow-card">
           <div className="mb-3">
-            <h3 className="font-semibold">Ocupação por imóvel</h3>
-            <p className="text-xs text-muted-foreground">Top 10 por diárias vendidas</p>
+            <h3 className="font-semibold">Top imóveis por noites vendidas</h3>
+            <p className="text-xs text-muted-foreground">Top 10 imóveis no histórico disponível</p>
           </div>
-          <div className="h-72" aria-label="Gráfico de ocupação por imóvel">
+          <div className="h-72" aria-label="Gráfico de noites vendidas por imóvel">
             {propMetrics.isLoading ? <Skeleton className="h-full w-full" /> : topNights.length === 0 ? (
               <div className="h-full grid place-items-center text-sm text-muted-foreground">Sem dados</div>
             ) : (
@@ -760,7 +760,7 @@ export default function Inteligencia() {
                   <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={12} />
                   <YAxis type="category" dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={11} width={140} />
                   <Tooltip contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))", borderRadius: 8 }} />
-                  <Bar dataKey="nights" fill="hsl(var(--accent))" radius={[0, 4, 4, 0]} />
+                  <Bar dataKey="nights" name="Noites" fill={DATA_COLORS.primary} radius={[0, 4, 4, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             )}
