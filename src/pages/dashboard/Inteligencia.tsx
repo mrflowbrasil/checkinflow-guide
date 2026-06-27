@@ -180,9 +180,9 @@ function aggregate(rows: any[]) {
   const confirmed = rows.filter((r) => r.status !== "canceled");
   const num = (v: any) => Number(v ?? 0) || 0;
   const grossRevenue = confirmed.reduce((s, r) => s + num(r.sell_price_corrected ?? r.total_amount), 0);
-  const netRevenue = confirmed.reduce((s, r) => s + num(r.net_amount ?? r.sell_price_corrected ?? r.total_amount), 0);
   const fees = confirmed.reduce((s, r) => s + num(r.fees_amount), 0);
   const commission = confirmed.reduce((s, r) => s + num(r.company_commission), 0);
+  const netRevenue = grossRevenue - fees - commission;
   const nights = confirmed.reduce((s, r) => s + num(r.nights), 0);
   const count = confirmed.length;
   const avg = count > 0 ? grossRevenue / count : 0;
