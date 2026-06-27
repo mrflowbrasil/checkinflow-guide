@@ -8,14 +8,21 @@ export function useHasReservationsIntegration() {
     queryKey: ["reservations_integration", tenant?.id],
     enabled: !!tenant?.id,
     queryFn: async () => {
-      const { data } = await supabase
-        .from("tenant_integrations")
-        .select("provider, status")
-        .eq("tenant_id", tenant!.id)
-        .in("provider", ["stays", "hostaway"])
-        .eq("status", "connected");
-      const providers = (data ?? []).map((r) => r.provider as string);
-      return { connected: providers.length > 0, providers };
+      const [{ data: integs }, { count }] = await Promise.all([
+        supabase
+          .from("tenant_integrations")
+          .select("provider, status")
+          .eq("tenant_id", tenant!.id)
+          .in("provider", ["stays", "hostaway"])
+          .eq("status", "connected"),
+        supabase
+          .from("reservations_import")
+          .select("id", { count: "exact", head: true })
+          .eq("tenant_id", tenant!.id),
+      ]);
+      const providers = (integs ?? []).map((r) => r.provider as string);
+      const hasData = (count ?? 0) > 0;
+      return { connected: providers.length > 0 || hasData, providers, hasData };
     },
   });
 }
