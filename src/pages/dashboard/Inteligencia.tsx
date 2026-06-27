@@ -732,7 +732,229 @@ export default function Inteligencia() {
         </Card>
       </div>
 
+      {/* === Sub-etapa 2.2: Evolução anual / Sazonalidade / Canais / Lead time === */}
+
+      {/* Evolução anual comparativa */}
+      <Card className="p-5 shadow-card">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
+          <div>
+            <h3 className="font-semibold">Evolução anual comparativa</h3>
+            <p className="text-xs text-muted-foreground">Série mensal por ano · histórico completo · base: {dateBasis === "booked_at" ? "data da reserva" : "check-in"}</p>
+          </div>
+          <Select value={yearMetric} onValueChange={(v) => setYearMetric(v as any)}>
+            <SelectTrigger className="w-full sm:w-56"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="netRevenue">Receita líquida</SelectItem>
+              <SelectItem value="grossRevenue">Receita bruta</SelectItem>
+              <SelectItem value="count">Reservas</SelectItem>
+              <SelectItem value="nights">Diárias</SelectItem>
+              <SelectItem value="avg">Ticket médio</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="h-80" aria-label="Gráfico de evolução anual">
+          {allHistory.isLoading && !allHistory.data ? <Skeleton className="h-full w-full" /> : annualSeries.years.length === 0 ? (
+            <div className="h-full grid place-items-center text-sm text-muted-foreground">Sem dados</div>
+          ) : (
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={annualSeries.data}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                <YAxis
+                  stroke="hsl(var(--muted-foreground))"
+                  fontSize={12}
+                  tickFormatter={(v) => yearMetric === "count" || yearMetric === "nights" ? NUM.format(v) : BRL.format(v)}
+                />
+                <Tooltip
+                  formatter={(v: number) => yearMetric === "count" || yearMetric === "nights" ? NUM.format(v) : BRL2.format(v)}
+                  contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))", borderRadius: 8 }}
+                />
+                <Legend />
+                {annualSeries.years.map((y, i) => (
+                  <Line
+                    key={y}
+                    type="monotone"
+                    dataKey={String(y)}
+                    name={String(y)}
+                    stroke={PIE_COLORS[i % PIE_COLORS.length]}
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                ))}
+              </LineChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+      </Card>
+
+      {/* Sazonalidade (heatmap) */}
+      <Card className="p-5 shadow-card overflow-hidden">
+        <div className="mb-3">
+          <h3 className="font-semibold">Sazonalidade</h3>
+          <p className="text-xs text-muted-foreground">Receita líquida por mês × ano · intensidade indica volume</p>
+        </div>
+        {allHistory.isLoading && !allHistory.data ? <Skeleton className="h-48 w-full" /> : seasonality.years.length === 0 ? (
+          <div className="text-sm text-muted-foreground py-6">Sem dados</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs border-separate border-spacing-1">
+              <thead>
+                <tr>
+                  <th className="text-left text-muted-foreground font-normal pr-2"></th>
+                  {seasonality.monthLabels.map((m) => (
+                    <th key={m} className="text-center text-muted-foreground font-normal">{m}</th>
+                  ))}
+                  <th className="text-right text-muted-foreground font-normal pl-2">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {seasonality.years.map((y) => {
+                  let yearTotal = 0;
+                  const cells = seasonality.monthLabels.map((_, i) => {
+                    const key = `${y}-${String(i + 1).padStart(2, "0")}`;
+                    const v = yearMonthAgg.get(key)?.net ?? 0;
+                    yearTotal += v;
+                    return v;
+                  });
+                  return (
+                    <tr key={y}>
+                      <td className="pr-2 font-medium tabular-nums">{y}</td>
+                      {cells.map((v, i) => {
+                        const intensity = seasonality.max > 0 ? v / seasonality.max : 0;
+                        const bg = v > 0
+                          ? `hsl(var(--primary) / ${(0.08 + intensity * 0.85).toFixed(2)})`
+                          : "hsl(var(--muted) / 0.3)";
+                        return (
+                          <td key={i} className="text-center">
+                            <TooltipProvider delayDuration={100}>
+                              <UITooltip>
+                                <TooltipTrigger asChild>
+                                  <div
+                                    className="h-9 rounded-md grid place-items-center text-[10px] tabular-nums cursor-default"
+                                    style={{ background: bg, color: intensity > 0.5 ? "hsl(var(--primary-foreground))" : "inherit" }}
+                                  >
+                                    {v > 0 ? (v >= 1000 ? `${Math.round(v / 1000)}k` : Math.round(v)) : "·"}
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent className="text-xs">
+                                  <div className="font-medium">{seasonality.monthLabels[i]}/{y}</div>
+                                  <div>{BRL2.format(v)}</div>
+                                </TooltipContent>
+                              </UITooltip>
+                            </TooltipProvider>
+                          </td>
+                        );
+                      })}
+                      <td className="pl-2 text-right tabular-nums font-medium">{BRL.format(yearTotal)}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Card>
+
+      {/* Distribuição por canal */}
+      <div className="grid lg:grid-cols-2 gap-4">
+        <Card className="p-5 shadow-card">
+          <div className="mb-3">
+            <h3 className="font-semibold">Receita líquida por canal</h3>
+            <p className="text-xs text-muted-foreground">Últimos 12 meses (empilhado)</p>
+          </div>
+          <div className="h-80" aria-label="Gráfico empilhado de canal por mês">
+            {allHistory.isLoading && !allHistory.data ? <Skeleton className="h-full w-full" /> : channelMonthly.channels.length === 0 ? (
+              <div className="h-full grid place-items-center text-sm text-muted-foreground">Sem dados</div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={channelMonthly.data}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="label" stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickFormatter={(v) => BRL.format(v)} />
+                  <Tooltip
+                    formatter={(v: number) => BRL2.format(v)}
+                    contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))", borderRadius: 8 }}
+                  />
+                  <Legend />
+                  {channelMonthly.channels.map((c, i) => (
+                    <Bar key={c} dataKey={c} stackId="ch" fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                  ))}
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </div>
+        </Card>
+
+        <Card className="p-5 shadow-card">
+          <div className="mb-3">
+            <h3 className="font-semibold">Lead time</h3>
+            <p className="text-xs text-muted-foreground">Distribuição das reservas confirmadas no período</p>
+          </div>
+          <div className="h-80" aria-label="Histograma de lead time">
+            {loading ? <Skeleton className="h-full w-full" /> : leadHistogram.every((b) => b.count === 0) ? (
+              <div className="h-full grid place-items-center text-sm text-muted-foreground">Sem dados de lead time</div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={leadHistogram}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                  <Tooltip
+                    formatter={(v: number, _n, p: any) => [`${NUM.format(v)} reservas (${(p.payload.pct).toFixed(1)}%)`, "Total"]}
+                    contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))", borderRadius: 8 }}
+                  />
+                  <Bar dataKey="count" fill="hsl(var(--accent))" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </div>
+        </Card>
+      </div>
+
+      {/* Tabela por canal */}
+      <Card className="p-5 shadow-card overflow-hidden">
+        <div className="mb-3">
+          <h3 className="font-semibold">Performance por canal</h3>
+          <p className="text-xs text-muted-foreground">Período selecionado</p>
+        </div>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Canal</TableHead>
+                <TableHead className="text-right">Receita líquida</TableHead>
+                <TableHead className="text-right">Receita bruta</TableHead>
+                <TableHead className="text-right">Reservas</TableHead>
+                <TableHead className="text-right">Ticket médio</TableHead>
+                <TableHead className="text-right">Lead time (d)</TableHead>
+                <TableHead className="text-right">% receita</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {loading && Array.from({ length: 4 }).map((_, i) => (
+                <TableRow key={i}><TableCell colSpan={7}><Skeleton className="h-6 w-full" /></TableCell></TableRow>
+              ))}
+              {!loading && channelSummary.length === 0 && (
+                <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-8">Sem dados</TableCell></TableRow>
+              )}
+              {channelSummary.map((c) => (
+                <TableRow key={c.name}>
+                  <TableCell className="font-medium">{c.name}</TableCell>
+                  <TableCell className="text-right tabular-nums">{BRL2.format(c.net)}</TableCell>
+                  <TableCell className="text-right tabular-nums text-muted-foreground">{BRL2.format(c.gross)}</TableCell>
+                  <TableCell className="text-right tabular-nums">{NUM.format(c.count)}</TableCell>
+                  <TableCell className="text-right tabular-nums">{BRL2.format(c.avg)}</TableCell>
+                  <TableCell className="text-right tabular-nums">{c.lead > 0 ? c.lead.toFixed(1) : "—"}</TableCell>
+                  <TableCell className="text-right tabular-nums">{c.share.toFixed(1)}%</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </Card>
+
       {/* Top imóveis */}
+
       <Card className="p-5 shadow-card overflow-hidden">
         <div className="mb-3">
           <h3 className="font-semibold">Top imóveis</h3>
