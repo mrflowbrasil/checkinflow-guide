@@ -939,7 +939,7 @@ export default function Inteligencia() {
                     formatter={(v: number, _n, p: any) => [`${NUM.format(v)} reservas (${(p.payload.pct).toFixed(1)}%)`, "Total"]}
                     contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))", borderRadius: 8 }}
                   />
-                  <Bar dataKey="count" fill="hsl(var(--accent))" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="count" name="Reservas" fill={DATA_COLORS.primaryAlt} radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             )}
