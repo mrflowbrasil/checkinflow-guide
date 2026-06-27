@@ -732,9 +732,9 @@ export default function Inteligencia() {
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie data={channelMix} dataKey="value" nameKey="name" outerRadius={90} label>
-                    {channelMix.map((_, i) => (
-                      <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                  <Pie data={channelMix} dataKey="value" nameKey="name" outerRadius={90} stroke="hsl(var(--background))" strokeWidth={2} label>
+                    {channelMix.map((entry, i) => (
+                      <Cell key={i} fill={channelColor(entry.name, i)} />
                     ))}
                   </Pie>
                   <Tooltip contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))", borderRadius: 8 }} />
