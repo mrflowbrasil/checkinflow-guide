@@ -227,10 +227,13 @@ export default function Inteligencia() {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => qc.invalidateQueries()}
-          disabled={loading}
+          onClick={() => qc.invalidateQueries({ predicate: (q) => {
+            const k = q.queryKey?.[0] as string | undefined;
+            return !!k && (k.startsWith("v_") || k === "last_synced_at");
+          }})}
+          disabled={fetching}
         >
-          <RefreshCw className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`} /> Atualizar
+          <RefreshCw className={`h-4 w-4 mr-2 ${fetching ? "animate-spin" : ""}`} /> Atualizar
         </Button>
       </header>
 
