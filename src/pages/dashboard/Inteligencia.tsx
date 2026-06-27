@@ -66,6 +66,7 @@ import {
   type DateBasis,
 } from "@/hooks/useInteligencia";
 import { InsightsWidget } from "@/components/inteligencia/InsightsWidget";
+import { ChannelRevenueCard } from "@/components/inteligencia/ChannelRevenueCard";
 
 const BRL = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 const BRL2 = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
@@ -908,33 +909,13 @@ export default function Inteligencia() {
 
       {/* Distribuição por canal */}
       <div className="grid lg:grid-cols-2 gap-4">
-        <Card className="p-5 shadow-card">
-          <div className="mb-3">
-            <h3 className="font-semibold">Receita líquida por canal</h3>
-            <p className="text-xs text-muted-foreground">Últimos 12 meses (empilhado)</p>
-          </div>
-          <div className="h-80" aria-label="Gráfico empilhado de canal por mês">
-            {allHistory.isLoading && !allHistory.data ? <Skeleton className="h-full w-full" /> : channelMonthly.channels.length === 0 ? (
-              <div className="h-full grid place-items-center text-sm text-muted-foreground">Sem dados</div>
-            ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={channelMonthly.data}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="label" stroke="hsl(var(--muted-foreground))" fontSize={11} />
-                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickFormatter={(v) => BRL.format(v)} />
-                  <Tooltip
-                    formatter={(v: number) => BRL2.format(v)}
-                    contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))", borderRadius: 8 }}
-                  />
-                  <Legend />
-                  {channelMonthly.channels.map((c, i) => (
-                    <Bar key={c} dataKey={c} stackId="ch" fill={channelColor(c, i)} />
-                  ))}
-                </BarChart>
-              </ResponsiveContainer>
-            )}
-          </div>
-        </Card>
+        <ChannelRevenueCard
+          rows={historyFiltered as any}
+          dateBasis={dateBasis}
+          loading={allHistory.isLoading && !allHistory.data}
+          rangeLabel="Últimos 12 meses"
+        />
+
 
         <Card className="p-5 shadow-card">
           <div className="mb-3">
