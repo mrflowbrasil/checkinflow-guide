@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   ResponsiveContainer,
@@ -23,14 +23,30 @@ import {
   TrendingDown,
   Calendar as CalendarIcon,
   Plug,
+  Info,
 } from "lucide-react";
-import { format, subDays, subMonths, startOfMonth, endOfMonth, startOfYear, parseISO, formatDistanceToNow } from "date-fns";
+import {
+  format,
+  subDays,
+  subMonths,
+  startOfMonth,
+  endOfMonth,
+  startOfYear,
+  endOfYear,
+  parseISO,
+  formatDistanceToNow,
+  differenceInCalendarDays,
+} from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   Table,
   TableBody,
@@ -46,46 +62,109 @@ import {
   usePropertyMetrics,
   useLastSyncedAt,
   useUpcomingCheckins,
+  type DateBasis,
 } from "@/hooks/useInteligencia";
 
 const BRL = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 const BRL2 = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 const NUM = new Intl.NumberFormat("pt-BR");
 
-type PresetKey = "30d" | "month" | "12m" | "ytd";
+type PresetKey = "30d" | "month" | "90d" | "6m" | "12m" | "ytd" | "prev_year" | "all" | "custom";
 
-function presetRange(p: PresetKey): { start: string; end: string; label: string; prev: { start: string; end: string } } {
+const ALL_TIME_START = "2000-01-01";
+
+type Range = { start: string; end: string; label: string; prev: { start: string; end: string } };
+
+function presetRange(p: PresetKey, custom?: { start: string; end: string }): Range {
   const today = new Date();
   const fmt = (d: Date) => d.toISOString().slice(0, 10);
-  if (p === "month") {
-    const s = startOfMonth(today), e = endOfMonth(today);
-    const ps = startOfMonth(subMonths(today, 1)), pe = endOfMonth(subMonths(today, 1));
-    return { start: fmt(s), end: fmt(e), label: "Mês atual", prev: { start: fmt(ps), end: fmt(pe) } };
+  switch (p) {
+    case "month": {
+      const s = startOfMonth(today), e = endOfMonth(today);
+      const ps = startOfMonth(subMonths(today, 1)), pe = endOfMonth(subMonths(today, 1));
+      return { start: fmt(s), end: fmt(e), label: "Mês atual", prev: { start: fmt(ps), end: fmt(pe) } };
+    }
+    case "90d": {
+      const s = subDays(today, 90);
+      const ps = subDays(today, 180), pe = subDays(today, 90);
+      return { start: fmt(s), end: fmt(today), label: "Últimos 90 dias", prev: { start: fmt(ps), end: fmt(pe) } };
+    }
+    case "6m": {
+      const s = subMonths(today, 6);
+      const ps = subMonths(today, 12), pe = subMonths(today, 6);
+      return { start: fmt(s), end: fmt(today), label: "Últimos 6 meses", prev: { start: fmt(ps), end: fmt(pe) } };
+    }
+    case "12m": {
+      const s = subMonths(today, 12);
+      const ps = subMonths(today, 24), pe = subMonths(today, 12);
+      return { start: fmt(s), end: fmt(today), label: "Últimos 12 meses", prev: { start: fmt(ps), end: fmt(pe) } };
+    }
+    case "ytd": {
+      const s = startOfYear(today);
+      const ps = startOfYear(subMonths(today, 12)), pe = subMonths(today, 12);
+      return { start: fmt(s), end: fmt(today), label: "Ano atual", prev: { start: fmt(ps), end: fmt(pe) } };
+    }
+    case "prev_year": {
+      const lastYear = subMonths(today, 12);
+      const s = startOfYear(lastYear), e = endOfYear(lastYear);
+      const prevYear = subMonths(today, 24);
+      const ps = startOfYear(prevYear), pe = endOfYear(prevYear);
+      return { start: fmt(s), end: fmt(e), label: "Ano anterior", prev: { start: fmt(ps), end: fmt(pe) } };
+    }
+    case "all":
+      return { start: ALL_TIME_START, end: fmt(today), label: "Todo histórico", prev: { start: ALL_TIME_START, end: ALL_TIME_START } };
+    case "custom": {
+      const s = custom?.start ?? fmt(subDays(today, 30));
+      const e = custom?.end ?? fmt(today);
+      const days = Math.max(1, differenceInCalendarDays(parseISO(e), parseISO(s)));
+      const ps = subDays(parseISO(s), days);
+      const pe = subDays(parseISO(s), 1);
+      return { start: s, end: e, label: "Personalizado", prev: { start: fmt(ps), end: fmt(pe) } };
+    }
+    case "30d":
+    default: {
+      const s = subDays(today, 30);
+      const ps = subDays(today, 60), pe = subDays(today, 30);
+      return { start: fmt(s), end: fmt(today), label: "Últimos 30 dias", prev: { start: fmt(ps), end: fmt(pe) } };
+    }
   }
-  if (p === "12m") {
-    const s = subMonths(today, 12);
-    const ps = subMonths(today, 24), pe = subMonths(today, 12);
-    return { start: fmt(s), end: fmt(today), label: "Últimos 12 meses", prev: { start: fmt(ps), end: fmt(pe) } };
-  }
-  if (p === "ytd") {
-    const s = startOfYear(today);
-    const ps = startOfYear(subMonths(today, 12)), pe = subMonths(today, 12);
-    return { start: fmt(s), end: fmt(today), label: "Ano atual", prev: { start: fmt(ps), end: fmt(pe) } };
-  }
-  const s = subDays(today, 30);
-  const ps = subDays(today, 60), pe = subDays(today, 30);
-  return { start: fmt(s), end: fmt(today), label: "Últimos 30 dias", prev: { start: fmt(ps), end: fmt(pe) } };
 }
 
-function KpiCard({ label, value, delta, loading }: { label: string; value: string; delta?: number | null; loading?: boolean }) {
+function KpiCard({
+  label,
+  value,
+  delta,
+  loading,
+  hint,
+}: {
+  label: string;
+  value: string;
+  delta?: number | null;
+  loading?: boolean;
+  hint?: string;
+}) {
   const up = (delta ?? 0) >= 0;
   return (
     <Card className="p-5 shadow-card">
-      <div className="text-xs uppercase tracking-wider text-muted-foreground mb-2">{label}</div>
+      <div className="flex items-center gap-1.5 mb-2">
+        <span className="text-xs uppercase tracking-wider text-muted-foreground">{label}</span>
+        {hint && (
+          <TooltipProvider delayDuration={150}>
+            <UITooltip>
+              <TooltipTrigger asChild>
+                <button type="button" className="text-muted-foreground/70 hover:text-foreground transition-colors">
+                  <Info className="h-3.5 w-3.5" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs text-xs">{hint}</TooltipContent>
+            </UITooltip>
+          </TooltipProvider>
+        )}
+      </div>
       {loading ? (
         <Skeleton className="h-8 w-32" />
       ) : (
-        <div className="text-2xl sm:text-3xl font-semibold">{value}</div>
+        <div className="text-2xl sm:text-3xl font-semibold tabular-nums">{value}</div>
       )}
       {delta != null && !loading && Number.isFinite(delta) && (
         <div className={`mt-2 inline-flex items-center gap-1 text-xs ${up ? "text-success" : "text-destructive"}`}>
@@ -99,11 +178,17 @@ function KpiCard({ label, value, delta, loading }: { label: string; value: strin
 
 function aggregate(rows: any[]) {
   const confirmed = rows.filter((r) => r.status !== "canceled");
-  const revenue = confirmed.reduce((s, r) => s + Number(r.total_amount ?? 0), 0);
-  const nights = confirmed.reduce((s, r) => s + Number(r.nights ?? 0), 0);
+  const num = (v: any) => Number(v ?? 0) || 0;
+  const grossRevenue = confirmed.reduce((s, r) => s + num(r.sell_price_corrected ?? r.total_amount), 0);
+  const netRevenue = confirmed.reduce((s, r) => s + num(r.net_amount ?? r.sell_price_corrected ?? r.total_amount), 0);
+  const fees = confirmed.reduce((s, r) => s + num(r.fees_amount), 0);
+  const commission = confirmed.reduce((s, r) => s + num(r.company_commission), 0);
+  const nights = confirmed.reduce((s, r) => s + num(r.nights), 0);
   const count = confirmed.length;
-  const avg = count > 0 ? revenue / count : 0;
-  return { revenue, nights, count, avg, canceled: rows.length - count };
+  const avg = count > 0 ? grossRevenue / count : 0;
+  const leadRows = confirmed.filter((r) => r.lead_time_days != null);
+  const leadAvg = leadRows.length > 0 ? leadRows.reduce((s, r) => s + num(r.lead_time_days), 0) / leadRows.length : 0;
+  return { grossRevenue, netRevenue, fees, commission, nights, count, avg, canceled: rows.length - count, leadAvg };
 }
 
 const PIE_COLORS = ["hsl(var(--primary))", "hsl(var(--accent))", "hsl(var(--success))", "hsl(var(--warning))", "hsl(var(--muted-foreground))", "hsl(var(--destructive))"];
@@ -112,25 +197,39 @@ export default function Inteligencia() {
   const qc = useQueryClient();
   const [preset, setPreset] = useState<PresetKey>("30d");
   const [propertyFilter, setPropertyFilter] = useState<string>("all");
+  const [channelFilter, setChannelFilter] = useState<string>("all");
+  const [dateBasis, setDateBasis] = useState<DateBasis>("check_in");
+  const [customStart, setCustomStart] = useState<string>(() => format(subDays(new Date(), 30), "yyyy-MM-dd"));
+  const [customEnd, setCustomEnd] = useState<string>(() => format(new Date(), "yyyy-MM-dd"));
 
-  const range = useMemo(() => presetRange(preset), [preset]);
+  const range = useMemo(
+    () => presetRange(preset, { start: customStart, end: customEnd }),
+    [preset, customStart, customEnd],
+  );
 
   const integration = useHasReservationsIntegration();
   const lastSync = useLastSyncedAt();
-  const current = useReservationsRange(range.start, range.end);
-  const previous = useReservationsRange(range.prev.start, range.prev.end);
+  const current = useReservationsRange(range.start, range.end, dateBasis);
+  const previous = useReservationsRange(range.prev.start, range.prev.end, dateBasis);
   const monthly = useMonthlyMetrics();
   const propMetrics = usePropertyMetrics();
   const upcoming = useUpcomingCheckins(20);
 
-  const filteredCurrent = useMemo(
-    () => (current.data ?? []).filter((r) => propertyFilter === "all" || r.property_external_id === propertyFilter),
-    [current.data, propertyFilter],
-  );
-  const filteredPrev = useMemo(
-    () => (previous.data ?? []).filter((r) => propertyFilter === "all" || r.property_external_id === propertyFilter),
-    [previous.data, propertyFilter],
-  );
+  const channels = useMemo(() => {
+    const set = new Set<string>();
+    (current.data ?? []).forEach((r) => set.add(r.channel || "Direto"));
+    return Array.from(set).sort();
+  }, [current.data]);
+
+  const applyClientFilters = (rows: any[]) =>
+    rows.filter((r) => {
+      if (propertyFilter !== "all" && r.property_external_id !== propertyFilter) return false;
+      if (channelFilter !== "all" && (r.channel || "Direto") !== channelFilter) return false;
+      return true;
+    });
+
+  const filteredCurrent = useMemo(() => applyClientFilters(current.data ?? []), [current.data, propertyFilter, channelFilter]);
+  const filteredPrev = useMemo(() => applyClientFilters(previous.data ?? []), [previous.data, propertyFilter, channelFilter]);
 
   const kpi = useMemo(() => aggregate(filteredCurrent), [filteredCurrent]);
   const kpiPrev = useMemo(() => aggregate(filteredPrev), [filteredPrev]);
@@ -238,32 +337,99 @@ export default function Inteligencia() {
       </header>
 
       {/* Filtros */}
-      <Card className="p-4 shadow-card flex flex-col sm:flex-row gap-3 sm:items-center">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <CalendarIcon className="h-4 w-4" /> Período
+      <Card className="p-4 shadow-card space-y-3">
+        <div className="flex flex-col lg:flex-row lg:items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <CalendarIcon className="h-4 w-4" /> Período
+          </div>
+          <Select value={preset} onValueChange={(v) => setPreset(v as PresetKey)}>
+            <SelectTrigger className="w-full sm:w-52"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="30d">Últimos 30 dias</SelectItem>
+              <SelectItem value="month">Mês atual</SelectItem>
+              <SelectItem value="90d">Últimos 90 dias</SelectItem>
+              <SelectItem value="6m">Últimos 6 meses</SelectItem>
+              <SelectItem value="12m">Últimos 12 meses</SelectItem>
+              <SelectItem value="ytd">Ano atual</SelectItem>
+              <SelectItem value="prev_year">Ano anterior</SelectItem>
+              <SelectItem value="all">Todo histórico</SelectItem>
+              <SelectItem value="custom">Personalizado…</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {preset === "custom" && (
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-2">
+                  <CalendarIcon className="h-4 w-4" />
+                  {format(parseISO(customStart), "dd/MM/yy")} → {format(parseISO(customEnd), "dd/MM/yy")}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-72 space-y-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Início</Label>
+                  <Input type="date" value={customStart} onChange={(e) => setCustomStart(e.target.value)} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Fim</Label>
+                  <Input type="date" value={customEnd} onChange={(e) => setCustomEnd(e.target.value)} />
+                </div>
+              </PopoverContent>
+            </Popover>
+          )}
+
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">Base:</span>
+            <Select value={dateBasis} onValueChange={(v) => setDateBasis(v as DateBasis)}>
+              <SelectTrigger className="w-44 h-9">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="check_in">Data de check-in</SelectItem>
+                <SelectItem value="booked_at">Data da reserva</SelectItem>
+              </SelectContent>
+            </Select>
+            <TooltipProvider delayDuration={150}>
+              <UITooltip>
+                <TooltipTrigger asChild>
+                  <button type="button" className="text-muted-foreground/70 hover:text-foreground transition-colors">
+                    <Info className="h-4 w-4" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs text-xs">
+                  <p><strong>Check-in</strong>: agrupa pela estada (quando o hóspede chegou).</p>
+                  <p className="mt-1"><strong>Reserva</strong>: agrupa por quando a reserva foi feita (`booked_at`). Útil para analisar ritmo de vendas.</p>
+                </TooltipContent>
+              </UITooltip>
+            </TooltipProvider>
+          </div>
+
+          <div className="sm:ml-auto text-xs text-muted-foreground">
+            {format(parseISO(range.start), "dd/MM/yy", { locale: ptBR })} → {format(parseISO(range.end), "dd/MM/yy", { locale: ptBR })}
+          </div>
         </div>
-        <Select value={preset} onValueChange={(v) => setPreset(v as PresetKey)}>
-          <SelectTrigger className="w-full sm:w-56"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="30d">Últimos 30 dias</SelectItem>
-            <SelectItem value="month">Mês atual</SelectItem>
-            <SelectItem value="12m">Últimos 12 meses</SelectItem>
-            <SelectItem value="ytd">Ano atual</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={propertyFilter} onValueChange={setPropertyFilter}>
-          <SelectTrigger className="w-full sm:w-72"><SelectValue placeholder="Todos os imóveis" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos os imóveis</SelectItem>
-            {(propMetrics.data ?? []).map((p) => (
-              <SelectItem key={p.property_external_id} value={p.property_external_id}>
-                {p.property_name || p.property_external_id}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <div className="sm:ml-auto text-xs text-muted-foreground">
-          {format(parseISO(range.start), "dd/MM/yy", { locale: ptBR })} → {format(parseISO(range.end), "dd/MM/yy", { locale: ptBR })}
+
+        <div className="flex flex-col sm:flex-row gap-3 flex-wrap">
+          <Select value={propertyFilter} onValueChange={setPropertyFilter}>
+            <SelectTrigger className="w-full sm:w-72"><SelectValue placeholder="Todos os imóveis" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos os imóveis</SelectItem>
+              {(propMetrics.data ?? []).map((p) => (
+                <SelectItem key={p.property_external_id} value={p.property_external_id}>
+                  {p.property_name || p.property_external_id}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={channelFilter} onValueChange={setChannelFilter}>
+            <SelectTrigger className="w-full sm:w-52"><SelectValue placeholder="Todos os canais" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos os canais</SelectItem>
+              {channels.map((c) => (
+                <SelectItem key={c} value={c}>{c}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </Card>
 
@@ -273,12 +439,50 @@ export default function Inteligencia() {
         </Card>
       )}
 
-      {/* KPIs */}
+      {/* KPIs financeiros */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <KpiCard label="Receita confirmada" value={BRL.format(kpi.revenue)} delta={delta(kpi.revenue, kpiPrev.revenue)} loading={loading} />
+        <KpiCard
+          label="Receita bruta"
+          value={BRL.format(kpi.grossRevenue)}
+          delta={delta(kpi.grossRevenue, kpiPrev.grossRevenue)}
+          loading={loading}
+          hint="Soma de sell_price_corrected das reservas confirmadas no período."
+        />
+        <KpiCard
+          label="Receita líquida"
+          value={BRL.format(kpi.netRevenue)}
+          delta={delta(kpi.netRevenue, kpiPrev.netRevenue)}
+          loading={loading}
+          hint="Receita após dedução de taxas e ajustes (net_amount)."
+        />
+        <KpiCard
+          label="Taxas"
+          value={BRL.format(kpi.fees)}
+          delta={delta(kpi.fees, kpiPrev.fees)}
+          loading={loading}
+          hint="Total de forward fees (total_forward_fee + total_forward_fee_all)."
+        />
+        <KpiCard
+          label="Comissão"
+          value={BRL.format(kpi.commission)}
+          delta={delta(kpi.commission, kpiPrev.commission)}
+          loading={loading}
+          hint="Soma de company_commission das reservas no período."
+        />
+      </div>
+
+      {/* KPIs operacionais */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard label="Reservas confirmadas" value={NUM.format(kpi.count)} delta={delta(kpi.count, kpiPrev.count)} loading={loading} />
         <KpiCard label="Diárias vendidas" value={NUM.format(kpi.nights)} delta={delta(kpi.nights, kpiPrev.nights)} loading={loading} />
-        <KpiCard label="Ticket médio" value={BRL.format(kpi.avg)} delta={delta(kpi.avg, kpiPrev.avg)} loading={loading} />
+        <KpiCard label="Ticket médio" value={BRL.format(kpi.avg)} delta={delta(kpi.avg, kpiPrev.avg)} loading={loading} hint="Receita bruta ÷ número de reservas confirmadas." />
+        <KpiCard
+          label="Lead time médio"
+          value={`${kpi.leadAvg.toFixed(1)} dias`}
+          delta={delta(kpi.leadAvg, kpiPrev.leadAvg)}
+          loading={loading}
+          hint="Dias entre a data da reserva (booked_at) e o check-in."
+        />
       </div>
 
       {/* Charts */}

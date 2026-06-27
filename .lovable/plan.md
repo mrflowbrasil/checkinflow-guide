@@ -1,88 +1,71 @@
+# ETAPA 2 — Frontend do Dashboard de Inteligência
 
-# Dashboard Inteligente — `/app/inteligencia`
+Escopo: consumir as novas colunas da view (`net_amount`, `fees_amount`, `buy_price`, `company_commission`, `sell_price_corrected`, `booked_at`, `lead_time_days`) e reorganizar a página em **12 blocos** com comparações dinâmicas, evolução anual e motor de insights. Sem mudanças no banco.
 
-Painel de leitura sobre `reservations_import` via as 3 views já validadas. Multi-tenant via RLS herdada das views (`security_invoker = true`), sem alterações em tabelas ou ingestão.
+Para evitar uma única entrega gigantesca, vou dividir em **3 sub-etapas**. Cada uma deixa a página funcionando — você confirma antes da próxima.
 
-## 1. Rota e navegação
+---
 
-- `src/App.tsx`: nova rota lazy `inteligencia` dentro de `/app` (`AppShell` + `RequireAuth`).
-- `src/components/layout/AppShell.tsx`: novo item de menu **"Inteligência"** (ícone `BarChart3`) logo abaixo de **Dashboard**.
-- Acesso condicional: visível apenas quando o tenant tem integração Stays/Hostaway ativa (consulta `tenant_integrations` por `tenant_id`, status `connected`). Sem integração → item escondido e rota redireciona para `/app` com toast "Disponível após conectar Stays ou Hostaway".
+## Sub-etapa 2.1 — Fundação (hook + filtros + KPIs financeiros)
 
-## 2. Página `src/pages/dashboard/Inteligencia.tsx`
+**`src/hooks/useInteligencia.tsx`**
+- Novo `useReservationsAll(filters)` que busca todo o histórico paginado em chunks de 1000 (Supabase tem cap de 1000/req). Cache 5min.
+- Novo filtro server-side opcional por `booked_at` (data de reserva) vs `check_in` (data de estada) — controlado por parâmetro `dateBasis`.
+- Manter hooks atuais funcionando (sem breaking changes).
 
-Layout responsivo (mobile-first, grid 12 colunas no desktop) usando tokens semânticos do `index.css` (sem cores hardcoded).
+**`src/pages/dashboard/Inteligencia.tsx`**
+- Barra de filtros expandida:
+  - Período: `30d / mês atual / 90d / 6m / 12m / YTD / ano anterior / todo histórico / custom (date range picker)`.
+  - Base da data: `Check-in` (padrão) ou `Reserva (booked_at)` com tooltip explicando.
+  - Imóvel (mantém).
+  - Canal (novo, multiselect).
+- KPIs reformulados (linha 1):
+  - Receita bruta (`sell_price_corrected`)
+  - Receita líquida (`net_amount`)
+  - Taxas (`fees_amount`)
+  - Comissão (`company_commission`)
+- KPIs linha 2:
+  - Reservas confirmadas / Diárias / Ticket médio / Lead time médio (`lead_time_days`)
+- Cada KPI traz delta vs período anterior espelhado + tooltip com a fórmula.
 
-### 2.1 Header
-- Título "Inteligência de reservas" + subtítulo "Dados sincronizados em tempo real do seu PMS".
-- Badge com `provider` detectado e timestamp do `MAX(synced_at)` ("Atualizado há 3 min").
-- Botão "Atualizar" → invalida queries do react-query.
+**Critério de aceite 2.1**: filtros funcionam, KPIs financeiros exibem valores reais e batem com amostra manual em 2-3 reservas.
 
-### 2.2 Filtros (sticky no topo do conteúdo)
-- **Período**: presets (Mês atual, Últimos 30 dias, Últimos 12 meses, Ano atual, Customizado com `Calendar` + range).
-- **Imóvel**: `Select` populado por `v_dashboard_property_metrics.property_name` (+ "Todos").
-- **Canal**: multi-select a partir de `distinct channel` de `v_reservations_dashboard` no período.
-- Estado mantido em URL via `useSearchParams` para deep-link.
+---
 
-### 2.3 KPIs (4 cards no topo)
-Agregados em SQL sobre `v_reservations_dashboard` filtrado:
-1. **Receita confirmada** (R$) — soma `total_amount` com `status != 'canceled'`.
-2. **Reservas confirmadas** — contagem.
-3. **Diárias vendidas** — soma `nights`.
-4. **Ticket médio** — receita / reservas.
+## Sub-etapa 2.2 — Evolução anual + sazonalidade + canais
 
-Cada card mostra valor principal + comparação vs período anterior equivalente (% e seta).
+- **Evolução anual comparativa**: gráfico de linhas com séries por ano (2024 vs 2025 vs 2026), eixo X = mês (Jan–Dez). Métrica selecionável: Receita líquida / Reservas / Diárias / Ticket médio.
+- **Sazonalidade (heatmap)**: matriz Ano × Mês com intensidade = receita líquida. Tooltip detalhado.
+- **Distribuição por canal**: barras empilhadas por mês (últimos 12) + tabela com receita, reservas, ticket, % do total, lead time médio por canal.
+- **Lead time**: histograma (0-7, 8-30, 31-60, 61-90, 90+ dias) com % de reservas em cada faixa.
 
-### 2.4 Gráficos (recharts via `@/components/ui/chart`)
-- **Receita mensal** (BarChart 12 meses) — fonte `v_dashboard_monthly_metrics` filtrada por tenant. Tooltip com receita + reservas.
-- **Reservas confirmadas vs canceladas** (LineChart mensal sobreposto) — mesma view.
-- **Mix por canal** (PieChart) — `count` agrupado por `channel` no período (query em `v_reservations_dashboard`).
-- **Ocupação por imóvel** (BarChart horizontal top 10) — `nights` por `property_name` em `v_dashboard_property_metrics`.
+**Critério de aceite 2.2**: gráficos renderizam com dados do histórico completo, comparação ano a ano visível.
 
-### 2.5 Tabela "Top imóveis"
-Colunas: imóvel, receita, reservas, diárias, último check-in. Ordenável, paginada (10 por vez). Fonte: `v_dashboard_property_metrics`.
+---
 
-### 2.6 Tabela "Próximos check-ins"
-`v_reservations_dashboard` onde `check_in >= today` e `status != 'canceled'`, ordenada asc, limite 20. Colunas: data, imóvel, hóspede, canal, valor.
+## Sub-etapa 2.3 — Imóveis + Insights + Próximas chegadas
 
-### 2.7 Estados
-- **Loading**: skeletons nos cards/gráficos/tabelas.
-- **Empty** (zero reservas no período): ilustração + texto "Sem reservas no período selecionado".
-- **Sem integração**: card centralizado "Conecte Stays ou Hostaway para ver seus dados" com CTA para `/app/integrations`.
-- **Erro**: card de erro com botão "Tentar novamente".
+- **Performance por imóvel** (tabela expandida): receita bruta, líquida, comissão, taxas, reservas, diárias, ticket médio, lead time médio, ocupação%, ranking; ordenação por coluna.
+- **Top/Bottom**: top 5 maior receita líquida + bottom 5 (atenção).
+- **Motor de Insights** (cards textuais auto-gerados):
+  - Melhor mês do ano atual.
+  - Canal de maior crescimento vs período anterior.
+  - Imóvel com queda relevante (-20% receita líquida vs período anterior).
+  - Tendência de lead time (encurtando / estendendo).
+  - Alerta de concentração (se >40% receita vem de 1 canal/imóvel).
+- **Próximas chegadas** (mantém, com mais colunas: canal, ticket, lead time).
 
-## 3. Acesso a dados
+**Critério de aceite 2.3**: insights aparecem só quando dados suportam, tabela ordenável, sem regressão.
 
-Hook `src/hooks/useInteligencia.tsx`:
-- `useReservationsRange(start, end, propertyId?, channels?)` → `from('v_reservations_dashboard').select(...).gte('check_in', start).lte('check_in', end)` — RLS filtra por tenant automaticamente.
-- `useMonthlyMetrics(monthsBack)` → `from('v_dashboard_monthly_metrics')`.
-- `usePropertyMetrics()` → `from('v_dashboard_property_metrics')`.
-- `useLastSyncedAt()` → `MAX(synced_at)` via RPC simples (`select max(synced_at) from reservations_import` — RLS aplica).
-- `useHasReservationsIntegration()` → checa `tenant_integrations` por providers `stays`/`hostaway` e `is_connected`.
+---
 
-Todas as queries usam react-query com `queryKey` incluindo tenant_id + filtros + 60s `staleTime`.
+## Técnico
 
-## 4. Permissão por plano
+- Toda agregação em memória (`useMemo`) sobre o resultado de `useReservationsAll`. Sem novas RPCs.
+- Formatadores BRL/percent compartilhados.
+- Skeletons em cada bloco; erro isolado por bloco não derruba a página.
+- Sem mexer em `templates.ts`, banco, edge functions ou outras telas.
 
-Sem nova trava de plano específica para o dashboard em si (qualquer tenant com integração Stays/Hostaway já está em `pro`/`launch`/`business` por `tenant_has_feature('pms_integrations')`). A visibilidade do menu segue a presença da integração — não duplicamos a checagem de plano aqui.
+---
 
-## Detalhes técnicos
-
-- Sem novas tabelas, sem migrations, sem alterações de RLS.
-- Sem mocks. Se a view retornar 0 linhas → estado vazio real.
-- Formatação BRL via `Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })`; datas via `date-fns/format` em pt-BR.
-- Acessibilidade: gráficos com `aria-label`, tabelas semânticas, foco visível.
-- Performance: lazy import da página; recharts via `ResponsiveContainer`; queries paralelas; nenhuma chamada client-side carrega mais de ~2k linhas (filtro por período sempre aplicado).
-
-## O que NÃO será feito
-
-- Nada de export CSV/PDF, alertas, previsões, ou comparativo entre tenants (super_admin).
-- Nada de escrita: dashboard é 100% leitura.
-- Nenhuma alteração na função de ingestão ou nas views.
-
-## Pergunta antes de implementar
-
-Confirma estes 3 pontos antes de eu codificar?
-1. **Período padrão** ao abrir o dashboard: "Últimos 30 dias" ou "Mês atual"?
-2. **Filtro por data**: por `check_in` (default proposto) ou por `synced_at`/data de criação da reserva?
-3. **Acesso**: ocultar o menu para quem não tem integração Stays/Hostaway conectada (proposto) ou mostrar sempre e exibir o estado "Conecte uma integração"?
+Posso começar pela **Sub-etapa 2.1** assim que aprovar?
