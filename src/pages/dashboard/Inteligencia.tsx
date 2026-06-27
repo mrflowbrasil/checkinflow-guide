@@ -192,7 +192,43 @@ function aggregate(rows: any[]) {
   return { grossRevenue, netRevenue, fees, commission, nights, count, avg, canceled: rows.length - count, leadAvg };
 }
 
-const PIE_COLORS = ["hsl(var(--primary))", "hsl(var(--accent))", "hsl(var(--success))", "hsl(var(--warning))", "hsl(var(--muted-foreground))", "hsl(var(--destructive))"];
+// Refined Mr Flow chart palette — teal/cyan first, complementary muted tones, no pure black or hot reds.
+const CHART_COLORS = [
+  "hsl(var(--chart-1))", // teal Mr Flow
+  "hsl(var(--chart-2))", // cyan accent
+  "hsl(var(--chart-3))", // azul suave
+  "hsl(var(--chart-4))", // âmbar
+  "hsl(var(--chart-5))", // roxo suave
+  "hsl(var(--chart-6))", // verde sálvia
+  "hsl(var(--chart-7))", // coral suave
+  "hsl(var(--chart-8))", // cinza neutro
+];
+
+// Semantic colors for status-aware data
+const DATA_COLORS = {
+  confirmed: "hsl(var(--chart-1))",        // ciano/teal Mr Flow
+  canceled: "hsl(var(--destructive))",     // vermelho suave
+  pending: "hsl(var(--warning))",          // âmbar
+  fees: "hsl(var(--chart-7))",             // laranja suave
+  positive: "hsl(var(--success))",
+  negative: "hsl(var(--destructive))",
+  neutral: "hsl(var(--muted-foreground))",
+  primary: "hsl(var(--chart-1))",
+  primaryAlt: "hsl(var(--chart-2))",
+};
+
+// Normalize unknown/empty channel names for color mapping
+function channelColor(name: string, index: number): string {
+  const key = (name || "").toLowerCase();
+  if (key === "direto") return "hsl(var(--chart-1))";
+  if (key === "airbnb") return "hsl(var(--chart-7))";
+  if (key === "booking" || key === "booking.com") return "hsl(var(--chart-3))";
+  if (key === "vrbo") return "hsl(var(--chart-4))";
+  if (key === "stays") return "hsl(var(--chart-2))";
+  if (key === "hostaway") return "hsl(var(--chart-5))";
+  if (!key || key === "unknown" || key === "outros") return "hsl(var(--chart-8))";
+  return CHART_COLORS[index % CHART_COLORS.length];
+}
 
 export default function Inteligencia() {
   const qc = useQueryClient();
@@ -656,7 +692,7 @@ export default function Inteligencia() {
                     formatter={(v: number) => BRL2.format(v)}
                     contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))", borderRadius: 8 }}
                   />
-                  <Bar dataKey="revenue" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="revenue" name="Receita" fill={DATA_COLORS.primary} radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             )}
@@ -677,8 +713,8 @@ export default function Inteligencia() {
                   <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
                   <Tooltip contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))", borderRadius: 8 }} />
                   <Legend />
-                  <Line type="monotone" dataKey="confirmed" name="Confirmadas" stroke="hsl(var(--primary))" strokeWidth={2} />
-                  <Line type="monotone" dataKey="canceled" name="Canceladas" stroke="hsl(var(--destructive))" strokeWidth={2} />
+                  <Line type="monotone" dataKey="confirmed" name="Confirmadas" stroke={DATA_COLORS.confirmed} strokeWidth={2.5} dot={false} />
+                  <Line type="monotone" dataKey="canceled" name="Canceladas" stroke={DATA_COLORS.canceled} strokeWidth={2} strokeDasharray="4 3" dot={false} />
                 </LineChart>
               </ResponsiveContainer>
             )}
@@ -696,9 +732,9 @@ export default function Inteligencia() {
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie data={channelMix} dataKey="value" nameKey="name" outerRadius={90} label>
-                    {channelMix.map((_, i) => (
-                      <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                  <Pie data={channelMix} dataKey="value" nameKey="name" outerRadius={90} stroke="hsl(var(--background))" strokeWidth={2} label>
+                    {channelMix.map((entry, i) => (
+                      <Cell key={i} fill={channelColor(entry.name, i)} />
                     ))}
                   </Pie>
                   <Tooltip contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))", borderRadius: 8 }} />
@@ -711,10 +747,10 @@ export default function Inteligencia() {
 
         <Card className="p-5 shadow-card">
           <div className="mb-3">
-            <h3 className="font-semibold">Ocupação por imóvel</h3>
-            <p className="text-xs text-muted-foreground">Top 10 por diárias vendidas</p>
+            <h3 className="font-semibold">Top imóveis por noites vendidas</h3>
+            <p className="text-xs text-muted-foreground">Top 10 imóveis no histórico disponível</p>
           </div>
-          <div className="h-72" aria-label="Gráfico de ocupação por imóvel">
+          <div className="h-72" aria-label="Gráfico de noites vendidas por imóvel">
             {propMetrics.isLoading ? <Skeleton className="h-full w-full" /> : topNights.length === 0 ? (
               <div className="h-full grid place-items-center text-sm text-muted-foreground">Sem dados</div>
             ) : (
@@ -724,7 +760,7 @@ export default function Inteligencia() {
                   <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={12} />
                   <YAxis type="category" dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={11} width={140} />
                   <Tooltip contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))", borderRadius: 8 }} />
-                  <Bar dataKey="nights" fill="hsl(var(--accent))" radius={[0, 4, 4, 0]} />
+                  <Bar dataKey="nights" name="Noites" fill={DATA_COLORS.primary} radius={[0, 4, 4, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             )}
@@ -776,7 +812,7 @@ export default function Inteligencia() {
                     type="monotone"
                     dataKey={String(y)}
                     name={String(y)}
-                    stroke={PIE_COLORS[i % PIE_COLORS.length]}
+                    stroke={CHART_COLORS[i % CHART_COLORS.length]}
                     strokeWidth={2}
                     dot={false}
                   />
@@ -877,7 +913,7 @@ export default function Inteligencia() {
                   />
                   <Legend />
                   {channelMonthly.channels.map((c, i) => (
-                    <Bar key={c} dataKey={c} stackId="ch" fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                    <Bar key={c} dataKey={c} stackId="ch" fill={channelColor(c, i)} />
                   ))}
                 </BarChart>
               </ResponsiveContainer>
@@ -903,7 +939,7 @@ export default function Inteligencia() {
                     formatter={(v: number, _n, p: any) => [`${NUM.format(v)} reservas (${(p.payload.pct).toFixed(1)}%)`, "Total"]}
                     contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))", borderRadius: 8 }}
                   />
-                  <Bar dataKey="count" fill="hsl(var(--accent))" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="count" name="Reservas" fill={DATA_COLORS.primaryAlt} radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             )}

@@ -36,8 +36,24 @@
     --destructive: 0 75% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 142 70% 40%;
+    --success: 142 60% 42%;
     --success-foreground: 0 0% 100%;
+
+    /* Semantic data colors (dashboard / charts) */
+    --warning: 38 92% 55%;
+    --warning-foreground: 222 60% 15%;
+    --info: 210 80% 55%;
+    --info-foreground: 0 0% 100%;
+
+    /* Dashboard chart palette — Mr Flow refined, no agressive colors */
+    --chart-1: 181 70% 38%;   /* teal Mr Flow */
+    --chart-2: 188 86% 53%;   /* cyan accent */
+    --chart-3: 210 70% 50%;   /* azul suave */
+    --chart-4: 38 88% 58%;    /* âmbar */
+    --chart-5: 262 55% 60%;   /* roxo suave */
+    --chart-6: 152 45% 45%;   /* verde sálvia */
+    --chart-7: 20 75% 60%;    /* coral suave */
+    --chart-8: 215 15% 55%;   /* cinza neutro */
 
     --border: 214 25% 90%;
     --input: 214 25% 92%;
@@ -82,8 +98,22 @@
     --secondary-foreground: 210 30% 96%;
     --muted: 222 35% 16%;
     --muted-foreground: 215 15% 65%;
-    --destructive: 0 70% 55%;
+    --destructive: 0 65% 58%;
     --destructive-foreground: 0 0% 100%;
+    --success: 152 55% 50%;
+    --success-foreground: 222 60% 15%;
+    --warning: 38 90% 60%;
+    --warning-foreground: 222 60% 15%;
+    --info: 210 75% 60%;
+    --info-foreground: 0 0% 100%;
+    --chart-1: 181 75% 48%;
+    --chart-2: 188 86% 60%;
+    --chart-3: 210 75% 62%;
+    --chart-4: 38 90% 62%;
+    --chart-5: 262 60% 68%;
+    --chart-6: 152 50% 55%;
+    --chart-7: 20 80% 65%;
+    --chart-8: 215 15% 65%;
     --border: 222 35% 18%;
     --input: 222 35% 18%;
     --ring: 188 86% 53%;
