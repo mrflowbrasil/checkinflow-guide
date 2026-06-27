@@ -713,8 +713,8 @@ export default function Inteligencia() {
                   <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
                   <Tooltip contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))", borderRadius: 8 }} />
                   <Legend />
-                  <Line type="monotone" dataKey="confirmed" name="Confirmadas" stroke="hsl(var(--primary))" strokeWidth={2} />
-                  <Line type="monotone" dataKey="canceled" name="Canceladas" stroke="hsl(var(--destructive))" strokeWidth={2} />
+                  <Line type="monotone" dataKey="confirmed" name="Confirmadas" stroke={DATA_COLORS.confirmed} strokeWidth={2.5} dot={false} />
+                  <Line type="monotone" dataKey="canceled" name="Canceladas" stroke={DATA_COLORS.canceled} strokeWidth={2} strokeDasharray="4 3" dot={false} />
                 </LineChart>
               </ResponsiveContainer>
             )}
