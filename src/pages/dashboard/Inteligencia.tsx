@@ -215,6 +215,8 @@ export default function Inteligencia() {
   const monthly = useMonthlyMetrics();
   const propMetrics = usePropertyMetrics();
   const upcoming = useUpcomingCheckins(20);
+  const allHistory = useReservationsAll(dateBasis);
+  const [yearMetric, setYearMetric] = useState<"netRevenue" | "grossRevenue" | "count" | "nights" | "avg">("netRevenue");
 
   const channels = useMemo(() => {
     const set = new Set<string>();
