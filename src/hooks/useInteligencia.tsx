@@ -29,25 +29,57 @@ export function useHasReservationsIntegration() {
 
 const keepPrev = <T,>(prev: T | undefined) => prev;
 
-export function useReservationsRange(start: string, end: string) {
+export type DateBasis = "check_in" | "booked_at";
+
+async function fetchAllPaged(column: string, start: string | null, end: string | null, tenantId: string) {
+  const pageSize = 1000;
+  let from = 0;
+  const all: any[] = [];
+  for (;;) {
+    let q = supabase
+      .from("v_reservations_dashboard" as any)
+      .select("*")
+      .eq("tenant_id", tenantId)
+      .order(column, { ascending: true })
+      .range(from, from + pageSize - 1);
+    if (start) q = q.gte(column, start);
+    if (end) q = q.lte(column, end);
+    const { data, error } = await q;
+    if (error) throw error;
+    const rows = (data ?? []) as any[];
+    all.push(...rows);
+    if (rows.length < pageSize) break;
+    from += pageSize;
+    if (from > 50_000) break; // safety
+  }
+  return all;
+}
+
+export function useReservationsRange(
+  start: string,
+  end: string,
+  dateBasis: DateBasis = "check_in",
+) {
   const { data: tenant } = useTenant();
   return useQuery({
-    queryKey: ["v_reservations_dashboard", tenant?.id, start, end],
+    queryKey: ["v_reservations_dashboard", tenant?.id, dateBasis, start, end],
     enabled: !!tenant?.id,
     staleTime: 60_000,
     placeholderData: keepPrev,
     retry: 1,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("v_reservations_dashboard" as any)
-        .select("*")
-        .gte("check_in", start)
-        .lte("check_in", end)
-        .order("check_in", { ascending: true })
-        .limit(10000);
-      if (error) throw error;
-      return (data ?? []) as any[];
-    },
+    queryFn: async () => fetchAllPaged(dateBasis, start, end, tenant!.id),
+  });
+}
+
+export function useReservationsAll(dateBasis: DateBasis = "check_in") {
+  const { data: tenant } = useTenant();
+  return useQuery({
+    queryKey: ["v_reservations_dashboard_all", tenant?.id, dateBasis],
+    enabled: !!tenant?.id,
+    staleTime: 5 * 60_000,
+    placeholderData: keepPrev,
+    retry: 1,
+    queryFn: async () => fetchAllPaged(dateBasis, null, null, tenant!.id),
   });
 }
 
