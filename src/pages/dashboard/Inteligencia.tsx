@@ -692,7 +692,7 @@ export default function Inteligencia() {
                     formatter={(v: number) => BRL2.format(v)}
                     contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))", borderRadius: 8 }}
                   />
-                  <Bar dataKey="revenue" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="revenue" name="Receita" fill={DATA_COLORS.primary} radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             )}
