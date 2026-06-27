@@ -453,7 +453,7 @@ export default function Inteligencia() {
           value={BRL.format(kpi.netRevenue)}
           delta={delta(kpi.netRevenue, kpiPrev.netRevenue)}
           loading={loading}
-          hint="Receita após dedução de taxas e ajustes (net_amount)."
+          hint="Receita bruta − taxas − comissão da empresa."
         />
         <KpiCard
           label="Taxas"
