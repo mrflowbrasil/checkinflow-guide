@@ -675,6 +675,20 @@ export default function Inteligencia() {
         />
       </div>
 
+      {/* Insights do Agente Mr Flow (determinístico) */}
+      <InsightsWidget
+        current={filteredCurrent}
+        previous={filteredPrev}
+        history={historyFiltered}
+        dateBasis={dateBasis}
+        loading={loading}
+        fetching={fetching || allHistory.isFetching}
+        onRefresh={() => qc.invalidateQueries({ predicate: (q) => {
+          const k = q.queryKey?.[0] as string | undefined;
+          return !!k && k.startsWith("v_");
+        }})}
+      />
+
       {/* Charts */}
       <div className="grid lg:grid-cols-2 gap-4">
         <Card className="p-5 shadow-card">
