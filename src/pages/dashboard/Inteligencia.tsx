@@ -58,6 +58,7 @@ import {
 import {
   useHasReservationsIntegration,
   useReservationsRange,
+  useReservationsAll,
   useMonthlyMetrics,
   usePropertyMetrics,
   useLastSyncedAt,
@@ -214,6 +215,8 @@ export default function Inteligencia() {
   const monthly = useMonthlyMetrics();
   const propMetrics = usePropertyMetrics();
   const upcoming = useUpcomingCheckins(20);
+  const allHistory = useReservationsAll(dateBasis);
+  const [yearMetric, setYearMetric] = useState<"netRevenue" | "grossRevenue" | "count" | "nights" | "avg">("netRevenue");
 
   const channels = useMemo(() => {
     const set = new Set<string>();
@@ -266,6 +269,156 @@ export default function Inteligencia() {
         .map((p) => ({ name: p.property_name || p.property_external_id || "—", nights: Number(p.nights) })),
     [propMetrics.data],
   );
+  // History-based aggregations (Sub-etapa 2.2)
+  const historyFiltered = useMemo(() => applyClientFilters(allHistory.data ?? []), [allHistory.data, propertyFilter, channelFilter]);
+
+  // Per year × month aggregation
+  const yearMonthAgg = useMemo(() => {
+    const map = new Map<string, { gross: number; net: number; fees: number; commission: number; count: number; nights: number }>();
+    const num = (v: any) => Number(v ?? 0) || 0;
+    historyFiltered.forEach((r) => {
+      if (r.status === "canceled") return;
+      const basis = dateBasis === "booked_at" ? r.booked_at : r.check_in;
+      if (!basis) return;
+      const key = String(basis).slice(0, 7); // YYYY-MM
+      const cur = map.get(key) ?? { gross: 0, net: 0, fees: 0, commission: 0, count: 0, nights: 0 };
+      const gross = num(r.sell_price_corrected ?? r.total_amount);
+      const fees = num(r.fees_amount);
+      const commission = num(r.company_commission);
+      cur.gross += gross;
+      cur.fees += fees;
+      cur.commission += commission;
+      cur.net += gross - fees - commission;
+      cur.count += 1;
+      cur.nights += num(r.nights);
+      map.set(key, cur);
+    });
+    return map;
+  }, [historyFiltered, dateBasis]);
+
+  const annualSeries = useMemo(() => {
+    const years = new Set<number>();
+    yearMonthAgg.forEach((_, k) => years.add(Number(k.slice(0, 4))));
+    const sortedYears = Array.from(years).sort();
+    const monthLabels = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+    const data = monthLabels.map((label, i) => {
+      const row: Record<string, any> = { month: label };
+      sortedYears.forEach((y) => {
+        const key = `${y}-${String(i + 1).padStart(2, "0")}`;
+        const agg = yearMonthAgg.get(key);
+        let value = 0;
+        if (agg) {
+          switch (yearMetric) {
+            case "grossRevenue": value = agg.gross; break;
+            case "netRevenue": value = agg.net; break;
+            case "count": value = agg.count; break;
+            case "nights": value = agg.nights; break;
+            case "avg": value = agg.count > 0 ? agg.gross / agg.count : 0; break;
+          }
+        }
+        row[String(y)] = value;
+      });
+      return row;
+    });
+    return { years: sortedYears, data };
+  }, [yearMonthAgg, yearMetric]);
+
+  // Seasonality matrix (year × month) with intensity by net revenue
+  const seasonality = useMemo(() => {
+    const years = annualSeries.years;
+    const monthLabels = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+    let max = 0;
+    years.forEach((y) => {
+      for (let m = 1; m <= 12; m++) {
+        const key = `${y}-${String(m).padStart(2, "0")}`;
+        const v = yearMonthAgg.get(key)?.net ?? 0;
+        if (v > max) max = v;
+      }
+    });
+    return { years, monthLabels, max };
+  }, [annualSeries.years, yearMonthAgg]);
+
+  // Channel × month stacked (last 12 months from today, basis = check_in/booked_at filter)
+  const channelMonthly = useMemo(() => {
+    const today = new Date();
+    const months: string[] = [];
+    for (let i = 11; i >= 0; i--) {
+      const d = subMonths(today, i);
+      months.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+    }
+    const channelSet = new Set<string>();
+    const num = (v: any) => Number(v ?? 0) || 0;
+    const byMonth = new Map<string, Map<string, number>>();
+    historyFiltered.forEach((r) => {
+      if (r.status === "canceled") return;
+      const basis = dateBasis === "booked_at" ? r.booked_at : r.check_in;
+      if (!basis) return;
+      const key = String(basis).slice(0, 7);
+      if (!months.includes(key)) return;
+      const ch = r.channel || "Direto";
+      channelSet.add(ch);
+      const m = byMonth.get(key) ?? new Map<string, number>();
+      m.set(ch, (m.get(ch) ?? 0) + (num(r.sell_price_corrected ?? r.total_amount) - num(r.fees_amount) - num(r.company_commission)));
+      byMonth.set(key, m);
+    });
+    const channels = Array.from(channelSet).sort();
+    const data = months.map((k) => {
+      const row: Record<string, any> = { label: format(parseISO(`${k}-01`), "MMM/yy", { locale: ptBR }) };
+      const m = byMonth.get(k) ?? new Map();
+      channels.forEach((c) => { row[c] = Math.round(m.get(c) ?? 0); });
+      return row;
+    });
+    return { data, channels };
+  }, [historyFiltered, dateBasis]);
+
+  // Channel summary table (current filtered period)
+  const channelSummary = useMemo(() => {
+    const num = (v: any) => Number(v ?? 0) || 0;
+    const map = new Map<string, { gross: number; net: number; count: number; leadSum: number; leadN: number }>();
+    filteredCurrent.forEach((r) => {
+      if (r.status === "canceled") return;
+      const ch = r.channel || "Direto";
+      const cur = map.get(ch) ?? { gross: 0, net: 0, count: 0, leadSum: 0, leadN: 0 };
+      const gross = num(r.sell_price_corrected ?? r.total_amount);
+      cur.gross += gross;
+      cur.net += gross - num(r.fees_amount) - num(r.company_commission);
+      cur.count += 1;
+      if (r.lead_time_days != null) { cur.leadSum += num(r.lead_time_days); cur.leadN += 1; }
+      map.set(ch, cur);
+    });
+    const totalNet = Array.from(map.values()).reduce((s, x) => s + x.net, 0);
+    return Array.from(map.entries())
+      .map(([name, v]) => ({
+        name,
+        gross: v.gross,
+        net: v.net,
+        count: v.count,
+        avg: v.count > 0 ? v.gross / v.count : 0,
+        share: totalNet > 0 ? (v.net / totalNet) * 100 : 0,
+        lead: v.leadN > 0 ? v.leadSum / v.leadN : 0,
+      }))
+      .sort((a, b) => b.net - a.net);
+  }, [filteredCurrent]);
+
+  // Lead time histogram (current filtered)
+  const leadHistogram = useMemo(() => {
+    const buckets = [
+      { name: "0–7 dias", min: 0, max: 7, count: 0 },
+      { name: "8–30 dias", min: 8, max: 30, count: 0 },
+      { name: "31–60 dias", min: 31, max: 60, count: 0 },
+      { name: "61–90 dias", min: 61, max: 90, count: 0 },
+      { name: "90+ dias", min: 91, max: Infinity, count: 0 },
+    ];
+    let total = 0;
+    filteredCurrent.forEach((r) => {
+      if (r.status === "canceled") return;
+      if (r.lead_time_days == null) return;
+      const v = Number(r.lead_time_days);
+      const b = buckets.find((x) => v >= x.min && v <= x.max);
+      if (b) { b.count += 1; total += 1; }
+    });
+    return buckets.map((b) => ({ name: b.name, count: b.count, pct: total > 0 ? (b.count / total) * 100 : 0 }));
+  }, [filteredCurrent]);
 
   if (integration.isLoading) {
     return (
@@ -579,7 +732,229 @@ export default function Inteligencia() {
         </Card>
       </div>
 
+      {/* === Sub-etapa 2.2: Evolução anual / Sazonalidade / Canais / Lead time === */}
+
+      {/* Evolução anual comparativa */}
+      <Card className="p-5 shadow-card">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
+          <div>
+            <h3 className="font-semibold">Evolução anual comparativa</h3>
+            <p className="text-xs text-muted-foreground">Série mensal por ano · histórico completo · base: {dateBasis === "booked_at" ? "data da reserva" : "check-in"}</p>
+          </div>
+          <Select value={yearMetric} onValueChange={(v) => setYearMetric(v as any)}>
+            <SelectTrigger className="w-full sm:w-56"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="netRevenue">Receita líquida</SelectItem>
+              <SelectItem value="grossRevenue">Receita bruta</SelectItem>
+              <SelectItem value="count">Reservas</SelectItem>
+              <SelectItem value="nights">Diárias</SelectItem>
+              <SelectItem value="avg">Ticket médio</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="h-80" aria-label="Gráfico de evolução anual">
+          {allHistory.isLoading && !allHistory.data ? <Skeleton className="h-full w-full" /> : annualSeries.years.length === 0 ? (
+            <div className="h-full grid place-items-center text-sm text-muted-foreground">Sem dados</div>
+          ) : (
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={annualSeries.data}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                <YAxis
+                  stroke="hsl(var(--muted-foreground))"
+                  fontSize={12}
+                  tickFormatter={(v) => yearMetric === "count" || yearMetric === "nights" ? NUM.format(v) : BRL.format(v)}
+                />
+                <Tooltip
+                  formatter={(v: number) => yearMetric === "count" || yearMetric === "nights" ? NUM.format(v) : BRL2.format(v)}
+                  contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))", borderRadius: 8 }}
+                />
+                <Legend />
+                {annualSeries.years.map((y, i) => (
+                  <Line
+                    key={y}
+                    type="monotone"
+                    dataKey={String(y)}
+                    name={String(y)}
+                    stroke={PIE_COLORS[i % PIE_COLORS.length]}
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                ))}
+              </LineChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+      </Card>
+
+      {/* Sazonalidade (heatmap) */}
+      <Card className="p-5 shadow-card overflow-hidden">
+        <div className="mb-3">
+          <h3 className="font-semibold">Sazonalidade</h3>
+          <p className="text-xs text-muted-foreground">Receita líquida por mês × ano · intensidade indica volume</p>
+        </div>
+        {allHistory.isLoading && !allHistory.data ? <Skeleton className="h-48 w-full" /> : seasonality.years.length === 0 ? (
+          <div className="text-sm text-muted-foreground py-6">Sem dados</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs border-separate border-spacing-1">
+              <thead>
+                <tr>
+                  <th className="text-left text-muted-foreground font-normal pr-2"></th>
+                  {seasonality.monthLabels.map((m) => (
+                    <th key={m} className="text-center text-muted-foreground font-normal">{m}</th>
+                  ))}
+                  <th className="text-right text-muted-foreground font-normal pl-2">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {seasonality.years.map((y) => {
+                  let yearTotal = 0;
+                  const cells = seasonality.monthLabels.map((_, i) => {
+                    const key = `${y}-${String(i + 1).padStart(2, "0")}`;
+                    const v = yearMonthAgg.get(key)?.net ?? 0;
+                    yearTotal += v;
+                    return v;
+                  });
+                  return (
+                    <tr key={y}>
+                      <td className="pr-2 font-medium tabular-nums">{y}</td>
+                      {cells.map((v, i) => {
+                        const intensity = seasonality.max > 0 ? v / seasonality.max : 0;
+                        const bg = v > 0
+                          ? `hsl(var(--primary) / ${(0.08 + intensity * 0.85).toFixed(2)})`
+                          : "hsl(var(--muted) / 0.3)";
+                        return (
+                          <td key={i} className="text-center">
+                            <TooltipProvider delayDuration={100}>
+                              <UITooltip>
+                                <TooltipTrigger asChild>
+                                  <div
+                                    className="h-9 rounded-md grid place-items-center text-[10px] tabular-nums cursor-default"
+                                    style={{ background: bg, color: intensity > 0.5 ? "hsl(var(--primary-foreground))" : "inherit" }}
+                                  >
+                                    {v > 0 ? (v >= 1000 ? `${Math.round(v / 1000)}k` : Math.round(v)) : "·"}
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent className="text-xs">
+                                  <div className="font-medium">{seasonality.monthLabels[i]}/{y}</div>
+                                  <div>{BRL2.format(v)}</div>
+                                </TooltipContent>
+                              </UITooltip>
+                            </TooltipProvider>
+                          </td>
+                        );
+                      })}
+                      <td className="pl-2 text-right tabular-nums font-medium">{BRL.format(yearTotal)}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Card>
+
+      {/* Distribuição por canal */}
+      <div className="grid lg:grid-cols-2 gap-4">
+        <Card className="p-5 shadow-card">
+          <div className="mb-3">
+            <h3 className="font-semibold">Receita líquida por canal</h3>
+            <p className="text-xs text-muted-foreground">Últimos 12 meses (empilhado)</p>
+          </div>
+          <div className="h-80" aria-label="Gráfico empilhado de canal por mês">
+            {allHistory.isLoading && !allHistory.data ? <Skeleton className="h-full w-full" /> : channelMonthly.channels.length === 0 ? (
+              <div className="h-full grid place-items-center text-sm text-muted-foreground">Sem dados</div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={channelMonthly.data}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="label" stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickFormatter={(v) => BRL.format(v)} />
+                  <Tooltip
+                    formatter={(v: number) => BRL2.format(v)}
+                    contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))", borderRadius: 8 }}
+                  />
+                  <Legend />
+                  {channelMonthly.channels.map((c, i) => (
+                    <Bar key={c} dataKey={c} stackId="ch" fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                  ))}
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </div>
+        </Card>
+
+        <Card className="p-5 shadow-card">
+          <div className="mb-3">
+            <h3 className="font-semibold">Lead time</h3>
+            <p className="text-xs text-muted-foreground">Distribuição das reservas confirmadas no período</p>
+          </div>
+          <div className="h-80" aria-label="Histograma de lead time">
+            {loading ? <Skeleton className="h-full w-full" /> : leadHistogram.every((b) => b.count === 0) ? (
+              <div className="h-full grid place-items-center text-sm text-muted-foreground">Sem dados de lead time</div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={leadHistogram}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                  <Tooltip
+                    formatter={(v: number, _n, p: any) => [`${NUM.format(v)} reservas (${(p.payload.pct).toFixed(1)}%)`, "Total"]}
+                    contentStyle={{ background: "hsl(var(--background))", border: "1px solid hsl(var(--border))", borderRadius: 8 }}
+                  />
+                  <Bar dataKey="count" fill="hsl(var(--accent))" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </div>
+        </Card>
+      </div>
+
+      {/* Tabela por canal */}
+      <Card className="p-5 shadow-card overflow-hidden">
+        <div className="mb-3">
+          <h3 className="font-semibold">Performance por canal</h3>
+          <p className="text-xs text-muted-foreground">Período selecionado</p>
+        </div>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Canal</TableHead>
+                <TableHead className="text-right">Receita líquida</TableHead>
+                <TableHead className="text-right">Receita bruta</TableHead>
+                <TableHead className="text-right">Reservas</TableHead>
+                <TableHead className="text-right">Ticket médio</TableHead>
+                <TableHead className="text-right">Lead time (d)</TableHead>
+                <TableHead className="text-right">% receita</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {loading && Array.from({ length: 4 }).map((_, i) => (
+                <TableRow key={i}><TableCell colSpan={7}><Skeleton className="h-6 w-full" /></TableCell></TableRow>
+              ))}
+              {!loading && channelSummary.length === 0 && (
+                <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-8">Sem dados</TableCell></TableRow>
+              )}
+              {channelSummary.map((c) => (
+                <TableRow key={c.name}>
+                  <TableCell className="font-medium">{c.name}</TableCell>
+                  <TableCell className="text-right tabular-nums">{BRL2.format(c.net)}</TableCell>
+                  <TableCell className="text-right tabular-nums text-muted-foreground">{BRL2.format(c.gross)}</TableCell>
+                  <TableCell className="text-right tabular-nums">{NUM.format(c.count)}</TableCell>
+                  <TableCell className="text-right tabular-nums">{BRL2.format(c.avg)}</TableCell>
+                  <TableCell className="text-right tabular-nums">{c.lead > 0 ? c.lead.toFixed(1) : "—"}</TableCell>
+                  <TableCell className="text-right tabular-nums">{c.share.toFixed(1)}%</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </Card>
+
       {/* Top imóveis */}
+
       <Card className="p-5 shadow-card overflow-hidden">
         <div className="mb-3">
           <h3 className="font-semibold">Top imóveis</h3>
