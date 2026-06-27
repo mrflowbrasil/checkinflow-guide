@@ -568,13 +568,6 @@ export type Database = {
             referencedRelation: "properties"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "property_details_property_id_fkey"
-            columns: ["property_id"]
-            isOneToOne: true
-            referencedRelation: "v_dashboard_property_metrics"
-            referencedColumns: ["property_id"]
-          },
         ]
       }
       property_images: {
@@ -606,13 +599,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "properties"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "property_images_property_id_fkey"
-            columns: ["property_id"]
-            isOneToOne: false
-            referencedRelation: "v_dashboard_property_metrics"
-            referencedColumns: ["property_id"]
           },
         ]
       }
@@ -658,13 +644,6 @@ export type Database = {
             referencedRelation: "properties"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "property_pages_property_id_fkey"
-            columns: ["property_id"]
-            isOneToOne: false
-            referencedRelation: "v_dashboard_property_metrics"
-            referencedColumns: ["property_id"]
-          },
         ]
       }
       property_slug_history: {
@@ -690,13 +669,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "properties"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "property_slug_history_property_id_fkey"
-            columns: ["property_id"]
-            isOneToOne: false
-            referencedRelation: "v_dashboard_property_metrics"
-            referencedColumns: ["property_id"]
           },
         ]
       }
@@ -1105,10 +1077,8 @@ export type Database = {
           canceled_count: number | null
           confirmed_count: number | null
           last_check_in: string | null
-          last_synced_at: string | null
           nights: number | null
           property_external_id: string | null
-          property_id: string | null
           property_name: string | null
           revenue: number | null
           tenant_id: string | null
@@ -1128,19 +1098,55 @@ export type Database = {
           channel: string | null
           check_in: string | null
           check_out: string | null
-          created_at: string | null
           currency: string | null
           external_id: string | null
+          guest_count: number | null
           guest_name: string | null
           id: string | null
-          is_canceled: boolean | null
           nights: number | null
           property_external_id: string | null
+          property_name: string | null
           provider: string | null
           status: string | null
           synced_at: string | null
           tenant_id: string | null
           total_amount: number | null
+        }
+        Insert: {
+          channel?: never
+          check_in?: never
+          check_out?: never
+          currency?: never
+          external_id?: string | null
+          guest_count?: never
+          guest_name?: never
+          id?: string | null
+          nights?: never
+          property_external_id?: never
+          property_name?: never
+          provider?: string | null
+          status?: never
+          synced_at?: string | null
+          tenant_id?: string | null
+          total_amount?: never
+        }
+        Update: {
+          channel?: never
+          check_in?: never
+          check_out?: never
+          currency?: never
+          external_id?: string | null
+          guest_count?: never
+          guest_name?: never
+          id?: string | null
+          nights?: never
+          property_external_id?: never
+          property_name?: never
+          provider?: string | null
+          status?: never
+          synced_at?: string | null
+          tenant_id?: string | null
+          total_amount?: never
         }
         Relationships: [
           {
