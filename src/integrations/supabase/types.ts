@@ -568,6 +568,13 @@ export type Database = {
             referencedRelation: "properties"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "property_details_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: true
+            referencedRelation: "v_dashboard_property_metrics"
+            referencedColumns: ["property_id"]
+          },
         ]
       }
       property_images: {
@@ -599,6 +606,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "properties"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "property_images_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "v_dashboard_property_metrics"
+            referencedColumns: ["property_id"]
           },
         ]
       }
@@ -644,6 +658,13 @@ export type Database = {
             referencedRelation: "properties"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "property_pages_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "v_dashboard_property_metrics"
+            referencedColumns: ["property_id"]
+          },
         ]
       }
       property_slug_history: {
@@ -668,6 +689,51 @@ export type Database = {
             columns: ["property_id"]
             isOneToOne: false
             referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "property_slug_history_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "v_dashboard_property_metrics"
+            referencedColumns: ["property_id"]
+          },
+        ]
+      }
+      reservations_import: {
+        Row: {
+          created_at: string | null
+          external_id: string
+          id: string
+          payload: Json
+          provider: string
+          synced_at: string | null
+          tenant_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          external_id: string
+          id?: string
+          payload: Json
+          provider: string
+          synced_at?: string | null
+          tenant_id: string
+        }
+        Update: {
+          created_at?: string | null
+          external_id?: string
+          id?: string
+          payload?: Json
+          provider?: string
+          synced_at?: string | null
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reservations_import_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
             referencedColumns: ["id"]
           },
         ]
@@ -1014,7 +1080,78 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      v_dashboard_monthly_metrics: {
+        Row: {
+          avg_ticket: number | null
+          canceled_count: number | null
+          confirmed_count: number | null
+          month: string | null
+          nights: number | null
+          revenue: number | null
+          tenant_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reservations_import_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v_dashboard_property_metrics: {
+        Row: {
+          canceled_count: number | null
+          confirmed_count: number | null
+          last_check_in: string | null
+          last_synced_at: string | null
+          nights: number | null
+          property_external_id: string | null
+          property_id: string | null
+          property_name: string | null
+          revenue: number | null
+          tenant_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reservations_import_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      v_reservations_dashboard: {
+        Row: {
+          channel: string | null
+          check_in: string | null
+          check_out: string | null
+          created_at: string | null
+          currency: string | null
+          external_id: string | null
+          guest_name: string | null
+          id: string | null
+          is_canceled: boolean | null
+          nights: number | null
+          property_external_id: string | null
+          provider: string | null
+          status: string | null
+          synced_at: string | null
+          tenant_id: string | null
+          total_amount: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reservations_import_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       current_tenant_id: { Args: never; Returns: string }
