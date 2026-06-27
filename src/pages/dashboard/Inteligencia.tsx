@@ -192,7 +192,43 @@ function aggregate(rows: any[]) {
   return { grossRevenue, netRevenue, fees, commission, nights, count, avg, canceled: rows.length - count, leadAvg };
 }
 
-const PIE_COLORS = ["hsl(var(--primary))", "hsl(var(--accent))", "hsl(var(--success))", "hsl(var(--warning))", "hsl(var(--muted-foreground))", "hsl(var(--destructive))"];
+// Refined Mr Flow chart palette — teal/cyan first, complementary muted tones, no pure black or hot reds.
+const CHART_COLORS = [
+  "hsl(var(--chart-1))", // teal Mr Flow
+  "hsl(var(--chart-2))", // cyan accent
+  "hsl(var(--chart-3))", // azul suave
+  "hsl(var(--chart-4))", // âmbar
+  "hsl(var(--chart-5))", // roxo suave
+  "hsl(var(--chart-6))", // verde sálvia
+  "hsl(var(--chart-7))", // coral suave
+  "hsl(var(--chart-8))", // cinza neutro
+];
+
+// Semantic colors for status-aware data
+const DATA_COLORS = {
+  confirmed: "hsl(var(--chart-1))",        // ciano/teal Mr Flow
+  canceled: "hsl(var(--destructive))",     // vermelho suave
+  pending: "hsl(var(--warning))",          // âmbar
+  fees: "hsl(var(--chart-7))",             // laranja suave
+  positive: "hsl(var(--success))",
+  negative: "hsl(var(--destructive))",
+  neutral: "hsl(var(--muted-foreground))",
+  primary: "hsl(var(--chart-1))",
+  primaryAlt: "hsl(var(--chart-2))",
+};
+
+// Normalize unknown/empty channel names for color mapping
+function channelColor(name: string, index: number): string {
+  const key = (name || "").toLowerCase();
+  if (key === "direto") return "hsl(var(--chart-1))";
+  if (key === "airbnb") return "hsl(var(--chart-7))";
+  if (key === "booking" || key === "booking.com") return "hsl(var(--chart-3))";
+  if (key === "vrbo") return "hsl(var(--chart-4))";
+  if (key === "stays") return "hsl(var(--chart-2))";
+  if (key === "hostaway") return "hsl(var(--chart-5))";
+  if (!key || key === "unknown" || key === "outros") return "hsl(var(--chart-8))";
+  return CHART_COLORS[index % CHART_COLORS.length];
+}
 
 export default function Inteligencia() {
   const qc = useQueryClient();
