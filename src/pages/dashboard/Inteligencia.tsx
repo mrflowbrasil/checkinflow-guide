@@ -812,7 +812,7 @@ export default function Inteligencia() {
                     type="monotone"
                     dataKey={String(y)}
                     name={String(y)}
-                    stroke={PIE_COLORS[i % PIE_COLORS.length]}
+                    stroke={CHART_COLORS[i % CHART_COLORS.length]}
                     strokeWidth={2}
                     dot={false}
                   />
