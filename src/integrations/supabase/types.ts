@@ -1095,58 +1095,85 @@ export type Database = {
       }
       v_reservations_dashboard: {
         Row: {
+          booked_at: string | null
+          buy_price: number | null
           channel: string | null
           check_in: string | null
           check_out: string | null
+          company_commission: number | null
           currency: string | null
           external_id: string | null
+          fees_amount: number | null
           guest_count: number | null
           guest_name: string | null
           id: string | null
+          lead_time_days: number | null
+          net_amount: number | null
           nights: number | null
           property_external_id: string | null
           property_name: string | null
           provider: string | null
+          sell_price_corrected: number | null
           status: string | null
           synced_at: string | null
           tenant_id: string | null
           total_amount: number | null
+          total_forward_fee: number | null
+          total_forward_fee_all: number | null
         }
         Insert: {
+          booked_at?: never
+          buy_price?: never
           channel?: never
           check_in?: never
           check_out?: never
+          company_commission?: never
           currency?: never
           external_id?: string | null
+          fees_amount?: never
           guest_count?: never
           guest_name?: never
           id?: string | null
+          lead_time_days?: never
+          net_amount?: never
           nights?: never
           property_external_id?: never
           property_name?: never
           provider?: string | null
+          sell_price_corrected?: never
           status?: never
           synced_at?: string | null
           tenant_id?: string | null
           total_amount?: never
+          total_forward_fee?: never
+          total_forward_fee_all?: never
         }
         Update: {
+          booked_at?: never
+          buy_price?: never
           channel?: never
           check_in?: never
           check_out?: never
+          company_commission?: never
           currency?: never
           external_id?: string | null
+          fees_amount?: never
           guest_count?: never
           guest_name?: never
           id?: string | null
+          lead_time_days?: never
+          net_amount?: never
           nights?: never
           property_external_id?: never
           property_name?: never
           provider?: string | null
+          sell_price_corrected?: never
           status?: never
           synced_at?: string | null
           tenant_id?: string | null
           total_amount?: never
+          total_forward_fee?: never
+          total_forward_fee_all?: never
         }
         Relationships: [
           {
