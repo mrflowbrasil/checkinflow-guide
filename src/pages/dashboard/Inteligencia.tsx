@@ -65,6 +65,7 @@ import {
   useUpcomingCheckins,
   type DateBasis,
 } from "@/hooks/useInteligencia";
+import { InsightsWidget } from "@/components/inteligencia/InsightsWidget";
 
 const BRL = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 const BRL2 = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
@@ -673,6 +674,20 @@ export default function Inteligencia() {
           hint="Dias entre a data da reserva (booked_at) e o check-in."
         />
       </div>
+
+      {/* Insights do Agente Mr Flow (determinístico) */}
+      <InsightsWidget
+        current={filteredCurrent}
+        previous={filteredPrev}
+        history={historyFiltered}
+        dateBasis={dateBasis}
+        loading={loading}
+        fetching={fetching || allHistory.isFetching}
+        onRefresh={() => qc.invalidateQueries({ predicate: (q) => {
+          const k = q.queryKey?.[0] as string | undefined;
+          return !!k && k.startsWith("v_");
+        }})}
+      />
 
       {/* Charts */}
       <div className="grid lg:grid-cols-2 gap-4">
