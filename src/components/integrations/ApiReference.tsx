@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 type Param = { name: string; in: "query" | "header" | "body"; type: string; required?: boolean; description: string };
 type Endpoint = {
-  method: "GET" | "POST" | "PUT" | "DELETE";
+  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   path: string;
   title: string;
   description: string;
