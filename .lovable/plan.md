@@ -1,71 +1,44 @@
-# ETAPA 2 — Frontend do Dashboard de Inteligência
+## Diagnóstico
 
-Escopo: consumir as novas colunas da view (`net_amount`, `fees_amount`, `buy_price`, `company_commission`, `sell_price_corrected`, `booked_at`, `lead_time_days`) e reorganizar a página em **12 blocos** com comparações dinâmicas, evolução anual e motor de insights. Sem mudanças no banco.
+A tenant **ABMnb's workspace** (`plan_code = business`) tem 17 registros em `tenant_api_keys`. Todas as chaves — inclusive as duas atualmente ativas (`mrf_live_J1IsFYn` e `mrf_live_3IkN6mg`) — foram criadas **antes** da introdução do `key_ciphertext`, então `has_cipher = false` em todas.
 
-Para evitar uma única entrega gigantesca, vou dividir em **3 sub-etapas**. Cada uma deixa a página funcionando — você confirma antes da próxima.
+Fluxo atual em `integrations-connect` e `integrations-trigger-import`:
 
----
+1. Chamam `getLatestRecoverableTenantApiKey()`.
+2. A função pega a chave ativa mais recente, tenta `decryptApiKey(null)` → retorna `null`.
+3. Retorna `{ apiKey: null, apiKeyStatus: "unrecoverable" }`.
+4. As edge functions devolvem **HTTP 409** com `unrecoverableApiKeyPayload(...)`.
+5. O frontend mostra o toast genérico do supabase-js: **"Edge Function returned a non-2xx status code"** e **nenhum webhook é disparado**.
 
-## Sub-etapa 2.1 — Fundação (hook + filtros + KPIs financeiros)
+Ou seja: ABMnb está travada porque não existe nenhuma chave recuperável, mas a regra atual proíbe revogar/rotacionar as antigas — então o código simplesmente falha.
 
-**`src/hooks/useInteligencia.tsx`**
-- Novo `useReservationsAll(filters)` que busca todo o histórico paginado em chunks de 1000 (Supabase tem cap de 1000/req). Cache 5min.
-- Novo filtro server-side opcional por `booked_at` (data de reserva) vs `check_in` (data de estada) — controlado por parâmetro `dateBasis`.
-- Manter hooks atuais funcionando (sem breaking changes).
+## Decisão
 
-**`src/pages/dashboard/Inteligencia.tsx`**
-- Barra de filtros expandida:
-  - Período: `30d / mês atual / 90d / 6m / 12m / YTD / ano anterior / todo histórico / custom (date range picker)`.
-  - Base da data: `Check-in` (padrão) ou `Reserva (booked_at)` com tooltip explicando.
-  - Imóvel (mantém).
-  - Canal (novo, multiselect).
-- KPIs reformulados (linha 1):
-  - Receita bruta (`sell_price_corrected`)
-  - Receita líquida (`net_amount`)
-  - Taxas (`fees_amount`)
-  - Comissão (`company_commission`)
-- KPIs linha 2:
-  - Reservas confirmadas / Diárias / Ticket médio / Lead time médio (`lead_time_days`)
-- Cada KPI traz delta vs período anterior espelhado + tooltip com a fórmula.
+Manter a regra "não revogar chaves existentes" (automações externas continuam usando as antigas), mas permitir que o sistema **gere automaticamente uma nova chave recuperável** quando não houver nenhuma com `key_ciphertext`. A nova chave passa a ser a "última ativa" e é o que é enviado nas próximas chamadas/webhooks. As chaves antigas continuam válidas até o usuário revogar manualmente.
 
-**Critério de aceite 2.1**: filtros funcionam, KPIs financeiros exibem valores reais e batem com amostra manual em 2-3 reservas.
+Isso destrava ABMnb (e qualquer outra tenant antiga) sem quebrar fluxos n8n existentes.
 
----
+## Mudanças
 
-## Sub-etapa 2.2 — Evolução anual + sazonalidade + canais
+### 1. `supabase/functions/_shared/tenant-api-keys.ts`
+- Em `getLatestRecoverableTenantApiKey`, quando a chave mais recente existir mas `decryptApiKey` retornar `null`, **não** devolver `unrecoverable`. Em vez disso, chamar `createTenantApiKey(admin, tenantId, "Integração (auto)")` e retornar a nova chave com `apiKeyStatus: "new"`.
+- Manter `unrecoverableApiKeyPayload` exportado por compatibilidade, mas ele deixa de ser acionado neste caminho.
 
-- **Evolução anual comparativa**: gráfico de linhas com séries por ano (2024 vs 2025 vs 2026), eixo X = mês (Jan–Dez). Métrica selecionável: Receita líquida / Reservas / Diárias / Ticket médio.
-- **Sazonalidade (heatmap)**: matriz Ano × Mês com intensidade = receita líquida. Tooltip detalhado.
-- **Distribuição por canal**: barras empilhadas por mês (últimos 12) + tabela com receita, reservas, ticket, % do total, lead time médio por canal.
-- **Lead time**: histograma (0-7, 8-30, 31-60, 61-90, 90+ dias) com % de reservas em cada faixa.
+### 2. `supabase/functions/integrations-connect/index.ts` e `integrations-trigger-import/index.ts` e `catalog-trigger-import/index.ts`
+- Como agora `getLatestRecoverableTenantApiKey` sempre devolve `apiKey != null` (cria se preciso), o branch `if (!keyResult.apiKey) return 409` vira inalcançável; mantemos como guard defensivo apenas, mas o fluxo normal segue e dispara o webhook.
+- Incluir no JSON de retorno `api_key` (apenas quando `apiKeyStatus === "new"`) para o frontend exibir uma única vez.
 
-**Critério de aceite 2.2**: gráficos renderizam com dados do histórico completo, comparação ano a ano visível.
+### 3. `src/pages/dashboard/Integrations.tsx`
+- No `submit()` (conectar), se a resposta vier com `api_key` e `api_key_status === "new"`, abrir o mesmo dialog de "Chave criada" já existente (`setRevealedKey(...)`) com aviso de que uma nova chave foi gerada automaticamente porque a anterior não pôde ser recuperada, instruindo a atualizar o n8n.
+- Invalidar `tenant_api_keys` para refletir a nova chave na lista.
 
----
+### 4. Plan gating (correção paralela)
+- `integrations-connect` hoje permite só `pro`/`business`. Acrescentar `launch` para alinhar com `usePlanFeatures` e com a decisão anterior de liberar Stays/Hostaway no plano Lançamento.
 
-## Sub-etapa 2.3 — Imóveis + Insights + Próximas chegadas
+## Validação
 
-- **Performance por imóvel** (tabela expandida): receita bruta, líquida, comissão, taxas, reservas, diárias, ticket médio, lead time médio, ocupação%, ranking; ordenação por coluna.
-- **Top/Bottom**: top 5 maior receita líquida + bottom 5 (atenção).
-- **Motor de Insights** (cards textuais auto-gerados):
-  - Melhor mês do ano atual.
-  - Canal de maior crescimento vs período anterior.
-  - Imóvel com queda relevante (-20% receita líquida vs período anterior).
-  - Tendência de lead time (encurtando / estendendo).
-  - Alerta de concentração (se >40% receita vem de 1 canal/imóvel).
-- **Próximas chegadas** (mantém, com mais colunas: canal, ticket, lead time).
-
-**Critério de aceite 2.3**: insights aparecem só quando dados suportam, tabela ordenável, sem regressão.
-
----
-
-## Técnico
-
-- Toda agregação em memória (`useMemo`) sobre o resultado de `useReservationsAll`. Sem novas RPCs.
-- Formatadores BRL/percent compartilhados.
-- Skeletons em cada bloco; erro isolado por bloco não derruba a página.
-- Sem mexer em `templates.ts`, banco, edge functions ou outras telas.
-
----
-
-Posso começar pela **Sub-etapa 2.1** assim que aprovar?
+1. Reabrir o dialog "Conectar Stays" na conta ABMnb → enviar credenciais.
+2. Esperar resposta 200, ver dialog com a nova api-key revelada uma única vez.
+3. Conferir em `tenant_integrations` que `status` saiu de `pending` para `syncing/connected` após o webhook do n8n.
+4. Conferir em `tenant_api_keys` que a nova chave tem `key_ciphertext != null` e as antigas continuam sem `revoked_at` setado pelo sistema.
+5. Disparar "Importar de Stays" e confirmar que o webhook é executado.
