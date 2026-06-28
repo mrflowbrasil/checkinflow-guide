@@ -37,7 +37,7 @@ serve(async (req) => {
       .select("plan_code")
       .eq("id", tenantId)
       .maybeSingle();
-    if (tenantRow?.plan_code !== "pro" && tenantRow?.plan_code !== "business") {
+    if (tenantRow?.plan_code !== "pro" && tenantRow?.plan_code !== "business" && tenantRow?.plan_code !== "launch") {
       return json({ error: "feature_not_available_in_plan", message: "Integrações com Stays/Hostaway estão disponíveis a partir do plano Gestão." }, 403);
     }
 
