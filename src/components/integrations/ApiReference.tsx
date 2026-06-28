@@ -187,7 +187,7 @@ const ENDPOINTS: Endpoint[] = [
   },
 ];
 
-const _PATCH_METHOD_TAG: "PATCH" = "PATCH";
+
 
 const methodColor: Record<Endpoint["method"], string> = {
   GET: "bg-emerald-500/15 text-emerald-700 border-emerald-500/30",
