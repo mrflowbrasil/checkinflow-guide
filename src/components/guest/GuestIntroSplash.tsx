@@ -10,7 +10,7 @@ type Props = {
   onUnlock: () => void;
 };
 
-const NO_PASS_AUTOCLOSE_MS = 1800;
+const NO_PASS_AUTOCLOSE_MS = 2500;
 
 export function GuestIntroSplash({
   coverUrl,
@@ -83,14 +83,14 @@ export function GuestIntroSplash({
         }
 
         .intro-bg {
-          animation: intro-zoom 1800ms cubic-bezier(.2,.7,.2,1) both;
+          animation: intro-zoom 2500ms cubic-bezier(.2,.7,.2,1) both;
         }
         .intro-headline {
           font-family: 'Caveat', 'Brush Script MT', cursive;
-          animation: intro-hand-write 1100ms cubic-bezier(.6,.05,.25,1) 350ms both;
+          animation: intro-hand-write 1600ms cubic-bezier(.6,.05,.25,1) 500ms both;
         }
         .intro-form {
-          animation: intro-fade-up 420ms ease-out 1300ms both;
+          animation: intro-fade-up 500ms ease-out 1900ms both;
         }
         .intro-splash-leave {
           animation: intro-leave 300ms ease-out forwards;
