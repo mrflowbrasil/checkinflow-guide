@@ -156,7 +156,38 @@ const ENDPOINTS: Endpoint[] = [
   "pages_updated": 1
 }`,
   },
+  {
+    method: "PATCH",
+    path: "/properties-api/access",
+    title: "Acesso ao hub (senha do hóspede)",
+    description:
+      "Liga/desliga a proteção \"Acesso ao hub\" de um imóvel e define a senha simples exigida do hóspede. Use ao criar uma nova reserva para gerar a senha automaticamente a partir dos dados do cliente. O tenant_id é obrigatório e precisa ser o mesmo tenant da API key.",
+    auth: "X-API-Key",
+    params: [
+      { name: "tenant_id", in: "body", type: "uuid", required: true, description: "ID do tenant (workspace). Precisa bater com o tenant da API key." },
+      { name: "property_id", in: "body", type: "uuid", description: "ID interno do imóvel. Obrigatório se external_id não for enviado." },
+      { name: "external_id", in: "body", type: "string", description: "Alternativa ao property_id (ID do imóvel no PMS)." },
+      { name: "external_provider", in: "body", type: "string", description: "Usado junto com external_id. Padrão: stays." },
+      { name: "enabled", in: "body", type: "boolean", description: "true liga a proteção, false desliga. Para ligar, precisa existir uma senha (já salva ou enviada no mesmo payload)." },
+      { name: "password", in: "body", type: "string | null", description: "Senha simples (1–64 chars). Envie null para limpar a senha salva." },
+    ],
+    requestExample: `{
+  "tenant_id": "576bc692-299c-4e1a-a7c9-9d374d09dce8",
+  "property_id": "ab40310a-476e-48ed-9af9-e3d5fe3aa5a8",
+  "enabled": true,
+  "password": "MARIA1406"
+}`,
+    responseExample: `{
+  "id": "uuid",
+  "tenant_id": "uuid",
+  "access_password_enabled": true,
+  "has_password": true,
+  "updated_at": "2026-06-28T12:34:56Z"
+}`,
+  },
 ];
+
+const _PATCH_METHOD_TAG: "PATCH" = "PATCH";
 
 const methodColor: Record<Endpoint["method"], string> = {
   GET: "bg-emerald-500/15 text-emerald-700 border-emerald-500/30",
