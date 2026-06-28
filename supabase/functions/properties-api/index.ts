@@ -311,6 +311,84 @@ serve(async (req) => {
       return json({ total: count ?? 0, count: items.length, limit, offset, items });
     }
 
+    // PATCH /properties-api/access — toggle hub access password
+    if (req.method === "PATCH") {
+      const url = new URL(req.url);
+      if (!/\/access\/?$/.test(url.pathname)) {
+        return json({ error: "not_found" }, 404);
+      }
+      const body = await req.json().catch(() => ({}));
+      const {
+        tenant_id: bodyTenantId,
+        property_id,
+        external_id,
+        external_provider = "stays",
+        enabled,
+        password,
+      } = body ?? {};
+
+      if (!bodyTenantId) return json({ error: "tenant_id_required" }, 400);
+      if (bodyTenantId !== tenantId) return json({ error: "tenant_mismatch" }, 403);
+      if (!property_id && !external_id) {
+        return json({ error: "property_id_or_external_id_required" }, 400);
+      }
+      const hasEnabled = typeof enabled === "boolean";
+      const hasPassword = password !== undefined;
+      if (!hasEnabled && !hasPassword) {
+        return json({ error: "nothing_to_update", hint: "send `enabled` and/or `password`" }, 400);
+      }
+      if (hasPassword && password !== null) {
+        if (typeof password !== "string") return json({ error: "password_must_be_string" }, 400);
+        if (password.length < 1 || password.length > 64) {
+          return json({ error: "password_length_invalid", hint: "1–64 chars" }, 400);
+        }
+      }
+
+      // Locate property scoped to tenant
+      let propQuery = admin
+        .from("properties")
+        .select("id, access_password_enabled, access_password")
+        .eq("tenant_id", tenantId);
+      if (property_id) {
+        propQuery = propQuery.eq("id", String(property_id));
+      } else {
+        propQuery = propQuery
+          .eq("external_provider", external_provider)
+          .eq("external_id", String(external_id));
+      }
+      const { data: prop, error: findErr } = await propQuery.maybeSingle();
+      if (findErr) throw findErr;
+      if (!prop) return json({ error: "property_not_found" }, 404);
+
+      const update: any = { updated_at: new Date().toISOString() };
+      if (hasPassword) update.access_password = password; // null clears
+      if (hasEnabled) update.access_password_enabled = enabled;
+
+      // Guard: enabling requires a password to exist
+      if (hasEnabled && enabled === true) {
+        const willHavePassword = hasPassword ? password !== null && password !== "" : !!prop.access_password;
+        if (!willHavePassword) {
+          return json({ error: "password_required_to_enable" }, 400);
+        }
+      }
+
+      const { data: updated, error: updErr } = await admin
+        .from("properties")
+        .update(update)
+        .eq("id", prop.id)
+        .select("id, tenant_id, access_password_enabled, access_password, updated_at")
+        .single();
+      if (updErr) throw updErr;
+
+      return json({
+        id: updated.id,
+        tenant_id: updated.tenant_id,
+        access_password_enabled: updated.access_password_enabled,
+        has_password: !!updated.access_password,
+        updated_at: updated.updated_at,
+      });
+    }
+
     if (req.method !== "POST" && req.method !== "PUT") {
       return json({ error: "method_not_allowed" }, 405);
     }

@@ -1,44 +1,71 @@
-## Diagnóstico
+## Objetivo
 
-A tenant **ABMnb's workspace** (`plan_code = business`) tem 17 registros em `tenant_api_keys`. Todas as chaves — inclusive as duas atualmente ativas (`mrf_live_J1IsFYn` e `mrf_live_3IkN6mg`) — foram criadas **antes** da introdução do `key_ciphertext`, então `has_cipher = false` em todas.
+Permitir que sistemas externos (n8n etc.) liguem/desliguem a proteção "Acesso ao hub" de um imóvel e definam a senha simples, normalmente acionado quando uma nova reserva é criada (gerar senha a partir de dados do hóspede).
 
-Fluxo atual em `integrations-connect` e `integrations-trigger-import`:
+## Endpoint
 
-1. Chamam `getLatestRecoverableTenantApiKey()`.
-2. A função pega a chave ativa mais recente, tenta `decryptApiKey(null)` → retorna `null`.
-3. Retorna `{ apiKey: null, apiKeyStatus: "unrecoverable" }`.
-4. As edge functions devolvem **HTTP 409** com `unrecoverableApiKeyPayload(...)`.
-5. O frontend mostra o toast genérico do supabase-js: **"Edge Function returned a non-2xx status code"** e **nenhum webhook é disparado**.
+`PATCH /properties-api/access` (adicionado ao edge function existente `properties-api`).
 
-Ou seja: ABMnb está travada porque não existe nenhuma chave recuperável, mas a regra atual proíbe revogar/rotacionar as antigas — então o código simplesmente falha.
+### Autenticação
+- Header `X-API-Key: SUA_CHAVE` (mesmo padrão atual).
 
-## Decisão
+### Body (JSON)
+| Campo | Tipo | Obrigatório | Descrição |
+|---|---|---|---|
+| `tenant_id` | uuid | sim | ID do tenant. Deve bater com o tenant da API key (senão `403 tenant_mismatch`). |
+| `property_id` | uuid | sim* | ID interno do imóvel. *Opcional se `external_id` for enviado. |
+| `external_id` | string | sim* | Alternativa ao `property_id`, casado com `external_provider` (padrão `stays`). |
+| `external_provider` | string | não | Padrão `stays`. |
+| `enabled` | boolean | não | Liga/desliga `access_password_enabled`. |
+| `password` | string | não | Define `access_password` (1–64 chars). Envie `null` para limpar. |
 
-Manter a regra "não revogar chaves existentes" (automações externas continuam usando as antigas), mas permitir que o sistema **gere automaticamente uma nova chave recuperável** quando não houver nenhuma com `key_ciphertext`. A nova chave passa a ser a "última ativa" e é o que é enviado nas próximas chamadas/webhooks. As chaves antigas continuam válidas até o usuário revogar manualmente.
+Regras:
+- Pelo menos um entre `enabled` e `password` precisa ser enviado.
+- Se `enabled=true` e a propriedade não tem senha salva e nenhuma foi enviada → `400 password_required_to_enable`.
+- Valida que a propriedade pertence ao `tenant_id` informado (`404 property_not_found` caso contrário).
 
-Isso destrava ABMnb (e qualquer outra tenant antiga) sem quebrar fluxos n8n existentes.
+### Resposta
+```json
+{
+  "id": "uuid",
+  "tenant_id": "uuid",
+  "access_password_enabled": true,
+  "has_password": true,
+  "updated_at": "2026-06-28T12:34:56Z"
+}
+```
+(`has_password` é booleano, a senha em si nunca é retornada.)
 
-## Mudanças
+## Mudanças no código
 
-### 1. `supabase/functions/_shared/tenant-api-keys.ts`
-- Em `getLatestRecoverableTenantApiKey`, quando a chave mais recente existir mas `decryptApiKey` retornar `null`, **não** devolver `unrecoverable`. Em vez disso, chamar `createTenantApiKey(admin, tenantId, "Integração (auto)")` e retornar a nova chave com `apiKeyStatus: "new"`.
-- Manter `unrecoverableApiKeyPayload` exportado por compatibilidade, mas ele deixa de ser acionado neste caminho.
+1. `supabase/functions/properties-api/index.ts`
+   - Adicionar branch `if (req.method === "PATCH" && /\/access\/?$/.test(url.pathname))`.
+   - Validar tenant_id, localizar propriedade por `property_id` ou `external_id`, aplicar update em `properties` (`access_password_enabled`, `access_password`, `updated_at`).
+2. `src/components/integrations/ApiReference.tsx`
+   - Acrescentar o novo endpoint à lista `ENDPOINTS` com params, exemplo de request, response e cURL automático.
+3. Sem migração de banco — colunas `access_password_enabled` e `access_password` já existem em `public.properties`.
 
-### 2. `supabase/functions/integrations-connect/index.ts` e `integrations-trigger-import/index.ts` e `catalog-trigger-import/index.ts`
-- Como agora `getLatestRecoverableTenantApiKey` sempre devolve `apiKey != null` (cria se preciso), o branch `if (!keyResult.apiKey) return 409` vira inalcançável; mantemos como guard defensivo apenas, mas o fluxo normal segue e dispara o webhook.
-- Incluir no JSON de retorno `api_key` (apenas quando `apiKeyStatus === "new"`) para o frontend exibir uma única vez.
+## cURL de exemplo (entregue ao usuário no final)
 
-### 3. `src/pages/dashboard/Integrations.tsx`
-- No `submit()` (conectar), se a resposta vier com `api_key` e `api_key_status === "new"`, abrir o mesmo dialog de "Chave criada" já existente (`setRevealedKey(...)`) com aviso de que uma nova chave foi gerada automaticamente porque a anterior não pôde ser recuperada, instruindo a atualizar o n8n.
-- Invalidar `tenant_api_keys` para refletir a nova chave na lista.
+```bash
+curl -X PATCH "https://pgdfcufjdyhmaqikwbdq.supabase.co/functions/v1/properties-api/access" \
+  -H "X-API-Key: SUA_CHAVE" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tenant_id": "576bc692-299c-4e1a-a7c9-9d374d09dce8",
+    "property_id": "ab40310a-476e-48ed-9af9-e3d5fe3aa5a8",
+    "enabled": true,
+    "password": "MARIA1406"
+  }'
+```
 
-### 4. Plan gating (correção paralela)
-- `integrations-connect` hoje permite só `pro`/`business`. Acrescentar `launch` para alinhar com `usePlanFeatures` e com a decisão anterior de liberar Stays/Hostaway no plano Lançamento.
+Alternativa por ID externo do PMS:
+```bash
+curl -X PATCH ".../properties-api/access" \
+  -H "X-API-Key: SUA_CHAVE" -H "Content-Type: application/json" \
+  -d '{"tenant_id":"...","external_id":"KU01J","external_provider":"stays","enabled":true,"password":"JOAO2208"}'
+```
 
-## Validação
-
-1. Reabrir o dialog "Conectar Stays" na conta ABMnb → enviar credenciais.
-2. Esperar resposta 200, ver dialog com a nova api-key revelada uma única vez.
-3. Conferir em `tenant_integrations` que `status` saiu de `pending` para `syncing/connected` após o webhook do n8n.
-4. Conferir em `tenant_api_keys` que a nova chave tem `key_ciphertext != null` e as antigas continuam sem `revoked_at` setado pelo sistema.
-5. Disparar "Importar de Stays" e confirmar que o webhook é executado.
+## Observações de segurança
+- A API key continua sendo a credencial primária; `tenant_id` é uma validação extra contra envio acidental para o tenant errado.
+- Senha armazenada em texto (compatível com o fluxo atual da UI de edição do imóvel).
