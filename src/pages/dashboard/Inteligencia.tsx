@@ -67,6 +67,15 @@ import {
 } from "@/hooks/useInteligencia";
 import { InsightsWidget } from "@/components/inteligencia/InsightsWidget";
 import { ChannelRevenueCard } from "@/components/inteligencia/ChannelRevenueCard";
+import { Money } from "@/components/inteligencia/Money";
+import {
+  reservationGross,
+  reservationRevenueAfterChannelFee,
+  reservationChannelFees,
+  reservationCommission,
+  reservationNet,
+  num as fnum,
+} from "@/lib/reservation-finance";
 
 const BRL = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 const BRL2 = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
@@ -136,12 +145,14 @@ function presetRange(p: PresetKey, custom?: { start: string; end: string }): Ran
 function KpiCard({
   label,
   value,
+  money,
   delta,
   loading,
   hint,
 }: {
   label: string;
-  value: string;
+  value?: string;
+  money?: number;
   delta?: number | null;
   loading?: boolean;
   hint?: string;
@@ -166,6 +177,10 @@ function KpiCard({
       </div>
       {loading ? (
         <Skeleton className="h-8 w-32" />
+      ) : money != null ? (
+        <div className="text-2xl sm:text-3xl font-semibold leading-none">
+          <Money value={money} />
+        </div>
       ) : (
         <div className="text-2xl sm:text-3xl font-semibold tabular-nums">{value}</div>
       )}
@@ -181,17 +196,18 @@ function KpiCard({
 
 function aggregate(rows: any[]) {
   const confirmed = rows.filter((r) => r.status !== "canceled");
-  const num = (v: any) => Number(v ?? 0) || 0;
-  const grossRevenue = confirmed.reduce((s, r) => s + num(r.sell_price_corrected ?? r.total_amount), 0);
-  const fees = confirmed.reduce((s, r) => s + num(r.fees_amount), 0);
-  const commission = confirmed.reduce((s, r) => s + num(r.company_commission), 0);
-  const netRevenue = grossRevenue - fees - commission;
-  const nights = confirmed.reduce((s, r) => s + num(r.nights), 0);
+  const grossRevenue = confirmed.reduce((s, r) => s + reservationGross(r), 0);
+  const revenueAfterChannelFee = confirmed.reduce((s, r) => s + reservationRevenueAfterChannelFee(r), 0);
+  const fees = confirmed.reduce((s, r) => s + reservationChannelFees(r), 0);
+  const commission = confirmed.reduce((s, r) => s + reservationCommission(r), 0);
+  const netRevenue = confirmed.reduce((s, r) => s + reservationNet(r), 0);
+  const nights = confirmed.reduce((s, r) => s + fnum(r.nights), 0);
   const count = confirmed.length;
   const avg = count > 0 ? grossRevenue / count : 0;
+  const adr = nights > 0 ? grossRevenue / nights : 0;
   const leadRows = confirmed.filter((r) => r.lead_time_days != null);
-  const leadAvg = leadRows.length > 0 ? leadRows.reduce((s, r) => s + num(r.lead_time_days), 0) / leadRows.length : 0;
-  return { grossRevenue, netRevenue, fees, commission, nights, count, avg, canceled: rows.length - count, leadAvg };
+  const leadAvg = leadRows.length > 0 ? leadRows.reduce((s, r) => s + fnum(r.lead_time_days), 0) / leadRows.length : 0;
+  return { grossRevenue, revenueAfterChannelFee, netRevenue, fees, commission, nights, count, avg, adr, canceled: rows.length - count, leadAvg };
 }
 
 // Refined Mr Flow chart palette — teal/cyan first, complementary muted tones, no pure black or hot reds.
@@ -313,22 +329,18 @@ export default function Inteligencia() {
   // Per year × month aggregation
   const yearMonthAgg = useMemo(() => {
     const map = new Map<string, { gross: number; net: number; fees: number; commission: number; count: number; nights: number }>();
-    const num = (v: any) => Number(v ?? 0) || 0;
     historyFiltered.forEach((r) => {
       if (r.status === "canceled") return;
       const basis = dateBasis === "booked_at" ? r.booked_at : r.check_in;
       if (!basis) return;
       const key = String(basis).slice(0, 7); // YYYY-MM
       const cur = map.get(key) ?? { gross: 0, net: 0, fees: 0, commission: 0, count: 0, nights: 0 };
-      const gross = num(r.sell_price_corrected ?? r.total_amount);
-      const fees = num(r.fees_amount);
-      const commission = num(r.company_commission);
-      cur.gross += gross;
-      cur.fees += fees;
-      cur.commission += commission;
-      cur.net += gross - fees - commission;
+      cur.gross += reservationGross(r);
+      cur.fees += reservationChannelFees(r);
+      cur.commission += reservationCommission(r);
+      cur.net += reservationNet(r);
       cur.count += 1;
-      cur.nights += num(r.nights);
+      cur.nights += fnum(r.nights);
       map.set(key, cur);
     });
     return map;
@@ -385,7 +397,6 @@ export default function Inteligencia() {
       months.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
     }
     const channelSet = new Set<string>();
-    const num = (v: any) => Number(v ?? 0) || 0;
     const byMonth = new Map<string, Map<string, number>>();
     historyFiltered.forEach((r) => {
       if (r.status === "canceled") return;
@@ -396,7 +407,7 @@ export default function Inteligencia() {
       const ch = r.channel || "Direto";
       channelSet.add(ch);
       const m = byMonth.get(key) ?? new Map<string, number>();
-      m.set(ch, (m.get(ch) ?? 0) + (num(r.sell_price_corrected ?? r.total_amount) - num(r.fees_amount) - num(r.company_commission)));
+      m.set(ch, (m.get(ch) ?? 0) + reservationNet(r));
       byMonth.set(key, m);
     });
     const channels = Array.from(channelSet).sort();
@@ -411,17 +422,15 @@ export default function Inteligencia() {
 
   // Channel summary table (current filtered period)
   const channelSummary = useMemo(() => {
-    const num = (v: any) => Number(v ?? 0) || 0;
     const map = new Map<string, { gross: number; net: number; count: number; leadSum: number; leadN: number }>();
     filteredCurrent.forEach((r) => {
       if (r.status === "canceled") return;
       const ch = r.channel || "Direto";
       const cur = map.get(ch) ?? { gross: 0, net: 0, count: 0, leadSum: 0, leadN: 0 };
-      const gross = num(r.sell_price_corrected ?? r.total_amount);
-      cur.gross += gross;
-      cur.net += gross - num(r.fees_amount) - num(r.company_commission);
+      cur.gross += reservationGross(r);
+      cur.net += reservationNet(r);
       cur.count += 1;
-      if (r.lead_time_days != null) { cur.leadSum += num(r.lead_time_days); cur.leadN += 1; }
+      if (r.lead_time_days != null) { cur.leadSum += fnum(r.lead_time_days); cur.leadN += 1; }
       map.set(ch, cur);
     });
     const totalNet = Array.from(map.values()).reduce((s, x) => s + x.net, 0);
@@ -631,34 +640,41 @@ export default function Inteligencia() {
       )}
 
       {/* KPIs financeiros */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <KpiCard
           label="Receita bruta"
-          value={BRL.format(kpi.grossRevenue)}
+          money={kpi.grossRevenue}
           delta={delta(kpi.grossRevenue, kpiPrev.grossRevenue)}
           loading={loading}
-          hint="Soma de sell_price_corrected das reservas confirmadas no período."
+          hint="Soma de reserveTotal (total_amount) das reservas confirmadas no período. Equivale ao valor total cobrado do hóspede."
         />
         <KpiCard
-          label="Receita líquida"
-          value={BRL.format(kpi.netRevenue)}
-          delta={delta(kpi.netRevenue, kpiPrev.netRevenue)}
+          label="Receita pós-taxa canal"
+          money={kpi.revenueAfterChannelFee}
+          delta={delta(kpi.revenueAfterChannelFee, kpiPrev.revenueAfterChannelFee)}
           loading={loading}
-          hint="Receita bruta − taxas − comissão da empresa."
+          hint="Soma de sell_price_corrected — receita bruta já descontada da taxa do canal (forward fee)."
         />
         <KpiCard
-          label="Taxas"
-          value={BRL.format(kpi.fees)}
+          label="Taxas de canal"
+          money={kpi.fees}
           delta={delta(kpi.fees, kpiPrev.fees)}
           loading={loading}
-          hint="Total de forward fees (total_forward_fee + total_forward_fee_all)."
+          hint="coalesce(total_forward_fee_all, total_forward_fee, 0). Taxa retida pelo canal (ex.: Booking, Airbnb)."
         />
         <KpiCard
           label="Comissão"
-          value={BRL.format(kpi.commission)}
+          money={kpi.commission}
           delta={delta(kpi.commission, kpiPrev.commission)}
           loading={loading}
           hint="Soma de company_commission das reservas no período."
+        />
+        <KpiCard
+          label="Receita líquida"
+          money={kpi.netRevenue}
+          delta={delta(kpi.netRevenue, kpiPrev.netRevenue)}
+          loading={loading}
+          hint="Soma de buy_price — valor líquido recebido pelo proprietário. Já desconta taxa do canal e comissão (não subtrair novamente)."
         />
       </div>
 
@@ -666,7 +682,20 @@ export default function Inteligencia() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard label="Reservas confirmadas" value={NUM.format(kpi.count)} delta={delta(kpi.count, kpiPrev.count)} loading={loading} />
         <KpiCard label="Diárias vendidas" value={NUM.format(kpi.nights)} delta={delta(kpi.nights, kpiPrev.nights)} loading={loading} />
-        <KpiCard label="Ticket médio" value={BRL.format(kpi.avg)} delta={delta(kpi.avg, kpiPrev.avg)} loading={loading} hint="Receita bruta ÷ número de reservas confirmadas." />
+        <KpiCard
+          label="Ticket médio"
+          money={kpi.avg}
+          delta={delta(kpi.avg, kpiPrev.avg)}
+          loading={loading}
+          hint="Receita bruta (reserveTotal) ÷ número de reservas confirmadas."
+        />
+        <KpiCard
+          label="Diária média (ADR)"
+          money={kpi.adr}
+          delta={delta(kpi.adr, kpiPrev.adr)}
+          loading={loading}
+          hint="Receita bruta ÷ diárias vendidas (nightCount). Average Daily Rate."
+        />
         <KpiCard
           label="Lead time médio"
           value={`${kpi.leadAvg.toFixed(1)} dias`}

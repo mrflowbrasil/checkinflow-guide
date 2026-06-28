@@ -49,10 +49,10 @@ const MONTH_NAMES_PT = [
 const num = (v: any) => Number(v ?? 0) || 0;
 const isConfirmed = (r: any) => r.status !== "canceled";
 
-function gross(r: any) { return num(r.sell_price_corrected ?? r.total_amount); }
-function fees(r: any) { return num(r.fees_amount); }
+function gross(r: any) { return num(r.total_amount ?? r.sell_price_corrected); }
+function fees(r: any) { return num(r.total_forward_fee_all ?? r.total_forward_fee ?? r.fees_amount); }
 function commission(r: any) { return num(r.company_commission); }
-function net(r: any) { return gross(r) - fees(r) - commission(r); }
+function net(r: any) { return r.buy_price != null ? num(r.buy_price) : gross(r) - fees(r) - commission(r); }
 
 export interface GenerateInput {
   current: any[];           // filtered current period rows
