@@ -107,13 +107,11 @@ export async function getLatestRecoverableTenantApiKey(admin: any, tenantId: str
 
   const apiKey = await decryptApiKey(existingKey.key_ciphertext);
   if (!apiKey) {
-    return {
-      apiKey: null,
-      apiKeyStatus: "unrecoverable",
-      keyId: existingKey.id,
-      keyName: existingKey.name,
-      keyPrefix: existingKey.key_prefix,
-    };
+    // Legacy key without recoverable ciphertext. We CANNOT recover its plaintext,
+    // and we MUST NOT revoke it (external automations may depend on it).
+    // Generate a new recoverable key alongside it; the old one keeps working
+    // until the user revokes it manually from the panel.
+    return createTenantApiKey(admin, tenantId, "Integração (auto)");
   }
 
   return {

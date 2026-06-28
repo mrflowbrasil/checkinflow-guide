@@ -37,7 +37,7 @@ serve(async (req) => {
       .select("plan_code")
       .eq("id", tenantId)
       .maybeSingle();
-    if (tenantRow?.plan_code !== "pro" && tenantRow?.plan_code !== "business") {
+    if (tenantRow?.plan_code !== "pro" && tenantRow?.plan_code !== "business" && tenantRow?.plan_code !== "launch") {
       return json({ error: "feature_not_available_in_plan", message: "Integrações com Stays/Hostaway estão disponíveis a partir do plano Gestão." }, 403);
     }
 
@@ -126,7 +126,14 @@ serve(async (req) => {
       return json({ ok: false, error: "webhook_failed", status: hookRes.status }, 502);
     }
 
-    return json({ ok: true, api_key_status: keyResult.apiKeyStatus, key_prefix: keyResult.keyPrefix });
+    return json({
+      ok: true,
+      api_key_status: keyResult.apiKeyStatus,
+      key_prefix: keyResult.keyPrefix,
+      // Only expose the plaintext when a brand-new key was just generated.
+      api_key: keyResult.apiKeyStatus === "new" ? keyResult.apiKey : undefined,
+      key_name: keyResult.keyName,
+    });
   } catch (e: any) {
     console.error("integrations-connect error", e);
     return json({ error: e.message ?? "internal" }, 500);

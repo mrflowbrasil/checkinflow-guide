@@ -172,6 +172,11 @@ export default function Integrations() {
       toast.success("Credenciais enviadas. Validando conexão…");
       setOpenProvider(null);
       qc.invalidateQueries({ queryKey: ["tenant_integrations"] });
+      if (data?.api_key && data?.api_key_status === "new") {
+        setRevealedKey({ name: data.key_name ?? "Integração (auto)", key: data.api_key });
+        qc.invalidateQueries({ queryKey: ["tenant_api_keys"] });
+        toast.info("Geramos uma nova API Key automaticamente. Atualize seu fluxo n8n com o valor exibido.");
+      }
     } catch (e: any) {
       toast.error(e.message ?? "Erro inesperado.");
     } finally {
