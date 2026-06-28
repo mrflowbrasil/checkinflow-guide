@@ -67,6 +67,15 @@ import {
 } from "@/hooks/useInteligencia";
 import { InsightsWidget } from "@/components/inteligencia/InsightsWidget";
 import { ChannelRevenueCard } from "@/components/inteligencia/ChannelRevenueCard";
+import { Money } from "@/components/inteligencia/Money";
+import {
+  reservationGross,
+  reservationRevenueAfterChannelFee,
+  reservationChannelFees,
+  reservationCommission,
+  reservationNet,
+  num as fnum,
+} from "@/lib/reservation-finance";
 
 const BRL = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 const BRL2 = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
@@ -136,12 +145,14 @@ function presetRange(p: PresetKey, custom?: { start: string; end: string }): Ran
 function KpiCard({
   label,
   value,
+  money,
   delta,
   loading,
   hint,
 }: {
   label: string;
-  value: string;
+  value?: string;
+  money?: number;
   delta?: number | null;
   loading?: boolean;
   hint?: string;
@@ -166,6 +177,10 @@ function KpiCard({
       </div>
       {loading ? (
         <Skeleton className="h-8 w-32" />
+      ) : money != null ? (
+        <div className="text-2xl sm:text-3xl font-semibold leading-none">
+          <Money value={money} />
+        </div>
       ) : (
         <div className="text-2xl sm:text-3xl font-semibold tabular-nums">{value}</div>
       )}
@@ -181,17 +196,18 @@ function KpiCard({
 
 function aggregate(rows: any[]) {
   const confirmed = rows.filter((r) => r.status !== "canceled");
-  const num = (v: any) => Number(v ?? 0) || 0;
-  const grossRevenue = confirmed.reduce((s, r) => s + num(r.sell_price_corrected ?? r.total_amount), 0);
-  const fees = confirmed.reduce((s, r) => s + num(r.fees_amount), 0);
-  const commission = confirmed.reduce((s, r) => s + num(r.company_commission), 0);
-  const netRevenue = grossRevenue - fees - commission;
-  const nights = confirmed.reduce((s, r) => s + num(r.nights), 0);
+  const grossRevenue = confirmed.reduce((s, r) => s + reservationGross(r), 0);
+  const revenueAfterChannelFee = confirmed.reduce((s, r) => s + reservationRevenueAfterChannelFee(r), 0);
+  const fees = confirmed.reduce((s, r) => s + reservationChannelFees(r), 0);
+  const commission = confirmed.reduce((s, r) => s + reservationCommission(r), 0);
+  const netRevenue = confirmed.reduce((s, r) => s + reservationNet(r), 0);
+  const nights = confirmed.reduce((s, r) => s + fnum(r.nights), 0);
   const count = confirmed.length;
   const avg = count > 0 ? grossRevenue / count : 0;
+  const adr = nights > 0 ? grossRevenue / nights : 0;
   const leadRows = confirmed.filter((r) => r.lead_time_days != null);
-  const leadAvg = leadRows.length > 0 ? leadRows.reduce((s, r) => s + num(r.lead_time_days), 0) / leadRows.length : 0;
-  return { grossRevenue, netRevenue, fees, commission, nights, count, avg, canceled: rows.length - count, leadAvg };
+  const leadAvg = leadRows.length > 0 ? leadRows.reduce((s, r) => s + fnum(r.lead_time_days), 0) / leadRows.length : 0;
+  return { grossRevenue, revenueAfterChannelFee, netRevenue, fees, commission, nights, count, avg, adr, canceled: rows.length - count, leadAvg };
 }
 
 // Refined Mr Flow chart palette — teal/cyan first, complementary muted tones, no pure black or hot reds.
