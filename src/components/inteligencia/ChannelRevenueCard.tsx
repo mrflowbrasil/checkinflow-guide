@@ -109,8 +109,11 @@ export function ChannelRevenueCard({ rows, dateBasis, loading, rangeLabel }: Pro
       const k = String(basis).slice(0, 7);
       if (!months.includes(k)) return;
       const ch = normKey(r.channel || "");
-      const gross = num(r.sell_price_corrected ?? r.total_amount);
-      const net = gross - num(r.fees_amount) - num(r.company_commission);
+      const gross = num((r as any).total_amount ?? r.sell_price_corrected);
+      // Receita líquida vem direto de buy_price (não subtrair taxas/comissão de novo).
+      const net = (r as any).buy_price != null
+        ? num((r as any).buy_price)
+        : gross - num((r as any).total_forward_fee_all ?? (r as any).total_forward_fee ?? r.fees_amount) - num(r.company_commission);
       const m = agg.get(k) ?? new Map();
       const cur = m.get(ch) ?? { net: 0, gross: 0, count: 0 };
       cur.net += net;
