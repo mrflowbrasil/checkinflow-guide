@@ -640,34 +640,41 @@ export default function Inteligencia() {
       )}
 
       {/* KPIs financeiros */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <KpiCard
           label="Receita bruta"
-          value={BRL.format(kpi.grossRevenue)}
+          money={kpi.grossRevenue}
           delta={delta(kpi.grossRevenue, kpiPrev.grossRevenue)}
           loading={loading}
-          hint="Soma de sell_price_corrected das reservas confirmadas no período."
+          hint="Soma de reserveTotal (total_amount) das reservas confirmadas no período. Equivale ao valor total cobrado do hóspede."
         />
         <KpiCard
-          label="Receita líquida"
-          value={BRL.format(kpi.netRevenue)}
-          delta={delta(kpi.netRevenue, kpiPrev.netRevenue)}
+          label="Receita pós-taxa canal"
+          money={kpi.revenueAfterChannelFee}
+          delta={delta(kpi.revenueAfterChannelFee, kpiPrev.revenueAfterChannelFee)}
           loading={loading}
-          hint="Receita bruta − taxas − comissão da empresa."
+          hint="Soma de sell_price_corrected — receita bruta já descontada da taxa do canal (forward fee)."
         />
         <KpiCard
-          label="Taxas"
-          value={BRL.format(kpi.fees)}
+          label="Taxas de canal"
+          money={kpi.fees}
           delta={delta(kpi.fees, kpiPrev.fees)}
           loading={loading}
-          hint="Total de forward fees (total_forward_fee + total_forward_fee_all)."
+          hint="coalesce(total_forward_fee_all, total_forward_fee, 0). Taxa retida pelo canal (ex.: Booking, Airbnb)."
         />
         <KpiCard
           label="Comissão"
-          value={BRL.format(kpi.commission)}
+          money={kpi.commission}
           delta={delta(kpi.commission, kpiPrev.commission)}
           loading={loading}
           hint="Soma de company_commission das reservas no período."
+        />
+        <KpiCard
+          label="Receita líquida"
+          money={kpi.netRevenue}
+          delta={delta(kpi.netRevenue, kpiPrev.netRevenue)}
+          loading={loading}
+          hint="Soma de buy_price — valor líquido recebido pelo proprietário. Já desconta taxa do canal e comissão (não subtrair novamente)."
         />
       </div>
 
@@ -675,7 +682,20 @@ export default function Inteligencia() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard label="Reservas confirmadas" value={NUM.format(kpi.count)} delta={delta(kpi.count, kpiPrev.count)} loading={loading} />
         <KpiCard label="Diárias vendidas" value={NUM.format(kpi.nights)} delta={delta(kpi.nights, kpiPrev.nights)} loading={loading} />
-        <KpiCard label="Ticket médio" value={BRL.format(kpi.avg)} delta={delta(kpi.avg, kpiPrev.avg)} loading={loading} hint="Receita bruta ÷ número de reservas confirmadas." />
+        <KpiCard
+          label="Ticket médio"
+          money={kpi.avg}
+          delta={delta(kpi.avg, kpiPrev.avg)}
+          loading={loading}
+          hint="Receita bruta (reserveTotal) ÷ número de reservas confirmadas."
+        />
+        <KpiCard
+          label="Diária média (ADR)"
+          money={kpi.adr}
+          delta={delta(kpi.adr, kpiPrev.adr)}
+          loading={loading}
+          hint="Receita bruta ÷ diárias vendidas (nightCount). Average Daily Rate."
+        />
         <KpiCard
           label="Lead time médio"
           value={`${kpi.leadAvg.toFixed(1)} dias`}
