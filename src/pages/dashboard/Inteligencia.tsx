@@ -329,22 +329,18 @@ export default function Inteligencia() {
   // Per year × month aggregation
   const yearMonthAgg = useMemo(() => {
     const map = new Map<string, { gross: number; net: number; fees: number; commission: number; count: number; nights: number }>();
-    const num = (v: any) => Number(v ?? 0) || 0;
     historyFiltered.forEach((r) => {
       if (r.status === "canceled") return;
       const basis = dateBasis === "booked_at" ? r.booked_at : r.check_in;
       if (!basis) return;
       const key = String(basis).slice(0, 7); // YYYY-MM
       const cur = map.get(key) ?? { gross: 0, net: 0, fees: 0, commission: 0, count: 0, nights: 0 };
-      const gross = num(r.sell_price_corrected ?? r.total_amount);
-      const fees = num(r.fees_amount);
-      const commission = num(r.company_commission);
-      cur.gross += gross;
-      cur.fees += fees;
-      cur.commission += commission;
-      cur.net += gross - fees - commission;
+      cur.gross += reservationGross(r);
+      cur.fees += reservationChannelFees(r);
+      cur.commission += reservationCommission(r);
+      cur.net += reservationNet(r);
       cur.count += 1;
-      cur.nights += num(r.nights);
+      cur.nights += fnum(r.nights);
       map.set(key, cur);
     });
     return map;
@@ -401,7 +397,6 @@ export default function Inteligencia() {
       months.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
     }
     const channelSet = new Set<string>();
-    const num = (v: any) => Number(v ?? 0) || 0;
     const byMonth = new Map<string, Map<string, number>>();
     historyFiltered.forEach((r) => {
       if (r.status === "canceled") return;
@@ -412,7 +407,7 @@ export default function Inteligencia() {
       const ch = r.channel || "Direto";
       channelSet.add(ch);
       const m = byMonth.get(key) ?? new Map<string, number>();
-      m.set(ch, (m.get(ch) ?? 0) + (num(r.sell_price_corrected ?? r.total_amount) - num(r.fees_amount) - num(r.company_commission)));
+      m.set(ch, (m.get(ch) ?? 0) + reservationNet(r));
       byMonth.set(key, m);
     });
     const channels = Array.from(channelSet).sort();
@@ -427,17 +422,15 @@ export default function Inteligencia() {
 
   // Channel summary table (current filtered period)
   const channelSummary = useMemo(() => {
-    const num = (v: any) => Number(v ?? 0) || 0;
     const map = new Map<string, { gross: number; net: number; count: number; leadSum: number; leadN: number }>();
     filteredCurrent.forEach((r) => {
       if (r.status === "canceled") return;
       const ch = r.channel || "Direto";
       const cur = map.get(ch) ?? { gross: 0, net: 0, count: 0, leadSum: 0, leadN: 0 };
-      const gross = num(r.sell_price_corrected ?? r.total_amount);
-      cur.gross += gross;
-      cur.net += gross - num(r.fees_amount) - num(r.company_commission);
+      cur.gross += reservationGross(r);
+      cur.net += reservationNet(r);
       cur.count += 1;
-      if (r.lead_time_days != null) { cur.leadSum += num(r.lead_time_days); cur.leadN += 1; }
+      if (r.lead_time_days != null) { cur.leadSum += fnum(r.lead_time_days); cur.leadN += 1; }
       map.set(ch, cur);
     });
     const totalNet = Array.from(map.values()).reduce((s, x) => s + x.net, 0);
