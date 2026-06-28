@@ -193,6 +193,7 @@ const methodColor: Record<Endpoint["method"], string> = {
   GET: "bg-emerald-500/15 text-emerald-700 border-emerald-500/30",
   POST: "bg-blue-500/15 text-blue-700 border-blue-500/30",
   PUT: "bg-amber-500/15 text-amber-700 border-amber-500/30",
+  PATCH: "bg-purple-500/15 text-purple-700 border-purple-500/30",
   DELETE: "bg-destructive/15 text-destructive border-destructive/30",
 };
 
