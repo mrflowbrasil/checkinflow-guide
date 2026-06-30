@@ -49,7 +49,12 @@ export function TemplatePreviewDialog({
           <div className="text-sm font-medium">Prévia: {template.name}</div>
         </div>
 
-        <div className={`guide-root ${tplClass} h-[78vh] overflow-y-auto`}>
+        <div
+          className={`guide-root ${tplClass} h-[78vh] overflow-y-auto`}
+          data-btn-shape="rounded"
+          data-btn-border="none"
+          data-cover-style="line"
+        >
           {!activePage ? (
             <HomePreview template={template} primary={primary} onOpenPage={(k) => setActiveKey(k)} />
           ) : (
@@ -61,6 +66,7 @@ export function TemplatePreviewDialog({
             />
           )}
         </div>
+
       </DialogContent>
     </Dialog>
   );
