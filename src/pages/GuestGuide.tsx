@@ -267,7 +267,7 @@ function GuideBody({
           </div>
         )}
 
-        <div className="absolute bottom-0 left-0 right-0 p-6 text-white text-center">
+        <div className="absolute bottom-0 left-0 right-0 z-10 p-6 text-white text-center">
           <h1 className="text-3xl sm:text-4xl font-semibold drop-shadow-lg">{data.name}</h1>
           {data.address && <p className="text-sm sm:text-base opacity-90 mt-2 drop-shadow">{t(data.address)}</p>}
         </div>
