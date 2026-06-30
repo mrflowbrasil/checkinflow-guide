@@ -86,11 +86,14 @@ function HomePreview({
       <div className="relative">
         <div className="aspect-[4/3] w-full overflow-hidden">
           <img src={COVER_IMG} alt="Preview" className="h-full w-full object-cover" />
-          <div
-            className="absolute inset-0"
-            style={{ background: "linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.65) 100%)" }}
-          />
+          <div className="guide-cover-fade" data-cover-style="line" />
         </div>
+        <div className="absolute bottom-0 left-0 right-0 p-5 text-white text-center">
+          <h1 className="text-2xl font-semibold drop-shadow-lg">Suíte Premium - Vila Serena</h1>
+          <p className="text-xs opacity-90 mt-1 drop-shadow">Campos do Jordão - São Paulo - SP</p>
+        </div>
+      </div>
+
         <div className="absolute bottom-0 left-0 right-0 p-5 text-white text-center">
           <h1 className="text-2xl font-semibold drop-shadow-lg">Suíte Premium - Vila Serena</h1>
           <p className="text-xs opacity-90 mt-1 drop-shadow">Campos do Jordão - São Paulo - SP</p>
