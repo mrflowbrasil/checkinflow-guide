@@ -174,7 +174,7 @@ function PagePreview({
           <ArrowLeft className="h-5 w-5" />
         </Button>
       </div>
-      <div className="px-5 pt-4 pb-12">
+      <div className="guide-inner-decor px-5 pt-4 pb-12">
         <div className="flex flex-col items-center text-center mb-6">
           <span className="guide-page-icon-halo mb-3">
             <Icon className="h-10 w-10" style={{ color: primary }} />
