@@ -47,7 +47,7 @@ export default function GuestGuide() {
         .from("properties")
         .select(`
           id, name, address, booking_url, cover_image_url, public_slug, status, access_password_enabled, access_password,
-          tenants!inner(id, name, primary_color, secondary_color, template, is_active, logo_url, show_logo, plan_code, instagram_url, facebook_url),
+          tenants!inner(id, name, primary_color, secondary_color, template, is_active, logo_url, show_logo, plan_code, instagram_url, facebook_url, button_shape, button_border, cover_transition),
           property_pages(id, page_key, title, icon, position, is_enabled)
         `)
         .eq("public_slug", slug!)
@@ -273,36 +273,39 @@ function GuideBody({
       </div>
 
       <div className="max-w-md mx-auto px-4 -mt-4 relative z-10">
-        {/* Título da seção */}
-        <div className="text-center mt-6 mb-4">
-          <h2 className="guide-kicker-ornament text-sm font-semibold tracking-[0.25em] uppercase" style={{ color: primaryColor }}>
-            {t("Hub de Boas Vindas")}
-          </h2>
+        {/* Decor wrapper: kicker + grid */}
+        <div className="guide-home-decor">
+          {/* Título da seção */}
+          <div className="text-center mt-6 mb-4">
+            <h2 className="guide-kicker-ornament text-sm font-semibold tracking-[0.25em] uppercase" style={{ color: primaryColor }}>
+              {t("Hub de Boas Vindas")}
+            </h2>
+          </div>
+
+          {/* Grid */}
+          <div className="grid grid-cols-3 gap-3 pb-6">
+            {pages.map((p: any) => {
+              const Icon = getPageIcon(p.icon);
+              const isEmergency = p.page_key === "emergency";
+              return (
+                <button
+                  key={p.id}
+                  onClick={() => setActivePageKey(p.page_key)}
+                  className="guide-card aspect-square flex flex-col items-center justify-center gap-2 p-2 transition-all active:scale-95 shadow-card hover:shadow-card-hover"
+                >
+                  <Icon
+                    className="h-7 w-7"
+                    style={{ color: isEmergency ? "hsl(var(--destructive))" : primaryColor }}
+                  />
+                  <span className="text-xs font-medium text-center leading-tight" style={{ color: isEmergency ? "hsl(var(--destructive))" : "hsl(var(--guide-fg))" }}>
+                    {t(p.title)}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-
-        {/* Grid */}
-        <div className="grid grid-cols-3 gap-3 pb-6">
-          {pages.map((p: any) => {
-            const Icon = getPageIcon(p.icon);
-            const isEmergency = p.page_key === "emergency";
-            return (
-              <button
-                key={p.id}
-                onClick={() => setActivePageKey(p.page_key)}
-                className="guide-card aspect-square flex flex-col items-center justify-center gap-2 p-2 transition-all active:scale-95 shadow-card hover:shadow-card-hover"
-              >
-                <Icon
-                  className="h-7 w-7"
-                  style={{ color: isEmergency ? "hsl(var(--destructive))" : primaryColor }}
-                />
-                <span className="text-xs font-medium text-center leading-tight" style={{ color: isEmergency ? "hsl(var(--destructive))" : "hsl(var(--guide-fg))" }}>
-                  {t(p.title)}
-                </span>
-              </button>
-            );
-          })}
-        </div>
 
         {/* Reservar (após os ícones) */}
         {data.booking_url && (

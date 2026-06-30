@@ -40,7 +40,7 @@ export function GuestPagePreview({
           )}
         </div>
       </div>
-      <div className="px-5 pt-4 pb-12">
+      <div className="guide-inner-decor px-5 pt-4 pb-12">
         <div className="flex flex-col items-center text-center mb-6">
           {Icon && (
             <span className="guide-page-icon-halo mb-3">
@@ -59,6 +59,7 @@ export function GuestPagePreview({
           <BlocksRenderer blocks={blocks} primaryColor={primaryColor} translate />
         )}
       </div>
+
     </div>
   );
 }
