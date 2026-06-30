@@ -43,10 +43,13 @@ export function GuestPagePreview({
       <div className="px-5 pt-4 pb-12">
         <div className="flex flex-col items-center text-center mb-6">
           {Icon && (
-            <Icon className="h-12 w-12 mb-3" style={{ color: primaryColor ?? "hsl(var(--guide-fg))" }} />
+            <span className="guide-page-icon-halo mb-3">
+              <Icon className="h-12 w-12" style={{ color: primaryColor ?? "hsl(var(--guide-fg))" }} />
+            </span>
           )}
           <h2 className="text-2xl font-semibold">{t(pageTitle)}</h2>
         </div>
+
 
         {blocks.length === 0 ? (
           <p className="text-center text-sm py-12" style={{ color: "hsl(var(--guide-muted))" }}>
