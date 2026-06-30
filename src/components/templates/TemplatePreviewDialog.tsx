@@ -99,11 +99,12 @@ function HomePreview({
       <div className="px-4 -mt-3 relative z-10 pb-8">
         <div className="text-center mt-5 mb-3">
           <h2
-            className="text-xs font-semibold tracking-[0.25em] uppercase"
+            className="guide-kicker-ornament text-xs font-semibold tracking-[0.25em] uppercase"
             style={{ color: primary }}
           >
             Hub de Boas Vindas
           </h2>
+
         </div>
 
         <div className="grid grid-cols-3 gap-2.5">
