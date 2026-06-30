@@ -250,7 +250,7 @@ function GuideBody({
           ) : (
             <div className="h-full w-full bg-muted" />
           )}
-          <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.65) 100%)" }} />
+          <div className="guide-cover-fade" data-cover-style={coverStyle} />
         </div>
 
         {/* Logo flutuante sobre a capa */}
