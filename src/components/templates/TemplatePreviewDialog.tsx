@@ -97,36 +97,38 @@ function HomePreview({
 
 
       <div className="px-4 -mt-3 relative z-10 pb-8">
-        <div className="text-center mt-5 mb-3">
-          <h2
-            className="guide-kicker-ornament text-xs font-semibold tracking-[0.25em] uppercase"
-            style={{ color: primary }}
-          >
-            Hub de Boas Vindas
-          </h2>
+        <div className="guide-home-decor">
+          <div className="text-center mt-5 mb-3">
+            <h2
+              className="guide-kicker-ornament text-xs font-semibold tracking-[0.25em] uppercase"
+              style={{ color: primary }}
+            >
+              Hub de Boas Vindas
+            </h2>
+          </div>
 
-        </div>
-
-        <div className="grid grid-cols-3 gap-2.5">
-          {FAKE_PAGES.map((p) => {
-            const Icon = getPageIcon(p.icon);
-            return (
-              <button
-                key={p.key}
-                onClick={() => onOpenPage(p.key)}
-                className="guide-card aspect-square flex flex-col items-center justify-center gap-2 p-2 transition-all active:scale-95 shadow-sm"
-              >
-                <Icon className="h-6 w-6" style={{ color: primary }} />
-                <span
-                  className="text-[11px] font-medium text-center leading-tight"
-                  style={{ color: "hsl(var(--guide-fg))" }}
+          <div className="grid grid-cols-3 gap-2.5">
+            {FAKE_PAGES.map((p) => {
+              const Icon = getPageIcon(p.icon);
+              return (
+                <button
+                  key={p.key}
+                  onClick={() => onOpenPage(p.key)}
+                  className="guide-card aspect-square flex flex-col items-center justify-center gap-2 p-2 transition-all active:scale-95 shadow-sm"
                 >
-                  {p.title}
-                </span>
-              </button>
-            );
-          })}
+                  <Icon className="h-6 w-6" style={{ color: primary }} />
+                  <span
+                    className="text-[11px] font-medium text-center leading-tight"
+                    style={{ color: "hsl(var(--guide-fg))" }}
+                  >
+                    {p.title}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
+
 
         <Button
           size="lg"
