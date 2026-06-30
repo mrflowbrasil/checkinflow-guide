@@ -174,9 +174,12 @@ function PagePreview({
       </div>
       <div className="px-5 pt-4 pb-12">
         <div className="flex flex-col items-center text-center mb-6">
-          <Icon className="h-10 w-10 mb-3" style={{ color: primary }} />
+          <span className="guide-page-icon-halo mb-3">
+            <Icon className="h-10 w-10" style={{ color: primary }} />
+          </span>
           <h2 className="text-xl font-semibold">{title}</h2>
         </div>
+
 
         <p className="text-sm mb-4" style={{ color: "hsl(var(--guide-fg))" }}>
           Este é um exemplo de conteúdo desta página. O texto do guia aparece aqui com a
