@@ -546,12 +546,15 @@
   .guide-root[data-btn-border="none"] .guide-card,
   .guide-root[data-btn-border="none"] .guide-cta-primary {
     border-width: 0 !important;
+    outline: 0 solid transparent !important;
   }
   .guide-root[data-btn-border="outline"] .guide-card,
   .guide-root[data-btn-border="outline"] .guide-cta-primary {
     border-width: 1.5px !important;
     border-style: solid !important;
     border-color: var(--guide-btn-border-color) !important;
+    outline: 1.5px solid var(--guide-btn-border-color) !important;
+    outline-offset: -1.5px !important;
   }
   .guide-root .guide-card {
     border-radius: var(--guide-btn-radius);
