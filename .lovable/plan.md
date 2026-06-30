@@ -1,50 +1,57 @@
-## Ajustes nos detalhes decorativos do template Boho Fun
+Plano de correção para o degradê da capa
 
-### 1. Capa: degradê não aplica no guia público (bug)
+O problema atual é de conceito e estrutura: o CSS aplica um overlay escuro dentro da imagem da capa, mas a linha dura que aparece no Android está na transição entre a imagem e a seção bege do guia. Como o degradê está preso dentro do container da imagem, ele não consegue “fundir” a capa com o fundo do template.
 
-A query do `GuestGuide.tsx` seleciona apenas alguns campos do `tenants` e **não inclui** `cover_transition`, `button_shape` e `button_border`. Por isso o valor salvo no painel nunca chega no guia público — sempre cai no default `"line"`.
+Implementação proposta:
 
-**Correção**: adicionar `button_shape, button_border, cover_transition` ao `select` de `tenants!inner(...)` em `src/pages/GuestGuide.tsx`.
+1. Separar dois efeitos diferentes
+- Manter um overlay escuro leve sobre a imagem apenas para legibilidade do título.
+- Criar um segundo degradê específico para transição capa → fundo do template.
+- Esse degradê deve usar a cor real do template (`--guide-bg`) e não apenas preto/transparente.
 
-### 2. Home: decorações dentro da área dos 9 botões
+2. Ajustar a estrutura do hero no guia público
+- Adicionar classes semânticas no hero, por exemplo:
+  - `guide-hero`
+  - `guide-cover-media`
+  - `guide-cover-readability`
+  - `guide-cover-transition`
+- A transição em degradê ficará posicionada no rodapé do hero e poderá avançar visualmente sobre a área seguinte, sem ficar cortada pelo `overflow-hidden` da imagem.
 
-Hoje as decorações são `::before/::after` no `.guide-root`:
-- `::before` (topo direito) fica atrás da capa → não aparece.
-- `::after` (rodapé esquerdo) só aparece com scroll, longe dos botões.
+3. Corrigir o CSS do modo “Linha” vs “Degradê”
+- `line`: mantém a separação atual, com corte mais direto entre capa e conteúdo.
+- `gradient`: aplica uma faixa de transição mais alta, com múltiplos stops, indo da imagem para `hsl(var(--guide-bg))`.
+- A transição será aplicada por seletor no root:
+  - `.guide-root[data-cover-style="gradient"] .guide-cover-transition`
+  - `.guide-root[data-cover-style="line"] .guide-cover-transition`
 
-**Correção**: ancorar as decorações em um wrapper novo `.guide-home-decor` que envolve a seção do kicker + grid de 9 botões (em `GuestGuide.tsx` e em `TemplatePreviewDialog.tsx`). Mover os pseudo-elementos do Boho Fun para esse wrapper:
-- `::before` no canto superior direito do wrapper (acima do grid, abaixo do kicker, sem cobrir os botões — usa `top: -10px; right: -30px`).
-- `::after` no canto inferior esquerdo do wrapper (ao lado/abaixo da última linha de botões).
-- Manter `overflow: visible` no wrapper, pequena opacidade e `z-index: 0` com `.guide-home-decor > * { position: relative; z-index: 1; }`.
+4. Garantir compatibilidade Android/iPhone
+- Evitar `mask-image`, filtros e variáveis CSS aninhadas que já falharam em Android/Chrome.
+- Usar apenas `linear-gradient()` simples com `hsl(var(--guide-bg) / alpha)`, que é suportado nos navegadores modernos.
+- Adicionar um fallback com `background-color: hsl(var(--guide-bg))` no final da faixa para eliminar linha dura.
 
-Assim os ornamentos ficam visíveis na primeira dobra, junto ao grid, sem serem cobertos pela capa.
+5. Aplicar também no preview dos templates
+- Atualizar `TemplatePreviewDialog.tsx` para usar a mesma estrutura do guia real.
+- Isso evita o painel mostrar uma prévia diferente do link público.
 
-### 3. Páginas internas: topo coberto e rodapé fora da 1ª dobra
+6. Verificar bordas dos botões junto com a correção
+- Reforçar os seletores de forma/borda depois dos overrides dos templates.
+- Validar que `data-btn-border="outline"` gera `border-width: 1.5px` nos cards e CTA.
 
-A folha decorativa superior nas páginas internas hoje é renderizada no `.guide-root` e fica encoberta pelo header sticky do `SheetContent` (a "máscara" indicada na imagem 3). A folha inferior só aparece bem no fim do scroll.
+7. Validação antes de finalizar
+- Testar o link público do Vila Serena em viewport mobile equivalente ao print.
+- Confirmar no DOM/computed style:
+  - root com `data-cover-style="gradient"`
+  - `.guide-cover-transition` com `background-image: linear-gradient(...)`
+  - cor final do degradê igual ao fundo do template Boho Fun
+  - cards com borda quando configurado
+- Comparar visualmente: a linha horizontal entre foto e fundo bege deve desaparecer ou ficar suavizada.
 
-**Correção** em `src/components/guest/GuestPagePreview.tsx`:
-- Adicionar um container `.guide-inner-decor` envolvendo o conteúdo da página (após o header sticky).
-- Mover a decoração superior para esse container, **abaixo** da altura do header sticky (`top: 16px; right: -30px`, escala menor: ~140px) — evita a máscara mostrada na imagem.
-- Tornar a decoração inferior um padrão repetido verticalmente: usar `background-repeat: repeat-y` num pseudo-elemento posicionado em `left: -20px; top: 40vh; bottom: 0; width: 120px; background-size: 120px auto` — assim a cada "frame de tela" descendo aparece uma nova cópia da folhagem, garantindo que apareça já na primeira dobra e se repita em páginas longas.
-- Mesma lógica espelhada à direita opcionalmente (menor opacidade) para páginas muito longas — manter discreto.
+Arquivos previstos:
+- `src/pages/GuestGuide.tsx`
+- `src/components/templates/TemplatePreviewDialog.tsx`
+- `src/index.css`
 
-### 4. Aplicar mudanças também no preview do template
-
-`src/components/templates/TemplatePreviewDialog.tsx` precisa receber:
-- O wrapper `.guide-home-decor` na `HomePreview`.
-- O wrapper `.guide-inner-decor` na `PagePreview`.
-- Hardcode `data-cover-style` continua, mas o gradiente agora será visualmente verificável.
-
-### Arquivos alterados
-
-- `src/index.css` — mover regras `::before/::after` do Boho Fun de `.guide-root.guide-template-boho_fun` para `.guide-root.guide-template-boho_fun .guide-home-decor` e `.guide-inner-decor`; adicionar variante repetida (`repeat-y`) para o padrão lateral interno.
-- `src/pages/GuestGuide.tsx` — incluir `button_shape, button_border, cover_transition` no `select`; envolver kicker + grid em `<div className="guide-home-decor relative">`.
-- `src/components/guest/GuestPagePreview.tsx` — envolver conteúdo em `<div className="guide-inner-decor relative">`.
-- `src/components/templates/TemplatePreviewDialog.tsx` — aplicar os mesmos wrappers no preview.
-
-### Resultado esperado
-
-- Folhas/ornamentos do Boho Fun visíveis na primeira tela, ao redor do grid de 9 botões.
-- Nas páginas internas, decoração superior não é mais cortada pelo header e folhagem lateral se repete conforme o usuário rola, garantindo presença em qualquer altura de conteúdo.
-- Capa com transição em degradê funciona corretamente para tenants que escolheram essa opção.
+Resultado esperado:
+- No Android e iPhone, o modo “Degradê” deixa de parecer uma linha reta e passa a fundir a capa com o fundo do template.
+- O comportamento fica consistente entre guia público e prévia de template.
+- As bordas dos botões continuam respeitando a personalização salva.

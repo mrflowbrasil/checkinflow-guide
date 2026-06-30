@@ -232,10 +232,10 @@ function GuideBody({
         </Helmet>
       )}
       {/* Hero */}
-      <div className="relative">
+      <div className="guide-hero relative">
         <LanguageSwitcher locale={locale} onChange={onLocaleChange} isLoading={tLoading} />
         <SocialLinks instagramUrl={tenant?.instagram_url} facebookUrl={tenant?.facebook_url} />
-        <div className="aspect-[4/3] sm:aspect-[16/10] max-h-[60vh] w-full overflow-hidden">
+        <div className="guide-cover-media aspect-[4/3] sm:aspect-[16/10] max-h-[60vh] w-full overflow-hidden">
           {data.cover_image_url ? (
             <img
               src={sbImage(data.cover_image_url, { width: 960 })}
@@ -250,8 +250,9 @@ function GuideBody({
           ) : (
             <div className="h-full w-full bg-muted" />
           )}
-          <div className="guide-cover-fade" data-cover-style={coverStyle} />
+          <div className="guide-cover-readability" />
         </div>
+        <div className="guide-cover-transition" />
 
         {/* Logo flutuante sobre a capa */}
         {tenant?.show_logo && tenant?.logo_url && (tenant?.plan_code === "pro" || tenant?.plan_code === "business") && (

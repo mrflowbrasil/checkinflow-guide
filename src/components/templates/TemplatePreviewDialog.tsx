@@ -83,11 +83,12 @@ function HomePreview({
 }) {
   return (
     <>
-      <div className="relative">
-        <div className="aspect-[4/3] w-full overflow-hidden">
+      <div className="guide-hero relative">
+        <div className="guide-cover-media aspect-[4/3] w-full overflow-hidden">
           <img src={COVER_IMG} alt="Preview" className="h-full w-full object-cover" />
-          <div className="guide-cover-fade" data-cover-style="line" />
+          <div className="guide-cover-readability" />
         </div>
+        <div className="guide-cover-transition" />
         <div className="absolute bottom-0 left-0 right-0 p-5 text-white text-center">
           <h1 className="text-2xl font-semibold drop-shadow-lg">Suíte Premium - Vila Serena</h1>
           <p className="text-xs opacity-90 mt-1 drop-shadow">Campos do Jordão - São Paulo - SP</p>
