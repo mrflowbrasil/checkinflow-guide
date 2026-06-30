@@ -543,6 +543,16 @@
   .guide-root[data-btn-shape="pill"]     { --guide-btn-radius: 9999px; }
   .guide-root[data-btn-border="outline"] { --guide-btn-border-width: 1.5px; }
 
+  .guide-root[data-btn-border="none"] .guide-card,
+  .guide-root[data-btn-border="none"] .guide-cta-primary {
+    border-width: 0 !important;
+  }
+  .guide-root[data-btn-border="outline"] .guide-card,
+  .guide-root[data-btn-border="outline"] .guide-cta-primary {
+    border-width: 1.5px !important;
+    border-style: solid !important;
+    border-color: var(--guide-btn-border-color) !important;
+  }
   .guide-root .guide-card {
     border-radius: var(--guide-btn-radius);
     border-width: var(--guide-btn-border-width) !important;
