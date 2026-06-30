@@ -275,10 +275,11 @@ function GuideBody({
       <div className="max-w-md mx-auto px-4 -mt-4 relative z-10">
         {/* Título da seção */}
         <div className="text-center mt-6 mb-4">
-          <h2 className="text-sm font-semibold tracking-[0.25em] uppercase" style={{ color: primaryColor }}>
+          <h2 className="guide-kicker-ornament text-sm font-semibold tracking-[0.25em] uppercase" style={{ color: primaryColor }}>
             {t("Hub de Boas Vindas")}
           </h2>
         </div>
+
 
         {/* Grid */}
         <div className="grid grid-cols-3 gap-3 pb-6">
