@@ -307,6 +307,7 @@
   /* Dark template: força fundo escuro e inverte CTA primário */
   .guide-template-dark.guide-root,
   .guide-root.guide-template-dark {
+    --guide-bg-rgb: 10, 20, 41;
     background-color: hsl(222 60% 10%) !important;
     color: hsl(0 0% 98%) !important;
   }
@@ -322,6 +323,7 @@
   /* Luxury template: fundo creme, cards mais claros, acentos dourados */
   .guide-template-luxury.guide-root,
   .guide-root.guide-template-luxury {
+    --guide-bg-rgb: 243, 235, 217;
     background-color: #f3ebd9 !important;
     color: #c9a35b !important;
   }
@@ -337,6 +339,7 @@
   /* Pop Vibes template */
   .guide-template-pop_vibes.guide-root,
   .guide-root.guide-template-pop_vibes {
+    --guide-bg-rgb: 80, 156, 228;
     background-color: #509ce4 !important;
     color: #ef6a3a !important;
   }
@@ -352,6 +355,7 @@
   /* Surf template */
   .guide-template-surf.guide-root,
   .guide-root.guide-template-surf {
+    --guide-bg-rgb: 255, 255, 255;
     background-color: #ffffff !important;
     color: #008889 !important;
   }
@@ -367,6 +371,7 @@
   /* Monochrome template */
   .guide-template-monochrome.guide-root,
   .guide-root.guide-template-monochrome {
+    --guide-bg-rgb: 255, 255, 255;
     background-color: #ffffff !important;
     color: #010101 !important;
   }
@@ -382,6 +387,7 @@
   /* Modular template */
   .guide-template-modular.guide-root,
   .guide-root.guide-template-modular {
+    --guide-bg-rgb: 244, 245, 246;
     background-color: #f4f5f6 !important;
     color: #fdfdfd !important;
   }
@@ -397,6 +403,7 @@
   /* Urban Oasis template */
   .guide-template-urban_oasis.guide-root,
   .guide-root.guide-template-urban_oasis {
+    --guide-bg-rgb: 200, 184, 168;
     background-color: #c8b8a8 !important;
     color: #5e5851 !important;
   }
@@ -412,6 +419,7 @@
   /* Aegean template */
   .guide-template-aegean.guide-root,
   .guide-root.guide-template-aegean {
+    --guide-bg-rgb: 255, 255, 255;
     background-color: #ffffff !important;
     color: #1f6fb2 !important;
   }
@@ -427,6 +435,7 @@
   /* Studio Minimal template */
   .guide-template-studio_minimal.guide-root,
   .guide-root.guide-template-studio_minimal {
+    --guide-bg-rgb: 244, 244, 244;
     background-color: #f4f4f4 !important;
     color: #535353 !important;
   }
@@ -442,6 +451,7 @@
   /* Coastal Boho template */
   .guide-template-coastal_boho.guide-root,
   .guide-root.guide-template-coastal_boho {
+    --guide-bg-rgb: 50, 97, 104;
     background-color: #326168 !important;
     color: #ffffff !important;
   }
@@ -457,6 +467,7 @@
   /* Serene Coast template */
   .guide-template-serene_coast.guide-root,
   .guide-root.guide-template-serene_coast {
+    --guide-bg-rgb: 247, 240, 223;
     background-color: #f7f0df !important;
     color: #da755e !important;
   }
@@ -472,6 +483,7 @@
   /* Jungle template */
   .guide-template-jungle.guide-root,
   .guide-root.guide-template-jungle {
+    --guide-bg-rgb: 239, 230, 207;
     background-color: #efe6cf !important;
     color: #2f5a2c !important;
   }
@@ -487,6 +499,7 @@
   /* Arcade template */
   .guide-template-arcade.guide-root,
   .guide-root.guide-template-arcade {
+    --guide-bg-rgb: 42, 29, 74;
     background-color: #2a1d4a !important;
     color: #f5d24a !important;
   }
@@ -502,6 +515,7 @@
   /* Boho Fun template */
   .guide-template-boho_fun.guide-root,
   .guide-root.guide-template-boho_fun {
+    --guide-bg-rgb: 240, 227, 207;
     background-color: #f0e3cf !important;
     color: #2f6e63 !important;
   }
@@ -522,12 +536,27 @@
     --guide-btn-radius: var(--guide-radius);
     --guide-btn-border-width: 0px;
     --guide-btn-border-color: rgba(0, 0, 0, 0.18);
+    --guide-bg-rgb: 255, 255, 255;
   }
   .guide-root[data-btn-shape="square"]   { --guide-btn-radius: 0.25rem; }
   .guide-root[data-btn-shape="rounded"]  { --guide-btn-radius: 1rem; }
   .guide-root[data-btn-shape="pill"]     { --guide-btn-radius: 9999px; }
   .guide-root[data-btn-border="outline"] { --guide-btn-border-width: 1.5px; }
 
+  .guide-root[data-btn-border="none"] .guide-card,
+  .guide-root[data-btn-border="none"] .guide-cta-primary {
+    border-width: 0 !important;
+    outline: 0 solid transparent !important;
+  }
+  .guide-root[data-btn-border="outline"] .guide-card,
+  .guide-root[data-btn-border="outline"] .guide-cta-primary {
+    border-width: 1.5px !important;
+    border-style: solid !important;
+    border-color: var(--guide-btn-border-color) !important;
+    outline: 1.5px solid var(--guide-btn-border-color) !important;
+    outline-offset: -1.5px !important;
+    box-shadow: inset 0 0 0 1.5px var(--guide-btn-border-color), var(--shadow-card) !important;
+  }
   .guide-root .guide-card {
     border-radius: var(--guide-btn-radius);
     border-width: var(--guide-btn-border-width) !important;
@@ -549,42 +578,73 @@
   .guide-template-coastal_boho .guide-cta-primary,
   .guide-template-jungle .guide-card,
   .guide-template-jungle .guide-cta-primary {
+    --guide-btn-border-color: rgba(255, 255, 255, 0.28);
     border-color: rgba(255, 255, 255, 0.28) !important;
   }
 
-  /* Transição da capa: line (overlay escuro) vs gradient (degradê suave) */
-  .guide-cover-fade {
+  /* Hero da capa: legibilidade separada da transição imagem → fundo */
+  .guide-hero {
+    isolation: isolate;
+  }
+  .guide-cover-media {
+    position: relative;
+  }
+  .guide-cover-readability,
+  .guide-cover-transition {
     position: absolute;
-    inset: 0;
     pointer-events: none;
-    background: transparent;
+    z-index: 5;
   }
-  .guide-cover-fade[data-cover-style="line"] {
-    background: linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.65) 100%);
-  }
-  .guide-cover-fade[data-cover-style="gradient"] {
+  .guide-cover-readability {
+    inset: 0;
     background-image: linear-gradient(
       to bottom,
-      rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, 0.05) 25%,
-      rgba(0, 0, 0, 0.15) 45%,
-      rgba(0, 0, 0, 0.32) 65%,
-      rgba(0, 0, 0, 0.55) 82%,
-      rgba(0, 0, 0, 0.72) 100%
+      rgba(0, 0, 0, 0) 24%,
+      rgba(0, 0, 0, 0.18) 58%,
+      rgba(0, 0, 0, 0.62) 100%
     );
   }
-  /* Templates escuros: degradê precisa ser ainda mais intenso na base para o título */
-  .guide-template-dark .guide-cover-fade[data-cover-style="gradient"],
-  .guide-template-arcade .guide-cover-fade[data-cover-style="gradient"],
-  .guide-template-coastal_boho .guide-cover-fade[data-cover-style="gradient"],
-  .guide-template-jungle .guide-cover-fade[data-cover-style="gradient"] {
+  .guide-cover-transition {
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 1px;
+    background-color: rgb(var(--guide-bg-rgb));
+    background-image: none;
+  }
+  .guide-root[data-cover-style="gradient"] .guide-cover-transition {
+    bottom: -68px;
+    height: 180px;
     background-image: linear-gradient(
       to bottom,
-      rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, 0.12) 30%,
-      rgba(0, 0, 0, 0.35) 55%,
-      rgba(0, 0, 0, 0.6) 78%,
-      rgba(0, 0, 0, 0.85) 100%
+      rgba(var(--guide-bg-rgb), 0) 0%,
+      rgba(var(--guide-bg-rgb), 0.08) 18%,
+      rgba(var(--guide-bg-rgb), 0.24) 34%,
+      rgba(var(--guide-bg-rgb), 0.48) 52%,
+      rgba(var(--guide-bg-rgb), 0.76) 70%,
+      rgba(var(--guide-bg-rgb), 0.94) 86%,
+      rgb(var(--guide-bg-rgb)) 100%
+    );
+  }
+  .guide-root[data-cover-style="line"] .guide-cover-transition {
+    bottom: -1px;
+    height: 1px;
+    background-color: rgb(var(--guide-bg-rgb));
+  }
+  /* Templates escuros: faixa um pouco mais alta para não criar corte duro em telas OLED */
+  .guide-template-dark[data-cover-style="gradient"] .guide-cover-transition,
+  .guide-template-arcade[data-cover-style="gradient"] .guide-cover-transition,
+  .guide-template-coastal_boho[data-cover-style="gradient"] .guide-cover-transition {
+    bottom: -78px;
+    height: 196px;
+    background-image: linear-gradient(
+      to bottom,
+      rgba(var(--guide-bg-rgb), 0) 0%,
+      rgba(var(--guide-bg-rgb), 0.12) 16%,
+      rgba(var(--guide-bg-rgb), 0.34) 36%,
+      rgba(var(--guide-bg-rgb), 0.62) 58%,
+      rgba(var(--guide-bg-rgb), 0.88) 80%,
+      rgb(var(--guide-bg-rgb)) 100%
     );
   }
 
