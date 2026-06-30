@@ -94,11 +94,7 @@ function HomePreview({
         </div>
       </div>
 
-        <div className="absolute bottom-0 left-0 right-0 p-5 text-white text-center">
-          <h1 className="text-2xl font-semibold drop-shadow-lg">Suíte Premium - Vila Serena</h1>
-          <p className="text-xs opacity-90 mt-1 drop-shadow">Campos do Jordão - São Paulo - SP</p>
-        </div>
-      </div>
+
 
       <div className="px-4 -mt-3 relative z-10 pb-8">
         <div className="text-center mt-5 mb-3">
