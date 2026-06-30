@@ -943,7 +943,10 @@ export type Database = {
       }
       tenants: {
         Row: {
+          button_border: string
+          button_shape: string
           catalog_bio: string | null
+          cover_transition: string
           created_at: string
           facebook_url: string | null
           id: string
@@ -965,7 +968,10 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          button_border?: string
+          button_shape?: string
           catalog_bio?: string | null
+          cover_transition?: string
           created_at?: string
           facebook_url?: string | null
           id?: string
@@ -987,7 +993,10 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          button_border?: string
+          button_shape?: string
           catalog_bio?: string | null
+          cover_transition?: string
           created_at?: string
           facebook_url?: string | null
           id?: string

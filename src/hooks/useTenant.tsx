@@ -14,7 +14,11 @@ export type Tenant = {
   is_active: boolean;
   plan_code: string;
   plan_status: string;
+  button_shape?: "square" | "rounded" | "pill" | null;
+  button_border?: "none" | "outline" | null;
+  cover_transition?: "line" | "gradient" | null;
 };
+
 
 export function useTenant() {
   const { user } = useAuth();

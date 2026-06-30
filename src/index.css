@@ -513,6 +513,113 @@
     background: #2f6e63 !important;
     color: #f0e3cf !important;
   }
+
+  /* ============================================================
+     Customização por tenant: forma/borda dos botões + transição da capa
+     Aplicados via data-attributes em .guide-root
+     ============================================================ */
+  .guide-root {
+    --guide-btn-radius: var(--guide-radius);
+    --guide-btn-border-width: 0px;
+    --guide-btn-border-color: hsl(var(--guide-fg) / 0.18);
+  }
+  .guide-root[data-btn-shape="square"]   { --guide-btn-radius: 0.25rem; }
+  .guide-root[data-btn-shape="rounded"]  { --guide-btn-radius: 1rem; }
+  .guide-root[data-btn-shape="pill"]     { --guide-btn-radius: 9999px; }
+  .guide-root[data-btn-border="outline"] { --guide-btn-border-width: 1.5px; }
+
+  .guide-root .guide-card {
+    border-radius: var(--guide-btn-radius);
+    border: var(--guide-btn-border-width) solid var(--guide-btn-border-color);
+  }
+  .guide-root .guide-cta-primary {
+    border-radius: var(--guide-btn-radius) !important;
+    border: var(--guide-btn-border-width) solid var(--guide-btn-border-color) !important;
+  }
+
+  /* Transição da capa: line (overlay escuro) vs gradient (degradê para o bg) */
+  .guide-cover-fade {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .guide-cover-fade[data-cover-style="line"] {
+    background: linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.65) 100%);
+  }
+  .guide-cover-fade[data-cover-style="gradient"] {
+    background: linear-gradient(
+      180deg,
+      rgba(0,0,0,0.15) 0%,
+      rgba(0,0,0,0.35) 50%,
+      hsl(var(--guide-bg) / 0.85) 88%,
+      hsl(var(--guide-bg)) 100%
+    );
+  }
+
+  /* ============================================================
+     Detalhes decorativos — Boho Fun (piloto)
+     SVG inline, sem requests externos.
+     ============================================================ */
+  .guide-root.guide-template-boho_fun {
+    position: relative;
+    overflow-x: hidden;
+  }
+  .guide-root.guide-template-boho_fun::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: -40px;
+    width: 220px;
+    height: 220px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.55;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><g fill='none' stroke='%232f6e63' stroke-width='1.6' stroke-linecap='round'><path d='M170 10 C 140 50, 130 90, 150 140'/><path d='M150 30 C 130 35, 115 45, 110 60'/><path d='M155 55 C 135 60, 120 72, 118 90'/><path d='M158 85 C 138 92, 125 105, 128 125'/><path d='M165 115 C 148 125, 140 140, 145 158'/></g><g fill='%232f6e63' opacity='0.55'><ellipse cx='118' cy='62' rx='14' ry='6' transform='rotate(-30 118 62)'/><ellipse cx='124' cy='92' rx='14' ry='6' transform='rotate(-25 124 92)'/><ellipse cx='132' cy='124' rx='14' ry='6' transform='rotate(-20 132 124)'/><ellipse cx='148' cy='156' rx='14' ry='6' transform='rotate(-15 148 156)'/></g></svg>");
+  }
+  .guide-root.guide-template-boho_fun::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: -30px;
+    width: 160px;
+    height: 160px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><g fill='none' stroke='%232f6e63' stroke-width='1.4' stroke-linecap='round'><path d='M20 190 C 50 150, 70 110, 60 60'/><path d='M40 160 C 55 152, 70 148, 82 152'/><path d='M48 130 C 64 122, 80 120, 92 126'/><path d='M55 100 C 70 92, 85 92, 96 100'/></g><g fill='%232f6e63' opacity='0.5'><ellipse cx='82' cy='150' rx='12' ry='5' transform='rotate(20 82 150)'/><ellipse cx='92' cy='122' rx='12' ry='5' transform='rotate(15 92 122)'/><ellipse cx='96' cy='98' rx='12' ry='5' transform='rotate(10 96 98)'/></g></svg>");
+  }
+  .guide-root.guide-template-boho_fun > * { position: relative; z-index: 1; }
+
+  /* Ornamento abaixo do kicker "HUB DE BOAS VINDAS" */
+  .guide-root.guide-template-boho_fun .guide-kicker-ornament::after {
+    content: "";
+    display: block;
+    margin: 10px auto 0;
+    width: 56px;
+    height: 6px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 6'><path d='M0 3 H22 M34 3 H56' stroke='%232f6e63' stroke-width='1.2' stroke-linecap='round'/><circle cx='28' cy='3' r='2.2' fill='%232f6e63'/></svg>");
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  /* Halo sutil ao redor do ícone das páginas internas */
+  .guide-root.guide-template-boho_fun .guide-page-icon-halo {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    padding: 14px;
+  }
+  .guide-root.guide-template-boho_fun .guide-page-icon-halo::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    border: 1.5px dashed hsl(170 35% 35% / 0.45);
+  }
 }
 
 /* Fonts for guide templates */

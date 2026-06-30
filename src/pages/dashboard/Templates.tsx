@@ -200,7 +200,10 @@ export default function Templates() {
         </div>
       </section>
 
+      <CustomizationPanel tenant={tenant} />
+
       <AlertDialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
+
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Aplicar template "{selected?.name}"?</AlertDialogTitle>
@@ -297,3 +300,126 @@ function TemplateCard({
     </div>
   );
 }
+
+function CustomizationPanel({ tenant }: { tenant: any }) {
+  const qc = useQueryClient();
+  const shape: "square" | "rounded" | "pill" = tenant?.button_shape ?? "rounded";
+  const border: "none" | "outline" = tenant?.button_border ?? "none";
+  const cover: "line" | "gradient" = tenant?.cover_transition ?? "line";
+
+  const update = useMutation({
+    mutationFn: async (patch: Record<string, any>) => {
+      const { error } = await (supabase.from("tenants") as any).update(patch).eq("id", tenant.id);
+      if (error) throw error;
+    },
+
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["tenant"] });
+      toast.success("Personalização atualizada");
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  const shapeOptions: { value: "square" | "rounded" | "pill"; label: string; radius: string }[] = [
+    { value: "square", label: "Quadrado", radius: "4px" },
+    { value: "rounded", label: "Arredondado", radius: "14px" },
+    { value: "pill", label: "Pílula", radius: "9999px" },
+  ];
+
+  return (
+    <section className="space-y-3">
+      <div className="flex items-center gap-2">
+        <h2 className="font-semibold">Personalização visual</h2>
+        <Badge variant="secondary">Aplica em qualquer template</Badge>
+      </div>
+
+      <Card className="p-5 grid md:grid-cols-3 gap-6">
+        {/* Forma do botão */}
+        <div className="space-y-3">
+          <div className="text-sm font-medium">Formato dos botões</div>
+          <div className="grid grid-cols-3 gap-2">
+            {shapeOptions.map((opt) => {
+              const active = shape === opt.value;
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  disabled={update.isPending}
+                  onClick={() => update.mutate({ button_shape: opt.value })}
+                  className={`flex flex-col items-center gap-2 p-3 border-2 rounded-xl transition ${
+                    active ? "border-accent ring-2 ring-accent/30 bg-accent-soft" : "border-border hover:border-accent/40"
+                  }`}
+                >
+                  <div
+                    className="h-10 w-10 bg-primary/15 border border-primary/40"
+                    style={{ borderRadius: opt.radius }}
+                  />
+                  <span className="text-xs font-medium">{opt.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Borda dos botões */}
+        <div className="space-y-3">
+          <div className="text-sm font-medium">Borda dos botões</div>
+          <div className="grid grid-cols-2 gap-2">
+            {(["none", "outline"] as const).map((opt) => {
+              const active = border === opt;
+              return (
+                <button
+                  key={opt}
+                  type="button"
+                  disabled={update.isPending}
+                  onClick={() => update.mutate({ button_border: opt })}
+                  className={`flex flex-col items-center gap-2 p-3 border-2 rounded-xl transition ${
+                    active ? "border-accent ring-2 ring-accent/30 bg-accent-soft" : "border-border hover:border-accent/40"
+                  }`}
+                >
+                  <div
+                    className={`h-10 w-10 rounded-xl bg-primary/15 ${opt === "outline" ? "border-2 border-primary/60" : ""}`}
+                  />
+                  <span className="text-xs font-medium">
+                    {opt === "none" ? "Sem borda" : "Com contorno"}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Transição da capa */}
+        <div className="space-y-3">
+          <div className="text-sm font-medium">Transição da capa</div>
+          <div className="grid grid-cols-2 gap-2">
+            {(["line", "gradient"] as const).map((opt) => {
+              const active = cover === opt;
+              const bg =
+                opt === "line"
+                  ? "linear-gradient(180deg, hsl(var(--primary)/0.6) 0%, hsl(var(--primary)/0.85) 60%, hsl(var(--background)) 60%)"
+                  : "linear-gradient(180deg, hsl(var(--primary)/0.6) 0%, hsl(var(--primary)/0.4) 45%, hsl(var(--background)/0.95) 85%, hsl(var(--background)) 100%)";
+              return (
+                <button
+                  key={opt}
+                  type="button"
+                  disabled={update.isPending}
+                  onClick={() => update.mutate({ cover_transition: opt })}
+                  className={`flex flex-col items-center gap-2 p-3 border-2 rounded-xl transition ${
+                    active ? "border-accent ring-2 ring-accent/30 bg-accent-soft" : "border-border hover:border-accent/40"
+                  }`}
+                >
+                  <div className="h-12 w-full rounded-md overflow-hidden" style={{ background: bg }} />
+                  <span className="text-xs font-medium">
+                    {opt === "line" ? "Linha" : "Degradê"}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </Card>
+    </section>
+  );
+}
+

@@ -199,9 +199,18 @@ function GuideBody({
   };
   if (data.address) lodgingLd.address = { "@type": "PostalAddress", streetAddress: data.address };
   if (data.cover_image_url) lodgingLd.image = data.cover_image_url;
+  const btnShape = tenant?.button_shape ?? "rounded";
+  const btnBorder = tenant?.button_border ?? "none";
+  const coverStyle = tenant?.cover_transition ?? "line";
   return (
-    <div className={`guide-root guide-template-${template} min-h-screen ${showLeadBar ? "pt-12 sm:pt-14" : ""}`}>
+    <div
+      className={`guide-root guide-template-${template} min-h-screen ${showLeadBar ? "pt-12 sm:pt-14" : ""}`}
+      data-btn-shape={btnShape}
+      data-btn-border={btnBorder}
+      data-cover-style={coverStyle}
+    >
       {showLeadBar && <LeadCaptureBar />}
+
       <Seo
         title={seoTitle}
         description={seoDesc}
@@ -241,7 +250,7 @@ function GuideBody({
           ) : (
             <div className="h-full w-full bg-muted" />
           )}
-          <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.65) 100%)" }} />
+          <div className="guide-cover-fade" data-cover-style={coverStyle} />
         </div>
 
         {/* Logo flutuante sobre a capa */}
@@ -266,10 +275,11 @@ function GuideBody({
       <div className="max-w-md mx-auto px-4 -mt-4 relative z-10">
         {/* Título da seção */}
         <div className="text-center mt-6 mb-4">
-          <h2 className="text-sm font-semibold tracking-[0.25em] uppercase" style={{ color: primaryColor }}>
+          <h2 className="guide-kicker-ornament text-sm font-semibold tracking-[0.25em] uppercase" style={{ color: primaryColor }}>
             {t("Hub de Boas Vindas")}
           </h2>
         </div>
+
 
         {/* Grid */}
         <div className="grid grid-cols-3 gap-3 pb-6">

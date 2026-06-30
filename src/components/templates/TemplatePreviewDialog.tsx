@@ -49,7 +49,12 @@ export function TemplatePreviewDialog({
           <div className="text-sm font-medium">Prévia: {template.name}</div>
         </div>
 
-        <div className={`guide-root ${tplClass} h-[78vh] overflow-y-auto`}>
+        <div
+          className={`guide-root ${tplClass} h-[78vh] overflow-y-auto`}
+          data-btn-shape="rounded"
+          data-btn-border="none"
+          data-cover-style="line"
+        >
           {!activePage ? (
             <HomePreview template={template} primary={primary} onOpenPage={(k) => setActiveKey(k)} />
           ) : (
@@ -61,6 +66,7 @@ export function TemplatePreviewDialog({
             />
           )}
         </div>
+
       </DialogContent>
     </Dialog>
   );
@@ -80,10 +86,7 @@ function HomePreview({
       <div className="relative">
         <div className="aspect-[4/3] w-full overflow-hidden">
           <img src={COVER_IMG} alt="Preview" className="h-full w-full object-cover" />
-          <div
-            className="absolute inset-0"
-            style={{ background: "linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.65) 100%)" }}
-          />
+          <div className="guide-cover-fade" data-cover-style="line" />
         </div>
         <div className="absolute bottom-0 left-0 right-0 p-5 text-white text-center">
           <h1 className="text-2xl font-semibold drop-shadow-lg">Suíte Premium - Vila Serena</h1>
@@ -91,14 +94,17 @@ function HomePreview({
         </div>
       </div>
 
+
+
       <div className="px-4 -mt-3 relative z-10 pb-8">
         <div className="text-center mt-5 mb-3">
           <h2
-            className="text-xs font-semibold tracking-[0.25em] uppercase"
+            className="guide-kicker-ornament text-xs font-semibold tracking-[0.25em] uppercase"
             style={{ color: primary }}
           >
             Hub de Boas Vindas
           </h2>
+
         </div>
 
         <div className="grid grid-cols-3 gap-2.5">
@@ -168,9 +174,12 @@ function PagePreview({
       </div>
       <div className="px-5 pt-4 pb-12">
         <div className="flex flex-col items-center text-center mb-6">
-          <Icon className="h-10 w-10 mb-3" style={{ color: primary }} />
+          <span className="guide-page-icon-halo mb-3">
+            <Icon className="h-10 w-10" style={{ color: primary }} />
+          </span>
           <h2 className="text-xl font-semibold">{title}</h2>
         </div>
+
 
         <p className="text-sm mb-4" style={{ color: "hsl(var(--guide-fg))" }}>
           Este é um exemplo de conteúdo desta página. O texto do guia aparece aqui com a
