@@ -1,59 +1,50 @@
+## Ajustes nos detalhes decorativos do template Boho Fun
 
-## Objetivo
+### 1. Capa: degradê não aplica no guia público (bug)
 
-Deixar os templates do Guia mais ricos visualmente (detalhes decorativos por modelo, estilo "fundo PowerPoint") e dar ao usuário controle sobre:
-1. **Formato dos botões** da home (quadrado / arredondado / pílula) + opção de **borda**.
-2. **Estilo da transição** da capa para o conteúdo: **linha** (atual) ou **degradê** suave.
+A query do `GuestGuide.tsx` seleciona apenas alguns campos do `tenants` e **não inclui** `cover_transition`, `button_shape` e `button_border`. Por isso o valor salvo no painel nunca chega no guia público — sempre cai no default `"line"`.
 
-Sim, é totalmente viável — toda a infra de tokens por template já existe em `index.css`. A proposta abaixo é incremental, sem refazer templates existentes.
+**Correção**: adicionar `button_shape, button_border, cover_transition` ao `select` de `tenants!inner(...)` em `src/pages/GuestGuide.tsx`.
 
-## Etapa 1 — Aplicar no Boho Fun (teste para aprovar)
+### 2. Home: decorações dentro da área dos 9 botões
 
-Antes de tocar nos outros 14 templates, faço o piloto **só no Boho Fun**:
+Hoje as decorações são `::before/::after` no `.guide-root`:
+- `::before` (topo direito) fica atrás da capa → não aparece.
+- `::after` (rodapé esquerdo) só aparece com scroll, longe dos botões.
 
-- Detalhes decorativos sutis (SVG inline, leves, sem impacto de performance):
-  - Folhas/curvas orgânicas no canto superior direito da home (atrás do hero).
-  - Linha decorativa fina abaixo do título "HUB DE BOAS VINDAS".
-  - Watermark discreto no rodapé das páginas internas (ex: pequena folha estilizada com baixa opacidade).
-  - Pequeno ornamento ao redor do ícone das páginas internas (anel suave usando `--guide-primary`).
-- Tudo 100% via CSS/SVG no escopo `.guide-template-boho_fun` — zero imagens externas, zero peso extra.
+**Correção**: ancorar as decorações em um wrapper novo `.guide-home-decor` que envolve a seção do kicker + grid de 9 botões (em `GuestGuide.tsx` e em `TemplatePreviewDialog.tsx`). Mover os pseudo-elementos do Boho Fun para esse wrapper:
+- `::before` no canto superior direito do wrapper (acima do grid, abaixo do kicker, sem cobrir os botões — usa `top: -10px; right: -30px`).
+- `::after` no canto inferior esquerdo do wrapper (ao lado/abaixo da última linha de botões).
+- Manter `overflow: visible` no wrapper, pequena opacidade e `z-index: 0` com `.guide-home-decor > * { position: relative; z-index: 1; }`.
 
-Você aprova nesse template e eu replico o mesmo *padrão de moldura decorativa* (com motivo próprio) para os demais: Pop Vibes (bolhas/raios), Arcade (pixels/grid neon), Jungle (folhagem densa), Aegean (ondas mediterrâneas), Luxury (filetes dourados), etc.
+Assim os ornamentos ficam visíveis na primeira dobra, junto ao grid, sem serem cobertos pela capa.
 
-## Etapa 2 — Configuração por tenant (botões + capa)
+### 3. Páginas internas: topo coberto e rodapé fora da 1ª dobra
 
-Adicionar 3 campos novos no `public.tenants`:
+A folha decorativa superior nas páginas internas hoje é renderizada no `.guide-root` e fica encoberta pelo header sticky do `SheetContent` (a "máscara" indicada na imagem 3). A folha inferior só aparece bem no fim do scroll.
 
-| Campo | Valores | Default |
-|---|---|---|
-| `button_shape` | `square` · `rounded` · `pill` | `rounded` |
-| `button_border` | `none` · `outline` | `none` |
-| `cover_transition` | `line` · `gradient` | `line` |
+**Correção** em `src/components/guest/GuestPagePreview.tsx`:
+- Adicionar um container `.guide-inner-decor` envolvendo o conteúdo da página (após o header sticky).
+- Mover a decoração superior para esse container, **abaixo** da altura do header sticky (`top: 16px; right: -30px`, escala menor: ~140px) — evita a máscara mostrada na imagem.
+- Tornar a decoração inferior um padrão repetido verticalmente: usar `background-repeat: repeat-y` num pseudo-elemento posicionado em `left: -20px; top: 40vh; bottom: 0; width: 120px; background-size: 120px auto` — assim a cada "frame de tela" descendo aparece uma nova cópia da folhagem, garantindo que apareça já na primeira dobra e se repita em páginas longas.
+- Mesma lógica espelhada à direita opcionalmente (menor opacidade) para páginas muito longas — manter discreto.
 
-Aplicados no Guia via CSS vars (`--guide-btn-radius`, `--guide-btn-border`) que já vão ser lidas por `.guide-card` e pelo CTA "Reservar Novamente". A transição da capa vira um seletor entre a borda atual e um degradê suave da cor da capa para `--guide-bg`.
+### 4. Aplicar mudanças também no preview do template
 
-## Etapa 3 — UI em /app/templates
+`src/components/templates/TemplatePreviewDialog.tsx` precisa receber:
+- O wrapper `.guide-home-decor` na `HomePreview`.
+- O wrapper `.guide-inner-decor` na `PagePreview`.
+- Hardcode `data-cover-style` continua, mas o gradiente agora será visualmente verificável.
 
-Abaixo do grid de templates, adicionar um card **"Personalizar"** com:
-- 3 toggles visuais para formato do botão (mini preview de cada).
-- Switch para borda dos botões.
-- 2 toggles para estilo da transição da capa (line / gradient) com mini preview.
+### Arquivos alterados
 
-Tudo persiste em `tenants` e reflete em tempo real no preview e no Guia público. Funciona em qualquer template.
+- `src/index.css` — mover regras `::before/::after` do Boho Fun de `.guide-root.guide-template-boho_fun` para `.guide-root.guide-template-boho_fun .guide-home-decor` e `.guide-inner-decor`; adicionar variante repetida (`repeat-y`) para o padrão lateral interno.
+- `src/pages/GuestGuide.tsx` — incluir `button_shape, button_border, cover_transition` no `select`; envolver kicker + grid em `<div className="guide-home-decor relative">`.
+- `src/components/guest/GuestPagePreview.tsx` — envolver conteúdo em `<div className="guide-inner-decor relative">`.
+- `src/components/templates/TemplatePreviewDialog.tsx` — aplicar os mesmos wrappers no preview.
 
-## Detalhes técnicos
+### Resultado esperado
 
-- **Migration**: adicionar colunas `button_shape`, `button_border`, `cover_transition` em `public.tenants` (text + CHECK), defaults compatíveis com o visual atual (nada quebra para tenants existentes).
-- **CSS (`src/index.css`)**:
-  - Novos tokens `--guide-btn-radius`, `--guide-btn-border-width`, `--guide-btn-border-color`.
-  - `.guide-card` passa a usar `border-radius: var(--guide-btn-radius)` e `border: var(--guide-btn-border-width) solid var(--guide-btn-border-color)`.
-  - Bloco `.guide-template-boho_fun` ganha pseudo-elementos `::before/::after` com SVG inline (folhas, linhas) posicionados absolutamente no `guide-root`.
-- **`GuestGuide.tsx` / `TemplatePreviewDialog.tsx`**:
-  - Aplicar inline-style com os tokens vindos do tenant.
-  - Trocar o gradiente fixo da capa por um helper que monta `linear-gradient` (modo gradient) ou mantém a borda atual (modo line).
-- **`src/pages/dashboard/Templates.tsx`**: novo painel "Personalização visual" com os controles acima, usando `useMutation` para `tenants.update`.
-- **`useTenant`**: já retorna o tenant inteiro; só expor os novos campos.
-
-## Entrega do piloto
-
-Faço Etapa 1 + Etapa 2 + Etapa 3 numa única passada, mas com os detalhes decorativos só no **Boho Fun**. Você aprova o look-and-feel nesse template e, em seguida, eu aplico o mesmo padrão (com motivos próprios) nos outros 14.
+- Folhas/ornamentos do Boho Fun visíveis na primeira tela, ao redor do grid de 9 botões.
+- Nas páginas internas, decoração superior não é mais cortada pelo header e folhagem lateral se repete conforme o usuário rola, garantindo presença em qualquer altura de conteúdo.
+- Capa com transição em degradê funciona corretamente para tenants que escolheram essa opção.
