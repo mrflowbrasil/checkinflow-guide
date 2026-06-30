@@ -1,71 +1,59 @@
+
 ## Objetivo
 
-Permitir que sistemas externos (n8n etc.) liguem/desliguem a proteção "Acesso ao hub" de um imóvel e definam a senha simples, normalmente acionado quando uma nova reserva é criada (gerar senha a partir de dados do hóspede).
+Deixar os templates do Guia mais ricos visualmente (detalhes decorativos por modelo, estilo "fundo PowerPoint") e dar ao usuário controle sobre:
+1. **Formato dos botões** da home (quadrado / arredondado / pílula) + opção de **borda**.
+2. **Estilo da transição** da capa para o conteúdo: **linha** (atual) ou **degradê** suave.
 
-## Endpoint
+Sim, é totalmente viável — toda a infra de tokens por template já existe em `index.css`. A proposta abaixo é incremental, sem refazer templates existentes.
 
-`PATCH /properties-api/access` (adicionado ao edge function existente `properties-api`).
+## Etapa 1 — Aplicar no Boho Fun (teste para aprovar)
 
-### Autenticação
-- Header `X-API-Key: SUA_CHAVE` (mesmo padrão atual).
+Antes de tocar nos outros 14 templates, faço o piloto **só no Boho Fun**:
 
-### Body (JSON)
-| Campo | Tipo | Obrigatório | Descrição |
-|---|---|---|---|
-| `tenant_id` | uuid | sim | ID do tenant. Deve bater com o tenant da API key (senão `403 tenant_mismatch`). |
-| `property_id` | uuid | sim* | ID interno do imóvel. *Opcional se `external_id` for enviado. |
-| `external_id` | string | sim* | Alternativa ao `property_id`, casado com `external_provider` (padrão `stays`). |
-| `external_provider` | string | não | Padrão `stays`. |
-| `enabled` | boolean | não | Liga/desliga `access_password_enabled`. |
-| `password` | string | não | Define `access_password` (1–64 chars). Envie `null` para limpar. |
+- Detalhes decorativos sutis (SVG inline, leves, sem impacto de performance):
+  - Folhas/curvas orgânicas no canto superior direito da home (atrás do hero).
+  - Linha decorativa fina abaixo do título "HUB DE BOAS VINDAS".
+  - Watermark discreto no rodapé das páginas internas (ex: pequena folha estilizada com baixa opacidade).
+  - Pequeno ornamento ao redor do ícone das páginas internas (anel suave usando `--guide-primary`).
+- Tudo 100% via CSS/SVG no escopo `.guide-template-boho_fun` — zero imagens externas, zero peso extra.
 
-Regras:
-- Pelo menos um entre `enabled` e `password` precisa ser enviado.
-- Se `enabled=true` e a propriedade não tem senha salva e nenhuma foi enviada → `400 password_required_to_enable`.
-- Valida que a propriedade pertence ao `tenant_id` informado (`404 property_not_found` caso contrário).
+Você aprova nesse template e eu replico o mesmo *padrão de moldura decorativa* (com motivo próprio) para os demais: Pop Vibes (bolhas/raios), Arcade (pixels/grid neon), Jungle (folhagem densa), Aegean (ondas mediterrâneas), Luxury (filetes dourados), etc.
 
-### Resposta
-```json
-{
-  "id": "uuid",
-  "tenant_id": "uuid",
-  "access_password_enabled": true,
-  "has_password": true,
-  "updated_at": "2026-06-28T12:34:56Z"
-}
-```
-(`has_password` é booleano, a senha em si nunca é retornada.)
+## Etapa 2 — Configuração por tenant (botões + capa)
 
-## Mudanças no código
+Adicionar 3 campos novos no `public.tenants`:
 
-1. `supabase/functions/properties-api/index.ts`
-   - Adicionar branch `if (req.method === "PATCH" && /\/access\/?$/.test(url.pathname))`.
-   - Validar tenant_id, localizar propriedade por `property_id` ou `external_id`, aplicar update em `properties` (`access_password_enabled`, `access_password`, `updated_at`).
-2. `src/components/integrations/ApiReference.tsx`
-   - Acrescentar o novo endpoint à lista `ENDPOINTS` com params, exemplo de request, response e cURL automático.
-3. Sem migração de banco — colunas `access_password_enabled` e `access_password` já existem em `public.properties`.
+| Campo | Valores | Default |
+|---|---|---|
+| `button_shape` | `square` · `rounded` · `pill` | `rounded` |
+| `button_border` | `none` · `outline` | `none` |
+| `cover_transition` | `line` · `gradient` | `line` |
 
-## cURL de exemplo (entregue ao usuário no final)
+Aplicados no Guia via CSS vars (`--guide-btn-radius`, `--guide-btn-border`) que já vão ser lidas por `.guide-card` e pelo CTA "Reservar Novamente". A transição da capa vira um seletor entre a borda atual e um degradê suave da cor da capa para `--guide-bg`.
 
-```bash
-curl -X PATCH "https://pgdfcufjdyhmaqikwbdq.supabase.co/functions/v1/properties-api/access" \
-  -H "X-API-Key: SUA_CHAVE" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "tenant_id": "576bc692-299c-4e1a-a7c9-9d374d09dce8",
-    "property_id": "ab40310a-476e-48ed-9af9-e3d5fe3aa5a8",
-    "enabled": true,
-    "password": "MARIA1406"
-  }'
-```
+## Etapa 3 — UI em /app/templates
 
-Alternativa por ID externo do PMS:
-```bash
-curl -X PATCH ".../properties-api/access" \
-  -H "X-API-Key: SUA_CHAVE" -H "Content-Type: application/json" \
-  -d '{"tenant_id":"...","external_id":"KU01J","external_provider":"stays","enabled":true,"password":"JOAO2208"}'
-```
+Abaixo do grid de templates, adicionar um card **"Personalizar"** com:
+- 3 toggles visuais para formato do botão (mini preview de cada).
+- Switch para borda dos botões.
+- 2 toggles para estilo da transição da capa (line / gradient) com mini preview.
 
-## Observações de segurança
-- A API key continua sendo a credencial primária; `tenant_id` é uma validação extra contra envio acidental para o tenant errado.
-- Senha armazenada em texto (compatível com o fluxo atual da UI de edição do imóvel).
+Tudo persiste em `tenants` e reflete em tempo real no preview e no Guia público. Funciona em qualquer template.
+
+## Detalhes técnicos
+
+- **Migration**: adicionar colunas `button_shape`, `button_border`, `cover_transition` em `public.tenants` (text + CHECK), defaults compatíveis com o visual atual (nada quebra para tenants existentes).
+- **CSS (`src/index.css`)**:
+  - Novos tokens `--guide-btn-radius`, `--guide-btn-border-width`, `--guide-btn-border-color`.
+  - `.guide-card` passa a usar `border-radius: var(--guide-btn-radius)` e `border: var(--guide-btn-border-width) solid var(--guide-btn-border-color)`.
+  - Bloco `.guide-template-boho_fun` ganha pseudo-elementos `::before/::after` com SVG inline (folhas, linhas) posicionados absolutamente no `guide-root`.
+- **`GuestGuide.tsx` / `TemplatePreviewDialog.tsx`**:
+  - Aplicar inline-style com os tokens vindos do tenant.
+  - Trocar o gradiente fixo da capa por um helper que monta `linear-gradient` (modo gradient) ou mantém a borda atual (modo line).
+- **`src/pages/dashboard/Templates.tsx`**: novo painel "Personalização visual" com os controles acima, usando `useMutation` para `tenants.update`.
+- **`useTenant`**: já retorna o tenant inteiro; só expor os novos campos.
+
+## Entrega do piloto
+
+Faço Etapa 1 + Etapa 2 + Etapa 3 numa única passada, mas com os detalhes decorativos só no **Boho Fun**. Você aprova o look-and-feel nesse template e, em seguida, eu aplico o mesmo padrão (com motivos próprios) nos outros 14.
