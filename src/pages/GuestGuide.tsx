@@ -47,7 +47,7 @@ export default function GuestGuide() {
         .from("properties")
         .select(`
           id, name, address, booking_url, cover_image_url, public_slug, status, access_password_enabled, access_password,
-          tenants!inner(id, name, primary_color, secondary_color, template, is_active, logo_url, show_logo, plan_code, instagram_url, facebook_url),
+          tenants!inner(id, name, primary_color, secondary_color, template, is_active, logo_url, show_logo, plan_code, instagram_url, facebook_url, button_shape, button_border, cover_transition),
           property_pages(id, page_key, title, icon, position, is_enabled)
         `)
         .eq("public_slug", slug!)
