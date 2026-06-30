@@ -309,9 +309,10 @@ function CustomizationPanel({ tenant }: { tenant: any }) {
 
   const update = useMutation({
     mutationFn: async (patch: Record<string, any>) => {
-      const { error } = await supabase.from("tenants").update(patch).eq("id", tenant.id);
+      const { error } = await (supabase.from("tenants") as any).update(patch).eq("id", tenant.id);
       if (error) throw error;
     },
+
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["tenant"] });
       toast.success("Personalização atualizada");
