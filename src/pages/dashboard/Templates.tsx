@@ -200,7 +200,10 @@ export default function Templates() {
         </div>
       </section>
 
+      <CustomizationPanel tenant={tenant} />
+
       <AlertDialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
+
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Aplicar template "{selected?.name}"?</AlertDialogTitle>
