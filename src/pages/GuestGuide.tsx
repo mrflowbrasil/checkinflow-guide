@@ -199,9 +199,18 @@ function GuideBody({
   };
   if (data.address) lodgingLd.address = { "@type": "PostalAddress", streetAddress: data.address };
   if (data.cover_image_url) lodgingLd.image = data.cover_image_url;
+  const btnShape = tenant?.button_shape ?? "rounded";
+  const btnBorder = tenant?.button_border ?? "none";
+  const coverStyle = tenant?.cover_transition ?? "line";
   return (
-    <div className={`guide-root guide-template-${template} min-h-screen ${showLeadBar ? "pt-12 sm:pt-14" : ""}`}>
+    <div
+      className={`guide-root guide-template-${template} min-h-screen ${showLeadBar ? "pt-12 sm:pt-14" : ""}`}
+      data-btn-shape={btnShape}
+      data-btn-border={btnBorder}
+      data-cover-style={coverStyle}
+    >
       {showLeadBar && <LeadCaptureBar />}
+
       <Seo
         title={seoTitle}
         description={seoDesc}
