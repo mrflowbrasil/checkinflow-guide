@@ -555,6 +555,7 @@
     border-color: var(--guide-btn-border-color) !important;
     outline: 1.5px solid var(--guide-btn-border-color) !important;
     outline-offset: -1.5px !important;
+    box-shadow: inset 0 0 0 1.5px var(--guide-btn-border-color), var(--shadow-card) !important;
   }
   .guide-root .guide-card {
     border-radius: var(--guide-btn-radius);
@@ -577,6 +578,7 @@
   .guide-template-coastal_boho .guide-cta-primary,
   .guide-template-jungle .guide-card,
   .guide-template-jungle .guide-cta-primary {
+    --guide-btn-border-color: rgba(255, 255, 255, 0.28);
     border-color: rgba(255, 255, 255, 0.28) !important;
   }
 
