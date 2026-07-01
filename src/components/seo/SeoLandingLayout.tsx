@@ -41,8 +41,7 @@ export interface SeoLandingProps {
 const DEFAULT_DATE_PUBLISHED = "2026-01-15";
 const DEFAULT_DATE_MODIFIED = "2026-05-29";
 const DEFAULT_AUTHOR = { name: "Mr Flow", url: "https://hub.mrflow.com.br" };
-const PUBLISHER_LOGO =
-  "https://storage.googleapis.com/gpt-engineer-file-uploads/QOxsOCPLdoWqcZHw4rluKIZw7h52/social-images/social-1777558596702-Logo_Welcome_Hub.webp";
+const PUBLISHER_LOGO = "https://hub.mrflow.com.br/mrflow-logo.webp";
 
 export function SeoLandingLayout({
   path,
