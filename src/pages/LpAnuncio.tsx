@@ -107,7 +107,7 @@ export default function LpAnuncio() {
       <header className="sticky top-0 z-30 bg-[#FAFAF7]/90 backdrop-blur-md border-b border-slate-200/70">
         <div className="container max-w-6xl mx-auto px-5 sm:px-8 flex items-center justify-between h-16">
           <Link to="/" className="flex flex-col items-start gap-0.5">
-            <img src={mrFlowLogo} alt="Mr Flow Welcome Hub" className="h-8 w-auto" />
+            <img src={mrFlowLogo} alt="Mr Flow Welcome Hub" width={140} height={32} loading="eager" decoding="async" className="h-8 w-auto" />
             <span className="text-[9px] tracking-[0.25em] text-slate-500 uppercase">Welcome Hub</span>
           </Link>
           <Button
