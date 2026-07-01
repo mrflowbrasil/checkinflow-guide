@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Calendar, ArrowLeft, X } from "lucide-react";
+import { Calendar, ArrowLeft } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { getPageIcon } from "@/lib/page-icons";
@@ -53,7 +53,6 @@ export function TemplatePreviewDialog({
           className={`guide-root ${tplClass} h-[78vh] overflow-y-auto`}
           data-btn-shape="rounded"
           data-btn-border="none"
-          data-cover-style="line"
         >
           {!activePage ? (
             <HomePreview template={template} primary={primary} onOpenPage={(k) => setActiveKey(k)} />

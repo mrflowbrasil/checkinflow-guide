@@ -47,7 +47,7 @@ export default function GuestGuide() {
         .from("properties")
         .select(`
           id, name, address, booking_url, cover_image_url, public_slug, status, access_password_enabled, access_password,
-          tenants!inner(id, name, primary_color, secondary_color, template, is_active, logo_url, show_logo, plan_code, instagram_url, facebook_url, button_shape, button_border, cover_transition),
+          tenants!inner(id, name, primary_color, secondary_color, template, is_active, logo_url, show_logo, plan_code, instagram_url, facebook_url, button_shape, button_border),
           property_pages(id, page_key, title, icon, position, is_enabled)
         `)
         .eq("public_slug", slug!)
@@ -201,13 +201,11 @@ function GuideBody({
   if (data.cover_image_url) lodgingLd.image = data.cover_image_url;
   const btnShape = tenant?.button_shape ?? "rounded";
   const btnBorder = tenant?.button_border ?? "none";
-  const coverStyle = tenant?.cover_transition ?? "line";
   return (
     <div
       className={`guide-root guide-template-${template} min-h-screen ${showLeadBar ? "pt-12 sm:pt-14" : ""}`}
       data-btn-shape={btnShape}
       data-btn-border={btnBorder}
-      data-cover-style={coverStyle}
     >
       {showLeadBar && <LeadCaptureBar />}
 
