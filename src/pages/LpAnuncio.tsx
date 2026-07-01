@@ -832,7 +832,7 @@ function QuemSomos() {
               <div className="absolute -bottom-10 -left-10 h-40 w-40 rounded-full bg-[#F4C9B8]/40 blur-3xl pointer-events-none" />
 
               <div className="relative bg-white rounded-3xl shadow-[0_20px_50px_-25px_rgba(15,23,42,0.25)] ring-1 ring-slate-200 px-8 py-7 mb-6">
-                <img src={mrFlowLogo} alt="Mr. Flow" className="h-12 w-auto" />
+                <img src={mrFlowLogo} alt="Mr. Flow" width={210} height={48} loading="lazy" decoding="async" className="h-12 w-auto" />
               </div>
               <p className="relative text-sm font-semibold tracking-[0.25em] uppercase text-[hsl(186_100%_24%)]">
                 Tecnologia &amp; Automação
