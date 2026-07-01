@@ -997,7 +997,10 @@ function PlanosSection() {
             <img
               src={plansMockup.url}
               alt="Welcome Hub no notebook e celular"
+              width={1040}
+              height={780}
               loading="lazy"
+              decoding="async"
               className="w-full max-w-[520px] mx-auto h-auto drop-shadow-[0_30px_40px_rgba(15,23,42,0.18)] animate-fade-in"
             />
           </div>
