@@ -1,57 +1,30 @@
-Plano de correção para o degradê da capa
+## Plano de correção definitiva do degradê da capa
 
-O problema atual é de conceito e estrutura: o CSS aplica um overlay escuro dentro da imagem da capa, mas a linha dura que aparece no Android está na transição entre a imagem e a seção bege do guia. Como o degradê está preso dentro do container da imagem, ele não consegue “fundir” a capa com o fundo do template.
+1. **Eliminar a causa provável do erro atual**
+   - Hoje o degradê depende de um elemento absoluto (`.guide-cover-transition`) posicionado no fim da capa, com altura negativa/externa ao bloco da imagem.
+   - Em alguns navegadores mobile, especialmente Android, esse tipo de overlay pode ficar atrás do conteúdo, ser cortado pelo contexto de empilhamento ou parecer uma linha branca, como no print.
 
-Implementação proposta:
+2. **Trocar a implementação por uma solução estrutural simples**
+   - Manter o overlay de legibilidade escuro sobre a imagem apenas para leitura do título.
+   - Para o modo `Degradê`, aplicar o fade diretamente como uma camada visual que cobre a parte inferior da imagem e continua sobre a área inicial do conteúdo.
+   - O objetivo é que a imagem desapareça suavemente para a cor real de fundo do template, sem depender de `mask-image`, sem valores HSL com alpha e sem elemento de 1px.
 
-1. Separar dois efeitos diferentes
-- Manter um overlay escuro leve sobre a imagem apenas para legibilidade do título.
-- Criar um segundo degradê específico para transição capa → fundo do template.
-- Esse degradê deve usar a cor real do template (`--guide-bg`) e não apenas preto/transparente.
+3. **Garantir que a cor de destino seja a mesma do template**
+   - Usar variáveis RGB já existentes por template (`--guide-bg-rgb`) como fonte única da cor final.
+   - Ajustar qualquer template que ainda esteja sem RGB correto para evitar degradê branco quando o fundo não for branco.
 
-2. Ajustar a estrutura do hero no guia público
-- Adicionar classes semânticas no hero, por exemplo:
-  - `guide-hero`
-  - `guide-cover-media`
-  - `guide-cover-readability`
-  - `guide-cover-transition`
-- A transição em degradê ficará posicionada no rodapé do hero e poderá avançar visualmente sobre a área seguinte, sem ficar cortada pelo `overflow-hidden` da imagem.
+4. **Corrigir a tela real e a prévia**
+   - Aplicar a mesma lógica em:
+     - Guia público (`src/pages/GuestGuide.tsx`)
+     - Prévia de templates (`src/components/templates/TemplatePreviewDialog.tsx`)
+   - Remover inconsistências como a prévia fixa em `data-cover-style="line"`, para que a prévia não mascare o problema.
 
-3. Corrigir o CSS do modo “Linha” vs “Degradê”
-- `line`: mantém a separação atual, com corte mais direto entre capa e conteúdo.
-- `gradient`: aplica uma faixa de transição mais alta, com múltiplos stops, indo da imagem para `hsl(var(--guide-bg))`.
-- A transição será aplicada por seletor no root:
-  - `.guide-root[data-cover-style="gradient"] .guide-cover-transition`
-  - `.guide-root[data-cover-style="line"] .guide-cover-transition`
+5. **Plano B, se a opção continuar frágil**
+   - Se a implementação ainda apresentar instabilidade visual no Android, remover a função de `Transição da capa` da tela de personalização.
+   - Nesse caso, todos os guias voltarão para o modo seguro `Linha`, preservando capa, botões e templates sem risco visual.
 
-4. Garantir compatibilidade Android/iPhone
-- Evitar `mask-image`, filtros e variáveis CSS aninhadas que já falharam em Android/Chrome.
-- Usar apenas `linear-gradient()` simples com `hsl(var(--guide-bg) / alpha)`, que é suportado nos navegadores modernos.
-- Adicionar um fallback com `background-color: hsl(var(--guide-bg))` no final da faixa para eliminar linha dura.
-
-5. Aplicar também no preview dos templates
-- Atualizar `TemplatePreviewDialog.tsx` para usar a mesma estrutura do guia real.
-- Isso evita o painel mostrar uma prévia diferente do link público.
-
-6. Verificar bordas dos botões junto com a correção
-- Reforçar os seletores de forma/borda depois dos overrides dos templates.
-- Validar que `data-btn-border="outline"` gera `border-width: 1.5px` nos cards e CTA.
-
-7. Validação antes de finalizar
-- Testar o link público do Vila Serena em viewport mobile equivalente ao print.
-- Confirmar no DOM/computed style:
-  - root com `data-cover-style="gradient"`
-  - `.guide-cover-transition` com `background-image: linear-gradient(...)`
-  - cor final do degradê igual ao fundo do template Boho Fun
-  - cards com borda quando configurado
-- Comparar visualmente: a linha horizontal entre foto e fundo bege deve desaparecer ou ficar suavizada.
-
-Arquivos previstos:
-- `src/pages/GuestGuide.tsx`
-- `src/components/templates/TemplatePreviewDialog.tsx`
-- `src/index.css`
-
-Resultado esperado:
-- No Android e iPhone, o modo “Degradê” deixa de parecer uma linha reta e passa a fundir a capa com o fundo do template.
-- O comportamento fica consistente entre guia público e prévia de template.
-- As bordas dos botões continuam respeitando a personalização salva.
+6. **Validação**
+   - Verificar no viewport mobile o guia público com `data-cover-style="gradient"` e confirmar visualmente que:
+     - não existe faixa branca dura entre capa e conteúdo;
+     - o degradê aparece sobre a transição imagem → fundo;
+     - os botões e o restante do guia não são cobertos pelo overlay.
