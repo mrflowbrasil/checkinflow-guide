@@ -107,7 +107,7 @@ export default function LpAnuncio() {
       <header className="sticky top-0 z-30 bg-[#FAFAF7]/90 backdrop-blur-md border-b border-slate-200/70">
         <div className="container max-w-6xl mx-auto px-5 sm:px-8 flex items-center justify-between h-16">
           <Link to="/" className="flex flex-col items-start gap-0.5">
-            <img src={mrFlowLogo} alt="Mr Flow Welcome Hub" className="h-8 w-auto" />
+            <img src={mrFlowLogo} alt="Mr Flow Welcome Hub" width={140} height={32} loading="eager" decoding="async" className="h-8 w-auto" />
             <span className="text-[9px] tracking-[0.25em] text-slate-500 uppercase">Welcome Hub</span>
           </Link>
           <Button
@@ -832,7 +832,7 @@ function QuemSomos() {
               <div className="absolute -bottom-10 -left-10 h-40 w-40 rounded-full bg-[#F4C9B8]/40 blur-3xl pointer-events-none" />
 
               <div className="relative bg-white rounded-3xl shadow-[0_20px_50px_-25px_rgba(15,23,42,0.25)] ring-1 ring-slate-200 px-8 py-7 mb-6">
-                <img src={mrFlowLogo} alt="Mr. Flow" className="h-12 w-auto" />
+                <img src={mrFlowLogo} alt="Mr. Flow" width={210} height={48} loading="lazy" decoding="async" className="h-12 w-auto" />
               </div>
               <p className="relative text-sm font-semibold tracking-[0.25em] uppercase text-[hsl(186_100%_24%)]">
                 Tecnologia &amp; Automação
@@ -997,7 +997,10 @@ function PlanosSection() {
             <img
               src={plansMockup.url}
               alt="Welcome Hub no notebook e celular"
+              width={1040}
+              height={780}
               loading="lazy"
+              decoding="async"
               className="w-full max-w-[520px] mx-auto h-auto drop-shadow-[0_30px_40px_rgba(15,23,42,0.18)] animate-fade-in"
             />
           </div>
