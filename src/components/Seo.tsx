@@ -19,8 +19,7 @@ interface SeoProps {
 }
 
 const ORIGIN = "https://hub.mrflow.com.br";
-const DEFAULT_OG_IMAGE =
-  "https://storage.googleapis.com/gpt-engineer-file-uploads/QOxsOCPLdoWqcZHw4rluKIZw7h52/social-images/social-1777558596702-Logo_Welcome_Hub.webp";
+const DEFAULT_OG_IMAGE = `${ORIGIN}/og-welcome-hub.webp`;
 
 export function Seo({
   title,
