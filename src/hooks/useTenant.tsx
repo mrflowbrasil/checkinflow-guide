@@ -16,7 +16,6 @@ export type Tenant = {
   plan_status: string;
   button_shape?: "square" | "rounded" | "pill" | null;
   button_border?: "none" | "outline" | null;
-  cover_transition?: "line" | "gradient" | null;
 };
 
 
