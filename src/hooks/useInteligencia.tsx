@@ -96,6 +96,7 @@ export function useUpcomingCheckins(limit = 20) {
       const { data, error } = await supabase
         .from("v_reservations_dashboard" as any)
         .select("*")
+        .eq("tenant_id", tenant!.id)
         .gte("check_in", today)
         .neq("status", "canceled")
         .order("check_in", { ascending: true })
@@ -118,6 +119,7 @@ export function useMonthlyMetrics() {
       const { data, error } = await supabase
         .from("v_dashboard_monthly_metrics" as any)
         .select("*")
+        .eq("tenant_id", tenant!.id)
         .order("month", { ascending: true });
       if (error) throw error;
       return (data ?? []) as any[];
@@ -137,6 +139,7 @@ export function usePropertyMetrics() {
       const { data, error } = await supabase
         .from("v_dashboard_property_metrics" as any)
         .select("*")
+        .eq("tenant_id", tenant!.id)
         .order("revenue", { ascending: false });
       if (error) throw error;
       return (data ?? []) as any[];
