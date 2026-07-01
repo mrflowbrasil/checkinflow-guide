@@ -305,7 +305,6 @@ function CustomizationPanel({ tenant }: { tenant: any }) {
   const qc = useQueryClient();
   const shape: "square" | "rounded" | "pill" = tenant?.button_shape ?? "rounded";
   const border: "none" | "outline" = tenant?.button_border ?? "none";
-  const cover: "line" | "gradient" = tenant?.cover_transition ?? "line";
 
   const update = useMutation({
     mutationFn: async (patch: Record<string, any>) => {
@@ -333,7 +332,7 @@ function CustomizationPanel({ tenant }: { tenant: any }) {
         <Badge variant="secondary">Aplica em qualquer template</Badge>
       </div>
 
-      <Card className="p-5 grid md:grid-cols-3 gap-6">
+      <Card className="p-5 grid md:grid-cols-2 gap-6">
         {/* Forma do botão */}
         <div className="space-y-3">
           <div className="text-sm font-medium">Formato dos botões</div>
@@ -382,36 +381,6 @@ function CustomizationPanel({ tenant }: { tenant: any }) {
                   />
                   <span className="text-xs font-medium">
                     {opt === "none" ? "Sem borda" : "Com contorno"}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Transição da capa */}
-        <div className="space-y-3">
-          <div className="text-sm font-medium">Transição da capa</div>
-          <div className="grid grid-cols-2 gap-2">
-            {(["line", "gradient"] as const).map((opt) => {
-              const active = cover === opt;
-              const bg =
-                opt === "line"
-                  ? "linear-gradient(180deg, hsl(var(--primary)/0.6) 0%, hsl(var(--primary)/0.85) 60%, hsl(var(--background)) 60%)"
-                  : "linear-gradient(180deg, hsl(var(--primary)/0.6) 0%, hsl(var(--primary)/0.4) 45%, hsl(var(--background)/0.95) 85%, hsl(var(--background)) 100%)";
-              return (
-                <button
-                  key={opt}
-                  type="button"
-                  disabled={update.isPending}
-                  onClick={() => update.mutate({ cover_transition: opt })}
-                  className={`flex flex-col items-center gap-2 p-3 border-2 rounded-xl transition ${
-                    active ? "border-accent ring-2 ring-accent/30 bg-accent-soft" : "border-border hover:border-accent/40"
-                  }`}
-                >
-                  <div className="h-12 w-full rounded-md overflow-hidden" style={{ background: bg }} />
-                  <span className="text-xs font-medium">
-                    {opt === "line" ? "Linha" : "Degradê"}
                   </span>
                 </button>
               );
