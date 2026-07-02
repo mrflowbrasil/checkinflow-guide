@@ -168,6 +168,19 @@ function LaunchOfferBlock() {
 }
 
 export default function LpAnuncioUrgente() {
+  return (
+    <OfferStatusProvider
+      storageKey={CONFIG.countdownStorageKey}
+      durationMs={CONFIG.countdownDurationMs}
+      onExpire={() => track("urgente_offer_expired")}
+    >
+      <LpAnuncioUrgenteContent />
+    </OfferStatusProvider>
+  );
+}
+
+function LpAnuncioUrgenteContent() {
+  const { expired } = useOfferStatus();
   const jsonLd = useMemo(
     () => [
       {
@@ -205,6 +218,7 @@ export default function LpAnuncioUrgente() {
             storageKey={CONFIG.countdownStorageKey}
             className="inline-flex items-center gap-2 sm:gap-3"
             compact
+            stopOnZero
             labelClassName="text-[9px] uppercase tracking-widest text-white/70 mt-0.5"
           />
         </div>
@@ -227,17 +241,7 @@ export default function LpAnuncioUrgente() {
               Welcome Hub
             </span>
           </Link>
-          <Button
-            type="button"
-            size="sm"
-            onClick={() => {
-              track("click_urgente_cta", { label: "header" });
-              openLaunchCheckout();
-            }}
-            className="bg-[hsl(186_100%_32%)] hover:bg-[hsl(186_100%_27%)] text-white font-bold rounded-xl shadow-md text-xs sm:text-sm"
-          >
-            Garantir vaga
-          </Button>
+          <HeaderCta />
         </div>
       </header>
 
