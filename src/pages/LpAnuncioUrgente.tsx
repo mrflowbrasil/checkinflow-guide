@@ -663,24 +663,23 @@ function LpAnuncioUrgenteContent() {
 
       {/* ============ STICKY MOBILE CTA ============ */}
       <div className="fixed bottom-0 inset-x-0 z-40 md:hidden bg-white border-t border-slate-200 shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.2)] px-4 py-3">
-        <Button
-          type="button"
-          onClick={() => {
-            track("click_urgente_cta", { label: "sticky-mobile" });
-            openLaunchCheckout();
-          }}
-          className="w-full h-12 rounded-xl font-extrabold bg-[hsl(186_100%_32%)] hover:bg-[hsl(186_100%_27%)] text-white shadow-md"
-        >
-          GARANTIR POR {CONFIG.price} <ArrowRight className="ml-1 h-4 w-4" />
-        </Button>
+        <StickyMobileCta price={CONFIG.price} />
       </div>
 
-      {/* ============ EXIT INTENT ============ */}
-      <ExitIntentDialog
-        onCta={() => {
-          track("click_urgente_cta", { label: "exit-intent" });
-          openLaunchCheckout();
-        }}
+      {/* ============ EXIT INTENT (só se oferta ainda ativa) ============ */}
+      {!expired && (
+        <ExitIntentDialog
+          onCta={() => {
+            track("click_urgente_cta", { label: "exit-intent" });
+            openLaunchCheckout();
+          }}
+        />
+      )}
+
+      {/* ============ OFERTA EXPIRADA ============ */}
+      <OfferExpiredDialog
+        onOpenTrack={() => track("view_urgente_expired_modal")}
+        onCtaTrack={(target) => track("click_urgente_expired_cta", { target })}
       />
     </div>
   );
