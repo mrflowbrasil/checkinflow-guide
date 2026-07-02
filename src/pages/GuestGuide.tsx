@@ -39,25 +39,49 @@ export default function GuestGuide() {
     }
   };
 
+  const isDemo = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("demo") === "1";
+
   const { data, isLoading } = useQuery({
-    queryKey: ["guide", slug],
+    queryKey: ["guide", slug, isDemo],
     enabled: !!slug,
     queryFn: async () => {
+      const propertySelect = `
+        id, name, address, booking_url, cover_image_url, public_slug, status, access_password_enabled, access_password,
+        tenants!inner(id, name, primary_color, secondary_color, template, is_active, logo_url, show_logo, plan_code, instagram_url, facebook_url, button_shape, button_border),
+        property_pages(id, page_key, title, icon, position, is_enabled)
+      `;
+
       const { data: property, error } = await supabase
         .from("properties")
-        .select(`
-          id, name, address, booking_url, cover_image_url, public_slug, status, access_password_enabled, access_password,
-          tenants!inner(id, name, primary_color, secondary_color, template, is_active, logo_url, show_logo, plan_code, instagram_url, facebook_url, button_shape, button_border),
-          property_pages(id, page_key, title, icon, position, is_enabled)
-        `)
+        .select(propertySelect)
         .eq("public_slug", slug!)
         .eq("status", "active")
         .maybeSingle();
       if (error) throw error;
-      if (!property) return null;
-      return property as any;
+      if (property) return property as any;
+
+      // Demo fallback: never show "link expirou" for embedded demos.
+      // Resolve the current active slug via slug history and re-fetch.
+      if (isDemo) {
+        const { data: history } = await supabase
+          .from("property_slug_history")
+          .select("property_id")
+          .eq("slug", slug!)
+          .maybeSingle();
+        if (history?.property_id) {
+          const { data: current } = await supabase
+            .from("properties")
+            .select(propertySelect)
+            .eq("id", history.property_id)
+            .eq("status", "active")
+            .maybeSingle();
+          if (current) return current as any;
+        }
+      }
+      return null;
     },
   });
+
 
   const tenant = data?.tenants;
   const pages = useMemo(
