@@ -59,7 +59,7 @@ import GarantiaSection from "@/components/lp/GarantiaSection";
 import LaunchOffer from "@/components/lp/LaunchOffer";
 import { Reveal } from "@/hooks/useReveal";
 
-const DEMO_URL = "https://hub.mrflow.com.br/g/suite-premium-vila-serena-23515a";
+const DEMO_URL = "https://hub.mrflow.com.br/g/suite-premium-vila-serena-23515a?demo=1";
 const CYAN = "hsl(186 100% 32%)"; // ciano Mr Flow acessível em fundo claro
 
 const ctaPrimary =
