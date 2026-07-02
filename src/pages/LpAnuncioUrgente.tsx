@@ -28,6 +28,8 @@ import UrgencyCountdown from "@/components/lp/UrgencyCountdown";
 import SpotsRemaining from "@/components/lp/SpotsRemaining";
 import ActivityTicker from "@/components/lp/ActivityTicker";
 import ExitIntentDialog from "@/components/lp/ExitIntentDialog";
+import OfferExpiredDialog from "@/components/lp/OfferExpiredDialog";
+import { OfferStatusProvider, useOfferStatus } from "@/hooks/useOfferDeadline";
 import { Reveal } from "@/hooks/useReveal";
 
 // ================== CONFIG (editar aqui, nada chumbado no meio do código) ==================
@@ -51,6 +53,21 @@ function track(event: string, payload: Record<string, unknown> = {}) {
 }
 
 function CTA({ label, className = "" }: { label?: string; className?: string }) {
+  const { expired } = useOfferStatus();
+  if (expired) {
+    return (
+      <Button
+        type="button"
+        disabled
+        className={
+          "h-14 sm:h-16 px-6 sm:px-9 rounded-2xl text-base sm:text-lg font-extrabold bg-slate-400 text-white cursor-not-allowed opacity-70 " +
+          className
+        }
+      >
+        Oferta encerrada
+      </Button>
+    );
+  }
   return (
     <Button
       type="button"
@@ -66,6 +83,87 @@ function CTA({ label, className = "" }: { label?: string; className?: string }) 
       {label ?? "QUERO GARANTIR MINHA VAGA AGORA"}
       <ArrowRight className="ml-2 h-5 w-5" />
     </Button>
+  );
+}
+
+function HeaderCta() {
+  const { expired } = useOfferStatus();
+  if (expired) {
+    return (
+      <Button
+        type="button"
+        size="sm"
+        disabled
+        className="bg-slate-400 text-white font-bold rounded-xl text-xs sm:text-sm cursor-not-allowed opacity-70"
+      >
+        Encerrada
+      </Button>
+    );
+  }
+  return (
+    <Button
+      type="button"
+      size="sm"
+      onClick={() => {
+        track("click_urgente_cta", { label: "header" });
+        openLaunchCheckout();
+      }}
+      className="bg-[hsl(186_100%_32%)] hover:bg-[hsl(186_100%_27%)] text-white font-bold rounded-xl shadow-md text-xs sm:text-sm"
+    >
+      Garantir vaga
+    </Button>
+  );
+}
+
+function StickyMobileCta({ price }: { price: string }) {
+  const { expired } = useOfferStatus();
+  if (expired) {
+    return (
+      <Button
+        type="button"
+        disabled
+        className="w-full h-12 rounded-xl font-extrabold bg-slate-400 text-white cursor-not-allowed opacity-80"
+      >
+        OFERTA ENCERRADA
+      </Button>
+    );
+  }
+  return (
+    <Button
+      type="button"
+      onClick={() => {
+        track("click_urgente_cta", { label: "sticky-mobile" });
+        openLaunchCheckout();
+      }}
+      className="w-full h-12 rounded-xl font-extrabold bg-[hsl(186_100%_32%)] hover:bg-[hsl(186_100%_27%)] text-white shadow-md"
+    >
+      GARANTIR POR {price} <ArrowRight className="ml-1 h-4 w-4" />
+    </Button>
+  );
+}
+
+function LaunchOfferBlock() {
+  const { expired } = useOfferStatus();
+  return (
+    <div className="relative">
+      <div className={expired ? "pointer-events-none opacity-50 grayscale" : ""} aria-hidden={expired}>
+        <LaunchOffer />
+      </div>
+      {expired && (
+        <div className="absolute inset-0 flex items-center justify-center p-6">
+          <div className="rounded-2xl bg-slate-900/90 text-white px-6 py-4 text-center shadow-2xl border border-white/10 max-w-sm">
+            <p className="text-sm uppercase tracking-widest font-bold text-red-300">Oferta encerrada</p>
+            <p className="mt-2 text-sm text-slate-200">O lote de lançamento por R$ 89,90 acabou. Veja os planos atuais.</p>
+            <a
+              href="/#planos"
+              className="mt-3 inline-flex items-center gap-1 text-sm font-bold text-[#00FFFF] hover:underline"
+            >
+              Ver planos <ArrowRight className="h-3.5 w-3.5" />
+            </a>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
