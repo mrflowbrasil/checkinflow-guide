@@ -2,16 +2,16 @@ import { useEffect, useState } from "react";
 import { CheckCircle2 } from "lucide-react";
 
 const EVENTS = [
-  { name: "Mariana", city: "Búzios - RJ", ago: 3 },
-  { name: "Rafael", city: "Florianópolis - SC", ago: 7 },
-  { name: "Denize", city: "Rio de Janeiro - RJ", ago: 12 },
-  { name: "Juliana", city: "Paracuru - CE", ago: 18 },
-  { name: "Pablo", city: "Nova Friburgo - RJ", ago: 24 },
-  { name: "Camila", city: "Ubatuba - SP", ago: 31 },
-  { name: "Ricardo", city: "Gramado - RS", ago: 42 },
-  { name: "Fernanda", city: "Porto de Galinhas - PE", ago: 55 },
-  { name: "Lucas", city: "Trancoso - BA", ago: 68 },
-  { name: "Aline", city: "Campos do Jordão - SP", ago: 82 },
+  { city: "Búzios - RJ", ago: 3 },
+  { city: "Florianópolis - SC", ago: 7 },
+  { city: "Rio de Janeiro - RJ", ago: 12 },
+  { city: "Paracuru - CE", ago: 18 },
+  { city: "Nova Friburgo - RJ", ago: 24 },
+  { city: "Ubatuba - SP", ago: 31 },
+  { city: "Gramado - RS", ago: 42 },
+  { city: "Porto de Galinhas - PE", ago: 55 },
+  { city: "Trancoso - BA", ago: 68 },
+  { city: "Campos do Jordão - SP", ago: 82 },
 ];
 
 export default function ActivityTicker() {
@@ -30,7 +30,7 @@ export default function ActivityTicker() {
     >
       <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
       <span>
-        <strong className="font-semibold">{e.name}</strong> de {e.city} garantiu a vaga há {e.ago} min
+        Um anfitrião de <strong className="font-semibold">{e.city}</strong> garantiu a vaga há {e.ago} min
       </span>
     </div>
   );

@@ -20,11 +20,7 @@ import mrFlowLogo from "@/assets/mrflow-logo.png";
 import denizeAvatar from "@/assets/lp/avatars/denize.webp.asset.json";
 import pabloAvatar from "@/assets/lp/avatars/pablo.webp.asset.json";
 import julianaAvatar from "@/assets/lp/avatars/juliana.webp.asset.json";
-import airbnbLogo from "@/assets/lp/logos/airbnb.webp.asset.json";
-import bookingLogo from "@/assets/lp/logos/booking.webp.asset.json";
-import staysLogo from "@/assets/lp/logos/stays.webp.asset.json";
-import hostawayLogo from "@/assets/lp/logos/hostaway.webp.asset.json";
-import vrboLogo from "@/assets/lp/logos/vrbo.webp.asset.json";
+import TrustLogos from "@/components/lp/TrustLogos";
 import VideoCriacao from "@/components/lp/VideoCriacao";
 import LaunchOffer, { openLaunchCheckout } from "@/components/lp/LaunchOffer";
 import GarantiaSection from "@/components/lp/GarantiaSection";
@@ -37,9 +33,10 @@ import { Reveal } from "@/hooks/useReveal";
 // ================== CONFIG (editar aqui, nada chumbado no meio do código) ==================
 const CONFIG = {
   totalSpots: 100,
-  fallbackRemaining: 23, // usado só se a RPC de vagas ainda estiver carregando
-  countdownDurationMs: 3 * 60 * 60 * 1000, // 3h rolando
-  countdownStorageKey: "lp:urgente:deadline",
+  initialRemaining: 57,
+  spotsDecrementIntervalMs: 167_000, // 2m47s
+  countdownDurationMs: 15 * 60 * 1000, // 15 minutos rolando
+  countdownStorageKey: "lp:urgente:deadline:15m",
   price: "R$ 89,90",
   priceCrossed: "R$ 199,90",
   monthlyEquivalent: "R$ 7,49",
@@ -118,16 +115,19 @@ export default function LpAnuncioUrgente() {
       {/* ============ HEADER MINIMAL ============ */}
       <header className="w-full bg-[#FAFAF7]/95 backdrop-blur border-b border-slate-200/70">
         <div className="container max-w-6xl mx-auto px-5 sm:px-8 flex items-center justify-between h-14 sm:h-16">
-          <Link to="/" className="flex items-center">
+          <Link to="/" className="flex flex-col items-start leading-none">
             <img
               src={mrFlowLogo}
               alt="Mr Flow Welcome Hub"
-              width={130}
-              height={30}
+              width={140}
+              height={32}
               loading="eager"
               decoding="async"
               className="h-7 sm:h-8 w-auto"
             />
+            <span className="mt-1 text-[9px] tracking-[0.25em] text-slate-500 uppercase">
+              Welcome Hub
+            </span>
           </Link>
           <Button
             type="button"
@@ -177,7 +177,11 @@ export default function LpAnuncioUrgente() {
 
           <Reveal delay={120}>
             <div className="mt-8 flex flex-col items-center gap-4">
-              <SpotsRemaining total={CONFIG.totalSpots} fallbackRemaining={CONFIG.fallbackRemaining} />
+              <SpotsRemaining
+                total={CONFIG.totalSpots}
+                initialRemaining={CONFIG.initialRemaining}
+                decrementIntervalMs={CONFIG.spotsDecrementIntervalMs}
+              />
               <CTA />
               <div className="flex flex-wrap justify-center gap-x-5 gap-y-1.5 text-xs sm:text-sm text-slate-600">
                 <span className="inline-flex items-center gap-1.5">
@@ -226,25 +230,8 @@ export default function LpAnuncioUrgente() {
       </section>
 
       {/* ============ 3. LOGOS PARCEIROS ============ */}
-      <section className="py-8 sm:py-10 border-y border-slate-200/70 bg-white">
-        <div className="container max-w-5xl mx-auto px-5 sm:px-8">
-          <p className="text-center text-[11px] uppercase tracking-widest text-slate-500 mb-5 font-semibold">
-            Funciona com quem você já usa
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-5 opacity-80">
-            {[airbnbLogo, bookingLogo, staysLogo, hostawayLogo, vrboLogo].map((logo, i) => (
-              <img
-                key={i}
-                src={logo.url}
-                alt=""
-                loading="lazy"
-                decoding="async"
-                className="h-6 sm:h-7 w-auto grayscale hover:grayscale-0 transition"
-              />
-            ))}
-          </div>
-        </div>
-      </section>
+      <TrustLogos title="Funciona com quem você já usa" />
+
 
       {/* ============ 5. ANTES x DEPOIS ============ */}
       <section className="py-16 sm:py-20 bg-slate-50/60">
@@ -546,7 +533,8 @@ export default function LpAnuncioUrgente() {
               />
               <SpotsRemaining
                 total={CONFIG.totalSpots}
-                fallbackRemaining={CONFIG.fallbackRemaining}
+                initialRemaining={CONFIG.initialRemaining}
+                decrementIntervalMs={CONFIG.spotsDecrementIntervalMs}
                 className="w-full max-w-md rounded-2xl border border-white/20 bg-white/10 backdrop-blur px-4 py-3"
               />
               <CTA label={`GARANTIR MINHA VAGA POR ${CONFIG.price}`} />
