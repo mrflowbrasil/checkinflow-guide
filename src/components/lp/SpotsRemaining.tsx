@@ -50,7 +50,7 @@ export default function SpotsRemaining({
         </span>
         <span className="text-slate-500 text-xs font-medium">{Math.round(pct)}% preenchido</span>
       </div>
-      <div className="mt-2 h-2 w-full rounded-full bg-orange-100 overflow-hidden">
+      <div className="mt-2 h-2 w-full rounded-full bg-white overflow-hidden">
         <div
           className="h-full bg-gradient-to-r from-orange-500 to-red-500 transition-all duration-700"
           style={{ width: `${pct}%` }}
