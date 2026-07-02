@@ -37,9 +37,10 @@ import { Reveal } from "@/hooks/useReveal";
 // ================== CONFIG (editar aqui, nada chumbado no meio do código) ==================
 const CONFIG = {
   totalSpots: 100,
-  fallbackRemaining: 23, // usado só se a RPC de vagas ainda estiver carregando
-  countdownDurationMs: 3 * 60 * 60 * 1000, // 3h rolando
-  countdownStorageKey: "lp:urgente:deadline",
+  initialRemaining: 57,
+  spotsDecrementIntervalMs: 167_000, // 2m47s
+  countdownDurationMs: 15 * 60 * 1000, // 15 minutos rolando
+  countdownStorageKey: "lp:urgente:deadline:15m",
   price: "R$ 89,90",
   priceCrossed: "R$ 199,90",
   monthlyEquivalent: "R$ 7,49",
@@ -118,16 +119,19 @@ export default function LpAnuncioUrgente() {
       {/* ============ HEADER MINIMAL ============ */}
       <header className="w-full bg-[#FAFAF7]/95 backdrop-blur border-b border-slate-200/70">
         <div className="container max-w-6xl mx-auto px-5 sm:px-8 flex items-center justify-between h-14 sm:h-16">
-          <Link to="/" className="flex items-center">
+          <Link to="/" className="flex flex-col items-start leading-none">
             <img
               src={mrFlowLogo}
               alt="Mr Flow Welcome Hub"
-              width={130}
-              height={30}
+              width={140}
+              height={32}
               loading="eager"
               decoding="async"
               className="h-7 sm:h-8 w-auto"
             />
+            <span className="mt-1 text-[9px] tracking-[0.25em] text-slate-500 uppercase">
+              Welcome Hub
+            </span>
           </Link>
           <Button
             type="button"
@@ -177,7 +181,11 @@ export default function LpAnuncioUrgente() {
 
           <Reveal delay={120}>
             <div className="mt-8 flex flex-col items-center gap-4">
-              <SpotsRemaining total={CONFIG.totalSpots} fallbackRemaining={CONFIG.fallbackRemaining} />
+              <SpotsRemaining
+                total={CONFIG.totalSpots}
+                initialRemaining={CONFIG.initialRemaining}
+                decrementIntervalMs={CONFIG.spotsDecrementIntervalMs}
+              />
               <CTA />
               <div className="flex flex-wrap justify-center gap-x-5 gap-y-1.5 text-xs sm:text-sm text-slate-600">
                 <span className="inline-flex items-center gap-1.5">
@@ -546,7 +554,8 @@ export default function LpAnuncioUrgente() {
               />
               <SpotsRemaining
                 total={CONFIG.totalSpots}
-                fallbackRemaining={CONFIG.fallbackRemaining}
+                initialRemaining={CONFIG.initialRemaining}
+                decrementIntervalMs={CONFIG.spotsDecrementIntervalMs}
                 className="w-full max-w-md rounded-2xl border border-white/20 bg-white/10 backdrop-blur px-4 py-3"
               />
               <CTA label={`GARANTIR MINHA VAGA POR ${CONFIG.price}`} />
