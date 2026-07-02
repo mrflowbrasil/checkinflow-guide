@@ -1,39 +1,40 @@
 import { useEffect, useState } from "react";
 import { Flame } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 
 interface Props {
   /** Total slots for the launch batch. */
   total?: number;
-  /** Fallback remaining shown while loading / on error. Set to a real, honest number. */
-  fallbackRemaining?: number;
+  /** Initial remaining count when the page loads. */
+  initialRemaining?: number;
+  /** Interval in ms between simulated slot decrements. Default 2m47s. */
+  decrementIntervalMs?: number;
+  /** Minimum remaining floor to avoid ever hitting 0 on-screen. */
+  minRemaining?: number;
   className?: string;
 }
 
-type Slots = { limit: number; sold: number; remaining: number; available: boolean };
-
 /**
- * Displays the real number of remaining launch slots.
- * Reads from the same `get_launch_slots` RPC used by LaunchOffer, so the
- * number always reflects reality (avoids fake scarcity / ad-account risk).
+ * Live-decreasing scarcity indicator.
+ * Starts at `initialRemaining` and drops by 1 every `decrementIntervalMs`
+ * while the lead is on the page — mimicking real-time sell-through.
  */
-export default function SpotsRemaining({ total = 100, fallbackRemaining = 100, className }: Props) {
-  const [slots, setSlots] = useState<Slots | null>(null);
+export default function SpotsRemaining({
+  total = 100,
+  initialRemaining = 57,
+  decrementIntervalMs = 167_000, // 2m47s
+  minRemaining = 3,
+  className,
+}: Props) {
+  const [remaining, setRemaining] = useState<number>(initialRemaining);
 
   useEffect(() => {
-    let mounted = true;
-    supabase.rpc("get_launch_slots").then(({ data }) => {
-      if (mounted && data) setSlots(data as unknown as Slots);
-    });
-    return () => {
-      mounted = false;
-    };
-  }, []);
+    const id = setInterval(() => {
+      setRemaining((r) => (r > minRemaining ? r - 1 : r));
+    }, decrementIntervalMs);
+    return () => clearInterval(id);
+  }, [decrementIntervalMs, minRemaining]);
 
-  const remaining = slots?.remaining ?? fallbackRemaining;
-  const limit = slots?.limit ?? total;
-  const pct = Math.max(0, Math.min(100, ((limit - remaining) / limit) * 100));
-  const soldOut = slots ? !slots.available : false;
+  const pct = Math.max(0, Math.min(100, ((total - remaining) / total) * 100));
 
   return (
     <div
@@ -45,7 +46,7 @@ export default function SpotsRemaining({ total = 100, fallbackRemaining = 100, c
       <div className="flex items-center justify-between text-sm font-semibold text-orange-700">
         <span className="inline-flex items-center gap-1.5">
           <Flame className="h-4 w-4" />
-          {soldOut ? "Lote encerrado" : `Restam ${remaining} de ${limit} vagas`}
+          Restam {remaining} de {total} vagas
         </span>
         <span className="text-slate-500 text-xs font-medium">{Math.round(pct)}% preenchido</span>
       </div>
