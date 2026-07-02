@@ -659,8 +659,8 @@ function LpAnuncioUrgenteContent() {
                 total={CONFIG.totalSpots}
                 initialRemaining={CONFIG.initialRemaining}
                 decrementIntervalMs={CONFIG.spotsDecrementIntervalMs}
-                className="w-full max-w-md rounded-2xl border border-white/20 bg-white/10 backdrop-blur px-4 py-3"
               />
+
               <CTA label={`GARANTIR MINHA VAGA POR ${CONFIG.price}`} />
               <p className="text-xs text-white/70">
                 Pagamento seguro • Garantia de 7 dias • Ativação imediata
