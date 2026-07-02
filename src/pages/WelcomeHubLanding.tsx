@@ -28,7 +28,7 @@ import { StickyFeatureSection } from "@/components/ui/sticky-scroll-cards-sectio
 import WhatsAppGuideDialog from "@/components/lp/WhatsAppGuideDialog";
 import { Reveal } from "@/hooks/useReveal";
 
-const DEMO_URL = "https://hub.mrflow.com.br/g/suite-premium-vila-serena-23515a";
+const DEMO_URL = "https://hub.mrflow.com.br/g/suite-premium-vila-serena-23515a?demo=1";
 
 // Ajuste manual: largura máxima do mockup do celular no hero (ex.: "360px", "420px", "80%")
 const PHONE_MOCKUP_MAX_WIDTH = "320px";

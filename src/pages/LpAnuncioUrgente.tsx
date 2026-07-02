@@ -418,7 +418,7 @@ function LpAnuncioUrgenteContent() {
                   <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-[#0a0f1c] rounded-b-2xl z-10" />
                   <div className="relative h-[620px] sm:h-[700px] bg-[#0F172A] overflow-hidden rounded-[2rem]">
                     <iframe
-                      src="https://hub.mrflow.com.br/g/suite-premium-vila-serena-23515a"
+                      src="https://hub.mrflow.com.br/g/suite-premium-vila-serena-23515a?demo=1"
                       title="Demo Mr Flow Welcome Hub"
                       className="absolute inset-0 w-full h-full"
                       loading="lazy"
