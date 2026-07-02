@@ -13,6 +13,7 @@ import MetaPixelTracker from "@/components/analytics/MetaPixelTracker";
 import NotFound from "./pages/NotFound";
 
 const LpAnuncio = lazy(() => import("./pages/LpAnuncio"));
+const LpAnuncioUrgente = lazy(() => import("./pages/LpAnuncioUrgente"));
 const WelcomeHubLanding = lazy(() => import("./pages/WelcomeHubLanding"));
 
 // Lazy-loaded routes — keep landing page (/) eager, split everything else.
@@ -91,6 +92,7 @@ const App = () => (
           <Suspense fallback={null}>
             <Routes>
               <Route path="/" element={<LpAnuncio />} />
+              <Route path="/oferta" element={<LpAnuncioUrgente />} />
               <Route path="/lp" element={<WelcomeHubLanding />} />
               <Route path="/welcome-hub" element={<Index />} />
               <Route path="/guia-digital-airbnb" element={<SeoLandings.GuiaDigitalAirbnb />} />
