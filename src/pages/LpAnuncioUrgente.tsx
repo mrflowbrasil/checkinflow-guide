@@ -525,7 +525,7 @@ function LpAnuncioUrgenteContent() {
       </section>
 
       {/* ============ 9. OFERTA (LaunchOffer real) ============ */}
-      <LaunchOffer />
+      <LaunchOfferBlock />
 
       {/* ============ O que você perde ============ */}
       <section className="py-16 sm:py-20 bg-slate-900 text-slate-100">
@@ -632,6 +632,7 @@ function LpAnuncioUrgenteContent() {
               <UrgencyCountdown
                 durationMs={CONFIG.countdownDurationMs}
                 storageKey={CONFIG.countdownStorageKey}
+                stopOnZero
               />
               <SpotsRemaining
                 total={CONFIG.totalSpots}
