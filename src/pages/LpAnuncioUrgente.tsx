@@ -432,19 +432,7 @@ function LpAnuncioUrgenteContent() {
       </section>
 
       {/* ============ 6b. DEMONSTRAÇÃO RÁPIDA ============ */}
-      <section className="bg-[#FAFAF7]">
-        <div className="container max-w-4xl mx-auto px-5 sm:px-8 pt-16 sm:pt-20 pb-4">
-          <Reveal className="text-center">
-            <span className="inline-flex items-center gap-2 rounded-full bg-[hsl(186_100%_94%)] border border-[hsl(186_100%_32%)]/20 px-3 py-1 text-xs font-bold uppercase tracking-widest text-[hsl(186_100%_24%)] mb-4">
-              <Zap className="h-3.5 w-3.5" /> Demonstração rápida
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-              Crie seu primeiro imóvel em menos de 5 minutos
-            </h2>
-          </Reveal>
-        </div>
-        <VideoCriacao />
-      </section>
+      <VideoCriacao />
 
       {/* ============ 7. DEPOIMENTOS ============ */}
       <section className="py-16 sm:py-20 bg-slate-50/60">
