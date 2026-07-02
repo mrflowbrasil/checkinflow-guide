@@ -234,25 +234,8 @@ export default function LpAnuncioUrgente() {
       </section>
 
       {/* ============ 3. LOGOS PARCEIROS ============ */}
-      <section className="py-8 sm:py-10 border-y border-slate-200/70 bg-white">
-        <div className="container max-w-5xl mx-auto px-5 sm:px-8">
-          <p className="text-center text-[11px] uppercase tracking-widest text-slate-500 mb-5 font-semibold">
-            Funciona com quem você já usa
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-5 opacity-80">
-            {[airbnbLogo, bookingLogo, staysLogo, hostawayLogo, vrboLogo].map((logo, i) => (
-              <img
-                key={i}
-                src={logo.url}
-                alt=""
-                loading="lazy"
-                decoding="async"
-                className="h-6 sm:h-7 w-auto grayscale hover:grayscale-0 transition"
-              />
-            ))}
-          </div>
-        </div>
-      </section>
+      <TrustLogos title="Funciona com quem você já usa" />
+
 
       {/* ============ 5. ANTES x DEPOIS ============ */}
       <section className="py-16 sm:py-20 bg-slate-50/60">
