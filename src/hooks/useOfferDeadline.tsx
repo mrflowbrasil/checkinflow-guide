@@ -10,11 +10,14 @@ const OfferStatusContext = createContext<OfferState | null>(null);
 
 function readDeadline(storageKey: string, durationMs: number): number {
   if (typeof window === "undefined") return Date.now() + durationMs;
-  const raw = window.localStorage.getItem(storageKey);
+  // Use sessionStorage so a new browser session/tab restarts the countdown.
+  const raw = window.sessionStorage.getItem(storageKey);
   const parsed = raw ? Number(raw) : NaN;
-  if (Number.isFinite(parsed)) return parsed;
+  // Only reuse a stored deadline if it's still in the future — avoids
+  // reopening the page in an already-expired state from a stale value.
+  if (Number.isFinite(parsed) && parsed > Date.now()) return parsed;
   const deadline = Date.now() + durationMs;
-  window.localStorage.setItem(storageKey, String(deadline));
+  window.sessionStorage.setItem(storageKey, String(deadline));
   return deadline;
 }
 
