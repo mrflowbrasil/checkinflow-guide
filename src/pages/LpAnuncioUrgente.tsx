@@ -405,12 +405,45 @@ function LpAnuncioUrgenteContent() {
               <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
                 Isso aqui pode estar no bolso do seu hóspede ainda hoje.
               </h2>
+              <p className="mt-4 text-slate-600 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+                Toque nos botões abaixo e navegue pela demonstração real de um guia publicado.
+              </p>
             </div>
           </Reveal>
           <Reveal delay={120}>
-            <VideoCriacao />
+            <div className="flex justify-center">
+              <div className="relative">
+                <div className="absolute -inset-6 bg-gradient-to-tr from-[hsl(186_100%_85%)]/40 via-transparent to-[#F3EBDD]/60 blur-3xl rounded-full pointer-events-none" />
+                <div className="relative w-[300px] sm:w-[340px] rounded-[3rem] bg-[#0a0f1c] border-[10px] border-[#1a2236] shadow-[0_30px_80px_-20px_rgba(15,23,42,0.3)] overflow-hidden">
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-[#0a0f1c] rounded-b-2xl z-10" />
+                  <div className="relative h-[620px] sm:h-[700px] bg-[#0F172A] overflow-hidden rounded-[2rem]">
+                    <iframe
+                      src="https://hub.mrflow.com.br/g/suite-premium-vila-serena-23515a"
+                      title="Demo Mr Flow Welcome Hub"
+                      className="absolute inset-0 w-full h-full"
+                      loading="lazy"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
           </Reveal>
         </div>
+      </section>
+
+      {/* ============ 6b. DEMONSTRAÇÃO RÁPIDA ============ */}
+      <section className="bg-[#FAFAF7]">
+        <div className="container max-w-4xl mx-auto px-5 sm:px-8 pt-16 sm:pt-20 pb-4">
+          <Reveal className="text-center">
+            <span className="inline-flex items-center gap-2 rounded-full bg-[hsl(186_100%_94%)] border border-[hsl(186_100%_32%)]/20 px-3 py-1 text-xs font-bold uppercase tracking-widest text-[hsl(186_100%_24%)] mb-4">
+              <Zap className="h-3.5 w-3.5" /> Demonstração rápida
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+              Crie seu primeiro imóvel em menos de 5 minutos
+            </h2>
+          </Reveal>
+        </div>
+        <VideoCriacao />
       </section>
 
       {/* ============ 7. DEPOIMENTOS ============ */}
