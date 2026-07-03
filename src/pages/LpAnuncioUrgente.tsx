@@ -339,7 +339,7 @@ function LpAnuncioUrgenteContent() {
       <section className="py-16 sm:py-20 bg-slate-50/60">
         <div className="container max-w-5xl mx-auto px-5 sm:px-8">
           <Reveal>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-center text-slate-900 tracking-tight mb-3">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1] text-center text-slate-900 mb-3">
               Duas rotinas. Uma escolha.
             </h2>
             <p className="text-center text-slate-600 max-w-xl mx-auto mb-10">
@@ -402,7 +402,7 @@ function LpAnuncioUrgenteContent() {
               <span className="inline-flex items-center gap-2 rounded-full bg-[hsl(186_100%_94%)] border border-[hsl(186_100%_32%)]/20 px-3 py-1 text-xs font-bold uppercase tracking-widest text-[hsl(186_100%_24%)] mb-4">
                 <Sparkles className="h-3.5 w-3.5" /> Veja funcionando de verdade
               </span>
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1] text-slate-900">
                 Isso aqui pode estar no bolso do seu hóspede ainda hoje.
               </h2>
               <p className="mt-4 text-slate-600 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
@@ -436,7 +436,7 @@ function LpAnuncioUrgenteContent() {
         <div className="container max-w-6xl mx-auto px-5 sm:px-8">
           <Reveal>
             <div className="text-center mb-10">
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1] text-slate-900">
                 Eles decidiram antes de você. E não voltaram atrás.
               </h2>
             </div>
@@ -506,7 +506,7 @@ function LpAnuncioUrgenteContent() {
               <span className="inline-flex items-center gap-2 rounded-full bg-amber-50 border border-amber-200 px-3 py-1 text-xs font-bold uppercase tracking-widest text-amber-800 mb-4">
                 <Gift className="h-3.5 w-3.5" /> Bônus que somem quando a oferta expirar
               </span>
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1] text-slate-900">
                 Além do ano inteiro, você leva:
               </h2>
             </div>
@@ -556,7 +556,7 @@ function LpAnuncioUrgenteContent() {
               <span className="inline-flex items-center gap-2 rounded-full bg-red-500/20 border border-red-400/40 px-3 py-1 text-xs font-bold uppercase tracking-widest text-red-300 mb-4">
                 <TrendingDown className="h-3.5 w-3.5" /> Custo real de ficar parado
               </span>
-              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1] text-white">
                 O que você perde se fechar essa página agora:
               </h2>
             </div>
@@ -592,7 +592,7 @@ function LpAnuncioUrgenteContent() {
       <section className="py-16 sm:py-20 bg-white">
         <div className="container max-w-3xl mx-auto px-5 sm:px-8">
           <Reveal>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-center text-slate-900 tracking-tight mb-10">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1] text-center text-slate-900 mb-10">
               Suas últimas dúvidas antes de garantir:
             </h2>
           </Reveal>
@@ -637,7 +637,7 @@ function LpAnuncioUrgenteContent() {
             <div className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-3 py-1 text-xs font-bold uppercase tracking-widest mb-5">
               <Flame className="h-3.5 w-3.5" /> Última chamada
             </div>
-            <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight leading-[1.05]">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1] text-white">
               O timer não espera.
               <br />
               <span className="text-[#00FFFF]">Nem o próximo hóspede.</span>
