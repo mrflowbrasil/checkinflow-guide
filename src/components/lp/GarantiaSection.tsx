@@ -46,7 +46,7 @@ export default function GarantiaSection() {
             <ShieldCheck className="h-3.5 w-3.5" />
             GARANTIA DE 7 DIAS
           </span>
-          <h2 className="mt-5 text-3xl sm:text-4xl lg:text-[2.6rem] font-bold tracking-tight leading-[1.1] text-slate-900">
+          <h2 className="mt-5 text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1] text-slate-900">
             Teste por 7 dias. Se não fizer sentido para você,{" "}
             <span style={{ color: CYAN }}>não paga nada.</span>
           </h2>
