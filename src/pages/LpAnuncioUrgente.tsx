@@ -251,7 +251,7 @@ function LpAnuncioUrgenteContent() {
           aria-hidden
           className="pointer-events-none absolute inset-x-0 top-0 h-[500px] bg-[radial-gradient(ellipse_at_top,hsl(186_100%_90%/0.5),transparent_70%)]"
         />
-        <div className="container max-w-5xl mx-auto px-5 sm:px-8 pt-8 pb-14 sm:pt-14 sm:pb-20 text-center relative">
+        <div className="container max-w-6xl mx-auto px-5 sm:px-8 pt-8 pb-14 sm:pt-14 sm:pb-20 text-center relative">
           <Reveal>
             <div className="inline-flex items-center gap-2 rounded-full bg-red-50 border border-red-200 px-3 py-1 text-[11px] sm:text-xs font-bold uppercase tracking-widest text-red-700 mb-5">
               <Flame className="h-3.5 w-3.5" /> Última chance — lote de lançamento
