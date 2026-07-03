@@ -251,16 +251,15 @@ function LpAnuncioUrgenteContent() {
           aria-hidden
           className="pointer-events-none absolute inset-x-0 top-0 h-[500px] bg-[radial-gradient(ellipse_at_top,hsl(186_100%_90%/0.5),transparent_70%)]"
         />
-        <div className="container max-w-4xl mx-auto px-5 sm:px-8 pt-8 pb-14 sm:pt-14 sm:pb-20 text-center relative">
+        <div className="container max-w-5xl mx-auto px-5 sm:px-8 pt-8 pb-14 sm:pt-14 sm:pb-20 text-center relative">
           <Reveal>
             <div className="inline-flex items-center gap-2 rounded-full bg-red-50 border border-red-200 px-3 py-1 text-[11px] sm:text-xs font-bold uppercase tracking-widest text-red-700 mb-5">
               <Flame className="h-3.5 w-3.5" /> Última chance — lote de lançamento
             </div>
 
-            <h1 className="text-[32px] sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.05]">
-              Enquanto você pensa,{" "}
-              <span className="text-[hsl(186_100%_28%)] whitespace-nowrap">outro anfitrião</span>
-              <br className="hidden sm:block" /> está garantindo{" "}
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight leading-[1.1]">
+              Enquanto você pensa, <span className="text-[hsl(186_100%_28%)]">outro anfitrião</span>{" "}
+              está garantindo{" "}
               <span className="relative inline-block">
                 <span className="relative z-10">a vaga que era sua.</span>
                 <span
