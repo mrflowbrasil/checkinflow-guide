@@ -431,9 +431,6 @@ function LpAnuncioUrgenteContent() {
         </div>
       </section>
 
-      {/* ============ 6b. DEMONSTRAÇÃO RÁPIDA ============ */}
-      <VideoCriacao />
-
       {/* ============ 7. DEPOIMENTOS ============ */}
       <section className="py-16 sm:py-20 bg-slate-50/60">
         <div className="container max-w-6xl mx-auto px-5 sm:px-8">
@@ -498,7 +495,10 @@ function LpAnuncioUrgenteContent() {
         </div>
       </section>
 
-      {/* ============ 8. BÔNUS COM PRAZO ============ */}
+      {/* ============ 8. DEMONSTRAÇÃO RÁPIDA ============ */}
+      <VideoCriacao />
+
+      {/* ============ 9. BÔNUS COM PRAZO ============ */}
       <section className="py-16 sm:py-20 bg-white">
         <div className="container max-w-4xl mx-auto px-5 sm:px-8">
           <Reveal>
@@ -545,7 +545,7 @@ function LpAnuncioUrgenteContent() {
         </div>
       </section>
 
-      {/* ============ 9. OFERTA (LaunchOffer real) ============ */}
+      {/* ============ 10. OFERTA (LaunchOffer real) ============ */}
       <LaunchOfferBlock />
 
       {/* ============ O que você perde ============ */}
@@ -585,10 +585,10 @@ function LpAnuncioUrgenteContent() {
         </div>
       </section>
 
-      {/* ============ 10. GARANTIA ============ */}
+      {/* ============ 11. GARANTIA ============ */}
       <GarantiaSection />
 
-      {/* ============ 11. FAQ curto ============ */}
+      {/* ============ 12. FAQ curto ============ */}
       <section className="py-16 sm:py-20 bg-white">
         <div className="container max-w-3xl mx-auto px-5 sm:px-8">
           <Reveal>
@@ -630,7 +630,7 @@ function LpAnuncioUrgenteContent() {
         </div>
       </section>
 
-      {/* ============ 12. CTA FINAL com countdown ============ */}
+      {/* ============ 13. CTA FINAL com countdown ============ */}
       <section className="py-16 sm:py-24 bg-gradient-to-br from-[hsl(186_100%_18%)] via-[hsl(186_100%_22%)] to-[hsl(186_100%_28%)] text-white">
         <div className="container max-w-3xl mx-auto px-5 sm:px-8 text-center">
           <Reveal>
