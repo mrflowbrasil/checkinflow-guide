@@ -431,9 +431,6 @@ function LpAnuncioUrgenteContent() {
         </div>
       </section>
 
-      {/* ============ 6b. DEMONSTRAÇÃO RÁPIDA ============ */}
-      <VideoCriacao />
-
       {/* ============ 7. DEPOIMENTOS ============ */}
       <section className="py-16 sm:py-20 bg-slate-50/60">
         <div className="container max-w-6xl mx-auto px-5 sm:px-8">
@@ -497,6 +494,9 @@ function LpAnuncioUrgenteContent() {
           </div>
         </div>
       </section>
+
+      {/* ============ 8. DEMONSTRAÇÃO RÁPIDA ============ */}
+      <VideoCriacao />
 
       {/* ============ 8. BÔNUS COM PRAZO ============ */}
       <section className="py-16 sm:py-20 bg-white">
