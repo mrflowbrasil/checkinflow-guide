@@ -16,6 +16,9 @@ export type Tenant = {
   plan_status: string;
   button_shape?: "square" | "rounded" | "pill" | null;
   button_border?: "none" | "outline" | null;
+  trial_started_at?: string | null;
+  trial_ends_at?: string | null;
+  trial_status?: "active" | "expired" | "converted" | "waived" | null;
 };
 
 
