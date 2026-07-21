@@ -179,8 +179,16 @@ async function upsertSubscription(subscription: any, env: StripeEnv) {
         plan_expires_at: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
         stripe_customer_id: subscription.customer,
         stripe_subscription_id: subscription.id,
+        trial_status: "converted",
       })
       .eq("id", tenantId);
+
+    // Reactivate properties disabled by trial expiration
+    await getSupabase()
+      .from("properties")
+      .update({ status: "active", public_disabled_reason: null })
+      .eq("tenant_id", tenantId)
+      .eq("public_disabled_reason", "trial_expired");
   }
 }
 

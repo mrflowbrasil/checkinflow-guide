@@ -7,12 +7,23 @@ export function GuestLinkExpired({ slug }: { slug: string }) {
   const { data, isLoading } = useQuery({
     queryKey: ["expired_slug", slug],
     queryFn: async () => {
+      // Try the current slug first (may be inactive due to trial_expired)
+      const { data: current } = await supabase
+        .from("properties")
+        .select("id, name, booking_url, public_disabled_reason, tenants(name, primary_color, template, support_whatsapp, logo_url, show_logo, plan_code)")
+        .eq("public_slug", slug)
+        .maybeSingle();
+      if (current) return { properties: current, reason: (current as any).public_disabled_reason } as any;
+
+      // Fallback: slug history (rotated links)
       const { data: history } = await supabase
         .from("property_slug_history")
-        .select("property_id, properties(name, booking_url, tenants(name, primary_color, template, support_whatsapp, logo_url, show_logo, plan_code))")
+        .select("property_id, properties(name, booking_url, public_disabled_reason, tenants(name, primary_color, template, support_whatsapp, logo_url, show_logo, plan_code))")
         .eq("slug", slug)
         .maybeSingle();
-      return history as any;
+      return history
+        ? { properties: (history as any).properties, reason: (history as any).properties?.public_disabled_reason }
+        : null;
     },
   });
 
@@ -36,6 +47,12 @@ export function GuestLinkExpired({ slug }: { slug: string }) {
     ? `https://wa.me/${whatsapp}?text=${encodeURIComponent("Olá! Preciso de ajuda com o link do guia do hóspede.")}`
     : null;
 
+  const isTrialExpired = data?.reason === "trial_expired";
+  const heading = isTrialExpired ? "Guia temporariamente indisponível" : "Este link expirou";
+  const body = isTrialExpired
+    ? "O período de teste deste guia terminou. O anfitrião precisa reativar o plano para o guia voltar ao ar."
+    : "O acesso a este guia foi atualizado. Faça uma nova reserva para receber um novo link de acesso.";
+
   return (
     <div className={`guide-root guide-template-${template} min-h-screen flex flex-col`}>
       <div className="flex-1 flex flex-col items-center justify-center px-6 text-center max-w-md mx-auto w-full">
@@ -53,11 +70,12 @@ export function GuestLinkExpired({ slug }: { slug: string }) {
         </div>
 
         <h1 className="text-2xl sm:text-3xl font-semibold mb-3" style={{ color: "hsl(var(--guide-fg))" }}>
-          Este link expirou
+          {heading}
         </h1>
         <p className="text-base mb-8" style={{ color: "hsl(var(--guide-muted))" }}>
-          O acesso a este guia foi atualizado. Faça uma nova reserva para receber um novo link de acesso.
+          {body}
         </p>
+
 
         {bookingUrl && (
           <Button

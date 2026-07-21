@@ -1,6 +1,7 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { LayoutDashboard, Home, Settings, LogOut, Shield, Menu, Plug, Sparkles, UserCog, HelpCircle, LayoutGrid, BarChart3 } from "lucide-react";
 import { PaymentTestModeBanner } from "@/components/billing/PaymentTestModeBanner";
+import { TrialBanner } from "@/components/layout/TrialBanner";
 import { MrFlowLogo } from "@/components/brand/MrFlowLogo";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsSuperAdmin, useTenant } from "@/hooks/useTenant";
@@ -160,6 +161,7 @@ export default function AppShell() {
         </header>
 
         <PaymentTestModeBanner />
+        <TrialBanner />
         {onboarding && !onboarding.completed && (
           <div className="bg-accent-soft border-b border-accent/20 px-4 py-2 flex items-center justify-between gap-3 text-sm">
             <div className="flex items-center gap-2 text-accent-foreground">
