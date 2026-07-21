@@ -445,6 +445,7 @@ export type Database = {
           id: string
           max_guests: number | null
           name: string
+          public_disabled_reason: string | null
           public_slug: string
           source: string
           status: Database["public"]["Enums"]["property_status"]
@@ -467,6 +468,7 @@ export type Database = {
           id?: string
           max_guests?: number | null
           name: string
+          public_disabled_reason?: string | null
           public_slug: string
           source?: string
           status?: Database["public"]["Enums"]["property_status"]
@@ -489,6 +491,7 @@ export type Database = {
           id?: string
           max_guests?: number | null
           name?: string
+          public_disabled_reason?: string | null
           public_slug?: string
           source?: string
           status?: Database["public"]["Enums"]["property_status"]
@@ -965,6 +968,9 @@ export type Database = {
           stripe_subscription_id: string | null
           support_whatsapp: string | null
           template: Database["public"]["Enums"]["tenant_template"]
+          trial_ends_at: string | null
+          trial_started_at: string | null
+          trial_status: string
           updated_at: string
         }
         Insert: {
@@ -990,6 +996,9 @@ export type Database = {
           stripe_subscription_id?: string | null
           support_whatsapp?: string | null
           template?: Database["public"]["Enums"]["tenant_template"]
+          trial_ends_at?: string | null
+          trial_started_at?: string | null
+          trial_status?: string
           updated_at?: string
         }
         Update: {
@@ -1015,6 +1024,9 @@ export type Database = {
           stripe_subscription_id?: string | null
           support_whatsapp?: string | null
           template?: Database["public"]["Enums"]["tenant_template"]
+          trial_ends_at?: string | null
+          trial_started_at?: string | null
+          trial_status?: string
           updated_at?: string
         }
         Relationships: [
@@ -1202,6 +1214,7 @@ export type Database = {
         Returns: boolean
       }
       email_queue_dispatch: { Args: never; Returns: undefined }
+      enforce_trial_expiration: { Args: never; Returns: number }
       enqueue_email: {
         Args: { payload: Json; queue_name: string }
         Returns: number
@@ -1246,6 +1259,10 @@ export type Database = {
         Returns: boolean
       }
       is_property_active: { Args: { _property_id: string }; Returns: boolean }
+      mark_tenant_converted: {
+        Args: { _tenant_id: string }
+        Returns: undefined
+      }
       move_to_dlq: {
         Args: {
           dlq_name: string

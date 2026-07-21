@@ -1,78 +1,60 @@
-# Expiração real do contador em /oferta
 
-## Objetivo
-Hoje o contador `UrgencyCountdown` está em modo "rolling" (reseta sozinho ao zerar), então o botão de compra nunca é bloqueado. Vamos transformá-lo em uma expiração **de verdade por visitante** (15 min a partir da 1ª visita, persistido em `localStorage`), bloquear todos os CTAs quando expirar e abrir um modal informando que a oferta acabou.
+## Contexto verificado
 
-## Comportamento final
-- 1ª visita → deadline salvo em `localStorage` (`lp:urgente:deadline:15m`) por 15 min.
-- Enquanto `agora < deadline`: tudo funciona como hoje.
-- Quando `agora >= deadline`:
-  - Contador congela em `00:00`, muda para tom "apagado" (cinza), e o rótulo vira **"Oferta expirada"**.
-  - Todos os botões de compra da página ficam desabilitados (header "Garantir vaga", CTA do hero, CTA do bloco final, botão do `LaunchOffer`, botão do `ExitIntentDialog`). Visualmente ficam opacos, `cursor-not-allowed`, sem executar `openLaunchCheckout`.
-  - Abre automaticamente 1 vez um modal **"Oferta expirada"** com:
-    - Título: "Essa oferta encerrou"
-    - Texto curto: as 100 vagas do lote de lançamento foram encerradas / o tempo acabou.
-    - CTA primário: **"Ver planos disponíveis"** → navega para `/#planos` (seção de planos da home).
-    - CTA secundário (link): **"Voltar para a página inicial"** → `/`.
-  - O modal pode ser fechado, mas os CTAs continuam desabilitados enquanto o deadline estiver vencido.
-- Refresh após expirado → estado expirado continua (deadline no `localStorage` já passou).
+Os 4 workspaces (`sergio-lima`, `maria`, `fernando-araujo-pires`, `gerson-scheffer`) estão no plano `free` (Single, R$ 8,90/mês, 1 imóvel), com `is_active = true`, `plan_status = active`, sem registro em `subscriptions` (nunca pagaram) e cada um tem 1 imóvel cadastrado. Hoje o guia público deles está no ar porque **não existe mecanismo de trial no banco** — a coluna `plan_expires_at` fica nula para free e nada é checado em `is_property_active`.
 
-## Arquitetura
+## Parte 1 — Ação imediata nos 4 workspaces
 
-### 1. Novo hook `useOfferDeadline`
-`src/hooks/useOfferDeadline.tsx` — fonte única da verdade sobre o estado da oferta, para não espalhar lógica de tempo.
+Desativar apenas o link público, mantendo login no painel:
 
-Retorna:
-```ts
-{
-  remainingMs: number;
-  expired: boolean;
-  deadline: number; // epoch ms
-}
-```
-- Lê/inicializa o deadline no `localStorage` (mesma chave e duração do `CONFIG` atual).
-- `setInterval(1000)` para atualizar `remainingMs` e `expired`.
-- Uma vez `expired = true`, **não reseta mais** (diferente do rolling atual).
+- Adicionar coluna `properties.public_disabled_reason text` (nullable) para deixar explícito o motivo (`trial_expired`) e permitir mensagem específica no `GuestGuide`.
+- Atualizar `properties.status = 'inactive'` e `public_disabled_reason = 'trial_expired'` para os imóveis dos 4 tenants listados.
+- Ajustar `is_property_active()` já cobre isso (checa `status = 'active'`), então o guia passará a exibir "link expirado".
+- Ajustar `GuestLinkExpired.tsx` (ou o componente equivalente disparado pelo `GuestGuide`) para, quando `public_disabled_reason = 'trial_expired'`, mostrar uma mensagem específica: "O período de teste deste guia terminou. O anfitrião precisa reativar o plano para voltar ao ar."
+- Login no painel do tenant continua funcionando (`tenants.is_active` permanece `true`), então cada dono pode pagar e reativar sem perder dados.
 
-### 2. Contexto `OfferStatusContext` (escopo local à página)
-`src/pages/LpAnuncioUrgente.tsx` cria um `OfferStatusProvider` que envolve toda a página e expõe `{ expired }` via `useOfferStatus()`. Assim, o `CTA` interno, o botão do header, o `LaunchOffer` e o `ExitIntentDialog` sabem se devem bloquear sem prop drilling.
+## Parte 2 — Regra de trial de 30 dias no sistema
 
-### 3. Ajustes em `UrgencyCountdown`
-`src/components/lp/UrgencyCountdown.tsx`:
-- Adicionar prop opcional `stopOnZero?: boolean` (default `false` para não quebrar outros usos).
-- Quando `stopOnZero` e chegou a zero: parar o interval, congelar em `00:00`, aplicar classe visual "expirada" (bg cinza em vez do gradiente vermelho) e trocar o `aria-label` para "Oferta expirada".
-- Manter compatibilidade total com o modo rolling existente.
+### Esquema
 
-### 4. Bloqueio dos CTAs em `LpAnuncioUrgente.tsx`
-- O componente interno `CTA` lê `useOfferStatus()`. Se `expired`, renderiza `<Button disabled>` com texto **"Oferta encerrada"** e sem `onClick`.
-- Botão "Garantir vaga" do header idem.
-- `LaunchOffer` já é reutilizado em outras páginas, então **não** vou alterá-lo globalmente. Em vez disso, envolvo a instância dessa página em um wrapper que, quando `expired`, sobrepõe uma camada com `pointer-events-none` + opacidade e mostra um badge "Oferta encerrada" por cima. (Alternativa mais limpa se preferir: aceitar uma prop `disabled` em `LaunchOffer` — posso fazer se você quiser tocar naquele componente.)
-- `ExitIntentDialog`: quando `expired`, não abre mais (não faz sentido tentar reter para uma oferta que acabou).
+- Adicionar em `public.tenants`:
+  - `trial_started_at timestamptz` (default `now()`)
+  - `trial_ends_at timestamptz` (default `now() + interval '30 days'`)
+  - `trial_status text` default `'active'` — valores: `active`, `expired`, `converted`, `waived`.
+- Backfill: para tenants existentes no plano `free` sem assinatura, preencher `trial_started_at = created_at` e `trial_ends_at = created_at + 30 days`. Se já expirou (created_at < now() - 30d), marcar `trial_status = 'expired'`.
+- Tenants com `plan_code != 'free'` **ou** com `subscriptions.status IN ('active','trialing','past_due')` recebem `trial_status = 'converted'` e não são afetados.
+- Super admins e `plan_code = 'launch'` recebem `trial_status = 'waived'`.
 
-### 5. Novo componente `OfferExpiredDialog`
-`src/components/lp/OfferExpiredDialog.tsx` usando `Dialog` do shadcn:
-- Abre automaticamente na primeira vez que `expired` vira `true` (efeito com flag em `useRef` para não reabrir se o usuário fechar).
-- Ícone de relógio/alerta em tom neutro (sem tom hostil).
-- Botões: "Ver planos disponíveis" (`window.location.href = "/#planos"`) e "Voltar ao início" (`<Link to="/">`).
-- Dispara `track("view_urgente_expired_modal")` ao abrir.
+### Ativação/desativação automática
 
-### 6. Tracking
-Adicionar em `LpAnuncioUrgente.tsx`:
-- `track("urgente_offer_expired")` no momento em que `expired` transiciona para `true`.
-- `track("click_urgente_expired_cta", { target: "planos" | "home" })` nos CTAs do modal.
+Função `public.enforce_trial_expiration()` (SECURITY DEFINER) que, para cada tenant com `trial_status = 'active' AND trial_ends_at < now() AND plan_code = 'free' AND` sem `subscription` ativa:
+- Marca `trial_status = 'expired'`.
+- Atualiza `properties` do tenant: `status = 'inactive'`, `public_disabled_reason = 'trial_expired'`.
 
-## Arquivos afetados
-- `src/hooks/useOfferDeadline.tsx` (novo)
-- `src/components/lp/OfferExpiredDialog.tsx` (novo)
-- `src/components/lp/UrgencyCountdown.tsx` (prop `stopOnZero`, visual expirado)
-- `src/pages/LpAnuncioUrgente.tsx` (provider, wiring, wrapper do `LaunchOffer`, bloqueio dos CTAs, modal)
+Agendar via `pg_cron` para rodar 1x/dia (`0 3 * * *` — 03:00 UTC). Usar `supabase--insert` para o `cron.schedule` (contém URL/keys específicos do projeto — não vai para migration).
+
+### Reativação automática ao pagar
+
+No webhook `payments-webhook/index.ts`, quando `upsertSubscription` marca `plan_code` como `active/trialing/past_due`:
+- Setar `tenants.trial_status = 'converted'`.
+- Reativar imóveis: `UPDATE properties SET status = 'active', public_disabled_reason = NULL WHERE tenant_id = X AND public_disabled_reason = 'trial_expired'`.
+
+### UI mínima (painel do tenant)
+
+- Em `DashboardHome.tsx` (ou `AppShell`): banner amarelo quando `trial_status = 'active'` mostrando "Seu teste grátis termina em X dias" com CTA para `/app/billing`.
+- Banner vermelho quando `trial_status = 'expired'`: "Seu teste terminou. Os links dos hóspedes estão offline até você ativar um plano."
+- Expor `trial_ends_at` e `trial_status` no hook `useTenant`.
+
+## Detalhes técnicos (para revisão)
+
+- Migração 1 (schema): `ALTER TABLE properties ADD COLUMN public_disabled_reason text`; `ALTER TABLE tenants ADD COLUMN trial_started_at`, `trial_ends_at`, `trial_status`. Backfill inline no mesmo migration. Criar `enforce_trial_expiration()`.
+- Migração 2 (data via insert tool): desativar os 4 imóveis específicos + backfill do trial status conforme regras acima.
+- Migração 3 (via insert tool): `cron.schedule('enforce-trial-expiration', '0 3 * * *', ...)` chamando a função SQL diretamente (não precisa de edge function).
+- Frontend: `useTenant` retorna novos campos; novo `TrialBanner.tsx`; atualização de `GuestLinkExpired` para variante `trial_expired`.
+- Webhook: adicionar reativação de imóveis + `trial_status='converted'` em `payments-webhook`.
 
 ## Fora do escopo
-- Não altero `LaunchOffer.tsx`, `LpAnuncio.tsx`, nem o comportamento em outras páginas — a expiração é local à `/oferta`.
-- Não mexo em `SpotsRemaining` (vagas restantes continuam decrescendo como hoje).
-- Sem mudanças de banco/edge functions.
 
-## Validação
-- Testar manualmente forçando `localStorage.setItem("lp:urgente:deadline:15m", String(Date.now() - 1000))` e recarregando `/oferta`: contador deve aparecer expirado, modal deve abrir, CTAs devem estar desabilitados.
-- Testar fluxo normal: primeira visita → contador rodando → CTAs ativos.
-- Rodar Playwright headless para screenshot do estado expirado e confirmar visualmente.
+- Não desativar login/painel dos tenants expirados (fica só o link público offline).
+- Não enviar e-mails de aviso automáticos (pode ser proposto num próximo passo).
+- Não mexer no plano `launch` nem em `pro/business/starter`.
