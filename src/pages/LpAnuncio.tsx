@@ -259,11 +259,11 @@ function HeroLp() {
                 Garantir 1 ano por R$ 89,90 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Reveal>
-            <p className="mt-4 text-sm text-slate-500 lg:hidden">
+            <Reveal immediate delay={380} as="p" className="mt-4 text-sm text-slate-500 lg:hidden">
               Leva menos de 5 minutos.&nbsp;
-            </p>
+            </Reveal>
 
-            <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-600 lg:hidden">
+            <Reveal immediate delay={440} className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-600 lg:hidden">
               <span className="inline-flex items-center gap-1.5">
                 <Check className="h-4 w-4 text-[hsl(186_100%_32%)]" /> Sem app para o hóspede baixar
               </span>
@@ -273,7 +273,7 @@ function HeroLp() {
               <span className="inline-flex items-center gap-1.5">
                 <Check className="h-4 w-4 text-[hsl(186_100%_32%)]" /> Atualização em tempo real
               </span>
-            </div>
+            </Reveal>
           </div>
 
           <Reveal immediate delay={200} className="relative w-full">
