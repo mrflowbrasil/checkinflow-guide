@@ -157,6 +157,22 @@ export function EditPropertyDialog({ open, onOpenChange, property }: Props) {
 
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="space-y-2">
+              <Label htmlFor="city">Cidade</Label>
+              <Input id="city" name="city" defaultValue={property.city ?? ""} placeholder="Ex.: Ipojuca - PE" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="max_guests">Capacidade</Label>
+              <Input id="max_guests" name="max_guests" type="number" min={1} step={1} defaultValue={property.max_guests ?? ""} />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="base_price">Preço base por noite (R$)</Label>
+            <Input id="base_price" name="base_price" type="number" min={0} step="0.01" defaultValue={property.base_price ?? ""} />
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
               <Label htmlFor="external_id">ID externo</Label>
               <Input id="external_id" name="external_id" defaultValue={property.external_id ?? ""} />
             </div>
