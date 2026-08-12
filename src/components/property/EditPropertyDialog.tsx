@@ -21,6 +21,9 @@ type Props = {
     booking_url: string | null;
     external_id: string | null;
     cover_image_url: string | null;
+    city?: string | null;
+    max_guests?: number | null;
+    base_price?: number | null;
     public_slug: string;
     tenant_id: string;
     access_password_enabled?: boolean | null;
@@ -50,6 +53,9 @@ export function EditPropertyDialog({ open, onOpenChange, property }: Props) {
     description: string;
     booking_url: string;
     external_id: string;
+    city: string;
+    max_guests: string;
+    base_price: string;
   };
 
   const save = useMutation({
@@ -74,6 +80,9 @@ export function EditPropertyDialog({ open, onOpenChange, property }: Props) {
           description: values.description || null,
           booking_url: values.booking_url || null,
           external_id: values.external_id || null,
+          city: values.city.trim() || null,
+          max_guests: values.max_guests.trim() ? Number(values.max_guests) : null,
+          base_price: values.base_price.trim() ? Number(values.base_price.replace(",", ".")) : null,
           cover_image_url: coverUrl,
           access_password_enabled: pwdEnabled,
           access_password: pwdEnabled ? (pwd.trim() || null) : null,
@@ -100,6 +109,9 @@ export function EditPropertyDialog({ open, onOpenChange, property }: Props) {
       description: String(fd.get("description") ?? ""),
       booking_url: String(fd.get("booking_url") ?? ""),
       external_id: String(fd.get("external_id") ?? ""),
+      city: String(fd.get("city") ?? ""),
+      max_guests: String(fd.get("max_guests") ?? ""),
+      base_price: String(fd.get("base_price") ?? ""),
     };
     save.mutate(values);
   };
@@ -141,6 +153,22 @@ export function EditPropertyDialog({ open, onOpenChange, property }: Props) {
           <div className="space-y-2">
             <Label htmlFor="address">Endereço</Label>
             <Input id="address" name="address" defaultValue={property.address ?? ""} />
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="city">Cidade</Label>
+              <Input id="city" name="city" defaultValue={property.city ?? ""} placeholder="Ex.: Ipojuca - PE" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="max_guests">Capacidade</Label>
+              <Input id="max_guests" name="max_guests" type="number" min={1} step={1} defaultValue={property.max_guests ?? ""} />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="base_price">Preço base por noite (R$)</Label>
+            <Input id="base_price" name="base_price" type="number" min={0} step="0.01" defaultValue={property.base_price ?? ""} />
           </div>
 
           <div className="grid sm:grid-cols-2 gap-4">
