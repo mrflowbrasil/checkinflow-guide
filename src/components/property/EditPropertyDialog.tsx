@@ -21,6 +21,9 @@ type Props = {
     booking_url: string | null;
     external_id: string | null;
     cover_image_url: string | null;
+    city?: string | null;
+    max_guests?: number | null;
+    base_price?: number | null;
     public_slug: string;
     tenant_id: string;
     access_password_enabled?: boolean | null;
@@ -50,6 +53,9 @@ export function EditPropertyDialog({ open, onOpenChange, property }: Props) {
     description: string;
     booking_url: string;
     external_id: string;
+    city: string;
+    max_guests: string;
+    base_price: string;
   };
 
   const save = useMutation({
