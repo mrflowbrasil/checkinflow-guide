@@ -80,6 +80,9 @@ export function EditPropertyDialog({ open, onOpenChange, property }: Props) {
           description: values.description || null,
           booking_url: values.booking_url || null,
           external_id: values.external_id || null,
+          city: values.city.trim() || null,
+          max_guests: values.max_guests.trim() ? Number(values.max_guests) : null,
+          base_price: values.base_price.trim() ? Number(values.base_price.replace(",", ".")) : null,
           cover_image_url: coverUrl,
           access_password_enabled: pwdEnabled,
           access_password: pwdEnabled ? (pwd.trim() || null) : null,
@@ -106,6 +109,9 @@ export function EditPropertyDialog({ open, onOpenChange, property }: Props) {
       description: String(fd.get("description") ?? ""),
       booking_url: String(fd.get("booking_url") ?? ""),
       external_id: String(fd.get("external_id") ?? ""),
+      city: String(fd.get("city") ?? ""),
+      max_guests: String(fd.get("max_guests") ?? ""),
+      base_price: String(fd.get("base_price") ?? ""),
     };
     save.mutate(values);
   };
