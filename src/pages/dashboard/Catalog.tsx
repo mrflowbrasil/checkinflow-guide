@@ -127,10 +127,14 @@ export default function Catalog() {
           ) : (propertiesQ.data?.length ?? 0) === 0 ? (
             <Card>
               <CardContent className="py-12 text-center space-y-3">
-                <p className="text-muted-foreground">Nenhum imóvel cadastrado ainda.</p>
-                <Button onClick={() => { setEditing(null); setManualOpen(true); }}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Adicionar meu primeiro imóvel
+                <p className="text-muted-foreground">
+                  Nenhum imóvel cadastrado ainda. Cadastre em Imóveis e ele aparece aqui automaticamente.
+                </p>
+                <Button asChild>
+                  <Link to="/app/properties/new">
+                    <Home className="h-4 w-4 mr-2" />
+                    Cadastrar meu primeiro imóvel
+                  </Link>
                 </Button>
               </CardContent>
             </Card>
