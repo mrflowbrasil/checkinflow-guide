@@ -127,19 +127,7 @@ export default function PropertiesList() {
     }
   };
 
-  const { data: properties, isLoading } = useQuery({
-    queryKey: ["properties", tenant?.id],
-    enabled: !!tenant?.id,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("properties")
-        .select("id, tenant_id, name, address, status, public_slug, cover_image_url")
-        .eq("tenant_id", tenant!.id)
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return data;
-    },
-  });
+  const { data: properties, isLoading } = useProperties();
 
   const copyLink = (slug: string) => {
     const url = `${window.location.origin}/g/${slug}`;
