@@ -35,21 +35,8 @@ export default function Catalog() {
   const [bio, setBio] = useState<string | null>(null);
   const [savingBio, setSavingBio] = useState(false);
 
-  const propertiesQ = useQuery({
-    queryKey: ["catalog-properties", tenant?.id],
-    enabled: !!tenant?.id,
-    queryFn: async (): Promise<CatalogProperty[]> => {
-      const { data, error } = await supabase
-        .from("properties")
-        .select(
-          "id, name, city, max_guests, base_price, cover_image_url, public_slug, booking_url, status, source, external_provider",
-        )
-        .eq("tenant_id", tenant!.id)
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return (data ?? []) as CatalogProperty[];
-    },
-  });
+  const propertiesQ = useProperties();
+  const invalidateProperties = useInvalidateProperties();
 
   const tenantBioQ = useQuery({
     queryKey: ["tenant-bio", tenant?.id],
