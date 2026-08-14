@@ -78,7 +78,7 @@ export default function Catalog() {
     qc.invalidateQueries({ queryKey: ["tenant-bio", tenant.id] });
   };
 
-  const refresh = () => qc.invalidateQueries({ queryKey: ["catalog-properties", tenant?.id] });
+  const refresh = () => invalidateProperties();
 
   return (
     <div className="container py-8 max-w-6xl space-y-6 animate-fade-in">
@@ -100,7 +100,8 @@ export default function Catalog() {
             <div>
               <h2 className="text-lg font-semibold">Seus imóveis</h2>
               <p className="text-sm text-muted-foreground">
-                {propertiesQ.data?.length ?? 0} imóvel(eis) no catálogo. Apenas os ativos aparecem na página pública.
+                {propertiesQ.data?.length ?? 0} imóvel(eis) cadastrados. Todo imóvel criado ou importado em Imóveis
+                aparece aqui automaticamente — apenas os ativos ficam visíveis na página pública.
               </p>
             </div>
             <div className="flex gap-2">
@@ -108,9 +109,11 @@ export default function Catalog() {
                 <Download className="h-4 w-4 mr-2" />
                 Importar da Stays / Hub
               </Button>
-              <Button onClick={() => { setEditing(null); setManualOpen(true); }}>
-                <Plus className="h-4 w-4 mr-2" />
-                Adicionar manualmente
+              <Button asChild>
+                <Link to="/app/properties/new">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Novo imóvel
+                </Link>
               </Button>
             </div>
           </div>
