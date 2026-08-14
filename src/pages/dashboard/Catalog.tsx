@@ -19,19 +19,10 @@ import { ImportFromStaysDialog } from "@/components/catalog/ImportFromStaysDialo
 import { CatalogPreviewDialog } from "@/components/catalog/CatalogPreviewDialog";
 import { PropertyCatalogCard } from "@/components/catalog/PropertyCatalogCard";
 
-export type CatalogProperty = {
-  id: string;
-  name: string;
-  city: string | null;
-  max_guests: number | null;
-  base_price: number | null;
-  cover_image_url: string | null;
-  public_slug: string;
-  booking_url: string | null;
-  status: "active" | "inactive";
-  source: "manual" | "stays" | "hub";
-  external_provider: string | null;
-};
+import { useProperties, useInvalidateProperties, type PropertyRow } from "@/hooks/useProperties";
+
+/** Mesma tabela/fonte da página de Imóveis. */
+export type CatalogProperty = PropertyRow;
 
 export default function Catalog() {
   const { data: tenant } = useTenant();
