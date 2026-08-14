@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { Copy, Download, ExternalLink, Eye, Loader2, Plus, RefreshCcw } from "lucide-react";
+import { Copy, Download, ExternalLink, Eye, Home, Loader2, Plus, RefreshCcw } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -19,19 +19,10 @@ import { ImportFromStaysDialog } from "@/components/catalog/ImportFromStaysDialo
 import { CatalogPreviewDialog } from "@/components/catalog/CatalogPreviewDialog";
 import { PropertyCatalogCard } from "@/components/catalog/PropertyCatalogCard";
 
-export type CatalogProperty = {
-  id: string;
-  name: string;
-  city: string | null;
-  max_guests: number | null;
-  base_price: number | null;
-  cover_image_url: string | null;
-  public_slug: string;
-  booking_url: string | null;
-  status: "active" | "inactive";
-  source: "manual" | "stays" | "hub";
-  external_provider: string | null;
-};
+import { useProperties, useInvalidateProperties, type PropertyRow } from "@/hooks/useProperties";
+
+/** Mesma tabela/fonte da página de Imóveis. */
+export type CatalogProperty = PropertyRow;
 
 export default function Catalog() {
   const { data: tenant } = useTenant();
@@ -44,21 +35,8 @@ export default function Catalog() {
   const [bio, setBio] = useState<string | null>(null);
   const [savingBio, setSavingBio] = useState(false);
 
-  const propertiesQ = useQuery({
-    queryKey: ["catalog-properties", tenant?.id],
-    enabled: !!tenant?.id,
-    queryFn: async (): Promise<CatalogProperty[]> => {
-      const { data, error } = await supabase
-        .from("properties")
-        .select(
-          "id, name, city, max_guests, base_price, cover_image_url, public_slug, booking_url, status, source, external_provider",
-        )
-        .eq("tenant_id", tenant!.id)
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return (data ?? []) as CatalogProperty[];
-    },
-  });
+  const propertiesQ = useProperties();
+  const invalidateProperties = useInvalidateProperties();
 
   const tenantBioQ = useQuery({
     queryKey: ["tenant-bio", tenant?.id],
@@ -100,7 +78,7 @@ export default function Catalog() {
     qc.invalidateQueries({ queryKey: ["tenant-bio", tenant.id] });
   };
 
-  const refresh = () => qc.invalidateQueries({ queryKey: ["catalog-properties", tenant?.id] });
+  const refresh = () => invalidateProperties();
 
   return (
     <div className="container py-8 max-w-6xl space-y-6 animate-fade-in">
@@ -122,7 +100,8 @@ export default function Catalog() {
             <div>
               <h2 className="text-lg font-semibold">Seus imóveis</h2>
               <p className="text-sm text-muted-foreground">
-                {propertiesQ.data?.length ?? 0} imóvel(eis) no catálogo. Apenas os ativos aparecem na página pública.
+                {propertiesQ.data?.length ?? 0} imóvel(eis) cadastrados. Todo imóvel criado ou importado em Imóveis
+                aparece aqui automaticamente — apenas os ativos ficam visíveis na página pública.
               </p>
             </div>
             <div className="flex gap-2">
@@ -130,9 +109,11 @@ export default function Catalog() {
                 <Download className="h-4 w-4 mr-2" />
                 Importar da Stays / Hub
               </Button>
-              <Button onClick={() => { setEditing(null); setManualOpen(true); }}>
-                <Plus className="h-4 w-4 mr-2" />
-                Adicionar manualmente
+              <Button asChild>
+                <Link to="/app/properties/new">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Novo imóvel
+                </Link>
               </Button>
             </div>
           </div>
@@ -146,10 +127,14 @@ export default function Catalog() {
           ) : (propertiesQ.data?.length ?? 0) === 0 ? (
             <Card>
               <CardContent className="py-12 text-center space-y-3">
-                <p className="text-muted-foreground">Nenhum imóvel cadastrado ainda.</p>
-                <Button onClick={() => { setEditing(null); setManualOpen(true); }}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Adicionar meu primeiro imóvel
+                <p className="text-muted-foreground">
+                  Nenhum imóvel cadastrado ainda. Cadastre em Imóveis e ele aparece aqui automaticamente.
+                </p>
+                <Button asChild>
+                  <Link to="/app/properties/new">
+                    <Home className="h-4 w-4 mr-2" />
+                    Cadastrar meu primeiro imóvel
+                  </Link>
                 </Button>
               </CardContent>
             </Card>
