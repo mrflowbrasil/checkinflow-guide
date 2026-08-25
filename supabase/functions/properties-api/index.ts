@@ -288,6 +288,7 @@ serve(async (req) => {
 
         return json({
           property_id: prop.id,
+          property_public_url: publicUrlOf(prop),
           count: rows?.length ?? 0,
           items: (rows ?? []).map(serializeSchedule),
         });
@@ -535,7 +536,12 @@ serve(async (req) => {
         }
       }
 
-      return json({ scheduled: true, property_id: prop.id, schedule: serializeSchedule(row) }, 201);
+      return json({
+        scheduled: true,
+        property_id: prop.id,
+        property_public_url: publicUrlOf(prop),
+        schedule: serializeSchedule(row),
+      }, 201);
     }
 
     // DELETE /properties-api/lock-code/schedule — cancel pending schedule(s)
