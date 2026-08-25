@@ -23,11 +23,17 @@ Acesso: dono do tenant lê/gerencia os agendamentos do próprio tenant; funçõe
 ### 2. Novos endpoints na `properties-api`
 - `POST /properties-api/lock-code/schedule`
   - Identifica o imóvel por `property_id` **ou** `external_id` (+ `external_provider`).
-  - Corpo: `lock_code`, `apply_at` (ISO 8601 com timezone), `remove_at` (opcional), `reference` (opcional).
-  - Valida: senha 1–32 caracteres, `apply_at` válido, `remove_at > apply_at`.
+  - Corpo: `lock_code`, `apply_at` (quando publicar), `remove_at` (opcional), `reference` (opcional).
+  - **Formatos de data aceitos** em `apply_at` / `remove_at`:
+    - Unix timestamp em **segundos** (ex.: `1787677200`) — formato usado nas automações (n8n), number ou string numérica.
+    - Unix timestamp em **milissegundos** (detectado automaticamente pela magnitude).
+    - ISO 8601 com timezone (ex.: `2026-08-30T15:00:00-03:00`).
+  - Valida: senha 1–32 caracteres, data válida, `remove_at > apply_at`.
   - Se `apply_at` já passou, aplica na hora.
+  - A resposta devolve as datas nos dois formatos (`apply_at` ISO + `apply_at_unix`) para facilitar depuração.
 - `GET /properties-api/lock-code/schedule?property_id=|external_id=` — lista agendamentos do imóvel.
 - `DELETE /properties-api/lock-code/schedule` — cancela por `schedule_id` (ou por `reference`).
+
 
 ### 3. Processador `process-lock-code-schedules` (edge function + cron)
 Roda a cada minuto via `pg_cron`/`pg_net`:
