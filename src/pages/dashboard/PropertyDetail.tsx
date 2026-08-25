@@ -257,6 +257,11 @@ export default function PropertyDetail() {
         </div>
       </Card>
 
+      {/* Scheduled lock code */}
+      <LockCodeScheduleCard propertyId={id!} tenantId={(property as any).tenant_id} />
+
+
+
       {/* Pages list */}
       <div>
         <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
