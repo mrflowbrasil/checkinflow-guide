@@ -376,14 +376,14 @@ function GuideBody({
       }}>
 
         <SheetContent side="bottom" className="h-[88vh] p-0 rounded-t-3xl border-t-0 max-w-md mx-auto">
-          {activePage && <PageContent pageId={activePage.id} title={activePage.title} icon={activePage.icon} template={template} primaryColor={primaryColor} onClose={() => setActivePageKey(null)} />}
+          {activePage && <PageContent pageId={activePage.id} pageKey={activePage.page_key} propertyId={data.id} title={activePage.title} icon={activePage.icon} template={template} primaryColor={primaryColor} onClose={() => setActivePageKey(null)} />}
         </SheetContent>
       </Sheet>
     </div>
   );
 }
 
-function PageContent({ pageId, title, icon, template, primaryColor, onClose }: { pageId: string; title: string; icon?: string; template: "clean" | "dark" | "luxury"; primaryColor?: string; onClose: () => void }) {
+function PageContent({ pageId, pageKey, propertyId, title, icon, template, primaryColor, onClose }: { pageId: string; pageKey?: string; propertyId?: string; title: string; icon?: string; template: "clean" | "dark" | "luxury"; primaryColor?: string; onClose: () => void }) {
   const { data: blocks } = useQuery({
     queryKey: ["guide_page_blocks", pageId],
     queryFn: async () => {
@@ -396,5 +396,28 @@ function PageContent({ pageId, title, icon, template, primaryColor, onClose }: {
       return data ?? [];
     },
   });
-  return <GuestPagePreview template={template} pageTitle={title} pageIcon={icon} primaryColor={primaryColor} blocks={(blocks ?? []) as any} onBack={onClose} />;
+  // Lock-code page: fetch the next scheduled release time (returns only the
+  // timestamp, never the code) so guests see "senha liberada em..." notice.
+  const { data: pendingLockAt } = useQuery({
+    queryKey: ["pending_lock_code_schedule", propertyId],
+    enabled: pageKey === "lock_code" && !!propertyId,
+    staleTime: 1000 * 60,
+    queryFn: async () => {
+      const { data, error } = await (supabase as any)
+        .rpc("get_pending_lock_code_schedule", { _property_id: propertyId });
+      if (error) throw error;
+      return (data as string | null) ?? null;
+    },
+  });
+  return (
+    <GuestPagePreview
+      template={template}
+      pageTitle={title}
+      pageIcon={icon}
+      primaryColor={primaryColor}
+      blocks={(blocks ?? []) as any}
+      pendingLockAt={pageKey === "lock_code" ? pendingLockAt ?? null : null}
+      onBack={onClose}
+    />
+  );
 }

@@ -1317,6 +1317,10 @@ export type Database = {
         }[]
       }
       get_launch_slots: { Args: never; Returns: Json }
+      get_pending_lock_code_schedule: {
+        Args: { _property_id: string }
+        Returns: string
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
