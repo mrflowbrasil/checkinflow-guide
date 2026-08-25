@@ -23,11 +23,17 @@ Acesso: dono do tenant lê/gerencia os agendamentos do próprio tenant; funçõe
 ### 2. Novos endpoints na `properties-api`
 - `POST /properties-api/lock-code/schedule`
   - Identifica o imóvel por `property_id` **ou** `external_id` (+ `external_provider`).
-  - Corpo: `lock_code`, `apply_at` (ISO 8601 com timezone), `remove_at` (opcional), `reference` (opcional).
-  - Valida: senha 1–32 caracteres, `apply_at` válido, `remove_at > apply_at`.
+  - Corpo: `lock_code`, `apply_at` (quando publicar), `remove_at` (opcional), `reference` (opcional).
+  - **Formatos de data aceitos** em `apply_at` / `remove_at`:
+    - Unix timestamp em **segundos** (ex.: `1787677200`) — formato usado nas automações (n8n), number ou string numérica.
+    - Unix timestamp em **milissegundos** (detectado automaticamente pela magnitude).
+    - ISO 8601 com timezone (ex.: `2026-08-30T15:00:00-03:00`).
+  - Valida: senha 1–32 caracteres, data válida, `remove_at > apply_at`.
   - Se `apply_at` já passou, aplica na hora.
+  - A resposta devolve as datas nos dois formatos (`apply_at` ISO + `apply_at_unix`) para facilitar depuração.
 - `GET /properties-api/lock-code/schedule?property_id=|external_id=` — lista agendamentos do imóvel.
 - `DELETE /properties-api/lock-code/schedule` — cancela por `schedule_id` (ou por `reference`).
+
 
 ### 3. Processador `process-lock-code-schedules` (edge function + cron)
 Roda a cada minuto via `pg_cron`/`pg_net`:
@@ -35,10 +41,22 @@ Roda a cada minuto via `pg_cron`/`pg_net`:
 - `remove_at <= now()` e status `applied` → limpa `lock_code` e remove o bloco; status vira `removed`.
 - Erros ficam registrados em `last_error` sem travar os demais registros.
 
-### 4. Documentação
-`src/components/integrations/ApiReference.tsx` ganha a seção "Senha de fechadura agendada" com parâmetros, respostas e cURL pronto para copiar (mesmo padrão dos endpoints atuais).
+### 4. Frontend: agendamento pela tela do imóvel
+Sim, terá interface. Na página do imóvel (`/app/properties/:id`), na área da página "Senha Fechadura":
+- Card **"Senha agendada"** listando os agendamentos (senha mascarada, "publica em", "expira em", status) com opção de cancelar.
+- Botão **"Agendar senha"** abre um diálogo com:
+  - campo de senha da fechadura;
+  - **data + hora de publicação** (calendário shadcn com `pointer-events-auto` + campo de hora `HH:mm`);
+  - **data + hora de remoção** (opcional, mesmo par de campos);
+  - atalhos rápidos ("hoje 14:00", "amanhã 12:00") e validação de que a remoção é depois da publicação.
+- Horas geradas em passos de 30 minutos no seletor, no fuso `America/Sao_Paulo`, gravadas em `timestamptz`.
+- Grava direto na tabela via cliente autenticado (RLS por tenant), sem passar pela API pública.
+
+### 5. Documentação
+`src/components/integrations/ApiReference.tsx` ganha a seção "Senha de fechadura agendada" com parâmetros, formatos de data aceitos, respostas e cURL pronto para copiar (mesmo padrão dos endpoints atuais), incluindo exemplo com timestamp Unix.
 
 ## Detalhes técnicos
 - Reaproveita `sha256` + `tenant_api_keys` para autenticação (mesma chave já usada pelas automações).
 - Escrita dos blocos segue a regra atual: só substitui blocos `source = 'auto'`, preservando edições manuais.
-- Todas as datas trafegam em ISO 8601 (`2026-08-30T15:00:00-03:00`) e são guardadas em `timestamptz`.
+- Parser único de datas (`parseWhen`) aceita Unix em segundos/ms e ISO 8601; armazenamento sempre em `timestamptz` (UTC).
+
