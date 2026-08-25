@@ -212,6 +212,23 @@ function buildPagesOverrides(pages: any): Map<string, BlockSeed[]> {
   return map;
 }
 
+async function findProperty(
+  admin: any,
+  tenantId: string,
+  opts: { property_id?: any; external_id?: any; external_provider?: any },
+) {
+  let q = admin.from("properties").select("id, name").eq("tenant_id", tenantId);
+  if (opts.property_id) {
+    q = q.eq("id", String(opts.property_id));
+  } else {
+    q = q
+      .eq("external_provider", txt(opts.external_provider) ?? "stays")
+      .eq("external_id", String(opts.external_id));
+  }
+  const { data } = await q.maybeSingle();
+  return data ?? null;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
