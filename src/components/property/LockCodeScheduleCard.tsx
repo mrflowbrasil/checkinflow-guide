@@ -130,6 +130,25 @@ export function LockCodeScheduleCard({ propertyId, tenantId }: Props) {
     onError: (e: any) => toast.error(e.message),
   });
 
+  const remove = useMutation({
+    mutationFn: async (scheduleId: string) => {
+      const { error } = await supabase
+        .from("property_lock_code_schedules")
+        .delete()
+        .eq("id", scheduleId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Registro excluído.");
+      setToDelete(null);
+      qc.invalidateQueries({ queryKey: ["lock_code_schedules", propertyId] });
+    },
+    onError: (e: any) => {
+      toast.error(e.message);
+      setToDelete(null);
+    },
+  });
+
   const quick = (daysAhead: number, time: string) => {
     const d = new Date();
     d.setDate(d.getDate() + daysAhead);
@@ -175,16 +194,27 @@ export function LockCodeScheduleCard({ propertyId, tenantId }: Props) {
                   </div>
                   {s.last_error && <div className="text-xs text-destructive">{s.last_error}</div>}
                 </div>
-                {s.status === "scheduled" && (
+                <div className="flex items-center gap-1">
+                  {s.status === "scheduled" && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => cancel.mutate(s.id)}
+                      disabled={cancel.isPending}
+                    >
+                      Cancelar
+                    </Button>
+                  )}
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => cancel.mutate(s.id)}
-                    disabled={cancel.isPending}
+                    className="text-destructive hover:text-destructive"
+                    onClick={() => setToDelete(s.id)}
+                    disabled={remove.isPending}
                   >
-                    <Trash2 className="mr-2 h-3.5 w-3.5" /> Cancelar
+                    <Trash2 className="mr-2 h-3.5 w-3.5" /> Excluir
                   </Button>
-                )}
+                </div>
               </div>
             );
           })}
