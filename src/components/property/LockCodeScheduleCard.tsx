@@ -13,6 +13,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CalendarIcon, KeyRound, Loader2, Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -108,6 +112,8 @@ export function LockCodeScheduleCard({ propertyId, tenantId }: Props) {
     },
     onError: (e: any) => toast.error(e.message),
   });
+
+  const [toDelete, setToDelete] = useState<string | null>(null);
 
   const cancel = useMutation({
     mutationFn: async (scheduleId: string) => {
