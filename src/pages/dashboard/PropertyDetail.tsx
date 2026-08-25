@@ -18,6 +18,8 @@ import { toast } from "sonner";
 import { getPageIcon } from "@/lib/page-icons";
 import QRCode from "qrcode";
 import { EditPropertyDialog } from "@/components/property/EditPropertyDialog";
+import { LockCodeScheduleCard } from "@/components/property/LockCodeScheduleCard";
+
 import {
   DndContext, closestCenter, KeyboardSensor, PointerSensor, TouchSensor, useSensor, useSensors, type DragEndEvent,
 } from "@dnd-kit/core";
