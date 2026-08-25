@@ -212,12 +212,15 @@ function buildPagesOverrides(pages: any): Map<string, BlockSeed[]> {
   return map;
 }
 
+const PUBLIC_BASE = "https://hub.mrflow.com.br/g/";
+const publicUrlOf = (prop: any) => (prop?.public_slug ? `${PUBLIC_BASE}${prop.public_slug}` : null);
+
 async function findProperty(
   admin: any,
   tenantId: string,
   opts: { property_id?: any; external_id?: any; external_provider?: any },
 ) {
-  let q = admin.from("properties").select("id, name").eq("tenant_id", tenantId);
+  let q = admin.from("properties").select("id, name, public_slug").eq("tenant_id", tenantId);
   if (opts.property_id) {
     q = q.eq("id", String(opts.property_id));
   } else {
