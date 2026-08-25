@@ -439,9 +439,131 @@ serve(async (req) => {
       });
     }
 
+    // POST /properties-api/lock-code/schedule — schedule a lock code change
+    if (req.method === "POST" && /\/lock-code\/schedule\/?$/.test(new URL(req.url).pathname)) {
+      const body = await req.json().catch(() => ({}));
+      const {
+        property_id,
+        external_id,
+        external_provider = "stays",
+        lock_code,
+        apply_at,
+        remove_at,
+        reference,
+        source = "api",
+      } = body ?? {};
+
+      if (!property_id && !external_id) {
+        return json({ error: "property_id_or_external_id_required" }, 400);
+      }
+      const code = txt(lock_code);
+      if (!code) return json({ error: "lock_code_required" }, 400);
+      if (code.length > 32) return json({ error: "lock_code_too_long", hint: "1–32 chars" }, 400);
+
+      const applyDate = parseWhen(apply_at);
+      if (!applyDate) {
+        return json(
+          { error: "apply_at_invalid", hint: "unix seconds (1787677200), unix ms or ISO 8601" },
+          400,
+        );
+      }
+      const removeDate = parseWhen(remove_at);
+      if (remove_at !== undefined && remove_at !== null && remove_at !== "" && !removeDate) {
+        return json(
+          { error: "remove_at_invalid", hint: "unix seconds (1787757000), unix ms or ISO 8601" },
+          400,
+        );
+      }
+      if (removeDate && removeDate.getTime() <= applyDate.getTime()) {
+        return json({ error: "remove_at_must_be_after_apply_at" }, 400);
+      }
+
+      const prop = await findProperty(admin, tenantId, { property_id, external_id, external_provider });
+      if (!prop) return json({ error: "property_not_found" }, 404);
+
+      // Same reference + property → replace the previous pending schedule (idempotent retries)
+      const ref = txt(reference);
+      if (ref) {
+        await admin
+          .from("property_lock_code_schedules")
+          .update({ status: "canceled" })
+          .eq("tenant_id", tenantId)
+          .eq("property_id", prop.id)
+          .eq("reference", ref)
+          .eq("status", "scheduled");
+      }
+
+      const { data: inserted, error: insErr } = await admin
+        .from("property_lock_code_schedules")
+        .insert({
+          tenant_id: tenantId,
+          property_id: prop.id,
+          lock_code: code,
+          apply_at: applyDate.toISOString(),
+          remove_at: removeDate ? removeDate.toISOString() : null,
+          reference: ref,
+          source: txt(source) ?? "api",
+        })
+        .select("*")
+        .single();
+      if (insErr) throw insErr;
+
+      let row = inserted;
+
+      // Already due → apply right away instead of waiting for the cron
+      if (applyDate.getTime() <= Date.now()) {
+        try {
+          await writeLockCode(admin, prop.id, code);
+          const { data: upd } = await admin
+            .from("property_lock_code_schedules")
+            .update({ status: "applied", applied_at: new Date().toISOString() })
+            .eq("id", inserted.id)
+            .select("*")
+            .single();
+          if (upd) row = upd;
+        } catch (e: any) {
+          const { data: upd } = await admin
+            .from("property_lock_code_schedules")
+            .update({ status: "failed", last_error: String(e?.message ?? e).slice(0, 500) })
+            .eq("id", inserted.id)
+            .select("*")
+            .single();
+          if (upd) row = upd;
+        }
+      }
+
+      return json({ scheduled: true, property_id: prop.id, schedule: serializeSchedule(row) }, 201);
+    }
+
+    // DELETE /properties-api/lock-code/schedule — cancel pending schedule(s)
+    if (req.method === "DELETE") {
+      const url = new URL(req.url);
+      if (!/\/lock-code\/schedule\/?$/.test(url.pathname)) return json({ error: "not_found" }, 404);
+
+      const body = await req.json().catch(() => ({}));
+      const scheduleId = txt(body?.schedule_id) ?? url.searchParams.get("schedule_id");
+      const ref = txt(body?.reference) ?? url.searchParams.get("reference");
+      if (!scheduleId && !ref) {
+        return json({ error: "schedule_id_or_reference_required" }, 400);
+      }
+
+      let q = admin
+        .from("property_lock_code_schedules")
+        .update({ status: "canceled" })
+        .eq("tenant_id", tenantId)
+        .eq("status", "scheduled");
+      q = scheduleId ? q.eq("id", scheduleId) : q.eq("reference", ref);
+
+      const { data: rows, error: delErr } = await q.select("*");
+      if (delErr) throw delErr;
+
+      return json({ canceled: rows?.length ?? 0, items: (rows ?? []).map(serializeSchedule) });
+    }
+
     if (req.method !== "POST" && req.method !== "PUT") {
       return json({ error: "method_not_allowed" }, 405);
     }
+
 
     const body = await req.json();
     const {
