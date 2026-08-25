@@ -13,6 +13,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CalendarIcon, KeyRound, Loader2, Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -109,6 +113,8 @@ export function LockCodeScheduleCard({ propertyId, tenantId }: Props) {
     onError: (e: any) => toast.error(e.message),
   });
 
+  const [toDelete, setToDelete] = useState<string | null>(null);
+
   const cancel = useMutation({
     mutationFn: async (scheduleId: string) => {
       const { error } = await supabase
@@ -122,6 +128,25 @@ export function LockCodeScheduleCard({ propertyId, tenantId }: Props) {
       qc.invalidateQueries({ queryKey: ["lock_code_schedules", propertyId] });
     },
     onError: (e: any) => toast.error(e.message),
+  });
+
+  const remove = useMutation({
+    mutationFn: async (scheduleId: string) => {
+      const { error } = await supabase
+        .from("property_lock_code_schedules")
+        .delete()
+        .eq("id", scheduleId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Registro excluído.");
+      setToDelete(null);
+      qc.invalidateQueries({ queryKey: ["lock_code_schedules", propertyId] });
+    },
+    onError: (e: any) => {
+      toast.error(e.message);
+      setToDelete(null);
+    },
   });
 
   const quick = (daysAhead: number, time: string) => {
@@ -169,16 +194,27 @@ export function LockCodeScheduleCard({ propertyId, tenantId }: Props) {
                   </div>
                   {s.last_error && <div className="text-xs text-destructive">{s.last_error}</div>}
                 </div>
-                {s.status === "scheduled" && (
+                <div className="flex items-center gap-1">
+                  {s.status === "scheduled" && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => cancel.mutate(s.id)}
+                      disabled={cancel.isPending}
+                    >
+                      Cancelar
+                    </Button>
+                  )}
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => cancel.mutate(s.id)}
-                    disabled={cancel.isPending}
+                    className="text-destructive hover:text-destructive"
+                    onClick={() => setToDelete(s.id)}
+                    disabled={remove.isPending}
                   >
-                    <Trash2 className="mr-2 h-3.5 w-3.5" /> Cancelar
+                    <Trash2 className="mr-2 h-3.5 w-3.5" /> Excluir
                   </Button>
-                )}
+                </div>
               </div>
             );
           })}
@@ -237,6 +273,29 @@ export function LockCodeScheduleCard({ propertyId, tenantId }: Props) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={!!toDelete} onOpenChange={(o) => { if (!o) setToDelete(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir registro de senha?</AlertDialogTitle>
+            <AlertDialogDescription>
+              O registro será removido permanentemente do histórico. Se a senha estiver ativa no guia,
+              ela continuará visível até ser removida pela data programada ou editada manualmente.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Voltar</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => toDelete && remove.mutate(toDelete)}
+              disabled={remove.isPending}
+            >
+              {remove.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 }
