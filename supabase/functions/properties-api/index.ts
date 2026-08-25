@@ -260,6 +260,37 @@ serve(async (req) => {
         return json({ count: PAGES_CATALOG.length, items: PAGES_CATALOG });
       }
 
+      // Sub-route: scheduled lock codes of a property
+      if (/\/lock-code\/schedule\/?$/.test(url.pathname)) {
+        const prop = await findProperty(admin, tenantId, {
+          property_id: qp.get("property_id"),
+          external_id: qp.get("external_id"),
+          external_provider: qp.get("external_provider"),
+        });
+        if (!qp.get("property_id") && !qp.get("external_id")) {
+          return json({ error: "property_id_or_external_id_required" }, 400);
+        }
+        if (!prop) return json({ error: "property_not_found" }, 404);
+
+        const statusFilter = qp.get("status");
+        let sq = admin
+          .from("property_lock_code_schedules")
+          .select("*")
+          .eq("tenant_id", tenantId)
+          .eq("property_id", prop.id);
+        if (statusFilter) sq = sq.eq("status", statusFilter);
+
+        const { data: rows, error: sErr } = await sq.order("apply_at", { ascending: false }).limit(200);
+        if (sErr) throw sErr;
+
+        return json({
+          property_id: prop.id,
+          count: rows?.length ?? 0,
+          items: (rows ?? []).map(serializeSchedule),
+        });
+      }
+
+
       // Sub-route: pages of a specific property by external_id
       if (/\/pages\/?$/.test(url.pathname)) {
         const extId = qp.get("external_id");
