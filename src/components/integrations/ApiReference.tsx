@@ -268,7 +268,14 @@ const ENDPOINTS: Endpoint[] = [
   "reference": "LP37J"
 }`,
     responseExample: `{
-  "canceled": 1
+  "canceled": 1,
+  "items": [
+    {
+      "id": "uuid",
+      "status": "canceled",
+      "property_public_url": "https://hub.mrflow.com.br/g/vila-serena-a1b2"
+    }
+  ]
 }`,
   },
 ];
