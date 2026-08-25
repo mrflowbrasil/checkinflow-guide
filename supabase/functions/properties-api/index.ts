@@ -212,12 +212,15 @@ function buildPagesOverrides(pages: any): Map<string, BlockSeed[]> {
   return map;
 }
 
+const PUBLIC_BASE = "https://hub.mrflow.com.br/g/";
+const publicUrlOf = (prop: any) => (prop?.public_slug ? `${PUBLIC_BASE}${prop.public_slug}` : null);
+
 async function findProperty(
   admin: any,
   tenantId: string,
   opts: { property_id?: any; external_id?: any; external_provider?: any },
 ) {
-  let q = admin.from("properties").select("id, name").eq("tenant_id", tenantId);
+  let q = admin.from("properties").select("id, name, public_slug").eq("tenant_id", tenantId);
   if (opts.property_id) {
     q = q.eq("id", String(opts.property_id));
   } else {
@@ -285,6 +288,7 @@ serve(async (req) => {
 
         return json({
           property_id: prop.id,
+          property_public_url: publicUrlOf(prop),
           count: rows?.length ?? 0,
           items: (rows ?? []).map(serializeSchedule),
         });
@@ -532,7 +536,12 @@ serve(async (req) => {
         }
       }
 
-      return json({ scheduled: true, property_id: prop.id, schedule: serializeSchedule(row) }, 201);
+      return json({
+        scheduled: true,
+        property_id: prop.id,
+        property_public_url: publicUrlOf(prop),
+        schedule: serializeSchedule(row),
+      }, 201);
     }
 
     // DELETE /properties-api/lock-code/schedule — cancel pending schedule(s)
@@ -557,7 +566,22 @@ serve(async (req) => {
       const { data: rows, error: delErr } = await q.select("*");
       if (delErr) throw delErr;
 
-      return json({ canceled: rows?.length ?? 0, items: (rows ?? []).map(serializeSchedule) });
+      // Enrich each canceled schedule with the property's public URL
+      const propIds = [...new Set((rows ?? []).map((r: any) => r.property_id))];
+      const slugByProp = new Map<string, string | null>();
+      if (propIds.length) {
+        const { data: props } = await admin
+          .from("properties")
+          .select("id, public_slug")
+          .in("id", propIds);
+        for (const p of props ?? []) slugByProp.set(p.id, p.public_slug);
+      }
+      const items = (rows ?? []).map((r: any) => ({
+        ...serializeSchedule(r),
+        property_public_url: publicUrlOf({ public_slug: slugByProp.get(r.property_id) }),
+      }));
+
+      return json({ canceled: rows?.length ?? 0, items });
     }
 
     if (req.method !== "POST" && req.method !== "PUT") {
