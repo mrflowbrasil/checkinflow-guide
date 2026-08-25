@@ -566,7 +566,22 @@ serve(async (req) => {
       const { data: rows, error: delErr } = await q.select("*");
       if (delErr) throw delErr;
 
-      return json({ canceled: rows?.length ?? 0, items: (rows ?? []).map(serializeSchedule) });
+      // Enrich each canceled schedule with the property's public URL
+      const propIds = [...new Set((rows ?? []).map((r: any) => r.property_id))];
+      const slugByProp = new Map<string, string | null>();
+      if (propIds.length) {
+        const { data: props } = await admin
+          .from("properties")
+          .select("id, public_slug")
+          .in("id", propIds);
+        for (const p of props ?? []) slugByProp.set(p.id, p.public_slug);
+      }
+      const items = (rows ?? []).map((r: any) => ({
+        ...serializeSchedule(r),
+        property_public_url: publicUrlOf({ public_slug: slugByProp.get(r.property_id) }),
+      }));
+
+      return json({ canceled: rows?.length ?? 0, items });
     }
 
     if (req.method !== "POST" && req.method !== "PUT") {
