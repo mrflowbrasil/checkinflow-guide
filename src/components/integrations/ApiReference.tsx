@@ -185,7 +185,92 @@ const ENDPOINTS: Endpoint[] = [
   "updated_at": "2026-06-28T12:34:56Z"
 }`,
   },
+  {
+    method: "POST",
+    path: "/properties-api/lock-code/schedule",
+    title: "Agendar senha da fechadura",
+    description:
+      "Programa a senha da fechadura para ser publicada no guia em uma data/hora e removida automaticamente em outra. Aceita timestamp Unix em segundos (ex: 1787677200), em milissegundos ou ISO 8601. Se apply_at já passou, a senha é aplicada imediatamente. Enviar o mesmo reference substitui o agendamento pendente anterior (idempotente).",
+    auth: "X-API-Key",
+    params: [
+      { name: "property_id", in: "body", type: "uuid", description: "ID interno do imóvel. Obrigatório se external_id não for enviado." },
+      { name: "external_id", in: "body", type: "string", description: "Alternativa ao property_id (ID do imóvel no PMS)." },
+      { name: "external_provider", in: "body", type: "string", description: "Usado junto com external_id. Padrão: stays." },
+      { name: "lock_code", in: "body", type: "string", required: true, description: "Senha da fechadura (1–32 caracteres)." },
+      { name: "apply_at", in: "body", type: "number | string", required: true, description: "Quando publicar a senha. Unix em segundos/ms ou ISO 8601." },
+      { name: "remove_at", in: "body", type: "number | string", description: "Quando remover a senha. Precisa ser depois de apply_at." },
+      { name: "reference", in: "body", type: "string", description: "Sua chave (ex: código da reserva) para reenvios idempotentes e cancelamento." },
+      { name: "source", in: "body", type: "string", description: "Origem do agendamento. Padrão: api." },
+    ],
+    requestExample: `{
+  "external_id": "stays-123",
+  "external_provider": "stays",
+  "lock_code": "4821",
+  "apply_at": 1787677200,
+  "remove_at": 1787757000,
+  "reference": "LP37J"
+}`,
+    responseExample: `{
+  "scheduled": true,
+  "property_id": "uuid",
+  "schedule": {
+    "id": "uuid",
+    "lock_code": "4821",
+    "status": "scheduled",
+    "apply_at": "2026-08-30T18:00:00Z",
+    "apply_at_unix": 1787677200,
+    "remove_at": "2026-08-31T16:10:00Z",
+    "remove_at_unix": 1787757000,
+    "reference": "LP37J"
+  }
+}`,
+  },
+  {
+    method: "GET",
+    path: "/properties-api/lock-code/schedule",
+    title: "Listar agendamentos de senha",
+    description: "Retorna os agendamentos de senha da fechadura de um imóvel, do mais recente para o mais antigo.",
+    auth: "X-API-Key",
+    params: [
+      { name: "property_id", in: "query", type: "uuid", description: "ID interno do imóvel. Obrigatório se external_id não for enviado." },
+      { name: "external_id", in: "query", type: "string", description: "Alternativa ao property_id." },
+      { name: "external_provider", in: "query", type: "string", description: "Padrão: stays." },
+      { name: "status", in: "query", type: "string", description: "Filtra por scheduled | applied | removed | canceled | failed." },
+    ],
+    responseExample: `{
+  "property_id": "uuid",
+  "count": 1,
+  "items": [
+    {
+      "id": "uuid",
+      "lock_code": "4821",
+      "status": "applied",
+      "apply_at_unix": 1787677200,
+      "remove_at_unix": 1787757000,
+      "reference": "LP37J"
+    }
+  ]
+}`,
+  },
+  {
+    method: "DELETE",
+    path: "/properties-api/lock-code/schedule",
+    title: "Cancelar agendamento de senha",
+    description: "Cancela agendamentos ainda pendentes por schedule_id ou por reference (ex: ao cancelar a reserva). Agendamentos já aplicados não são alterados.",
+    auth: "X-API-Key",
+    params: [
+      { name: "schedule_id", in: "body", type: "uuid", description: "ID do agendamento. Também aceito como ?schedule_id= na query." },
+      { name: "reference", in: "body", type: "string", description: "Cancela todos os pendentes com esse reference. Também aceito na query." },
+    ],
+    requestExample: `{
+  "reference": "LP37J"
+}`,
+    responseExample: `{
+  "canceled": 1
+}`,
+  },
 ];
+
 
 
 

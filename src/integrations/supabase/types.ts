@@ -605,6 +605,72 @@ export type Database = {
           },
         ]
       }
+      property_lock_code_schedules: {
+        Row: {
+          applied_at: string | null
+          apply_at: string
+          created_at: string
+          id: string
+          last_error: string | null
+          lock_code: string
+          property_id: string
+          reference: string | null
+          remove_at: string | null
+          removed_at: string | null
+          source: string
+          status: string
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          applied_at?: string | null
+          apply_at: string
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          lock_code: string
+          property_id: string
+          reference?: string | null
+          remove_at?: string | null
+          removed_at?: string | null
+          source?: string
+          status?: string
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          applied_at?: string | null
+          apply_at?: string
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          lock_code?: string
+          property_id?: string
+          reference?: string | null
+          remove_at?: string | null
+          removed_at?: string | null
+          source?: string
+          status?: string
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_lock_code_schedules_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "property_lock_code_schedules_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       property_pages: {
         Row: {
           created_at: string

@@ -18,6 +18,8 @@ import { toast } from "sonner";
 import { getPageIcon } from "@/lib/page-icons";
 import QRCode from "qrcode";
 import { EditPropertyDialog } from "@/components/property/EditPropertyDialog";
+import { LockCodeScheduleCard } from "@/components/property/LockCodeScheduleCard";
+
 import {
   DndContext, closestCenter, KeyboardSensor, PointerSensor, TouchSensor, useSensor, useSensors, type DragEndEvent,
 } from "@dnd-kit/core";
@@ -256,6 +258,11 @@ export default function PropertyDetail() {
           )}
         </div>
       </Card>
+
+      {/* Scheduled lock code */}
+      <LockCodeScheduleCard propertyId={id!} tenantId={(property as any).tenant_id} />
+
+
 
       {/* Pages list */}
       <div>
