@@ -15,6 +15,7 @@ export type PublicProperty = {
   city: string | null;
   max_guests: number | null;
   base_price: number | null;
+  price_total?: number | null;
   cover_image_url: string | null;
   public_slug: string;
   booking_url: string | null;
