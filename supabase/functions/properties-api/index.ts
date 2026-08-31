@@ -638,8 +638,12 @@ serve(async (req) => {
       description: description ?? null,
       address: address ?? null,
       city: city ?? null,
-      max_guests: max_guests != null ? Number(max_guests) : null,
-      base_price: base_price != null ? Number(base_price) : null,
+      // New import payload uses `capacity`/`price_base`; keep `max_guests`/`base_price`
+      // for backwards compatibility. Fallback to details.extras.max_guests.
+      max_guests: (max_guests ?? capacity ?? details?.extras?.max_guests) != null
+        ? Number(max_guests ?? capacity ?? details?.extras?.max_guests)
+        : null,
+      base_price: (base_price ?? price_base) != null ? Number(base_price ?? price_base) : null,
       booking_url: booking_url ?? null,
       cover_image_url: cover_image_url ?? null,
       external_id: external_id ? String(external_id) : null,
