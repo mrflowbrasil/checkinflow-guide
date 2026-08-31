@@ -120,9 +120,13 @@ Deno.serve(async (req) => {
         );
       }
       const remote = await res.json();
+      // Aceita objeto { properties: [...] } ou array [{ properties: [...] }]
+      const remoteList: unknown[] = Array.isArray(remote)
+        ? (remote[0]?.properties ?? [])
+        : (remote?.properties ?? []);
       // Mapa por external_id (id da Stays). Aceita também "id" como fallback.
       const map = new Map<string, { booking_url?: string; price_total?: number }>();
-      for (const item of remote?.properties ?? []) {
+      for (const item of remoteList as Array<Record<string, unknown>>) {
         const ext = item?.external_id ?? item?.id;
         if (ext) {
           map.set(String(ext), {
