@@ -53,6 +53,7 @@ export function CatalogFilters({
   onSortChange,
   totalResults,
   resultLabel = "acomodação",
+  resultLabelPlural = "acomodações",
 }: Props) {
   const update = (patch: Partial<Filters>) => onChange({ ...filters, ...patch });
 
