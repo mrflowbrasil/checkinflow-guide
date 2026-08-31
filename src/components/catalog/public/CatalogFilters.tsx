@@ -39,6 +39,7 @@ type Props = {
   onSortChange: (sort: SortOption) => void;
   totalResults: number;
   resultLabel?: string;
+  resultLabelPlural?: string;
 };
 
 export function CatalogFilters({
@@ -52,6 +53,7 @@ export function CatalogFilters({
   onSortChange,
   totalResults,
   resultLabel = "acomodação",
+  resultLabelPlural = "acomodações",
 }: Props) {
   const update = (patch: Partial<Filters>) => onChange({ ...filters, ...patch });
 
@@ -131,7 +133,7 @@ export function CatalogFilters({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-1 border-t">
         <p className="text-sm text-muted-foreground">
           <span className="font-semibold text-foreground">{totalResults}</span>{" "}
-          {resultLabel}{totalResults === 1 ? "" : "s"} encontrada{totalResults === 1 ? "" : "s"}
+          {totalResults === 1 ? resultLabel : resultLabelPlural} encontrada{totalResults === 1 ? "" : "s"}
         </p>
         <div className="flex items-center gap-2">
           <ArrowDownUp className="h-4 w-4 text-muted-foreground" />
