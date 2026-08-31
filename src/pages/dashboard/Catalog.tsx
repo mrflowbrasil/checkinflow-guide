@@ -192,10 +192,25 @@ export default function Catalog() {
           <Card>
             <CardHeader>
               <CardTitle>Personalização</CardTitle>
-              <CardDescription>O nome, a logo e as cores vêm das suas configurações do workspace.</CardDescription>
+              <CardDescription>A logo e as cores vêm das suas configurações do workspace.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
+                <Label htmlFor="catalog-title">Título do catálogo</Label>
+                <Input
+                  id="catalog-title"
+                  maxLength={60}
+                  placeholder={tenant?.name ?? "Nome comercial da empresa"}
+                  value={catalogTitle ?? ""}
+                  onChange={(e) => setCatalogTitle(e.target.value)}
+                  disabled={tenantBioQ.isLoading}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Nome exibido no topo da página pública. Se ficar vazio, usamos o nome do workspace.
+                </p>
+              </div>
+              <div className="space-y-2">
+
                 <Label htmlFor="bio">Bio do catálogo</Label>
                 <Textarea
                   id="bio"
