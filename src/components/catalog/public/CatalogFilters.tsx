@@ -1,4 +1,4 @@
-import { Loader2, Search } from "lucide-react";
+import { ArrowDownUp, Loader2, Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +19,15 @@ export type Filters = {
   maxPrice: number | null;
 };
 
+export type SortOption =
+  | "relevance"
+  | "price_asc"
+  | "price_desc"
+  | "guests_desc"
+  | "guests_asc"
+  | "name_asc"
+  | "name_desc";
+
 type Props = {
   filters: Filters;
   onChange: (f: Filters) => void;
@@ -26,9 +35,24 @@ type Props = {
   onSearch: () => void;
   searching: boolean;
   hasLiveAvailability: boolean;
+  sort: SortOption;
+  onSortChange: (sort: SortOption) => void;
+  totalResults: number;
+  resultLabel?: string;
 };
 
-export function CatalogFilters({ filters, onChange, priceMax, onSearch, searching, hasLiveAvailability }: Props) {
+export function CatalogFilters({
+  filters,
+  onChange,
+  priceMax,
+  onSearch,
+  searching,
+  hasLiveAvailability,
+  sort,
+  onSortChange,
+  totalResults,
+  resultLabel = "acomodação",
+}: Props) {
   const update = (patch: Partial<Filters>) => onChange({ ...filters, ...patch });
 
   return (
