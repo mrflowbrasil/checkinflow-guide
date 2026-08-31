@@ -93,6 +93,30 @@ export default function PublicCatalog() {
 
   const displayList = hasLiveAvailability ? (searchResults ?? locallyFiltered) : locallyFiltered;
 
+  const sortedDisplayList = useMemo(() => {
+    const list = [...displayList];
+    const priceOf = (p: PublicProperty) =>
+      p.price_total != null ? Number(p.price_total) : p.base_price != null ? Number(p.base_price) : 0;
+
+    switch (sort) {
+      case "price_asc":
+        return list.sort((a, b) => priceOf(a) - priceOf(b));
+      case "price_desc":
+        return list.sort((a, b) => priceOf(b) - priceOf(a));
+      case "guests_desc":
+        return list.sort((a, b) => (b.max_guests ?? 0) - (a.max_guests ?? 0));
+      case "guests_asc":
+        return list.sort((a, b) => (a.max_guests ?? 0) - (b.max_guests ?? 0));
+      case "name_asc":
+        return list.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+      case "name_desc":
+        return list.sort((a, b) => b.name.localeCompare(a.name, "pt-BR"));
+      case "relevance":
+      default:
+        return list;
+    }
+  }, [displayList, sort]);
+
   const priceMax = useMemo(() => {
     const max = properties.reduce((acc, p) => Math.max(acc, p.base_price ?? 0), 0);
     return Math.max(500, Math.ceil(max / 100) * 100);
