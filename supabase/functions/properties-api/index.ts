@@ -339,7 +339,7 @@ serve(async (req) => {
       let q = admin
         .from("properties")
         .select(
-          "id, tenant_id, name, external_id, external_provider, status, address, booking_url, cover_image_url, public_slug, created_at, updated_at",
+          "id, tenant_id, name, external_id, external_provider, status, address, city, max_guests, base_price, booking_url, cover_image_url, public_slug, created_at, updated_at",
           { count: "exact" },
         )
         .eq("tenant_id", tenantId);
@@ -599,7 +599,9 @@ serve(async (req) => {
       address,
       city,
       max_guests,
+      capacity,
       base_price,
+      price_base,
       latitude,
       longitude,
       booking_url,
@@ -636,8 +638,12 @@ serve(async (req) => {
       description: description ?? null,
       address: address ?? null,
       city: city ?? null,
-      max_guests: max_guests != null ? Number(max_guests) : null,
-      base_price: base_price != null ? Number(base_price) : null,
+      // New import payload uses `capacity`/`price_base`; keep `max_guests`/`base_price`
+      // for backwards compatibility. Fallback to details.extras.max_guests.
+      max_guests: (max_guests ?? capacity ?? details?.extras?.max_guests) != null
+        ? Number(max_guests ?? capacity ?? details?.extras?.max_guests)
+        : null,
+      base_price: (base_price ?? price_base) != null ? Number(base_price ?? price_base) : null,
       booking_url: booking_url ?? null,
       cover_image_url: cover_image_url ?? null,
       external_id: external_id ? String(external_id) : null,
@@ -672,13 +678,19 @@ serve(async (req) => {
         lock_code: details.lock_code ?? null,
         wifi_ssid: details.wifi_ssid ?? null,
         wifi_password: details.wifi_password ?? null,
-        latitude: details.latitude ?? null,
-        longitude: details.longitude ?? null,
+        latitude: details.latitude ?? latitude ?? null,
+        longitude: details.longitude ?? longitude ?? null,
         rules: details.rules ?? null,
         parking: details.parking ?? null,
         trash: details.trash ?? null,
         emergency_contacts: details.emergency_contacts ?? [],
-        extras: details.extras ?? {},
+        // New payload sends location_url/intercom at details level; block builders
+        // read them from extras, so merge them in when extras doesn't provide them.
+        extras: {
+          ...(details.location_url != null ? { location_url: details.location_url } : {}),
+          ...(details.intercom != null ? { intercom: details.intercom } : {}),
+          ...(details.extras ?? {}),
+        },
       };
       await admin.from("property_details").upsert(detailsPayload, { onConflict: "property_id" });
     }
