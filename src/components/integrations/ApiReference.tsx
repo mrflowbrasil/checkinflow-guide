@@ -123,6 +123,12 @@ const ENDPOINTS: Endpoint[] = [
   "external_provider": "stays",
   "name": "Apto 101 — Vila Madalena",
   "address": "Rua X, 100 — São Paulo/SP",
+  "city": "São Paulo",
+  "capacity": 4,
+  "price_base": 159,
+  "booking_url": "https://site.com.br/reservar/apto-101",
+  "latitude": -23.55,
+  "longitude": -46.69,
   "cover_image_url": "https://cdn.example.com/cover.jpg",
   "images": ["https://cdn.example.com/1.jpg"],
   "details": {
