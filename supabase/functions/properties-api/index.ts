@@ -684,7 +684,13 @@ serve(async (req) => {
         parking: details.parking ?? null,
         trash: details.trash ?? null,
         emergency_contacts: details.emergency_contacts ?? [],
-        extras: details.extras ?? {},
+        // New payload sends location_url/intercom at details level; block builders
+        // read them from extras, so merge them in when extras doesn't provide them.
+        extras: {
+          ...(details.location_url != null ? { location_url: details.location_url } : {}),
+          ...(details.intercom != null ? { intercom: details.intercom } : {}),
+          ...(details.extras ?? {}),
+        },
       };
       await admin.from("property_details").upsert(detailsPayload, { onConflict: "property_id" });
     }
