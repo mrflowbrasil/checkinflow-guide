@@ -25,7 +25,7 @@ Deno.serve(async (req) => {
 
     const { data: tenant, error: tErr } = await admin
       .from("tenants")
-      .select("id, name, slug, logo_url, primary_color, instagram_url, facebook_url, catalog_bio, is_active")
+      .select("id, name, slug, logo_url, primary_color, instagram_url, facebook_url, catalog_bio, catalog_title, is_active")
       .eq("slug", tenantSlug)
       .maybeSingle();
 
@@ -63,7 +63,7 @@ Deno.serve(async (req) => {
     return new Response(
       JSON.stringify({
         tenant: {
-          name: tenant.name,
+          name: tenant.catalog_title || tenant.name,
           slug: tenant.slug,
           logo_url: tenant.logo_url,
           primary_color: tenant.primary_color,
