@@ -39,6 +39,7 @@ type Props = {
   onSortChange: (sort: SortOption) => void;
   totalResults: number;
   resultLabel?: string;
+  resultLabelPlural?: string;
 };
 
 export function CatalogFilters({
