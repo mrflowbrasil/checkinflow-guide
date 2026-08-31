@@ -53,6 +53,7 @@ export default function PublicCatalog() {
   const [searching, setSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<PublicProperty[] | null>(null);
   const [searched, setSearched] = useState(false);
+  const [sort, setSort] = useState<SortOption>("relevance");
 
   useEffect(() => {
     let cancelled = false;
