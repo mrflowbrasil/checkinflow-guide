@@ -23,7 +23,7 @@ const NAV: Array<{ to: string; label: string; icon: any; end?: boolean; comingSo
   { to: "/app", label: "Dashboard", icon: LayoutDashboard, end: true },
   { to: "/app/properties", label: "Imóveis", icon: Home },
   { to: "/app/inteligencia", label: "Inteligência", icon: BarChart3, requiresIntegration: true },
-  { to: "/app/catalog", label: "Catálogo", icon: LayoutGrid, comingSoonInProd: true },
+  { to: "/app/catalog", label: "Catálogo", icon: LayoutGrid },
   { to: "/app/templates", label: "Templates", icon: Sparkles },
   { to: "/app/integrations", label: "Integrações", icon: Plug },
   { to: "/app/help", label: "Ajuda", icon: HelpCircle },
