@@ -186,6 +186,7 @@ export default function PublicCatalog() {
               onSortChange={setSort}
               totalResults={sortedDisplayList.length}
               resultLabel="acomodação"
+              resultLabelPlural="acomodações"
             />
 
             {searching ? (
