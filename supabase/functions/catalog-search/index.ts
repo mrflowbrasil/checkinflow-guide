@@ -104,18 +104,12 @@ Deno.serve(async (req) => {
           checkin: body.checkin,
           checkout: body.checkout,
           guests: body.guests,
-          max_price: body.max_price,
           integration_provider: activeIntegration.provider,
           integration_url: body.integration_url ?? activeIntegration.system_url,
           public_site_url: activeIntegration.public_site_url ?? null,
           authorization: activeIntegration.credentials_encrypted
             ? `Basic ${activeIntegration.credentials_encrypted}`
             : null,
-          properties: (candidates ?? []).map((p) => ({
-            id: p.id,
-            external_id: p.external_id,
-            source: p.source,
-          })),
         }),
       });
       if (!res.ok) {
@@ -126,20 +120,28 @@ Deno.serve(async (req) => {
         );
       }
       const remote = await res.json();
-      const map = new Map<string, { booking_url?: string; available?: boolean }>();
+      // Mapa por external_id (id da Stays). Aceita também "id" como fallback.
+      const map = new Map<string, { booking_url?: string; price_total?: number }>();
       for (const item of remote?.properties ?? []) {
-        if (item?.id) map.set(item.id, { booking_url: item.booking_url, available: item.available });
+        const ext = item?.external_id ?? item?.id;
+        if (ext) {
+          map.set(String(ext), {
+            booking_url: item.booking_url ?? undefined,
+            price_total: typeof item.price_total === "number" ? item.price_total : undefined,
+          });
+        }
       }
+      // De->para: apenas imóveis retornados pelo webhook e publicados no catálogo
       const merged = (candidates ?? [])
+        .filter((p) => p.external_id && map.has(String(p.external_id)))
         .map((p) => {
-          const m = map.get(p.id);
+          const m = map.get(String(p.external_id))!;
           return {
             ...p,
-            booking_url: m?.booking_url || p.booking_url,
-            available: m?.available ?? true,
+            booking_url: m.booking_url || p.booking_url,
+            price_total: m.price_total ?? null,
           };
-        })
-        .filter((p) => p.available !== false);
+        });
       return new Response(JSON.stringify({ properties: merged, mocked: false }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
