@@ -47,12 +47,17 @@ export function CatalogResultCard({ property }: { property: PublicProperty }) {
             </span>
           )}
         </div>
-        {property.base_price != null && (
+        {property.price_total != null ? (
+          <p className="text-base font-semibold">
+            R$ {Number(property.price_total).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}{" "}
+            <span className="text-muted-foreground font-normal text-sm">total no período</span>
+          </p>
+        ) : property.base_price != null ? (
           <p className="text-base font-semibold">
             R$ {Number(property.base_price).toLocaleString("pt-BR", { minimumFractionDigits: 0 })}{" "}
             <span className="text-muted-foreground font-normal text-sm">/ noite</span>
           </p>
-        )}
+        ) : null}
         <Button className="w-full mt-auto" onClick={handleClick} disabled={!property.booking_url}>
           Ver detalhes e reservar
         </Button>
