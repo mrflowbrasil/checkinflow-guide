@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Seo } from "@/components/Seo";
 
 import { CatalogHeader } from "@/components/catalog/public/CatalogHeader";
-import { CatalogFilters, type Filters } from "@/components/catalog/public/CatalogFilters";
+import { CatalogFilters, type Filters, type SortOption } from "@/components/catalog/public/CatalogFilters";
 import { CatalogResultCard } from "@/components/catalog/public/CatalogResultCard";
 import { CatalogSkeleton } from "@/components/catalog/public/CatalogSkeleton";
 
@@ -53,6 +53,7 @@ export default function PublicCatalog() {
   const [searching, setSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<PublicProperty[] | null>(null);
   const [searched, setSearched] = useState(false);
+  const [sort, setSort] = useState<SortOption>("relevance");
 
   useEffect(() => {
     let cancelled = false;
@@ -91,6 +92,30 @@ export default function PublicCatalog() {
   }, [properties, filters]);
 
   const displayList = hasLiveAvailability ? (searchResults ?? locallyFiltered) : locallyFiltered;
+
+  const sortedDisplayList = useMemo(() => {
+    const list = [...displayList];
+    const priceOf = (p: PublicProperty) =>
+      p.price_total != null ? Number(p.price_total) : p.base_price != null ? Number(p.base_price) : 0;
+
+    switch (sort) {
+      case "price_asc":
+        return list.sort((a, b) => priceOf(a) - priceOf(b));
+      case "price_desc":
+        return list.sort((a, b) => priceOf(b) - priceOf(a));
+      case "guests_desc":
+        return list.sort((a, b) => (b.max_guests ?? 0) - (a.max_guests ?? 0));
+      case "guests_asc":
+        return list.sort((a, b) => (a.max_guests ?? 0) - (b.max_guests ?? 0));
+      case "name_asc":
+        return list.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+      case "name_desc":
+        return list.sort((a, b) => b.name.localeCompare(a.name, "pt-BR"));
+      case "relevance":
+      default:
+        return list;
+    }
+  }, [displayList, sort]);
 
   const priceMax = useMemo(() => {
     const max = properties.reduce((acc, p) => Math.max(acc, p.base_price ?? 0), 0);
@@ -157,6 +182,10 @@ export default function PublicCatalog() {
               onSearch={handleSearch}
               searching={searching}
               hasLiveAvailability={hasLiveAvailability}
+              sort={sort}
+              onSortChange={setSort}
+              totalResults={sortedDisplayList.length}
+              resultLabel="acomodação"
             />
 
             {searching ? (
@@ -165,7 +194,7 @@ export default function PublicCatalog() {
                   <CatalogSkeleton key={i} />
                 ))}
               </div>
-            ) : displayList.length === 0 ? (
+            ) : sortedDisplayList.length === 0 ? (
               <div className="rounded-xl border bg-background p-8 text-center text-sm text-muted-foreground">
                 {searched
                   ? "Nenhum imóvel disponível para estas datas, tente outro período."
@@ -173,7 +202,7 @@ export default function PublicCatalog() {
               </div>
             ) : (
               <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {displayList.map((p) => (
+                {sortedDisplayList.map((p) => (
                   <li key={p.id} className="h-full">
                     <CatalogResultCard property={p} />
                   </li>

@@ -1,4 +1,4 @@
-import { Loader2, Search } from "lucide-react";
+import { ArrowDownUp, Loader2, Search } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +19,15 @@ export type Filters = {
   maxPrice: number | null;
 };
 
+export type SortOption =
+  | "relevance"
+  | "price_asc"
+  | "price_desc"
+  | "guests_desc"
+  | "guests_asc"
+  | "name_asc"
+  | "name_desc";
+
 type Props = {
   filters: Filters;
   onChange: (f: Filters) => void;
@@ -26,9 +35,24 @@ type Props = {
   onSearch: () => void;
   searching: boolean;
   hasLiveAvailability: boolean;
+  sort: SortOption;
+  onSortChange: (sort: SortOption) => void;
+  totalResults: number;
+  resultLabel?: string;
 };
 
-export function CatalogFilters({ filters, onChange, priceMax, onSearch, searching, hasLiveAvailability }: Props) {
+export function CatalogFilters({
+  filters,
+  onChange,
+  priceMax,
+  onSearch,
+  searching,
+  hasLiveAvailability,
+  sort,
+  onSortChange,
+  totalResults,
+  resultLabel = "acomodação",
+}: Props) {
   const update = (patch: Partial<Filters>) => onChange({ ...filters, ...patch });
 
   return (
@@ -103,6 +127,30 @@ export function CatalogFilters({ filters, onChange, priceMax, onSearch, searchin
           Buscar disponibilidade
         </Button>
       )}
+
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-1 border-t">
+        <p className="text-sm text-muted-foreground">
+          <span className="font-semibold text-foreground">{totalResults}</span>{" "}
+          {resultLabel}{totalResults === 1 ? "" : "s"} encontrada{totalResults === 1 ? "" : "s"}
+        </p>
+        <div className="flex items-center gap-2">
+          <ArrowDownUp className="h-4 w-4 text-muted-foreground" />
+          <Select value={sort} onValueChange={(v) => onSortChange(v as SortOption)}>
+            <SelectTrigger className="h-8 text-xs w-full sm:w-44">
+              <SelectValue placeholder="Ordenar por" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="relevance">Relevância</SelectItem>
+              <SelectItem value="price_asc">Menor preço</SelectItem>
+              <SelectItem value="price_desc">Maior preço</SelectItem>
+              <SelectItem value="guests_desc">Maior capacidade</SelectItem>
+              <SelectItem value="guests_asc">Menor capacidade</SelectItem>
+              <SelectItem value="name_asc">Nome A-Z</SelectItem>
+              <SelectItem value="name_desc">Nome Z-A</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
     </div>
   );
 }
