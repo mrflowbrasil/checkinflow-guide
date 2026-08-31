@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Seo } from "@/components/Seo";
 
 import { CatalogHeader } from "@/components/catalog/public/CatalogHeader";
-import { CatalogFilters, type Filters } from "@/components/catalog/public/CatalogFilters";
+import { CatalogFilters, type Filters, type SortOption } from "@/components/catalog/public/CatalogFilters";
 import { CatalogResultCard } from "@/components/catalog/public/CatalogResultCard";
 import { CatalogSkeleton } from "@/components/catalog/public/CatalogSkeleton";
 
