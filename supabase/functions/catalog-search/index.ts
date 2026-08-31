@@ -61,7 +61,7 @@ Deno.serve(async (req) => {
     // Check active integration
     const { data: activeIntegration } = await admin
       .from("tenant_integrations")
-      .select("provider, system_url")
+      .select("provider, system_url, public_site_url, credentials_encrypted")
       .eq("tenant_id", tenant.id)
       .in("provider", ["stays", "hostaway"])
       .eq("status", "connected")
@@ -107,6 +107,10 @@ Deno.serve(async (req) => {
           max_price: body.max_price,
           integration_provider: activeIntegration.provider,
           integration_url: body.integration_url ?? activeIntegration.system_url,
+          public_site_url: activeIntegration.public_site_url ?? null,
+          authorization: activeIntegration.credentials_encrypted
+            ? `Basic ${activeIntegration.credentials_encrypted}`
+            : null,
           properties: (candidates ?? []).map((p) => ({
             id: p.id,
             external_id: p.external_id,
