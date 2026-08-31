@@ -182,6 +182,10 @@ export default function PublicCatalog() {
               onSearch={handleSearch}
               searching={searching}
               hasLiveAvailability={hasLiveAvailability}
+              sort={sort}
+              onSortChange={setSort}
+              totalResults={sortedDisplayList.length}
+              resultLabel="acomodação"
             />
 
             {searching ? (
@@ -190,7 +194,7 @@ export default function PublicCatalog() {
                   <CatalogSkeleton key={i} />
                 ))}
               </div>
-            ) : displayList.length === 0 ? (
+            ) : sortedDisplayList.length === 0 ? (
               <div className="rounded-xl border bg-background p-8 text-center text-sm text-muted-foreground">
                 {searched
                   ? "Nenhum imóvel disponível para estas datas, tente outro período."
@@ -198,7 +202,7 @@ export default function PublicCatalog() {
               </div>
             ) : (
               <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {displayList.map((p) => (
+                {sortedDisplayList.map((p) => (
                   <li key={p.id} className="h-full">
                     <CatalogResultCard property={p} />
                   </li>
