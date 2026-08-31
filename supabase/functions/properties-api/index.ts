@@ -339,7 +339,7 @@ serve(async (req) => {
       let q = admin
         .from("properties")
         .select(
-          "id, tenant_id, name, external_id, external_provider, status, address, booking_url, cover_image_url, public_slug, created_at, updated_at",
+          "id, tenant_id, name, external_id, external_provider, status, address, city, max_guests, base_price, booking_url, cover_image_url, public_slug, created_at, updated_at",
           { count: "exact" },
         )
         .eq("tenant_id", tenantId);
@@ -678,8 +678,8 @@ serve(async (req) => {
         lock_code: details.lock_code ?? null,
         wifi_ssid: details.wifi_ssid ?? null,
         wifi_password: details.wifi_password ?? null,
-        latitude: details.latitude ?? null,
-        longitude: details.longitude ?? null,
+        latitude: details.latitude ?? latitude ?? null,
+        longitude: details.longitude ?? longitude ?? null,
         rules: details.rules ?? null,
         parking: details.parking ?? null,
         trash: details.trash ?? null,
