@@ -33,6 +33,7 @@ export default function Catalog() {
   const [importOpen, setImportOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [bio, setBio] = useState<string | null>(null);
+  const [catalogTitle, setCatalogTitle] = useState<string | null>(null);
   const [savingBio, setSavingBio] = useState(false);
 
   const propertiesQ = useProperties();
@@ -44,14 +45,17 @@ export default function Catalog() {
     queryFn: async () => {
       const { data } = await supabase
         .from("tenants")
-        .select("catalog_bio")
+        .select("catalog_bio, catalog_title")
         .eq("id", tenant!.id)
         .maybeSingle();
-      const value = (data as { catalog_bio: string | null } | null)?.catalog_bio ?? "";
+      const row = data as { catalog_bio: string | null; catalog_title: string | null } | null;
+      const value = row?.catalog_bio ?? "";
       setBio(value);
+      setCatalogTitle(row?.catalog_title ?? "");
       return value;
     },
   });
+
 
   const origin = typeof window !== "undefined" ? window.location.origin : "";
   const publicUrl = tenant ? `${origin}/c/${tenant.slug}` : "";
@@ -67,14 +71,15 @@ export default function Catalog() {
     setSavingBio(true);
     const { error } = await supabase
       .from("tenants")
-      .update({ catalog_bio: bio })
+      .update({ catalog_bio: bio, catalog_title: catalogTitle?.trim() || null })
       .eq("id", tenant.id);
     setSavingBio(false);
     if (error) {
       toast.error("Não foi possível salvar.");
       return;
     }
-    toast.success("Bio atualizada.");
+    toast.success("Catálogo atualizado.");
+
     qc.invalidateQueries({ queryKey: ["tenant-bio", tenant.id] });
   };
 
@@ -187,10 +192,25 @@ export default function Catalog() {
           <Card>
             <CardHeader>
               <CardTitle>Personalização</CardTitle>
-              <CardDescription>O nome, a logo e as cores vêm das suas configurações do workspace.</CardDescription>
+              <CardDescription>A logo e as cores vêm das suas configurações do workspace.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
+                <Label htmlFor="catalog-title">Título do catálogo</Label>
+                <Input
+                  id="catalog-title"
+                  maxLength={60}
+                  placeholder={tenant?.name ?? "Nome comercial da empresa"}
+                  value={catalogTitle ?? ""}
+                  onChange={(e) => setCatalogTitle(e.target.value)}
+                  disabled={tenantBioQ.isLoading}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Nome exibido no topo da página pública. Se ficar vazio, usamos o nome do workspace.
+                </p>
+              </div>
+              <div className="space-y-2">
+
                 <Label htmlFor="bio">Bio do catálogo</Label>
                 <Textarea
                   id="bio"

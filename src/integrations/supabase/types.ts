@@ -1015,6 +1015,7 @@ export type Database = {
           button_border: string
           button_shape: string
           catalog_bio: string | null
+          catalog_title: string | null
           cover_transition: string
           created_at: string
           facebook_url: string | null
@@ -1043,6 +1044,7 @@ export type Database = {
           button_border?: string
           button_shape?: string
           catalog_bio?: string | null
+          catalog_title?: string | null
           cover_transition?: string
           created_at?: string
           facebook_url?: string | null
@@ -1071,6 +1073,7 @@ export type Database = {
           button_border?: string
           button_shape?: string
           catalog_bio?: string | null
+          catalog_title?: string | null
           cover_transition?: string
           created_at?: string
           facebook_url?: string | null
