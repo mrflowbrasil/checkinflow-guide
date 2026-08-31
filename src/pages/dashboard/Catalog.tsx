@@ -71,14 +71,15 @@ export default function Catalog() {
     setSavingBio(true);
     const { error } = await supabase
       .from("tenants")
-      .update({ catalog_bio: bio })
+      .update({ catalog_bio: bio, catalog_title: catalogTitle?.trim() || null })
       .eq("id", tenant.id);
     setSavingBio(false);
     if (error) {
       toast.error("Não foi possível salvar.");
       return;
     }
-    toast.success("Bio atualizada.");
+    toast.success("Catálogo atualizado.");
+
     qc.invalidateQueries({ queryKey: ["tenant-bio", tenant.id] });
   };
 
