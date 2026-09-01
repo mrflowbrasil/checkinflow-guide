@@ -525,13 +525,65 @@ export default function Inteligencia() {
           <div className="mx-auto h-14 w-14 rounded-full bg-accent-soft grid place-items-center mb-4">
             <Plug className="h-7 w-7 text-accent-foreground" />
           </div>
-          <h2 className="text-xl font-semibold mb-2">Conecte Stays ou Hostaway para ver seus dados</h2>
+          <h2 className="text-xl font-semibold mb-2">Conecte sua PMS para obter relatórios e insights gerados por IA</h2>
           <p className="text-muted-foreground text-sm mb-6">
-            A Inteligência de reservas analisa as sincronizações em tempo real do seu PMS. Conecte uma integração para começar.
+            A Inteligência de reservas analisa as sincronizações em tempo real do seu PMS. Conecte Stays ou Hostaway para começar.
           </p>
           <Button asChild>
             <Link to="/app/integrations"><Plug className="mr-2 h-4 w-4" /> Conectar integração</Link>
           </Button>
+        </Card>
+      </div>
+    );
+  }
+
+  // Conectado à PMS, mas ainda sem reservas importadas: oferece importação de histórico
+  if (integration.data.providers.length > 0 && !integration.data.hasData) {
+    return (
+      <div className="container py-12 max-w-3xl">
+        <Card className="p-8 text-center shadow-card">
+          <div className="mx-auto h-14 w-14 rounded-full bg-primary/10 grid place-items-center mb-4">
+            {importState === "sent"
+              ? <CheckCircle2 className="h-7 w-7 text-success" />
+              : <History className="h-7 w-7 text-primary" />}
+          </div>
+
+          {importState === "sent" ? (
+            <>
+              <h2 className="text-xl font-semibold mb-2">Importação em andamento</h2>
+              <p className="text-muted-foreground text-sm mb-2">
+                Estamos buscando o histórico de reservas na sua PMS. Esse processo pode levar até <strong>5 minutos</strong>.
+              </p>
+              <p className="text-muted-foreground text-sm mb-6">
+                Você pode sair desta página — os dados aparecerão aqui automaticamente quando a importação terminar.
+              </p>
+              <Button variant="outline" onClick={() => qc.invalidateQueries({ queryKey: ["reservations_integration"] })}>
+                <RefreshCw className="mr-2 h-4 w-4" /> Verificar novamente
+              </Button>
+            </>
+          ) : (
+            <>
+              <h2 className="text-xl font-semibold mb-2">Importar histórico de reservas</h2>
+              <p className="text-muted-foreground text-sm mb-6">
+                Selecione o período do histórico de reservas que deseja importar e receba relatórios e insights por IA.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto">
+                <Select value={importYears} onValueChange={setImportYears} disabled={importState === "sending"}>
+                  <SelectTrigger className="w-full sm:w-48"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">Último 1 ano</SelectItem>
+                    <SelectItem value="3">Últimos 3 anos</SelectItem>
+                    <SelectItem value="5">Últimos 5 anos</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button onClick={startHistoryImport} disabled={importState === "sending"} className="w-full sm:w-auto">
+                  {importState === "sending"
+                    ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Iniciando...</>
+                    : <><History className="mr-2 h-4 w-4" /> Importar histórico</>}
+                </Button>
+              </div>
+            </>
+          )}
         </Card>
       </div>
     );
