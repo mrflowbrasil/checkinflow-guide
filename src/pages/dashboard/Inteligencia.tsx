@@ -287,6 +287,30 @@ export default function Inteligencia() {
   const allHistory = useReservationsAll(dateBasis);
   const [yearMetric, setYearMetric] = useState<"netRevenue" | "grossRevenue" | "count" | "nights" | "avg">("netRevenue");
 
+  // Ao abrir a página já com dados no banco, dispara uma atualização (hoje e 30 dias antes)
+  useEffect(() => {
+    if (dashUpdateFired.current) return;
+    if (integration.data?.connected && integration.data?.hasData) {
+      dashUpdateFired.current = true;
+      fireDashUpdate();
+    }
+  }, [integration.data?.connected, integration.data?.hasData]);
+
+  const startHistoryImport = async () => {
+    setImportState("sending");
+    try {
+      const { data, error } = await supabase.functions.invoke("inteligencia-sync", {
+        body: { event: "upload-dash", years: Number(importYears) },
+      });
+      if (error) throw error;
+      if (data?.ok === false) throw new Error(data?.message ?? data?.error ?? "Falha ao iniciar importação");
+      setImportState("sent");
+    } catch (e: any) {
+      setImportState("idle");
+      toast.error(e?.message ?? "Não foi possível iniciar a importação. Tente novamente.");
+    }
+  };
+
   const channels = useMemo(() => {
     const set = new Set<string>();
     (current.data ?? []).forEach((r) => set.add(r.channel || "Direto"));
