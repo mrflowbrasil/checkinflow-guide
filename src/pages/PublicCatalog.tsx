@@ -34,6 +34,18 @@ type TenantInfo = {
 
 type IntegrationInfo = { provider: string; system_url: string | null } | null;
 
+function normalizeCity(city: string | null): string | null {
+  if (!city) return null;
+  // "Caruaru, Pernambuco, Brasil" -> "Caruaru"
+  let c = city.split(",")[0]?.trim() ?? "";
+  if (!c) return null;
+  // Title-case for all-upper/all-lower entries ("CARUARU" -> "Caruaru")
+  if (c === c.toUpperCase() || c === c.toLowerCase()) {
+    c = c.toLowerCase().replace(/(^|\s|[-(])([a-zà-ú])/g, (m, p1, p2) => p1 + p2.toUpperCase());
+  }
+  return c;
+}
+
 export default function PublicCatalog() {
   const { tenantSlug = "" } = useParams();
   const [tenant, setTenant] = useState<TenantInfo | null>(null);
