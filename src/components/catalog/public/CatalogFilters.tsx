@@ -110,6 +110,22 @@ export function CatalogFilters({
         </div>
 
         <div className="space-y-1">
+          <Label className="text-xs">Cidade</Label>
+          <Select
+            value={filters.city ?? "any"}
+            onValueChange={(v) => update({ city: v === "any" ? null : v })}
+          >
+            <SelectTrigger><SelectValue placeholder="Qualquer" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="any">Qualquer</SelectItem>
+              {cities.map((c) => (
+                <SelectItem key={c} value={c}>{c}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-1">
           <div className="flex justify-between text-xs">
             <Label>Preço máx.</Label>
             <span className="text-muted-foreground">
