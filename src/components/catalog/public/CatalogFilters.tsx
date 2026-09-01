@@ -39,6 +39,7 @@ type Props = {
   sort: SortOption;
   onSortChange: (sort: SortOption) => void;
   totalResults: number;
+  cities: string[];
   resultLabel?: string;
   resultLabelPlural?: string;
 };
