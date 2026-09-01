@@ -54,6 +54,7 @@ export function CatalogFilters({
   sort,
   onSortChange,
   totalResults,
+  cities,
   resultLabel = "acomodação",
   resultLabelPlural = "acomodações",
 }: Props) {
