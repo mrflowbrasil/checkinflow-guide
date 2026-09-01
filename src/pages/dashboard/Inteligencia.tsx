@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -24,7 +24,12 @@ import {
   Calendar as CalendarIcon,
   Plug,
   Info,
+  History,
+  Loader2,
+  CheckCircle2,
 } from "lucide-react";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import {
   format,
   subDays,
