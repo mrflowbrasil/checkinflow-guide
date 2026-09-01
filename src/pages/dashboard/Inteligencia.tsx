@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -24,7 +24,12 @@ import {
   Calendar as CalendarIcon,
   Plug,
   Info,
+  History,
+  Loader2,
+  CheckCircle2,
 } from "lucide-react";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import {
   format,
   subDays,
@@ -248,6 +253,13 @@ function channelColor(name: string, index: number): string {
   return CHART_COLORS[index % CHART_COLORS.length];
 }
 
+function fireDashUpdate() {
+  // Fire-and-forget: pede ao PMS a janela recente (hoje e 30 dias antes)
+  supabase.functions
+    .invoke("inteligencia-sync", { body: { event: "dash-update" } })
+    .catch(() => {});
+}
+
 export default function Inteligencia() {
   const qc = useQueryClient();
   const [preset, setPreset] = useState<PresetKey>("30d");
@@ -256,6 +268,9 @@ export default function Inteligencia() {
   const [dateBasis, setDateBasis] = useState<DateBasis>("check_in");
   const [customStart, setCustomStart] = useState<string>(() => format(subDays(new Date(), 30), "yyyy-MM-dd"));
   const [customEnd, setCustomEnd] = useState<string>(() => format(new Date(), "yyyy-MM-dd"));
+  const [importYears, setImportYears] = useState<string>("1");
+  const [importState, setImportState] = useState<"idle" | "sending" | "sent">("idle");
+  const dashUpdateFired = useRef(false);
 
   const range = useMemo(
     () => presetRange(preset, { start: customStart, end: customEnd }),
@@ -271,6 +286,30 @@ export default function Inteligencia() {
   const upcoming = useUpcomingCheckins(20);
   const allHistory = useReservationsAll(dateBasis);
   const [yearMetric, setYearMetric] = useState<"netRevenue" | "grossRevenue" | "count" | "nights" | "avg">("netRevenue");
+
+  // Ao abrir a página já com dados no banco, dispara uma atualização (hoje e 30 dias antes)
+  useEffect(() => {
+    if (dashUpdateFired.current) return;
+    if (integration.data?.connected && integration.data?.hasData) {
+      dashUpdateFired.current = true;
+      fireDashUpdate();
+    }
+  }, [integration.data?.connected, integration.data?.hasData]);
+
+  const startHistoryImport = async () => {
+    setImportState("sending");
+    try {
+      const { data, error } = await supabase.functions.invoke("inteligencia-sync", {
+        body: { event: "upload-dash", years: Number(importYears) },
+      });
+      if (error) throw error;
+      if (data?.ok === false) throw new Error(data?.message ?? data?.error ?? "Falha ao iniciar importação");
+      setImportState("sent");
+    } catch (e: any) {
+      setImportState("idle");
+      toast.error(e?.message ?? "Não foi possível iniciar a importação. Tente novamente.");
+    }
+  };
 
   const channels = useMemo(() => {
     const set = new Set<string>();
@@ -486,13 +525,65 @@ export default function Inteligencia() {
           <div className="mx-auto h-14 w-14 rounded-full bg-accent-soft grid place-items-center mb-4">
             <Plug className="h-7 w-7 text-accent-foreground" />
           </div>
-          <h2 className="text-xl font-semibold mb-2">Conecte Stays ou Hostaway para ver seus dados</h2>
+          <h2 className="text-xl font-semibold mb-2">Conecte sua PMS para obter relatórios e insights gerados por IA</h2>
           <p className="text-muted-foreground text-sm mb-6">
-            A Inteligência de reservas analisa as sincronizações em tempo real do seu PMS. Conecte uma integração para começar.
+            A Inteligência de reservas analisa as sincronizações em tempo real do seu PMS. Conecte Stays ou Hostaway para começar.
           </p>
           <Button asChild>
             <Link to="/app/integrations"><Plug className="mr-2 h-4 w-4" /> Conectar integração</Link>
           </Button>
+        </Card>
+      </div>
+    );
+  }
+
+  // Conectado à PMS, mas ainda sem reservas importadas: oferece importação de histórico
+  if (integration.data.providers.length > 0 && !integration.data.hasData) {
+    return (
+      <div className="container py-12 max-w-3xl">
+        <Card className="p-8 text-center shadow-card">
+          <div className="mx-auto h-14 w-14 rounded-full bg-primary/10 grid place-items-center mb-4">
+            {importState === "sent"
+              ? <CheckCircle2 className="h-7 w-7 text-success" />
+              : <History className="h-7 w-7 text-primary" />}
+          </div>
+
+          {importState === "sent" ? (
+            <>
+              <h2 className="text-xl font-semibold mb-2">Importação em andamento</h2>
+              <p className="text-muted-foreground text-sm mb-2">
+                Estamos buscando o histórico de reservas na sua PMS. Esse processo pode levar até <strong>5 minutos</strong>.
+              </p>
+              <p className="text-muted-foreground text-sm mb-6">
+                Você pode sair desta página — os dados aparecerão aqui automaticamente quando a importação terminar.
+              </p>
+              <Button variant="outline" onClick={() => qc.invalidateQueries({ queryKey: ["reservations_integration"] })}>
+                <RefreshCw className="mr-2 h-4 w-4" /> Verificar novamente
+              </Button>
+            </>
+          ) : (
+            <>
+              <h2 className="text-xl font-semibold mb-2">Importar histórico de reservas</h2>
+              <p className="text-muted-foreground text-sm mb-6">
+                Selecione o período do histórico de reservas que deseja importar e receba relatórios e insights por IA.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto">
+                <Select value={importYears} onValueChange={setImportYears} disabled={importState === "sending"}>
+                  <SelectTrigger className="w-full sm:w-48"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">Último 1 ano</SelectItem>
+                    <SelectItem value="3">Últimos 3 anos</SelectItem>
+                    <SelectItem value="5">Últimos 5 anos</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button onClick={startHistoryImport} disabled={importState === "sending"} className="w-full sm:w-auto">
+                  {importState === "sending"
+                    ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Iniciando...</>
+                    : <><History className="mr-2 h-4 w-4" /> Importar histórico</>}
+                </Button>
+              </div>
+            </>
+          )}
         </Card>
       </div>
     );
@@ -526,10 +617,13 @@ export default function Inteligencia() {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => qc.invalidateQueries({ predicate: (q) => {
-            const k = q.queryKey?.[0] as string | undefined;
-            return !!k && (k.startsWith("v_") || k === "last_synced_at");
-          }})}
+          onClick={() => {
+            fireDashUpdate();
+            qc.invalidateQueries({ predicate: (q) => {
+              const k = q.queryKey?.[0] as string | undefined;
+              return !!k && (k.startsWith("v_") || k === "last_synced_at");
+            }});
+          }}
           disabled={fetching}
         >
           <RefreshCw className={`h-4 w-4 mr-2 ${fetching ? "animate-spin" : ""}`} /> Atualizar
