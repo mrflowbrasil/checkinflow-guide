@@ -103,6 +103,7 @@ serve(async (req) => {
         endpoints: {
           connection_done: "/integrations-mark-synced",
           import_done: "/integrations-mark-import-done",
+          dash_import_done: "/inteligencia-mark-done",
         },
       },
     };
