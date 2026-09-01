@@ -17,6 +17,7 @@ export type Filters = {
   checkout: string | null;
   guests: number | null;
   maxPrice: number | null;
+  city: string | null;
 };
 
 export type SortOption =
