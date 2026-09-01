@@ -253,6 +253,13 @@ function channelColor(name: string, index: number): string {
   return CHART_COLORS[index % CHART_COLORS.length];
 }
 
+function fireDashUpdate() {
+  // Fire-and-forget: pede ao PMS a janela recente (hoje e 30 dias antes)
+  supabase.functions
+    .invoke("inteligencia-sync", { body: { event: "dash-update" } })
+    .catch(() => {});
+}
+
 export default function Inteligencia() {
   const qc = useQueryClient();
   const [preset, setPreset] = useState<PresetKey>("30d");
@@ -261,6 +268,9 @@ export default function Inteligencia() {
   const [dateBasis, setDateBasis] = useState<DateBasis>("check_in");
   const [customStart, setCustomStart] = useState<string>(() => format(subDays(new Date(), 30), "yyyy-MM-dd"));
   const [customEnd, setCustomEnd] = useState<string>(() => format(new Date(), "yyyy-MM-dd"));
+  const [importYears, setImportYears] = useState<string>("1");
+  const [importState, setImportState] = useState<"idle" | "sending" | "sent">("idle");
+  const dashUpdateFired = useRef(false);
 
   const range = useMemo(
     () => presetRange(preset, { start: customStart, end: customEnd }),
