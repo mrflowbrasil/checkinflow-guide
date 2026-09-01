@@ -13,6 +13,8 @@ project_id = "pgdfcufjdyhmaqikwbdq"
     verify_jwt = true
   [functions.inteligencia-sync]
     verify_jwt = true
+  [functions.inteligencia-mark-done]
+    verify_jwt = false
   [functions.catalog-trigger-import]
     verify_jwt = true
   [functions.payments-webhook]
