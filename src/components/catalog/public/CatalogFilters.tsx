@@ -17,6 +17,7 @@ export type Filters = {
   checkout: string | null;
   guests: number | null;
   maxPrice: number | null;
+  city: string | null;
 };
 
 export type SortOption =
@@ -38,6 +39,7 @@ type Props = {
   sort: SortOption;
   onSortChange: (sort: SortOption) => void;
   totalResults: number;
+  cities: string[];
   resultLabel?: string;
   resultLabelPlural?: string;
 };
@@ -52,6 +54,7 @@ export function CatalogFilters({
   sort,
   onSortChange,
   totalResults,
+  cities,
   resultLabel = "acomodação",
   resultLabelPlural = "acomodações",
 }: Props) {
@@ -62,8 +65,8 @@ export function CatalogFilters({
       <div
         className={`grid gap-2 sm:gap-3 ${
           hasLiveAvailability
-            ? "grid-cols-2 sm:grid-cols-4"
-            : "grid-cols-1 sm:grid-cols-2"
+            ? "grid-cols-2 sm:grid-cols-5"
+            : "grid-cols-1 sm:grid-cols-3"
         }`}
       >
         {hasLiveAvailability && (
@@ -101,6 +104,22 @@ export function CatalogFilters({
               <SelectItem value="any">Qualquer</SelectItem>
               {[1, 2, 3, 4, 5].map((n) => (
                 <SelectItem key={n} value={String(n)}>{n === 5 ? "5+" : n} hóspede{n > 1 ? "s" : ""}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-1">
+          <Label className="text-xs">Cidade</Label>
+          <Select
+            value={filters.city ?? "any"}
+            onValueChange={(v) => update({ city: v === "any" ? null : v })}
+          >
+            <SelectTrigger><SelectValue placeholder="Qualquer" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="any">Qualquer</SelectItem>
+              {cities.map((c) => (
+                <SelectItem key={c} value={c}>{c}</SelectItem>
               ))}
             </SelectContent>
           </Select>

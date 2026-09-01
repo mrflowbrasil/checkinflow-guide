@@ -34,6 +34,18 @@ type TenantInfo = {
 
 type IntegrationInfo = { provider: string; system_url: string | null } | null;
 
+function normalizeCity(city: string | null): string | null {
+  if (!city) return null;
+  // "Caruaru, Pernambuco, Brasil" -> "Caruaru"
+  let c = city.split(",")[0]?.trim() ?? "";
+  if (!c) return null;
+  // Title-case for all-upper/all-lower entries ("CARUARU" -> "Caruaru")
+  if (c === c.toUpperCase() || c === c.toLowerCase()) {
+    c = c.toLowerCase().replace(/(^|\s|[-(])([a-zà-ú])/g, (m, p1, p2) => p1 + p2.toUpperCase());
+  }
+  return c;
+}
+
 export default function PublicCatalog() {
   const { tenantSlug = "" } = useParams();
   const [tenant, setTenant] = useState<TenantInfo | null>(null);
@@ -48,6 +60,7 @@ export default function PublicCatalog() {
     checkout: null,
     guests: null,
     maxPrice: null,
+    city: null,
   });
 
   const [searching, setSearching] = useState(false);
@@ -82,16 +95,35 @@ export default function PublicCatalog() {
     };
   }, [tenantSlug]);
 
-  // Local filter (guests + maxPrice only)
+  // Distinct cities for the filter (normalized + deduped)
+  const cities = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const p of properties) {
+      const c = normalizeCity(p.city);
+      if (c && !map.has(c.toLowerCase())) map.set(c.toLowerCase(), c);
+    }
+    return [...map.values()].sort((a, b) => a.localeCompare(b, "pt-BR"));
+  }, [properties]);
+
+  // Local filter (guests + maxPrice + city)
   const locallyFiltered = useMemo(() => {
     return properties.filter((p) => {
       if (filters.guests && (p.max_guests ?? 0) < filters.guests) return false;
       if (filters.maxPrice && (p.base_price ?? 0) > filters.maxPrice) return false;
+      if (filters.city && normalizeCity(p.city)?.toLowerCase() !== filters.city.toLowerCase()) return false;
       return true;
     });
   }, [properties, filters]);
 
-  const displayList = hasLiveAvailability ? (searchResults ?? locallyFiltered) : locallyFiltered;
+  const searchedFiltered = useMemo(() => {
+    if (!searchResults) return null;
+    if (!filters.city) return searchResults;
+    return searchResults.filter(
+      (p) => normalizeCity(p.city)?.toLowerCase() === filters.city!.toLowerCase(),
+    );
+  }, [searchResults, filters.city]);
+
+  const displayList = hasLiveAvailability ? (searchedFiltered ?? locallyFiltered) : locallyFiltered;
 
   const sortedDisplayList = useMemo(() => {
     const list = [...displayList];
@@ -185,6 +217,7 @@ export default function PublicCatalog() {
               sort={sort}
               onSortChange={setSort}
               totalResults={sortedDisplayList.length}
+              cities={cities}
               resultLabel="acomodação"
               resultLabelPlural="acomodações"
             />
