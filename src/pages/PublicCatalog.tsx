@@ -60,6 +60,7 @@ export default function PublicCatalog() {
     checkout: null,
     guests: null,
     maxPrice: null,
+    city: null,
   });
 
   const [searching, setSearching] = useState(false);
