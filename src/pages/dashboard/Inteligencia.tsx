@@ -784,8 +784,38 @@ export default function Inteligencia() {
             </TooltipProvider>
           </div>
 
-          <div className="sm:ml-auto text-xs text-muted-foreground">
-            {format(parseISO(range.start), "dd/MM/yy", { locale: ptBR })} → {format(parseISO(range.end), "dd/MM/yy", { locale: ptBR })}
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">Comparar:</span>
+            <Select value={compareMode} onValueChange={setCompareMode}>
+              <SelectTrigger className="w-56 h-9"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="prev">Período anterior</SelectItem>
+                {compareYearOptions.map((y) => (
+                  <SelectItem key={y} value={`y-${y}`}>Mesmo período de {y}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <TooltipProvider delayDuration={150}>
+              <UITooltip>
+                <TooltipTrigger asChild>
+                  <button type="button" className="text-muted-foreground/70 hover:text-foreground transition-colors">
+                    <Info className="h-4 w-4" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs text-xs">
+                  Define a base de comparação das variações dos indicadores: o período imediatamente anterior ou o mesmo intervalo de datas em um ano anterior disponível no histórico.
+                </TooltipContent>
+              </UITooltip>
+            </TooltipProvider>
+          </div>
+
+          <div className="sm:ml-auto text-xs text-muted-foreground text-right">
+            <div>
+              {format(parseISO(range.start), "dd/MM/yy", { locale: ptBR })} → {format(parseISO(range.end), "dd/MM/yy", { locale: ptBR })}
+            </div>
+            <div className="text-muted-foreground/70">
+              comparando com {format(parseISO(compare.start), "dd/MM/yy", { locale: ptBR })} → {format(parseISO(compare.end), "dd/MM/yy", { locale: ptBR })}
+            </div>
           </div>
         </div>
 
