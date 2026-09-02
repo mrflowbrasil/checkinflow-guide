@@ -43,6 +43,7 @@ import {
   parseISO,
   formatDistanceToNow,
   differenceInCalendarDays,
+  subYears,
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Card } from "@/components/ui/card";
