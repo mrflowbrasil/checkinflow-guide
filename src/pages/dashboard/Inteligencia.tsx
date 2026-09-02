@@ -271,6 +271,7 @@ export default function Inteligencia() {
   const [customEnd, setCustomEnd] = useState<string>(() => format(new Date(), "yyyy-MM-dd"));
   const [importYears, setImportYears] = useState<string>("1");
   const [importState, setImportState] = useState<"idle" | "sending" | "sent">("idle");
+  const [uploadOpen, setUploadOpen] = useState(false);
   const dashUpdateFired = useRef(false);
 
   const range = useMemo(
@@ -306,6 +307,8 @@ export default function Inteligencia() {
       if (error) throw error;
       if (data?.ok === false) throw new Error(data?.message ?? data?.error ?? "Falha ao iniciar importação");
       setImportState("sent");
+      setUploadOpen(false);
+      toast.success("Importação iniciada! Os dados aparecerão automaticamente quando o processo terminar (pode levar até 5 minutos).");
     } catch (e: any) {
       setImportState("idle");
       toast.error(e?.message ?? "Não foi possível iniciar a importação. Tente novamente.");
