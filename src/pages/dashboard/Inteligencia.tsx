@@ -27,8 +27,10 @@ import {
   History,
   Loader2,
   CheckCircle2,
+  Upload,
 } from "lucide-react";
 import { toast } from "sonner";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import {
   format,
@@ -270,6 +272,7 @@ export default function Inteligencia() {
   const [customEnd, setCustomEnd] = useState<string>(() => format(new Date(), "yyyy-MM-dd"));
   const [importYears, setImportYears] = useState<string>("1");
   const [importState, setImportState] = useState<"idle" | "sending" | "sent">("idle");
+  const [uploadOpen, setUploadOpen] = useState(false);
   const dashUpdateFired = useRef(false);
 
   const range = useMemo(
@@ -305,6 +308,8 @@ export default function Inteligencia() {
       if (error) throw error;
       if (data?.ok === false) throw new Error(data?.message ?? data?.error ?? "Falha ao iniciar importação");
       setImportState("sent");
+      setUploadOpen(false);
+      toast.success("Importação iniciada! Os dados aparecerão automaticamente quando o processo terminar (pode levar até 5 minutos).");
     } catch (e: any) {
       setImportState("idle");
       toast.error(e?.message ?? "Não foi possível iniciar a importação. Tente novamente.");
@@ -614,21 +619,56 @@ export default function Inteligencia() {
             )}
           </div>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            fireDashUpdate();
-            qc.invalidateQueries({ predicate: (q) => {
-              const k = q.queryKey?.[0] as string | undefined;
-              return !!k && (k.startsWith("v_") || k === "last_synced_at");
-            }});
-          }}
-          disabled={fetching}
-        >
-          <RefreshCw className={`h-4 w-4 mr-2 ${fetching ? "animate-spin" : ""}`} /> Atualizar
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={() => { setImportState("idle"); setUploadOpen(true); }}>
+            <Upload className="h-4 w-4 mr-2" /> Novo Upload
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              fireDashUpdate();
+              qc.invalidateQueries({ predicate: (q) => {
+                const k = q.queryKey?.[0] as string | undefined;
+                return !!k && (k.startsWith("v_") || k === "last_synced_at");
+              }});
+            }}
+            disabled={fetching}
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${fetching ? "animate-spin" : ""}`} /> Atualizar
+          </Button>
+        </div>
       </header>
+
+      {/* Nova importação de histórico */}
+      <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Importar histórico de reservas</DialogTitle>
+            <DialogDescription>
+              Selecione o período do histórico de reservas que deseja importar e receba relatórios e insights por IA.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
+            <Select value={importYears} onValueChange={setImportYears} disabled={importState === "sending"}>
+              <SelectTrigger className="w-full sm:w-48"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1">Último 1 ano</SelectItem>
+                <SelectItem value="3">Últimos 3 anos</SelectItem>
+                <SelectItem value="5">Últimos 5 anos</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button onClick={startHistoryImport} disabled={importState === "sending"} className="w-full sm:w-auto">
+              {importState === "sending"
+                ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Iniciando...</>
+                : <><History className="mr-2 h-4 w-4" /> Importar histórico</>}
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground pt-1">
+            Reservas já importadas são atualizadas automaticamente — não há risco de duplicação.
+          </p>
+        </DialogContent>
+      </Dialog>
 
       {/* Filtros */}
       <Card className="p-4 shadow-card space-y-3">
