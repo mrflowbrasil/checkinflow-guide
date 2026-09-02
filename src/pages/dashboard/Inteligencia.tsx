@@ -197,7 +197,7 @@ function KpiCard({
       {delta != null && !loading && Number.isFinite(delta) && (
         <div className={`mt-2 inline-flex items-center gap-1 text-xs ${up ? "text-success" : "text-destructive"}`}>
           {up ? <TrendingUp className="h-3.5 w-3.5" /> : <TrendingDown className="h-3.5 w-3.5" />}
-          {Math.abs(delta).toFixed(1)}% vs período anterior
+          {Math.abs(delta).toFixed(1)}% {deltaLabel}
         </div>
       )}
     </Card>
