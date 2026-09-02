@@ -276,6 +276,7 @@ export default function Inteligencia() {
   const [importYears, setImportYears] = useState<string>("1");
   const [importState, setImportState] = useState<"idle" | "sending" | "sent">("idle");
   const [uploadOpen, setUploadOpen] = useState(false);
+  const [compareMode, setCompareMode] = useState<string>("prev"); // "prev" | "y-<offset>"
   const dashUpdateFired = useRef(false);
 
   const range = useMemo(
@@ -285,12 +286,54 @@ export default function Inteligencia() {
 
   const integration = useHasReservationsIntegration();
   const lastSync = useLastSyncedAt();
+  const allHistory = useReservationsAll(dateBasis);
+
+  // Anos disponíveis no histórico (para comparação ano a ano)
+  const availableYears = useMemo(() => {
+    const set = new Set<number>();
+    (allHistory.data ?? []).forEach((r: any) => {
+      const basis = dateBasis === "booked_at" ? r.booked_at : r.check_in;
+      const y = Number(String(basis ?? "").slice(0, 4));
+      if (y) set.add(y);
+    });
+    return Array.from(set).sort((a, b) => b - a);
+  }, [allHistory.data, dateBasis]);
+
+  const rangeYear = Number(range.start.slice(0, 4));
+  const compareYearOptions = useMemo(
+    () => availableYears.filter((y) => y < rangeYear),
+    [availableYears, rangeYear],
+  );
+
+  // Range efetivo de comparação
+  const compare = useMemo(() => {
+    if (compareMode.startsWith("y-")) {
+      const targetYear = Number(compareMode.slice(2));
+      const offset = rangeYear - targetYear;
+      if (offset > 0) {
+        const fmt = (d: Date) => format(d, "yyyy-MM-dd");
+        return {
+          start: fmt(subYears(parseISO(range.start), offset)),
+          end: fmt(subYears(parseISO(range.end), offset)),
+          label: `vs mesmo período de ${targetYear}`,
+        };
+      }
+    }
+    return { start: range.prev.start, end: range.prev.end, label: "vs período anterior" };
+  }, [compareMode, range, rangeYear]);
+
+  // Se o ano escolhido deixar de existir nas opções, volta para período anterior
+  useEffect(() => {
+    if (compareMode.startsWith("y-") && !compareYearOptions.includes(Number(compareMode.slice(2)))) {
+      setCompareMode("prev");
+    }
+  }, [compareMode, compareYearOptions]);
+
   const current = useReservationsRange(range.start, range.end, dateBasis);
-  const previous = useReservationsRange(range.prev.start, range.prev.end, dateBasis);
+  const previous = useReservationsRange(compare.start, compare.end, dateBasis);
   const monthly = useMonthlyMetrics();
   const propMetrics = usePropertyMetrics();
   const upcoming = useUpcomingCheckins(20);
-  const allHistory = useReservationsAll(dateBasis);
   const [yearMetric, setYearMetric] = useState<"netRevenue" | "grossRevenue" | "count" | "nights" | "avg">("netRevenue");
 
   // Ao abrir a página já com dados no banco, dispara uma atualização (hoje e 30 dias antes)
