@@ -856,6 +856,7 @@ export default function Inteligencia() {
           money={kpi.grossRevenue}
           delta={delta(kpi.grossRevenue, kpiPrev.grossRevenue)}
           loading={loading}
+          deltaLabel={compare.label}
           hint="Soma de reserveTotal (total_amount) das reservas confirmadas no período. Equivale ao valor total cobrado do hóspede."
         />
         <KpiCard
@@ -863,6 +864,7 @@ export default function Inteligencia() {
           money={kpi.revenueAfterChannelFee}
           delta={delta(kpi.revenueAfterChannelFee, kpiPrev.revenueAfterChannelFee)}
           loading={loading}
+          deltaLabel={compare.label}
           hint="Soma de sell_price_corrected — receita bruta já descontada da taxa do canal (forward fee)."
         />
         <KpiCard
@@ -870,6 +872,7 @@ export default function Inteligencia() {
           money={kpi.fees}
           delta={delta(kpi.fees, kpiPrev.fees)}
           loading={loading}
+          deltaLabel={compare.label}
           hint="coalesce(total_forward_fee_all, total_forward_fee, 0). Taxa retida pelo canal (ex.: Booking, Airbnb)."
         />
         <KpiCard
@@ -877,6 +880,7 @@ export default function Inteligencia() {
           money={kpi.commission}
           delta={delta(kpi.commission, kpiPrev.commission)}
           loading={loading}
+          deltaLabel={compare.label}
           hint="Soma de company_commission das reservas no período."
         />
         <KpiCard
@@ -884,6 +888,7 @@ export default function Inteligencia() {
           money={kpi.netRevenue}
           delta={delta(kpi.netRevenue, kpiPrev.netRevenue)}
           loading={loading}
+          deltaLabel={compare.label}
           hint="Soma de buy_price — valor líquido recebido pelo proprietário. Já desconta taxa do canal e comissão (não subtrair novamente)."
         />
       </div>
@@ -897,6 +902,7 @@ export default function Inteligencia() {
           money={kpi.avg}
           delta={delta(kpi.avg, kpiPrev.avg)}
           loading={loading}
+          deltaLabel={compare.label}
           hint="Receita bruta (reserveTotal) ÷ número de reservas confirmadas."
         />
         <KpiCard
@@ -904,6 +910,7 @@ export default function Inteligencia() {
           money={kpi.adr}
           delta={delta(kpi.adr, kpiPrev.adr)}
           loading={loading}
+          deltaLabel={compare.label}
           hint="Receita bruta ÷ diárias vendidas (nightCount). Average Daily Rate."
         />
         <KpiCard
@@ -911,6 +918,7 @@ export default function Inteligencia() {
           value={`${kpi.leadAvg.toFixed(1)} dias`}
           delta={delta(kpi.leadAvg, kpiPrev.leadAvg)}
           loading={loading}
+          deltaLabel={compare.label}
           hint="Dias entre a data da reserva (booked_at) e o check-in."
         />
       </div>
