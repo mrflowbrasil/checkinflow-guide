@@ -43,6 +43,7 @@ import {
   parseISO,
   formatDistanceToNow,
   differenceInCalendarDays,
+  subYears,
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Card } from "@/components/ui/card";
@@ -156,6 +157,7 @@ function KpiCard({
   delta,
   loading,
   hint,
+  deltaLabel = "vs período anterior",
 }: {
   label: string;
   value?: string;
@@ -163,6 +165,7 @@ function KpiCard({
   delta?: number | null;
   loading?: boolean;
   hint?: string;
+  deltaLabel?: string;
 }) {
   const up = (delta ?? 0) >= 0;
   return (
@@ -194,7 +197,7 @@ function KpiCard({
       {delta != null && !loading && Number.isFinite(delta) && (
         <div className={`mt-2 inline-flex items-center gap-1 text-xs ${up ? "text-success" : "text-destructive"}`}>
           {up ? <TrendingUp className="h-3.5 w-3.5" /> : <TrendingDown className="h-3.5 w-3.5" />}
-          {Math.abs(delta).toFixed(1)}% vs período anterior
+          {Math.abs(delta).toFixed(1)}% {deltaLabel}
         </div>
       )}
     </Card>
@@ -273,6 +276,7 @@ export default function Inteligencia() {
   const [importYears, setImportYears] = useState<string>("1");
   const [importState, setImportState] = useState<"idle" | "sending" | "sent">("idle");
   const [uploadOpen, setUploadOpen] = useState(false);
+  const [compareMode, setCompareMode] = useState<string>("prev"); // "prev" | "y-<offset>"
   const dashUpdateFired = useRef(false);
 
   const range = useMemo(
@@ -282,12 +286,54 @@ export default function Inteligencia() {
 
   const integration = useHasReservationsIntegration();
   const lastSync = useLastSyncedAt();
+  const allHistory = useReservationsAll(dateBasis);
+
+  // Anos disponíveis no histórico (para comparação ano a ano)
+  const availableYears = useMemo(() => {
+    const set = new Set<number>();
+    (allHistory.data ?? []).forEach((r: any) => {
+      const basis = dateBasis === "booked_at" ? r.booked_at : r.check_in;
+      const y = Number(String(basis ?? "").slice(0, 4));
+      if (y) set.add(y);
+    });
+    return Array.from(set).sort((a, b) => b - a);
+  }, [allHistory.data, dateBasis]);
+
+  const rangeYear = Number(range.start.slice(0, 4));
+  const compareYearOptions = useMemo(
+    () => availableYears.filter((y) => y < rangeYear),
+    [availableYears, rangeYear],
+  );
+
+  // Range efetivo de comparação
+  const compare = useMemo(() => {
+    if (compareMode.startsWith("y-")) {
+      const targetYear = Number(compareMode.slice(2));
+      const offset = rangeYear - targetYear;
+      if (offset > 0) {
+        const fmt = (d: Date) => format(d, "yyyy-MM-dd");
+        return {
+          start: fmt(subYears(parseISO(range.start), offset)),
+          end: fmt(subYears(parseISO(range.end), offset)),
+          label: `vs mesmo período de ${targetYear}`,
+        };
+      }
+    }
+    return { start: range.prev.start, end: range.prev.end, label: "vs período anterior" };
+  }, [compareMode, range, rangeYear]);
+
+  // Se o ano escolhido deixar de existir nas opções, volta para período anterior
+  useEffect(() => {
+    if (compareMode.startsWith("y-") && !compareYearOptions.includes(Number(compareMode.slice(2)))) {
+      setCompareMode("prev");
+    }
+  }, [compareMode, compareYearOptions]);
+
   const current = useReservationsRange(range.start, range.end, dateBasis);
-  const previous = useReservationsRange(range.prev.start, range.prev.end, dateBasis);
+  const previous = useReservationsRange(compare.start, compare.end, dateBasis);
   const monthly = useMonthlyMetrics();
   const propMetrics = usePropertyMetrics();
   const upcoming = useUpcomingCheckins(20);
-  const allHistory = useReservationsAll(dateBasis);
   const [yearMetric, setYearMetric] = useState<"netRevenue" | "grossRevenue" | "count" | "nights" | "avg">("netRevenue");
 
   // Ao abrir a página já com dados no banco, dispara uma atualização (hoje e 30 dias antes)
@@ -738,8 +784,38 @@ export default function Inteligencia() {
             </TooltipProvider>
           </div>
 
-          <div className="sm:ml-auto text-xs text-muted-foreground">
-            {format(parseISO(range.start), "dd/MM/yy", { locale: ptBR })} → {format(parseISO(range.end), "dd/MM/yy", { locale: ptBR })}
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">Comparar:</span>
+            <Select value={compareMode} onValueChange={setCompareMode}>
+              <SelectTrigger className="w-56 h-9"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="prev">Período anterior</SelectItem>
+                {compareYearOptions.map((y) => (
+                  <SelectItem key={y} value={`y-${y}`}>Mesmo período de {y}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <TooltipProvider delayDuration={150}>
+              <UITooltip>
+                <TooltipTrigger asChild>
+                  <button type="button" className="text-muted-foreground/70 hover:text-foreground transition-colors">
+                    <Info className="h-4 w-4" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs text-xs">
+                  Define a base de comparação das variações dos indicadores: o período imediatamente anterior ou o mesmo intervalo de datas em um ano anterior disponível no histórico.
+                </TooltipContent>
+              </UITooltip>
+            </TooltipProvider>
+          </div>
+
+          <div className="sm:ml-auto text-xs text-muted-foreground text-right">
+            <div>
+              {format(parseISO(range.start), "dd/MM/yy", { locale: ptBR })} → {format(parseISO(range.end), "dd/MM/yy", { locale: ptBR })}
+            </div>
+            <div className="text-muted-foreground/70">
+              comparando com {format(parseISO(compare.start), "dd/MM/yy", { locale: ptBR })} → {format(parseISO(compare.end), "dd/MM/yy", { locale: ptBR })}
+            </div>
           </div>
         </div>
 
@@ -780,6 +856,7 @@ export default function Inteligencia() {
           money={kpi.grossRevenue}
           delta={delta(kpi.grossRevenue, kpiPrev.grossRevenue)}
           loading={loading}
+          deltaLabel={compare.label}
           hint="Soma de reserveTotal (total_amount) das reservas confirmadas no período. Equivale ao valor total cobrado do hóspede."
         />
         <KpiCard
@@ -787,6 +864,7 @@ export default function Inteligencia() {
           money={kpi.revenueAfterChannelFee}
           delta={delta(kpi.revenueAfterChannelFee, kpiPrev.revenueAfterChannelFee)}
           loading={loading}
+          deltaLabel={compare.label}
           hint="Soma de sell_price_corrected — receita bruta já descontada da taxa do canal (forward fee)."
         />
         <KpiCard
@@ -794,6 +872,7 @@ export default function Inteligencia() {
           money={kpi.fees}
           delta={delta(kpi.fees, kpiPrev.fees)}
           loading={loading}
+          deltaLabel={compare.label}
           hint="coalesce(total_forward_fee_all, total_forward_fee, 0). Taxa retida pelo canal (ex.: Booking, Airbnb)."
         />
         <KpiCard
@@ -801,6 +880,7 @@ export default function Inteligencia() {
           money={kpi.commission}
           delta={delta(kpi.commission, kpiPrev.commission)}
           loading={loading}
+          deltaLabel={compare.label}
           hint="Soma de company_commission das reservas no período."
         />
         <KpiCard
@@ -808,19 +888,21 @@ export default function Inteligencia() {
           money={kpi.netRevenue}
           delta={delta(kpi.netRevenue, kpiPrev.netRevenue)}
           loading={loading}
+          deltaLabel={compare.label}
           hint="Soma de buy_price — valor líquido recebido pelo proprietário. Já desconta taxa do canal e comissão (não subtrair novamente)."
         />
       </div>
 
       {/* KPIs operacionais */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <KpiCard label="Reservas confirmadas" value={NUM.format(kpi.count)} delta={delta(kpi.count, kpiPrev.count)} loading={loading} />
-        <KpiCard label="Diárias vendidas" value={NUM.format(kpi.nights)} delta={delta(kpi.nights, kpiPrev.nights)} loading={loading} />
+        <KpiCard label="Reservas confirmadas" value={NUM.format(kpi.count)} delta={delta(kpi.count, kpiPrev.count)} deltaLabel={compare.label} loading={loading} />
+        <KpiCard label="Diárias vendidas" value={NUM.format(kpi.nights)} delta={delta(kpi.nights, kpiPrev.nights)} deltaLabel={compare.label} loading={loading} />
         <KpiCard
           label="Ticket médio"
           money={kpi.avg}
           delta={delta(kpi.avg, kpiPrev.avg)}
           loading={loading}
+          deltaLabel={compare.label}
           hint="Receita bruta (reserveTotal) ÷ número de reservas confirmadas."
         />
         <KpiCard
@@ -828,6 +910,7 @@ export default function Inteligencia() {
           money={kpi.adr}
           delta={delta(kpi.adr, kpiPrev.adr)}
           loading={loading}
+          deltaLabel={compare.label}
           hint="Receita bruta ÷ diárias vendidas (nightCount). Average Daily Rate."
         />
         <KpiCard
@@ -835,6 +918,7 @@ export default function Inteligencia() {
           value={`${kpi.leadAvg.toFixed(1)} dias`}
           delta={delta(kpi.leadAvg, kpiPrev.leadAvg)}
           loading={loading}
+          deltaLabel={compare.label}
           hint="Dias entre a data da reserva (booked_at) e o check-in."
         />
       </div>
