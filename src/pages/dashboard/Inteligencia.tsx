@@ -157,6 +157,7 @@ function KpiCard({
   delta,
   loading,
   hint,
+  deltaLabel = "vs período anterior",
 }: {
   label: string;
   value?: string;
@@ -164,6 +165,7 @@ function KpiCard({
   delta?: number | null;
   loading?: boolean;
   hint?: string;
+  deltaLabel?: string;
 }) {
   const up = (delta ?? 0) >= 0;
   return (
