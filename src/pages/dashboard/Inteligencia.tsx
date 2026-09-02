@@ -895,8 +895,8 @@ export default function Inteligencia() {
 
       {/* KPIs operacionais */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <KpiCard label="Reservas confirmadas" value={NUM.format(kpi.count)} delta={delta(kpi.count, kpiPrev.count)} loading={loading} />
-        <KpiCard label="Diárias vendidas" value={NUM.format(kpi.nights)} delta={delta(kpi.nights, kpiPrev.nights)} loading={loading} />
+        <KpiCard label="Reservas confirmadas" value={NUM.format(kpi.count)} delta={delta(kpi.count, kpiPrev.count)} deltaLabel={compare.label} loading={loading} />
+        <KpiCard label="Diárias vendidas" value={NUM.format(kpi.nights)} delta={delta(kpi.nights, kpiPrev.nights)} deltaLabel={compare.label} loading={loading} />
         <KpiCard
           label="Ticket médio"
           money={kpi.avg}
