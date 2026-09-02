@@ -29,6 +29,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { toast } from "sonner";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import {
   format,
