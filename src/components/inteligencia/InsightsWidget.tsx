@@ -31,6 +31,7 @@ const PRIORITY_STYLES: Record<InsightPriority, { badge: string; dot: string; lab
 const CATEGORY_OPTIONS: { value: "all" | InsightCategory; label: string }[] = [
   { value: "all", label: "Todos" },
   { value: "Receita", label: "Receita" },
+  { value: "Preço", label: "Preço" },
   { value: "Canal", label: "Canal" },
   { value: "Imóvel", label: "Imóvel" },
   { value: "Sazonalidade", label: "Sazonalidade" },
@@ -40,6 +41,7 @@ const CATEGORY_OPTIONS: { value: "all" | InsightCategory; label: string }[] = [
 function categoryIcon(cat: InsightCategory) {
   switch (cat) {
     case "Receita": return <TrendingUp className="h-4 w-4" />;
+    case "Preço": return <TrendingUp className="h-4 w-4" />;
     case "Canal": return <Sparkles className="h-4 w-4" />;
     case "Imóvel": return <Lightbulb className="h-4 w-4" />;
     case "Sazonalidade": return <TrendingUp className="h-4 w-4" />;
@@ -49,6 +51,7 @@ function categoryIcon(cat: InsightCategory) {
     default: return <Lightbulb className="h-4 w-4" />;
   }
 }
+
 
 function InsightRow({ insight }: { insight: Insight }) {
   const [open, setOpen] = useState(false);
