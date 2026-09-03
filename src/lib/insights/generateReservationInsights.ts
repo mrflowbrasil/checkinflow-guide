@@ -564,6 +564,55 @@ export function generateReservationInsights({ current, previous, history, dateBa
           related_metric: "peakDemandWindow",
         });
       }
+
+      // --- Janela de 14 dias com menor demanda → sugestão promocional ---
+      {
+        const lowWin = 14;
+        let lowBest = { idx: 0, nights: Number.MAX_SAFE_INTEGER, revenue: 0 };
+        for (let i = 0; i < days.length; i++) {
+          let n = 0;
+          let rev = 0;
+          for (let k = 0; k < lowWin; k++) {
+            const d = days[(i + k) % days.length];
+            n += d.nights;
+            rev += d.revenue;
+          }
+          if (n < lowBest.nights) lowBest = { idx: i, nights: n, revenue: rev };
+        }
+        const avgWindowNightsLow = (totalNights / days.length) * lowWin;
+        const lowRatio = avgWindowNightsLow > 0 ? lowBest.nights / avgWindowNightsLow : 1;
+        const lowAdr = lowBest.nights > 0 ? lowBest.revenue / lowBest.nights : overallAdr;
+
+        if (lowRatio <= 0.55 && avgWindowNightsLow >= 5) {
+          const fmt = (key: string) => {
+            const [mm, dd] = key.split("-");
+            return `${dd} de ${MONTH_NAMES_PT[Number(mm) - 1]}`;
+          };
+          const startKey = days[lowBest.idx].key;
+          const endKey = days[(lowBest.idx + lowWin - 1) % days.length].key;
+          const gapPct = (1 - lowRatio) * 100;
+          const suggestedDisc = Math.min(25, Math.max(5, Math.round(gapPct / 4)));
+          const suggestedAdr = lowAdr * (1 - suggestedDisc / 100);
+
+          insights.push({
+            id: "low-demand-window",
+            category: "Preço",
+            priority: "medium",
+            title: `Baixa ocupação entre ${fmt(startKey)} e ${fmt(endKey)}`,
+            description: `No histórico completo, essa janela de datas concentra ${PCT(gapPct)} menos diárias que a média do ano. É o período com maior potencial de ganho com ações promocionais.`,
+            evidence: [
+              { label: "Diárias no período", value: NUM.format(lowBest.nights) },
+              { label: "Média equivalente (14 dias)", value: avgWindowNightsLow.toFixed(0) },
+              { label: "Diária média no período", value: BRL2.format(lowAdr) },
+              { label: "Desconto sugerido", value: `−${suggestedDisc}%` },
+              { label: "Diária promocional", value: BRL2.format(suggestedAdr) },
+            ],
+            recommended_action: `Avalie criar uma promoção entre ${fmt(startKey)} e ${fmt(endKey)}: diária promocional em torno de ${BRL2.format(suggestedAdr)} (−${suggestedDisc}%), ofertas last-minute, flexibilização da estadia mínima e destaque nos canais. Sugestão baseada no histórico.`,
+            confidence: "medium",
+            related_metric: "lowDemandWindow",
+          });
+        }
+      }
     }
   }
 
