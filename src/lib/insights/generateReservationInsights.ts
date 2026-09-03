@@ -428,6 +428,37 @@ export function generateReservationInsights({ current, previous, history, dateBa
       const peak = months.slice().sort((a, b) => b.nightsPerYear - a.nightsPerYear)[0];
       const demandRatio = avgNightsPerYear > 0 ? peak.nightsPerYear / avgNightsPerYear : 1;
 
+      // --- Mês de maior vacância (menor demanda) → sugestão promocional ---
+      if (months.length >= 6) {
+        const low = months.slice().sort((a, b) => a.nightsPerYear - b.nightsPerYear)[0];
+        const vacancyRatio = avgNightsPerYear > 0 ? low.nightsPerYear / avgNightsPerYear : 1;
+        if (vacancyRatio <= 0.65 && avgNightsPerYear >= 5) {
+          const name = MONTH_NAMES_PT[low.month - 1];
+          const gapPct = (1 - vacancyRatio) * 100;
+          const suggestedDisc = Math.min(20, Math.max(5, Math.round(gapPct / 4)));
+          const suggestedAdr = low.adr > 0 ? low.adr * (1 - suggestedDisc / 100) : overallAdr * (1 - suggestedDisc / 100);
+
+          insights.push({
+            id: "low-demand-month",
+            category: "Preço",
+            priority: vacancyRatio <= 0.45 ? "medium" : "low",
+            title: `${name.charAt(0).toUpperCase() + name.slice(1)} é o mês de maior vacância`,
+            description: `No histórico completo, ${name} tem ${PCT(gapPct)} menos diárias vendidas que a média dos meses. É o período com maior espaço para ganho de ocupação.`,
+            evidence: [
+              { label: "Diárias vendidas (média/ano)", value: low.nightsPerYear.toFixed(0) },
+              { label: "Média dos meses", value: avgNightsPerYear.toFixed(0) },
+              { label: `Diária média em ${name}`, value: BRL2.format(low.adr > 0 ? low.adr : overallAdr) },
+              { label: "Desconto sugerido", value: `−${suggestedDisc}%` },
+              { label: "Diária promocional", value: BRL2.format(suggestedAdr) },
+              { label: "Anos analisados", value: NUM.format(low.years) },
+            ],
+            recommended_action: `Considere ações promocionais para ${name}: diária promocional em torno de ${BRL2.format(suggestedAdr)} (−${suggestedDisc}%), pacotes fechados, estadia mínima flexível e campanhas antecipadas nos canais. Sugestão baseada no histórico, sem garantia de resultado.`,
+            confidence: low.years >= 2 ? "high" : "medium",
+            related_metric: "lowDemandMonth",
+          });
+        }
+      }
+
       if (demandRatio >= 1.2 && peak.nights >= 10) {
         const name = MONTH_NAMES_PT[peak.month - 1];
         const adrGap = peak.adr / overallAdr; // quanto a diária do pico já está acima da média
