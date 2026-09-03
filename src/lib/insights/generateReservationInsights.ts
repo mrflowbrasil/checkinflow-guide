@@ -376,6 +376,167 @@ export function generateReservationInsights({ current, previous, history, dateBa
     });
   }
 
+  // ===== INSIGHTS 11/12 — Períodos de maior demanda no histórico + sugestão de preço =====
+  // Distribui cada reserva noite a noite para medir demanda real por mês e por janela de datas.
+  {
+    const monthAgg = new Map<number, { nights: number; revenue: number; years: Set<number> }>();
+    const dayAgg = new Map<string, { nights: number; revenue: number }>(); // "MM-DD"
+    let totalNights = 0;
+    let totalRevenue = 0;
+
+    history.forEach((r) => {
+      if (!isConfirmed(r)) return;
+      if (!r.check_in) return;
+      const nights = Math.max(0, Math.round(num(r.nights)));
+      if (nights <= 0 || nights > 90) return;
+      const g = gross(r);
+      if (g <= 0) return;
+      const perNight = g / nights;
+      const start = new Date(`${String(r.check_in).slice(0, 10)}T00:00:00Z`);
+      if (Number.isNaN(start.getTime())) return;
+      for (let i = 0; i < nights; i++) {
+        const d = new Date(start.getTime() + i * 86400000);
+        const m = d.getUTCMonth() + 1;
+        const key = `${String(m).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
+        const mAgg = monthAgg.get(m) ?? { nights: 0, revenue: 0, years: new Set<number>() };
+        mAgg.nights += 1;
+        mAgg.revenue += perNight;
+        mAgg.years.add(d.getUTCFullYear());
+        monthAgg.set(m, mAgg);
+        const dAgg = dayAgg.get(key) ?? { nights: 0, revenue: 0 };
+        dAgg.nights += 1;
+        dAgg.revenue += perNight;
+        dayAgg.set(key, dAgg);
+        totalNights += 1;
+        totalRevenue += perNight;
+      }
+    });
+
+    const overallAdr = totalNights > 0 ? totalRevenue / totalNights : 0;
+
+    // --- Mês de maior demanda ---
+    if (monthAgg.size >= 3 && totalNights >= 30 && overallAdr > 0) {
+      const months = Array.from(monthAgg.entries()).map(([m, v]) => ({
+        month: m,
+        nightsPerYear: v.nights / Math.max(1, v.years.size),
+        nights: v.nights,
+        adr: v.revenue / v.nights,
+        years: v.years.size,
+      }));
+      const avgNightsPerYear =
+        months.reduce((s, m) => s + m.nightsPerYear, 0) / months.length;
+      const peak = months.slice().sort((a, b) => b.nightsPerYear - a.nightsPerYear)[0];
+      const demandRatio = avgNightsPerYear > 0 ? peak.nightsPerYear / avgNightsPerYear : 1;
+
+      if (demandRatio >= 1.2 && peak.nights >= 10) {
+        const name = MONTH_NAMES_PT[peak.month - 1];
+        const adrGap = peak.adr / overallAdr; // quanto a diária do pico já está acima da média
+        const canRaise = adrGap <= 1.15;
+        const suggestedPct = Math.min(20, Math.max(5, Math.round((demandRatio - 1) * 40)));
+        const suggestedAdr = peak.adr * (1 + suggestedPct / 100);
+
+        insights.push({
+          id: "peak-demand-month",
+          category: canRaise ? "Preço" : "Sazonalidade",
+          priority: canRaise ? "low" : "info",
+          title: canRaise
+            ? `Oportunidade de aumentar a diária em ${name}`
+            : `${name.charAt(0).toUpperCase() + name.slice(1)} é o período de maior demanda`,
+          description: canRaise
+            ? `No histórico completo, ${name} tem ${PCT((demandRatio - 1) * 100)} mais diárias vendidas que a média dos meses, mas a diária média praticada está próxima da média geral.`
+            : `No histórico completo, ${name} concentra a maior ocupação, e a diária média já está acima da média geral.`,
+          evidence: [
+            { label: "Diárias vendidas (média/ano)", value: peak.nightsPerYear.toFixed(0) },
+            { label: "Média dos meses", value: avgNightsPerYear.toFixed(0) },
+            { label: `Diária média em ${name}`, value: BRL2.format(peak.adr) },
+            { label: "Diária média geral", value: BRL2.format(overallAdr) },
+            ...(canRaise
+              ? [
+                  { label: "Aumento sugerido", value: `+${suggestedPct}%` },
+                  { label: "Diária sugerida", value: BRL2.format(suggestedAdr) },
+                ]
+              : []),
+            { label: "Anos analisados", value: NUM.format(peak.years) },
+          ],
+          recommended_action: canRaise
+            ? `Teste reajustar a diária de ${name} para cerca de ${BRL2.format(suggestedAdr)} (+${suggestedPct}%), acompanhando o ritmo de reservas. Sugestão baseada no histórico, sem garantia de resultado.`
+            : `Mantenha a política de preços de ${name} e antecipe a abertura de disponibilidade para capturar reservas mais cedo.`,
+          confidence: peak.years >= 2 ? "high" : "medium",
+          related_metric: "peakDemandMonth",
+        });
+      }
+    }
+
+    // --- Janela de 7 dias com maior demanda (independente do ano) ---
+    if (dayAgg.size >= 60 && totalNights >= 60 && overallAdr > 0) {
+      const days: { key: string; nights: number; revenue: number }[] = [];
+      for (let m = 1; m <= 12; m++) {
+        const dim = new Date(Date.UTC(2024, m, 0)).getUTCDate();
+        for (let d = 1; d <= dim; d++) {
+          const key = `${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+          const v = dayAgg.get(key);
+          days.push({ key, nights: v?.nights ?? 0, revenue: v?.revenue ?? 0 });
+        }
+      }
+      const win = 7;
+      let best = { idx: 0, nights: -1, revenue: 0 };
+      for (let i = 0; i < days.length; i++) {
+        let n = 0;
+        let rev = 0;
+        for (let k = 0; k < win; k++) {
+          const d = days[(i + k) % days.length];
+          n += d.nights;
+          rev += d.revenue;
+        }
+        if (n > best.nights) best = { idx: i, nights: n, revenue: rev };
+      }
+      const avgWindowNights = (totalNights / days.length) * win;
+      const ratio = avgWindowNights > 0 ? best.nights / avgWindowNights : 1;
+      const winAdr = best.nights > 0 ? best.revenue / best.nights : 0;
+
+      if (ratio >= 1.4 && best.nights >= 10 && winAdr > 0) {
+        const fmt = (key: string) => {
+          const [mm, dd] = key.split("-");
+          return `${dd} de ${MONTH_NAMES_PT[Number(mm) - 1]}`;
+        };
+        const startKey = days[best.idx].key;
+        const endKey = days[(best.idx + win - 1) % days.length].key;
+        const adrGap = winAdr / overallAdr;
+        const canRaise = adrGap <= 1.2;
+        const suggestedPct = Math.min(25, Math.max(5, Math.round((ratio - 1) * 30)));
+        const suggestedAdr = winAdr * (1 + suggestedPct / 100);
+
+        insights.push({
+          id: "peak-demand-window",
+          category: canRaise ? "Preço" : "Sazonalidade",
+          priority: canRaise ? "low" : "info",
+          title: `Pico de reservas entre ${fmt(startKey)} e ${fmt(endKey)}`,
+          description: canRaise
+            ? `Essa janela de datas concentra ${PCT((ratio - 1) * 100)} mais diárias que a média do ano, e a diária média cobrada ainda está próxima da média geral.`
+            : `Essa janela de datas concentra ${PCT((ratio - 1) * 100)} mais diárias que a média do ano, e a diária média já está acima da média geral.`,
+          evidence: [
+            { label: "Diárias no período", value: NUM.format(best.nights) },
+            { label: "Média equivalente (7 dias)", value: avgWindowNights.toFixed(0) },
+            { label: "Diária média no período", value: BRL2.format(winAdr) },
+            { label: "Diária média geral", value: BRL2.format(overallAdr) },
+            ...(canRaise
+              ? [
+                  { label: "Aumento sugerido", value: `+${suggestedPct}%` },
+                  { label: "Diária sugerida", value: BRL2.format(suggestedAdr) },
+                ]
+              : []),
+          ],
+          recommended_action: canRaise
+            ? `Considere aplicar tarifa de alta demanda entre ${fmt(startKey)} e ${fmt(endKey)}, em torno de ${BRL2.format(suggestedAdr)} (+${suggestedPct}%), com estadia mínima. Sugestão baseada no histórico.`
+            : `Garanta disponibilidade e antecipe a abertura de tarifas entre ${fmt(startKey)} e ${fmt(endKey)}.`,
+          confidence: "medium",
+          related_metric: "peakDemandWindow",
+        });
+      }
+    }
+  }
+
+
   // Priority ordering: high > medium > low > info
   const order: Record<InsightPriority, number> = { high: 0, medium: 1, low: 2, info: 3 };
   insights.sort((a, b) => order[a.priority] - order[b.priority]);
