@@ -25,7 +25,7 @@ import { useProperties, useInvalidateProperties, type PropertyRow } from "@/hook
 export type CatalogProperty = PropertyRow;
 
 export default function Catalog() {
-  const { data: tenant } = useTenant();
+  const { data: tenant, refetch: refetchTenant } = useTenant();
   const qc = useQueryClient();
 
   const [manualOpen, setManualOpen] = useState(false);
@@ -36,8 +36,74 @@ export default function Catalog() {
   const [catalogTitle, setCatalogTitle] = useState<string | null>(null);
   const [savingBio, setSavingBio] = useState(false);
 
+  const [slugInput, setSlugInput] = useState<string>("");
+  const [slugTouched, setSlugTouched] = useState(false);
+  const [slugCheck, setSlugCheck] = useState<{ slug: string; available: boolean; reason: string } | null>(null);
+  const [checkingSlug, setCheckingSlug] = useState(false);
+  const [savingSlug, setSavingSlug] = useState(false);
+
+  const normalizedSlug = useMemo(
+    () =>
+      slugInput
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, ""),
+    [slugInput],
+  );
+
+  useEffect(() => {
+    if (tenant?.slug && !slugTouched) setSlugInput(tenant.slug);
+  }, [tenant?.slug, slugTouched]);
+
+  useEffect(() => {
+    if (!normalizedSlug || normalizedSlug === tenant?.slug) {
+      setSlugCheck(null);
+      return;
+    }
+    let cancelled = false;
+    setCheckingSlug(true);
+    const t = setTimeout(async () => {
+      const { data, error } = await supabase.rpc("is_tenant_slug_available", { _slug: normalizedSlug });
+      if (cancelled) return;
+      setCheckingSlug(false);
+      if (error) {
+        setSlugCheck(null);
+        return;
+      }
+      setSlugCheck(data as unknown as { slug: string; available: boolean; reason: string });
+    }, 400);
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+    };
+  }, [normalizedSlug, tenant?.slug]);
+
+  const saveSlug = async () => {
+    if (!normalizedSlug) return;
+    setSavingSlug(true);
+    const { error } = await supabase.rpc("set_tenant_slug", { _slug: normalizedSlug });
+    setSavingSlug(false);
+    if (error) {
+      toast.error(
+        error.message?.includes("reserved")
+          ? "Este endereço é reservado."
+          : error.message?.includes("taken")
+          ? "Este endereço já está em uso."
+          : "Não foi possível salvar o endereço.",
+      );
+      return;
+    }
+    toast.success("Endereço do catálogo atualizado!");
+    setSlugTouched(false);
+    qc.invalidateQueries({ queryKey: ["tenant"] });
+    refetchTenant();
+  };
+
   const propertiesQ = useProperties();
   const invalidateProperties = useInvalidateProperties();
+
 
   const tenantBioQ = useQuery({
     queryKey: ["tenant-bio", tenant?.id],
