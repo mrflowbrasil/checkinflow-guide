@@ -1010,6 +1010,32 @@ export type Database = {
           },
         ]
       }
+      tenant_slug_history: {
+        Row: {
+          rotated_at: string
+          slug: string
+          tenant_id: string
+        }
+        Insert: {
+          rotated_at?: string
+          slug: string
+          tenant_id: string
+        }
+        Update: {
+          rotated_at?: string
+          slug?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenant_slug_history_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tenants: {
         Row: {
           button_border: string
@@ -1332,6 +1358,7 @@ export type Database = {
         Returns: boolean
       }
       is_property_active: { Args: { _property_id: string }; Returns: boolean }
+      is_tenant_slug_available: { Args: { _slug: string }; Returns: Json }
       mark_tenant_converted: {
         Args: { _tenant_id: string }
         Returns: undefined
@@ -1345,6 +1372,7 @@ export type Database = {
         }
         Returns: number
       }
+      normalize_tenant_slug: { Args: { _slug: string }; Returns: string }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }
         Returns: {
@@ -1354,6 +1382,7 @@ export type Database = {
         }[]
       }
       rotate_property_slug: { Args: { _property_id: string }; Returns: string }
+      set_tenant_slug: { Args: { _slug: string }; Returns: string }
       tenant_has_feature: {
         Args: { _feature: string; _tenant_id: string }
         Returns: boolean
