@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { Copy, Download, ExternalLink, Eye, Home, Loader2, Plus, RefreshCcw } from "lucide-react";
@@ -25,7 +25,7 @@ import { useProperties, useInvalidateProperties, type PropertyRow } from "@/hook
 export type CatalogProperty = PropertyRow;
 
 export default function Catalog() {
-  const { data: tenant } = useTenant();
+  const { data: tenant, refetch: refetchTenant } = useTenant();
   const qc = useQueryClient();
 
   const [manualOpen, setManualOpen] = useState(false);
@@ -36,8 +36,74 @@ export default function Catalog() {
   const [catalogTitle, setCatalogTitle] = useState<string | null>(null);
   const [savingBio, setSavingBio] = useState(false);
 
+  const [slugInput, setSlugInput] = useState<string>("");
+  const [slugTouched, setSlugTouched] = useState(false);
+  const [slugCheck, setSlugCheck] = useState<{ slug: string; available: boolean; reason: string } | null>(null);
+  const [checkingSlug, setCheckingSlug] = useState(false);
+  const [savingSlug, setSavingSlug] = useState(false);
+
+  const normalizedSlug = useMemo(
+    () =>
+      slugInput
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, ""),
+    [slugInput],
+  );
+
+  useEffect(() => {
+    if (tenant?.slug && !slugTouched) setSlugInput(tenant.slug);
+  }, [tenant?.slug, slugTouched]);
+
+  useEffect(() => {
+    if (!normalizedSlug || normalizedSlug === tenant?.slug) {
+      setSlugCheck(null);
+      return;
+    }
+    let cancelled = false;
+    setCheckingSlug(true);
+    const t = setTimeout(async () => {
+      const { data, error } = await supabase.rpc("is_tenant_slug_available", { _slug: normalizedSlug });
+      if (cancelled) return;
+      setCheckingSlug(false);
+      if (error) {
+        setSlugCheck(null);
+        return;
+      }
+      setSlugCheck(data as unknown as { slug: string; available: boolean; reason: string });
+    }, 400);
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+    };
+  }, [normalizedSlug, tenant?.slug]);
+
+  const saveSlug = async () => {
+    if (!normalizedSlug) return;
+    setSavingSlug(true);
+    const { error } = await supabase.rpc("set_tenant_slug", { _slug: normalizedSlug });
+    setSavingSlug(false);
+    if (error) {
+      toast.error(
+        error.message?.includes("reserved")
+          ? "Este endereço é reservado."
+          : error.message?.includes("taken")
+          ? "Este endereço já está em uso."
+          : "Não foi possível salvar o endereço.",
+      );
+      return;
+    }
+    toast.success("Endereço do catálogo atualizado!");
+    setSlugTouched(false);
+    qc.invalidateQueries({ queryKey: ["tenant"] });
+    refetchTenant();
+  };
+
   const propertiesQ = useProperties();
   const invalidateProperties = useInvalidateProperties();
+
 
   const tenantBioQ = useQuery({
     queryKey: ["tenant-bio", tenant?.id],
@@ -188,6 +254,53 @@ export default function Catalog() {
               </div>
             </CardContent>
           </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Endereço do catálogo</CardTitle>
+              <CardDescription>
+                Escolha o final do seu link. Depois de mudar, o endereço antigo continua funcionando e leva para o novo.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+                <span className="text-sm text-muted-foreground font-mono shrink-0">{origin}/c/</span>
+                <Input
+                  value={slugInput}
+                  onChange={(e) => { setSlugTouched(true); setSlugInput(e.target.value); }}
+                  placeholder="minha-empresa"
+                  maxLength={40}
+                  className="font-mono"
+                />
+                <Button onClick={saveSlug} disabled={savingSlug || !slugCheck?.available || normalizedSlug === tenant?.slug}>
+                  {savingSlug && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  Salvar endereço
+                </Button>
+              </div>
+              <p className="text-xs">
+                {checkingSlug ? (
+                  <span className="text-muted-foreground">Verificando disponibilidade…</span>
+                ) : !normalizedSlug ? (
+                  <span className="text-muted-foreground">Use de 3 a 40 letras, números ou hífens.</span>
+                ) : normalizedSlug === tenant?.slug ? (
+                  <span className="text-muted-foreground">Este já é o endereço atual do seu catálogo.</span>
+                ) : slugCheck?.available ? (
+                  <span className="text-emerald-600">
+                    Disponível: {origin}/c/{normalizedSlug}
+                  </span>
+                ) : (
+                  <span className="text-destructive">
+                    {slugCheck?.reason === "reserved"
+                      ? "Este endereço é reservado pelo sistema."
+                      : slugCheck?.reason === "invalid_length"
+                      ? "Use de 3 a 40 letras, números ou hífens."
+                      : "Este endereço já está em uso."}
+                  </span>
+                )}
+              </p>
+            </CardContent>
+          </Card>
+
 
           <Card>
             <CardHeader>

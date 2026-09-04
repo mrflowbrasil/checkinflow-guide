@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { supabase } from "@/integrations/supabase/client";
 import { Seo } from "@/components/Seo";
@@ -48,6 +48,7 @@ function normalizeCity(city: string | null): string | null {
 
 export default function PublicCatalog() {
   const { tenantSlug = "" } = useParams();
+  const navigate = useNavigate();
   const [tenant, setTenant] = useState<TenantInfo | null>(null);
   const [properties, setProperties] = useState<PublicProperty[]>([]);
   const [hasLiveAvailability, setHasLiveAvailability] = useState(false);
@@ -80,10 +81,15 @@ export default function PublicCatalog() {
         if (!res.ok) throw new Error("not_found");
         const json = await res.json();
         if (cancelled) return;
+        if (json.tenant?.slug && json.tenant.slug !== tenantSlug) {
+          navigate(`/c/${json.tenant.slug}`, { replace: true });
+          return;
+        }
         setTenant(json.tenant);
         setProperties(json.properties ?? []);
         setHasLiveAvailability(!!json.has_live_availability);
         setIntegration(json.integration ?? null);
+
       } catch {
         if (!cancelled) setError("Catálogo não encontrado.");
       } finally {
@@ -93,7 +99,7 @@ export default function PublicCatalog() {
     return () => {
       cancelled = true;
     };
-  }, [tenantSlug]);
+  }, [tenantSlug, navigate]);
 
   // Distinct cities for the filter (normalized + deduped)
   const cities = useMemo(() => {
