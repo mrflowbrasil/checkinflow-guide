@@ -78,10 +78,23 @@ export default function PublicCatalog() {
       setFiltersCompact(false);
       return;
     }
+    let ticking = false;
     const onScroll = () => {
-      const firstFold = window.innerHeight * 0.55;
-      if (filtersExpandedByUser) return;
-      setFiltersCompact(window.scrollY > firstFold);
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        ticking = false;
+        if (filtersExpandedByUser) return;
+        const y = window.scrollY;
+        // Histerese: limites diferentes para recolher/expandir evitam
+        // oscilação quando o colapso reduz a altura da página e o
+        // scrollY cruza o limiar novamente.
+        setFiltersCompact((prev) => {
+          if (!prev && y > window.innerHeight * 0.55) return true;
+          if (prev && y < window.innerHeight * 0.25) return false;
+          return prev;
+        });
+      });
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
