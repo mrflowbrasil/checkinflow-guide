@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { Copy, Download, ExternalLink, Eye, Home, Loader2, Plus, RefreshCcw } from "lucide-react";
@@ -267,7 +267,7 @@ export default function Catalog() {
                 <span className="text-sm text-muted-foreground font-mono shrink-0">{origin}/c/</span>
                 <Input
                   value={slugInput}
-                  onChange={(e) => setSlugInput(e.target.value)}
+                  onChange={(e) => { setSlugTouched(true); setSlugInput(e.target.value); }}
                   placeholder="minha-empresa"
                   maxLength={40}
                   className="font-mono"
