@@ -42,6 +42,8 @@ type Props = {
   cities: string[];
   resultLabel?: string;
   resultLabelPlural?: string;
+  compact?: boolean;
+  onToggleCompact?: () => void;
 };
 
 export function CatalogFilters({
