@@ -245,6 +245,13 @@ export default function PublicCatalog() {
               cities={cities}
               resultLabel="acomodação"
               resultLabelPlural="acomodações"
+              compact={filtersCompact}
+              onToggleCompact={() => {
+                const next = !filtersCompact;
+                setFiltersCompact(next);
+                setFiltersExpandedByUser(next);
+                if (!next) window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
             />
 
             {searching ? (
