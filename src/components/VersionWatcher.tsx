@@ -23,7 +23,9 @@ async function hardReload() {
   } catch {
     // ignore
   }
-  window.location.reload();
+  const url = new URL(window.location.href);
+  url.searchParams.set("app-version", Date.now().toString());
+  window.location.replace(url.toString());
 }
 
 export default function VersionWatcher() {
@@ -44,23 +46,22 @@ export default function VersionWatcher() {
       if (!remote || cancelled || notifiedRef.current) return;
       if (remote !== currentVersion) {
         notifiedRef.current = true;
-        toast(
-          "Nova versão disponível",
-          {
-            description:
-              "Atualize a página para ver as últimas melhorias e correções.",
-            duration: Infinity,
-            action: {
-              label: "Atualizar agora",
-              onClick: () => hardReload(),
-            },
-          },
-        );
+        const reloadKey = `reloaded-app-version-${remote}`;
+        if (sessionStorage.getItem(reloadKey) !== "1") {
+          sessionStorage.setItem(reloadKey, "1");
+          await hardReload();
+          return;
+        }
+        toast("Nova versão disponível", {
+          description: "Atualize a página para ver as últimas melhorias e correções.",
+          duration: Infinity,
+          action: { label: "Atualizar agora", onClick: () => hardReload() },
+        });
       }
     };
 
-    // initial check after small delay so it doesn't compete with first paint
-    const initial = setTimeout(check, 5_000);
+    // Check immediately so stale public pages repair themselves without user action.
+    void check();
     const interval = setInterval(check, POLL_MS);
     const onVisibility = () => {
       if (document.visibilityState === "visible") check();
@@ -69,7 +70,6 @@ export default function VersionWatcher() {
 
     return () => {
       cancelled = true;
-      clearTimeout(initial);
       clearInterval(interval);
       document.removeEventListener("visibilitychange", onVisibility);
     };

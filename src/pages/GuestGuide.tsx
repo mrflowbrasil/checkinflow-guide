@@ -18,6 +18,10 @@ import { Seo } from "@/components/Seo";
 import { Helmet } from "react-helmet-async";
 import { sbImage, sbImageSrcSet } from "@/lib/supabase-image";
 
+const PERMANENT_DEMO_GUIDE = {
+  slug: "suite-premium-vila-serena-23515a",
+  propertyId: "14fb2b44-7c45-4df1-a4f8-f243360881f4",
+} as const;
 
 export default function GuestGuide() {
   const { slug } = useParams<{ slug: string }>();
@@ -76,6 +80,19 @@ export default function GuestGuide() {
           .eq("status", "active")
           .maybeSingle();
         if (current) return current as any;
+      }
+
+      // The guide promoted on Mr. Flow's website is permanent. Resolve it by
+      // its immutable property id if its public slug lookup ever misses.
+      if (slug === PERMANENT_DEMO_GUIDE.slug) {
+        const { data: permanentGuide, error: permanentGuideError } = await supabase
+          .from("properties")
+          .select(propertySelect)
+          .eq("id", PERMANENT_DEMO_GUIDE.propertyId)
+          .eq("status", "active")
+          .maybeSingle();
+        if (permanentGuideError) throw permanentGuideError;
+        if (permanentGuide) return permanentGuide as any;
       }
       return null;
     },
