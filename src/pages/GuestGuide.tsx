@@ -41,7 +41,7 @@ export default function GuestGuide() {
 
   const isDemo = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("demo") === "1";
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["guide", slug, isDemo],
     enabled: !!slug,
     queryFn: async () => {
