@@ -41,7 +41,7 @@ export default function GuestGuide() {
 
   const isDemo = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("demo") === "1";
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["guide", slug, isDemo],
     enabled: !!slug,
     queryFn: async () => {
@@ -60,26 +60,28 @@ export default function GuestGuide() {
       if (error) throw error;
       if (property) return property as any;
 
-      // Demo fallback: never show "link expirou" for embedded demos.
-      // Resolve the current active slug via slug history and re-fetch.
-      if (isDemo) {
-        const { data: history } = await supabase
-          .from("property_slug_history")
-          .select("property_id")
-          .eq("slug", slug!)
+      // Fallback: resolve rotated/old slugs via history so shared links
+      // (e.g. the demo guide promoted on the site) never show "link expirou"
+      // while the property still exists and is active.
+      const { data: history } = await supabase
+        .from("property_slug_history")
+        .select("property_id")
+        .eq("slug", slug!)
+        .maybeSingle();
+      if (history?.property_id) {
+        const { data: current } = await supabase
+          .from("properties")
+          .select(propertySelect)
+          .eq("id", history.property_id)
+          .eq("status", "active")
           .maybeSingle();
-        if (history?.property_id) {
-          const { data: current } = await supabase
-            .from("properties")
-            .select(propertySelect)
-            .eq("id", history.property_id)
-            .eq("status", "active")
-            .maybeSingle();
-          if (current) return current as any;
-        }
+        if (current) return current as any;
       }
       return null;
     },
+    // A transient network/RLS hiccup must never surface as "link expirou".
+    retry: 3,
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 5000),
   });
 
 
@@ -162,6 +164,20 @@ export default function GuestGuide() {
 
   if (isLoading) {
     return <div className="min-h-screen grid place-items-center bg-background"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>;
+  }
+  if (error) {
+    // Network/transient failure — offer retry instead of the "expired" screen.
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-background px-6 text-center">
+        <p className="text-muted-foreground">Não foi possível carregar o guia agora. Verifique sua conexão.</p>
+        <button
+          onClick={() => refetch()}
+          className="rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
+        >
+          Tentar novamente
+        </button>
+      </div>
+    );
   }
   if (!data) {
     return <GuestLinkExpired slug={slug!} />;
