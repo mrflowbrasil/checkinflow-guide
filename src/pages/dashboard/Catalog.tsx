@@ -191,6 +191,53 @@ export default function Catalog() {
 
           <Card>
             <CardHeader>
+              <CardTitle>Endereço do catálogo</CardTitle>
+              <CardDescription>
+                Escolha o final do seu link. Depois de mudar, o endereço antigo continua funcionando e leva para o novo.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+                <span className="text-sm text-muted-foreground font-mono shrink-0">{origin}/c/</span>
+                <Input
+                  value={slugInput}
+                  onChange={(e) => setSlugInput(e.target.value)}
+                  placeholder="minha-empresa"
+                  maxLength={40}
+                  className="font-mono"
+                />
+                <Button onClick={saveSlug} disabled={savingSlug || !slugCheck?.available || normalizedSlug === tenant?.slug}>
+                  {savingSlug && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  Salvar endereço
+                </Button>
+              </div>
+              <p className="text-xs">
+                {checkingSlug ? (
+                  <span className="text-muted-foreground">Verificando disponibilidade…</span>
+                ) : !normalizedSlug ? (
+                  <span className="text-muted-foreground">Use de 3 a 40 letras, números ou hífens.</span>
+                ) : normalizedSlug === tenant?.slug ? (
+                  <span className="text-muted-foreground">Este já é o endereço atual do seu catálogo.</span>
+                ) : slugCheck?.available ? (
+                  <span className="text-emerald-600">
+                    Disponível: {origin}/c/{normalizedSlug}
+                  </span>
+                ) : (
+                  <span className="text-destructive">
+                    {slugCheck?.reason === "reserved"
+                      ? "Este endereço é reservado pelo sistema."
+                      : slugCheck?.reason === "invalid_length"
+                      ? "Use de 3 a 40 letras, números ou hífens."
+                      : "Este endereço já está em uso."}
+                  </span>
+                )}
+              </p>
+            </CardContent>
+          </Card>
+
+
+          <Card>
+            <CardHeader>
               <CardTitle>Personalização</CardTitle>
               <CardDescription>A logo e as cores vêm das suas configurações do workspace.</CardDescription>
             </CardHeader>
