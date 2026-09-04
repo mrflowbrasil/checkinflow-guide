@@ -23,18 +23,40 @@ Deno.serve(async (req) => {
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const admin = createClient(supabaseUrl, serviceKey);
 
-    const { data: tenant, error: tErr } = await admin
+    const TENANT_COLS =
+      "id, name, slug, logo_url, primary_color, instagram_url, facebook_url, catalog_bio, catalog_title, is_active";
+
+    let { data: tenant } = await admin
       .from("tenants")
-      .select("id, name, slug, logo_url, primary_color, instagram_url, facebook_url, catalog_bio, catalog_title, is_active")
+      .select(TENANT_COLS)
       .eq("slug", tenantSlug)
       .maybeSingle();
 
-    if (tErr || !tenant || !tenant.is_active) {
+    if (!tenant) {
+      // endereço antigo: resolve via histórico e devolve o slug canônico
+      const { data: hist } = await admin
+        .from("tenant_slug_history")
+        .select("tenant_id")
+        .eq("slug", tenantSlug)
+        .maybeSingle();
+
+      if (hist?.tenant_id) {
+        const { data: t2 } = await admin
+          .from("tenants")
+          .select(TENANT_COLS)
+          .eq("id", hist.tenant_id)
+          .maybeSingle();
+        tenant = t2;
+      }
+    }
+
+    if (!tenant || !tenant.is_active) {
       return new Response(JSON.stringify({ error: "not_found" }), {
         status: 404,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
 
     const { data: properties } = await admin
       .from("properties")
