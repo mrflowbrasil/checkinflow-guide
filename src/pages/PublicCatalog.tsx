@@ -80,10 +80,15 @@ export default function PublicCatalog() {
         if (!res.ok) throw new Error("not_found");
         const json = await res.json();
         if (cancelled) return;
+        if (json.tenant?.slug && json.tenant.slug !== tenantSlug) {
+          navigate(`/c/${json.tenant.slug}`, { replace: true });
+          return;
+        }
         setTenant(json.tenant);
         setProperties(json.properties ?? []);
         setHasLiveAvailability(!!json.has_live_availability);
         setIntegration(json.integration ?? null);
+
       } catch {
         if (!cancelled) setError("Catálogo não encontrado.");
       } finally {
