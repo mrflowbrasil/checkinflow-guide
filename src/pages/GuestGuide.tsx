@@ -51,14 +51,14 @@ export default function GuestGuide() {
     queryFn: async () => {
       const propertySelect = `
         id, name, address, booking_url, cover_image_url, public_slug, status, access_password_enabled, access_password,
-        tenants!inner(id, name, primary_color, secondary_color, template, is_active, logo_url, show_logo, plan_code, instagram_url, facebook_url, button_shape, button_border),
+        tenants(id, name, primary_color, secondary_color, template, is_active, logo_url, show_logo, plan_code, instagram_url, facebook_url, button_shape, button_border),
         property_pages(id, page_key, title, icon, position, is_enabled)
       `;
 
       const { data: property, error } = await supabase
         .from("properties")
         .select(propertySelect)
-        .eq("public_slug", slug!)
+        .eq("public_slug", slug)
         .eq("status", "active")
         .maybeSingle();
       if (error) throw error;
@@ -70,7 +70,7 @@ export default function GuestGuide() {
       const { data: history } = await supabase
         .from("property_slug_history")
         .select("property_id")
-        .eq("slug", slug!)
+        .eq("slug", slug)
         .maybeSingle();
       if (history?.property_id) {
         const { data: current } = await supabase
@@ -187,17 +187,17 @@ export default function GuestGuide() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-background px-6 text-center">
         <p className="text-muted-foreground">Não foi possível carregar o guia agora. Verifique sua conexão.</p>
-        <button
+        <Button
           onClick={() => refetch()}
-          className="rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
+          className="px-5 font-semibold"
         >
           Tentar novamente
-        </button>
+        </Button>
       </div>
     );
   }
   if (!data) {
-    return <GuestLinkExpired slug={slug!} onRetry={refetch} />;
+    return <GuestLinkExpired slug={slug ?? ""} onRetry={() => void refetch()} />;
   }
 
   const primaryColor = tenant?.primary_color ?? "#0F1E3D";
@@ -213,7 +213,7 @@ export default function GuestGuide() {
   };
 
   return (
-    <GuideI18nProvider slug={slug!} locale={locale}>
+    <GuideI18nProvider slug={slug ?? ""} locale={locale}>
       {showSplash && (
         <GuestIntroSplash
           coverUrl={data.cover_image_url}
