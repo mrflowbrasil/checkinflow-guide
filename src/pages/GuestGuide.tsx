@@ -180,7 +180,7 @@ export default function GuestGuide() {
     );
   }
   if (!data) {
-    return <GuestLinkExpired slug={slug!} />;
+    return <GuestLinkExpired slug={slug!} onRetry={refetch} />;
   }
 
   const primaryColor = tenant?.primary_color ?? "#0F1E3D";

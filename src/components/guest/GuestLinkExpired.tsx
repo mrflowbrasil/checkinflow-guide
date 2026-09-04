@@ -1,9 +1,10 @@
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Calendar, MessageCircle, Loader2 } from "lucide-react";
+import { Calendar, MessageCircle, Loader2, RefreshCw } from "lucide-react";
 
-export function GuestLinkExpired({ slug }: { slug: string }) {
+export function GuestLinkExpired({ slug, onRetry }: { slug: string; onRetry: () => void }) {
   const { data, isLoading } = useQuery({
     queryKey: ["expired_slug", slug],
     queryFn: async () => {
@@ -27,7 +28,14 @@ export function GuestLinkExpired({ slug }: { slug: string }) {
     },
   });
 
-  if (isLoading) {
+  const prop = data?.properties;
+  const isActiveGuide = !!prop && !data?.reason;
+
+  useEffect(() => {
+    if (isActiveGuide) onRetry();
+  }, [isActiveGuide, onRetry]);
+
+  if (isLoading || isActiveGuide) {
     return (
       <div className="min-h-screen grid place-items-center bg-background">
         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
@@ -35,7 +43,6 @@ export function GuestLinkExpired({ slug }: { slug: string }) {
     );
   }
 
-  const prop = data?.properties;
   const tenant = prop?.tenants;
   const template = (tenant?.template ?? "clean") as "clean" | "dark" | "luxury";
   const primaryColor = tenant?.primary_color ?? "#0F1E3D";
@@ -47,11 +54,8 @@ export function GuestLinkExpired({ slug }: { slug: string }) {
     ? `https://wa.me/${whatsapp}?text=${encodeURIComponent("Olá! Preciso de ajuda com o link do guia do hóspede.")}`
     : null;
 
-  const isTrialExpired = data?.reason === "trial_expired";
-  const heading = isTrialExpired ? "Guia temporariamente indisponível" : "Este link expirou";
-  const body = isTrialExpired
-    ? "O período de teste deste guia terminou. O anfitrião precisa reativar o plano para o guia voltar ao ar."
-    : "O acesso a este guia foi atualizado. Faça uma nova reserva para receber um novo link de acesso.";
+  const heading = "Não foi possível carregar o guia";
+  const body = "O guia está temporariamente indisponível. Tente novamente em instantes.";
 
   return (
     <div className={`guide-root guide-template-${template} min-h-screen flex flex-col`}>
@@ -76,6 +80,14 @@ export function GuestLinkExpired({ slug }: { slug: string }) {
           {body}
         </p>
 
+        <Button
+          size="lg"
+          className="w-full h-14 text-base font-semibold tracking-wider uppercase rounded-2xl shadow-hero mb-3"
+          style={{ background: primaryColor, color: "#fff" }}
+          onClick={onRetry}
+        >
+          <RefreshCw className="mr-2 h-5 w-5" /> Tentar novamente
+        </Button>
 
         {bookingUrl && (
           <Button
@@ -106,7 +118,7 @@ export function GuestLinkExpired({ slug }: { slug: string }) {
 
         {!bookingUrl && !whatsappUrl && (
           <p className="text-sm" style={{ color: "hsl(var(--guide-muted))" }}>
-            Entre em contato com o anfitrião para receber o novo link.
+            Se o problema continuar, entre em contato com o anfitrião.
           </p>
         )}
       </div>
