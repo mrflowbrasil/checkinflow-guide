@@ -64,9 +64,13 @@ export function CatalogFilters({
 }: Props) {
   const update = (patch: Partial<Filters>) => onChange({ ...filters, ...patch });
 
+  const fmtDate = (s: string) => {
+    const [y, m, d] = s.split("-");
+    return `${d}/${m}/${y}`;
+  };
   const activeFilterLabels: string[] = [];
-  if (filters.checkin) activeFilterLabels.push(`check-in ${new Date(filters.checkin).toLocaleDateString("pt-BR")}`);
-  if (filters.checkout) activeFilterLabels.push(`check-out ${new Date(filters.checkout).toLocaleDateString("pt-BR")}`);
+  if (filters.checkin) activeFilterLabels.push(`check-in ${fmtDate(filters.checkin)}`);
+  if (filters.checkout) activeFilterLabels.push(`check-out ${fmtDate(filters.checkout)}`);
   if (filters.guests) activeFilterLabels.push(`${filters.guests} hóspede${filters.guests > 1 ? "s" : ""}`);
   if (filters.city) activeFilterLabels.push(filters.city);
   if (filters.maxPrice) activeFilterLabels.push(`até R$ ${filters.maxPrice.toLocaleString("pt-BR")}`);
