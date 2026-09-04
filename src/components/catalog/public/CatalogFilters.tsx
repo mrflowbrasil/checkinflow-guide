@@ -59,6 +59,8 @@ export function CatalogFilters({
   cities,
   resultLabel = "acomodação",
   resultLabelPlural = "acomodações",
+  compact = false,
+  onToggleCompact,
 }: Props) {
   const update = (patch: Partial<Filters>) => onChange({ ...filters, ...patch });
 
