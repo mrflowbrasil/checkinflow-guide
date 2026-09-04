@@ -165,6 +165,20 @@ export default function GuestGuide() {
   if (isLoading) {
     return <div className="min-h-screen grid place-items-center bg-background"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>;
   }
+  if (error) {
+    // Network/transient failure — offer retry instead of the "expired" screen.
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-background px-6 text-center">
+        <p className="text-muted-foreground">Não foi possível carregar o guia agora. Verifique sua conexão.</p>
+        <button
+          onClick={() => refetch()}
+          className="rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
+        >
+          Tentar novamente
+        </button>
+      </div>
+    );
+  }
   if (!data) {
     return <GuestLinkExpired slug={slug!} />;
   }
