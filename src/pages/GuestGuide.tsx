@@ -60,26 +60,28 @@ export default function GuestGuide() {
       if (error) throw error;
       if (property) return property as any;
 
-      // Demo fallback: never show "link expirou" for embedded demos.
-      // Resolve the current active slug via slug history and re-fetch.
-      if (isDemo) {
-        const { data: history } = await supabase
-          .from("property_slug_history")
-          .select("property_id")
-          .eq("slug", slug!)
+      // Fallback: resolve rotated/old slugs via history so shared links
+      // (e.g. the demo guide promoted on the site) never show "link expirou"
+      // while the property still exists and is active.
+      const { data: history } = await supabase
+        .from("property_slug_history")
+        .select("property_id")
+        .eq("slug", slug!)
+        .maybeSingle();
+      if (history?.property_id) {
+        const { data: current } = await supabase
+          .from("properties")
+          .select(propertySelect)
+          .eq("id", history.property_id)
+          .eq("status", "active")
           .maybeSingle();
-        if (history?.property_id) {
-          const { data: current } = await supabase
-            .from("properties")
-            .select(propertySelect)
-            .eq("id", history.property_id)
-            .eq("status", "active")
-            .maybeSingle();
-          if (current) return current as any;
-        }
+        if (current) return current as any;
       }
       return null;
     },
+    // A transient network/RLS hiccup must never surface as "link expirou".
+    retry: 3,
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 5000),
   });
 
 
