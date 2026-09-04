@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { supabase } from "@/integrations/supabase/client";
 import { Seo } from "@/components/Seo";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 import { CatalogHeader } from "@/components/catalog/public/CatalogHeader";
 import { CatalogFilters, type Filters, type SortOption } from "@/components/catalog/public/CatalogFilters";
