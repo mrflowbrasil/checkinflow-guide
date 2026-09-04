@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { supabase } from "@/integrations/supabase/client";
 import { Seo } from "@/components/Seo";
@@ -48,6 +48,7 @@ function normalizeCity(city: string | null): string | null {
 
 export default function PublicCatalog() {
   const { tenantSlug = "" } = useParams();
+  const navigate = useNavigate();
   const [tenant, setTenant] = useState<TenantInfo | null>(null);
   const [properties, setProperties] = useState<PublicProperty[]>([]);
   const [hasLiveAvailability, setHasLiveAvailability] = useState(false);
