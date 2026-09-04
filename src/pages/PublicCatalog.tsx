@@ -99,7 +99,7 @@ export default function PublicCatalog() {
     return () => {
       cancelled = true;
     };
-  }, [tenantSlug]);
+  }, [tenantSlug, navigate]);
 
   // Distinct cities for the filter (normalized + deduped)
   const cities = useMemo(() => {
