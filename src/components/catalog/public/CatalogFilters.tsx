@@ -1,4 +1,4 @@
-import { ArrowDownUp, Loader2, Search } from "lucide-react";
+import { ArrowDownUp, ChevronDown, ChevronUp, Loader2, Search, SlidersHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
