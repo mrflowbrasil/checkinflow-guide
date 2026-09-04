@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { supabase } from "@/integrations/supabase/client";
 import { Seo } from "@/components/Seo";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 import { CatalogHeader } from "@/components/catalog/public/CatalogHeader";
 import { CatalogFilters, type Filters, type SortOption } from "@/components/catalog/public/CatalogFilters";
@@ -68,6 +69,24 @@ export default function PublicCatalog() {
   const [searchResults, setSearchResults] = useState<PublicProperty[] | null>(null);
   const [searched, setSearched] = useState(false);
   const [sort, setSort] = useState<SortOption>("relevance");
+  const isMobile = useIsMobile();
+  const [filtersCompact, setFiltersCompact] = useState(false);
+  const [filtersExpandedByUser, setFiltersExpandedByUser] = useState(false);
+
+  useEffect(() => {
+    if (!isMobile) {
+      setFiltersCompact(false);
+      return;
+    }
+    const onScroll = () => {
+      const firstFold = window.innerHeight * 0.55;
+      if (filtersExpandedByUser) return;
+      setFiltersCompact(window.scrollY > firstFold);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [isMobile, filtersExpandedByUser]);
 
   useEffect(() => {
     let cancelled = false;
@@ -226,6 +245,13 @@ export default function PublicCatalog() {
               cities={cities}
               resultLabel="acomodação"
               resultLabelPlural="acomodações"
+              compact={filtersCompact}
+              onToggleCompact={() => {
+                const next = !filtersCompact;
+                setFiltersCompact(next);
+                setFiltersExpandedByUser(next);
+                if (!next) window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
             />
 
             {searching ? (
