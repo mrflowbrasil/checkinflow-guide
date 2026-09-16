@@ -223,8 +223,10 @@ export default function GuestGuide() {
           onUnlock={handleUnlock}
         />
       )}
+      {/* Lead bar hidden for now on the demo guide — re-enable by
+          setting showLeadBar to `slug === "suite-premium-vila-serena-23515a"`. */}
       <GuideBody
-        showLeadBar={slug === "suite-premium-vila-serena-23515a"}
+        showLeadBar={false}
         data={data}
         tenant={tenant}
         pages={pages}
