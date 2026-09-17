@@ -193,6 +193,8 @@ export default function Billing() {
           const isCurrent = plan.code === currentPlanCode;
           const isEnterprise = plan.code === "enterprise";
           const isSingle = plan.code === "free";
+          // Lançamento é um plano exclusivamente anual: só aparece na aba Anual
+          if (plan.code === "launch" && interval === "month") return null;
           const isHighlighted = plan.code === "pro";
 
           const cents = interval === "month" ? plan.price_cents : plan.price_yearly_cents;
