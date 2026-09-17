@@ -13,6 +13,7 @@ import { Loader2, Palette, Upload, Trash2, ImageIcon, MessageCircle, Lock, Insta
 import { toast } from "sonner";
 import { LogoCropDialog } from "@/components/property/LogoCropDialog";
 import { normalizeSocialUrl } from "@/components/guest/SocialLinks";
+import { SubscriptionCard } from "@/components/billing/SubscriptionCard";
 
 
 export default function Settings() {
