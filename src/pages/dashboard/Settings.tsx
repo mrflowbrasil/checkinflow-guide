@@ -99,6 +99,8 @@ export default function Settings() {
         </div>
       </Card>
 
+      <SubscriptionCard />
+
       <Card className="p-6 shadow-card space-y-5">
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <div className="flex items-center gap-2">
