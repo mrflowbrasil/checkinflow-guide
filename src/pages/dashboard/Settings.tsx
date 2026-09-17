@@ -13,6 +13,7 @@ import { Loader2, Palette, Upload, Trash2, ImageIcon, MessageCircle, Lock, Insta
 import { toast } from "sonner";
 import { LogoCropDialog } from "@/components/property/LogoCropDialog";
 import { normalizeSocialUrl } from "@/components/guest/SocialLinks";
+import { SubscriptionCard } from "@/components/billing/SubscriptionCard";
 
 
 export default function Settings() {
@@ -97,6 +98,8 @@ export default function Settings() {
           <Input id="name" value={name} onChange={(e) => setName(e.target.value)} maxLength={120} />
         </div>
       </Card>
+
+      <SubscriptionCard />
 
       <Card className="p-6 shadow-card space-y-5">
         <div className="flex items-center justify-between gap-2 flex-wrap">
