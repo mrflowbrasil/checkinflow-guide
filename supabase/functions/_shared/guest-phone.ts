@@ -12,11 +12,33 @@ export function validateGuestPhone(input: { id_reserva: string; telefone: string
   return { id_reserva, telefone };
 }
 
+export type GuestPhoneWebhookContext = {
+  tenant_id: string;
+  tenant_name: string;
+  integration: {
+    system_url: string;
+    public_site_url: string | null;
+    credentials_encrypted: string | null;
+  } | null;
+};
+
 export async function forwardGuestPhone(
   data: { id_reserva: string; telefone: string },
+  context: GuestPhoneWebhookContext,
   send: typeof fetch = fetch,
 ) {
-  const payload = validateGuestPhone(data);
+  // Explicit allowlist: context is resolved on the server, never from guest input.
+  const payload = {
+    ...validateGuestPhone(data),
+    tenant_id: context.tenant_id,
+    tenant_name: context.tenant_name,
+    integration_provider: context.integration ? "stays" : null,
+    system_url: context.integration?.system_url ?? null,
+    public_site_url: context.integration?.public_site_url ?? null,
+    // Already stored as Base64(login:password) by integrations-connect.
+    authorization: context.integration?.credentials_encrypted
+      ? `Basic ${context.integration.credentials_encrypted}` : null,
+  };
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 15_000);
   try {

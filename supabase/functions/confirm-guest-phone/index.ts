@@ -35,10 +35,11 @@ Deno.serve(async (req) => {
     attempts.set(ip, { count: (entry?.count ?? 0) + 1, until: entry?.until ?? now + 60_000 });
     const url = Deno.env.get("SUPABASE_URL");
     const key = Deno.env.get("SUPABASE_ANON_KEY");
-    if (!url || !key) return json({ error: "Serviço indisponível. Tente novamente." }, 503);
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!url || !key || !serviceKey) return json({ error: "Serviço indisponível. Tente novamente." }, 503);
     const client = createClient(url, key);
     const tenant = await resolveGuestPhoneWorkspace(parsed.data.slug, async (field, value) => {
-      const { data, error } = await client.from("tenants").select("id, is_active")
+      const { data, error } = await client.from("tenants").select("id, name, is_active")
         .eq(field, value).eq("is_active", true).maybeSingle();
       if (error) throw error;
       return data;
@@ -48,7 +49,19 @@ Deno.serve(async (req) => {
       return data?.tenant_id ?? null;
     });
     if (!tenant) return json({ error: "Hospedagem não encontrada." }, 404);
-    return json(await forwardGuestPhone(payload));
+    // Privileged access is limited to Stays credentials for the resolved active workspace.
+    // Neither credentials nor upstream response bodies are returned to the guest.
+    const admin = createClient(url, serviceKey, { auth: { persistSession: false } });
+    const { data: integration, error: integrationError } = await admin
+      .from("tenant_integrations")
+      .select("system_url, public_site_url, credentials_encrypted")
+      .eq("tenant_id", tenant.id).eq("provider", "stays").maybeSingle();
+    if (integrationError) throw integrationError;
+    return json(await forwardGuestPhone(payload, {
+      tenant_id: tenant.id,
+      tenant_name: tenant.name,
+      integration,
+    }));
   } catch {
     return json({ error: "Não foi possível enviar agora. Tente novamente." }, 502);
   }
