@@ -24,6 +24,7 @@ const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Invite = lazy(() => import("./pages/Invite"));
 const GuestGuide = lazy(() => import("./pages/GuestGuide"));
+const GuestPhoneConfirmation = lazy(() => import("./pages/GuestPhoneConfirmation"));
 const SuperAdmin = lazy(() => import("./pages/SuperAdmin"));
 const DashboardHome = lazy(() => import("./pages/dashboard/DashboardHome"));
 const PropertiesList = lazy(() => import("./pages/dashboard/PropertiesList"));
@@ -126,6 +127,7 @@ const App = () => (
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/invite/:token" element={<Invite />} />
               <Route path="/g/:slug" element={<GuestGuide />} />
+              <Route path="/g/:slug/confirmar-celular" element={<GuestPhoneConfirmation />} />
               <Route path="/c/:tenantSlug" element={<PublicCatalog />} />
               <Route path="/termos" element={<Terms />} />
               <Route path="/privacidade" element={<Privacy />} />
