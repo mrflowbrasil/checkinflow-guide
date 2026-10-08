@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { LogoCropDialog } from "@/components/property/LogoCropDialog";
 import { normalizeSocialUrl } from "@/components/guest/SocialLinks";
 import { SubscriptionCard } from "@/components/billing/SubscriptionCard";
+import { GuestPhoneLinkSettings } from "@/components/settings/GuestPhoneLinkSettings";
 
 
 export default function Settings() {
@@ -100,6 +101,7 @@ export default function Settings() {
       </Card>
 
       <SubscriptionCard />
+      <GuestPhoneLinkSettings slug={tenant.slug} />
 
       <Card className="p-6 shadow-card space-y-5">
         <div className="flex items-center justify-between gap-2 flex-wrap">
