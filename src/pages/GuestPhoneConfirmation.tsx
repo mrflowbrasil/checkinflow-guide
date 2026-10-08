@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Seo } from "@/components/Seo";
 import { validateGuestPhone } from "../../supabase/functions/_shared/guest-phone";
+import { resolveGuestPhoneWorkspace } from "../../supabase/functions/_shared/guest-phone-workspace";
 
 export default function GuestPhoneConfirmation() {
   const { slug } = useParams<{ slug: string }>();
@@ -22,14 +23,20 @@ export default function GuestPhoneConfirmation() {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["guest-phone-brand", slug], enabled: Boolean(slug),
     queryFn: async () => {
-      const { data: property, error } = await supabase.from("properties")
-        .select("name, public_slug, tenants(name, template, logo_url, primary_color, secondary_color, is_active, button_shape, button_border)")
-        .eq("public_slug", slug ?? "").eq("status", "active").maybeSingle();
-      if (error) throw error;
-      return property;
+      return resolveGuestPhoneWorkspace(slug ?? "", async (field, value) => {
+        const { data, error } = await supabase.from("tenants")
+          .select("name, slug, template, logo_url, primary_color, secondary_color, is_active, button_shape, button_border")
+          .eq(field, value).eq("is_active", true).maybeSingle();
+        if (error) throw error;
+        return data;
+      }, async previous => {
+        const { data, error } = await supabase.from("tenant_slug_history").select("tenant_id").eq("slug", previous).maybeSingle();
+        if (error) throw error;
+        return data?.tenant_id ?? null;
+      });
     },
   });
-  const tenant = data?.tenants;
+  const tenant = data;
   useEffect(() => {
     const primary = tenant?.primary_color;
     if (primary && /^#[\da-f]{6}$/i.test(primary)) root.current?.style.setProperty("--phone-cta", primary);

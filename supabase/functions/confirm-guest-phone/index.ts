@@ -2,6 +2,7 @@ import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { z } from "npm:zod@3";
 import { forwardGuestPhone, validateGuestPhone } from "../_shared/guest-phone.ts";
+import { resolveGuestPhoneWorkspace } from "../_shared/guest-phone-workspace.ts";
 
 const schema = z.object({
   slug: z.string().regex(/^[a-zA-Z0-9_-]{1,150}$/),
@@ -36,12 +37,17 @@ Deno.serve(async (req) => {
     const key = Deno.env.get("SUPABASE_ANON_KEY");
     if (!url || !key) return json({ error: "Serviço indisponível. Tente novamente." }, 503);
     const client = createClient(url, key);
-    const { data, error } = await client.from("properties")
-      .select("id, tenants(is_active)").eq("public_slug", parsed.data.slug)
-      .eq("status", "active").maybeSingle();
-    const tenant = Array.isArray(data?.tenants) ? data.tenants[0] : data?.tenants;
-    if (error) return json({ error: "Não foi possível verificar a hospedagem." }, 503);
-    if (!data || !tenant?.is_active) return json({ error: "Hospedagem não encontrada." }, 404);
+    const tenant = await resolveGuestPhoneWorkspace(parsed.data.slug, async (field, value) => {
+      const { data, error } = await client.from("tenants").select("id, is_active")
+        .eq(field, value).eq("is_active", true).maybeSingle();
+      if (error) throw error;
+      return data;
+    }, async previous => {
+      const { data, error } = await client.from("tenant_slug_history").select("tenant_id").eq("slug", previous).maybeSingle();
+      if (error) throw error;
+      return data?.tenant_id ?? null;
+    });
+    if (!tenant) return json({ error: "Hospedagem não encontrada." }, 404);
     return json(await forwardGuestPhone(payload));
   } catch {
     return json({ error: "Não foi possível enviar agora. Tente novamente." }, 502);
