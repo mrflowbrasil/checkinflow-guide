@@ -4,4 +4,6 @@
 - [x] Preenchimento do ID da reserva via URL.
 - [x] Envio validado ao webhook pelo backend.
 - [x] Verificar testes, preenchimento pelo link, logo, dois campos e tentativa real de envio (erro apresentado corretamente).
-- [ ] Confirmar sucesso ponta a ponta — bloqueado: n8n retorna 404, webhook POST confirmacelular não registrado; usuário precisa ativar/configurar o workflow.
+- [x] Confirmar aceitação do webhook no reenvio do teste.
+- [ ] Usar slug do workspace na página e no envio.
+- [ ] Adicionar configuração do endereço e validar o fluxo.
