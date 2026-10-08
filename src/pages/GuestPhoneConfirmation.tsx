@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Seo } from "@/components/Seo";
 import { validateGuestPhone } from "../../supabase/functions/_shared/guest-phone";
 import { resolveGuestPhoneWorkspace } from "../../supabase/functions/_shared/guest-phone-workspace";
@@ -15,6 +16,7 @@ export default function GuestPhoneConfirmation() {
   const [params] = useSearchParams();
   const [reservation, setReservation] = useState(() => params.get("reserva") ?? params.get("id_reserva") ?? "");
   const [phone, setPhone] = useState("");
+  const [whatsappAccepted, setWhatsappAccepted] = useState(false);
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [message, setMessage] = useState("");
@@ -43,7 +45,7 @@ export default function GuestPhoneConfirmation() {
   }, [tenant?.primary_color, isLoading]);
   useEffect(() => {
     setReservation(params.get("reserva") ?? params.get("id_reserva") ?? "");
-    setSent(false); setMessage(""); setPhone("");
+    setSent(false); setMessage(""); setPhone(""); setWhatsappAccepted(false);
   }, [params, slug]);
 
   async function submit(event: FormEvent) {
@@ -118,6 +120,13 @@ export default function GuestPhoneConfirmation() {
                 <p id="phone-note" className="text-xs leading-relaxed">Inclua o código do país e o DDD.</p>
               </div>
               {message && <p role="alert" className="text-sm font-medium">{message}</p>}
+              <div className="flex items-start gap-3">
+                <Checkbox id="whatsapp-accepted" checked={whatsappAccepted}
+                  onCheckedChange={checked => setWhatsappAccepted(checked === true)} disabled={sending} className="mt-0.5 shrink-0" />
+                <Label htmlFor="whatsapp-accepted" className="cursor-pointer text-sm leading-relaxed">
+                  Aceito receber informações sobre minha reserva pelo WhatsApp
+                </Label>
+              </div>
               <Button type="submit" disabled={sending} className="guide-cta-primary guest-phone-submit h-12 w-full text-base">
                 {sending ? <Loader2 className="animate-spin" /> : <Send />} {sending ? "Enviando…" : "Confirmar celular"}
               </Button>
