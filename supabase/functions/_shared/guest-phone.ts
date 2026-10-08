@@ -17,14 +17,18 @@ export async function forwardGuestPhone(
   send: typeof fetch = fetch,
 ) {
   const payload = validateGuestPhone(data);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 15_000);
+  try {
   const response = await send(GUEST_PHONE_WEBHOOK, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
-    signal: AbortSignal.timeout(15_000),
+    signal: controller.signal,
     redirect: "error",
   });
   await response.body?.cancel();
   if (!response.ok) throw new Error("Não foi possível enviar agora. Tente novamente.");
   return { success: true };
+  } finally { clearTimeout(timer); }
 }
