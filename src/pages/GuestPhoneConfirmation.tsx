@@ -80,7 +80,7 @@ export default function GuestPhoneConfirmation() {
         path={`/g/${slug}/confirmar-celular`} noindex />
       <main className="mx-auto w-full max-w-lg px-6 pb-12 pt-10 sm:pt-16">
         <header className="mb-10 flex flex-col items-center gap-4 text-center">
-          {tenant.logo_url && <img src={tenant.logo_url} alt={tenant.name} width={160} height={80} className="h-20 w-40 object-contain" />}
+          <img src={tenant.logo_url || "/mrflow-logo.webp"} alt={tenant.logo_url ? tenant.name : "Mr Flow"} width={160} height={80} className="h-20 w-40 object-contain" />
           <p className="text-base font-semibold">{tenant.name}</p>
         </header>
         {sent ? (
