@@ -5,5 +5,5 @@
 - [x] Envio validado ao webhook pelo backend.
 - [x] Verificar testes, preenchimento pelo link, logo, dois campos e tentativa real de envio (erro apresentado corretamente).
 - [x] Confirmar aceitação do webhook no reenvio do teste.
-- [ ] Usar slug do workspace na página e no envio.
-- [ ] Adicionar configuração do endereço e validar o fluxo.
+- [x] Usar slug do workspace na página e no envio.
+- [x] Adicionar configuração do endereço e validar o fluxo em sessão autenticada e envio real por abmnb.
