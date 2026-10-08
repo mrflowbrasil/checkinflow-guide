@@ -283,6 +283,28 @@
 }
 
 @layer components {
+  .guest-phone-page {
+    --phone-cta: hsl(var(--primary));
+    --phone-cta-text: hsl(var(--primary-foreground));
+  }
+  .guest-phone-page .guest-phone-input {
+    background-color: transparent;
+    color: inherit;
+    border-color: currentColor;
+    border-radius: 0.5rem;
+    --tw-ring-color: currentColor;
+  }
+  .guest-phone-page .guest-phone-input::placeholder {
+    color: inherit;
+    opacity: 0.6;
+  }
+  .guest-phone-submit {
+    background: var(--phone-cta);
+    color: var(--phone-cta-text);
+  }
+  .guest-phone-submit:hover {
+    opacity: 0.9;
+  }
   .guide-root {
     background-color: hsl(var(--guide-bg));
     color: hsl(var(--guide-fg));
