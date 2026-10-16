@@ -1,15 +1,23 @@
 export const GUEST_PHONE_WEBHOOK = "https://n8n.mrflow.com.br/webhook/confirmacelular";
 
-export function validateGuestPhone(input: { id_reserva: string; telefone: string }) {
+export function validateGuestPhone(input: { id_reserva: string; telefone: string; nome: string; email: string }) {
   const id_reserva = input.id_reserva.trim();
   const telefone = input.telefone.replace(/[\s().-]/g, "");
+  const nome = input.nome.trim().replace(/\s+/g, " ");
+  const email = input.email.trim().toLowerCase();
   if (!/^[a-zA-Z0-9_-]{1,100}$/.test(id_reserva)) {
     throw new Error("Informe um ID de reserva válido.");
+  }
+  if (nome.length < 2 || nome.length > 100) {
+    throw new Error("Informe seu nome completo.");
+  }
+  if (!/^[^\s@]{1,64}@[^\s@]{1,255}\.[^\s@]{2,}$/.test(email)) {
+    throw new Error("Informe um e-mail válido.");
   }
   if (!/^\+?[1-9]\d{7,14}$/.test(telefone)) {
     throw new Error("Informe um celular válido, com DDD e código do país.");
   }
-  return { id_reserva, telefone };
+  return { id_reserva, telefone, nome, email };
 }
 
 export type GuestPhoneWebhookContext = {
@@ -23,7 +31,7 @@ export type GuestPhoneWebhookContext = {
 };
 
 export async function forwardGuestPhone(
-  data: { id_reserva: string; telefone: string },
+  data: { id_reserva: string; telefone: string; nome: string; email: string },
   context: GuestPhoneWebhookContext,
   send: typeof fetch = fetch,
 ) {
