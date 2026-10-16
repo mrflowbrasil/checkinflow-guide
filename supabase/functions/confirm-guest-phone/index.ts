@@ -8,6 +8,8 @@ const schema = z.object({
   slug: z.string().regex(/^[a-zA-Z0-9_-]{1,150}$/),
   id_reserva: z.string().min(1).max(100),
   telefone: z.string().min(1).max(40),
+  nome: z.string().min(1).max(100),
+  email: z.string().min(1).max(255),
 }).strict();
 // Bound per-instance throttling; never store phone numbers or reservation IDs.
 const attempts = new Map<string, { count: number; until: number }>();

@@ -29,11 +29,11 @@ describe("confirmação de celular", () => {
   });
   it("envia o nome do workspace e os dados Stays com autorização Basic sem converter duas vezes", async () => {
     const send = vi.fn().mockResolvedValue(new Response(null, { status: 200 }));
-    await expect(forwardGuestPhone({ id_reserva: " ABC123 ", telefone: "+55 (11) 99999-9999" }, context, send))
+    await expect(forwardGuestPhone({ id_reserva: " ABC123 ", telefone: "+55 (11) 99999-9999", nome: " Maria  Silva ", email: "MARIA@EXEMPLO.COM" }, context, send))
       .resolves.toEqual({ success: true });
     expect(send).toHaveBeenCalledWith("https://n8n.mrflow.com.br/webhook/confirmacelular", expect.objectContaining({
       method: "POST", body: JSON.stringify({
-        id_reserva: "ABC123", telefone: "+5511999999999",
+        id_reserva: "ABC123", telefone: "+5511999999999", nome: "Maria Silva", email: "maria@exemplo.com",
         tenant_id: "workspace-abmnb", tenant_name: "ABMnb", integration_provider: "stays",
         system_url: "https://example.stays.net", public_site_url: "https://example.com",
         authorization: "Basic dGVzdC11c2VyOnRlc3QtcGFzc3dvcmQ=",
@@ -42,7 +42,7 @@ describe("confirmação de celular", () => {
   });
   it("mantém confirmação sem Stays e envia campos de integração nulos", async () => {
     const send = vi.fn().mockResolvedValue(new Response(null, { status: 200 }));
-    await forwardGuestPhone({ id_reserva: "ABC123", telefone: "+5511999999999" }, { ...context, integration: null }, send);
+    await forwardGuestPhone({ id_reserva: "ABC123", telefone: "+5511999999999", nome: "Maria Silva", email: "maria@exemplo.com" }, { ...context, integration: null }, send);
     const body = JSON.parse(send.mock.calls[0][1].body);
     expect(body.tenant_name).toBe("ABMnb");
     expect(body.authorization).toBeNull();
@@ -50,15 +50,21 @@ describe("confirmação de celular", () => {
     expect(body.integration_provider).toBeNull();
   });
   it("não confirma sucesso se o webhook falhar", async () => {
-    await expect(forwardGuestPhone({ id_reserva: "ABC123", telefone: "+5511999999999" },
+    await expect(forwardGuestPhone({ id_reserva: "ABC123", telefone: "+5511999999999", nome: "Maria Silva", email: "maria@exemplo.com" },
       context, vi.fn().mockResolvedValue(new Response(null, { status: 500 })))).rejects.toThrow();
   });
   it("recusa reserva vazia", () => {
-    expect(() => validateGuestPhone({ id_reserva: "", telefone: "+5511999999999" })).toThrow();
+    expect(() => validateGuestPhone({ id_reserva: "", telefone: "+5511999999999", nome: "Maria Silva", email: "maria@exemplo.com" })).toThrow();
+  });
+  it("recusa nome curto", () => {
+    expect(() => validateGuestPhone({ id_reserva: "ABC123", telefone: "+5511999999999", nome: "M", email: "maria@exemplo.com" })).toThrow();
+  });
+  it("recusa e-mail inválido", () => {
+    expect(() => validateGuestPhone({ id_reserva: "ABC123", telefone: "+5511999999999", nome: "Maria Silva", email: "sem-arroba" })).toThrow();
   });
   it("recusa telefone inválido antes de enviar", async () => {
     const send = vi.fn();
-    await expect(forwardGuestPhone({ id_reserva: "ABC123", telefone: "123" }, context, send)).rejects.toThrow();
+    await expect(forwardGuestPhone({ id_reserva: "ABC123", telefone: "123", nome: "Maria Silva", email: "maria@exemplo.com" }, context, send)).rejects.toThrow();
     expect(send).not.toHaveBeenCalled();
   });
 });
