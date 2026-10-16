@@ -15,6 +15,8 @@ export default function GuestPhoneConfirmation() {
   const { slug } = useParams<{ slug: string }>();
   const [params] = useSearchParams();
   const [reservation, setReservation] = useState(() => params.get("reserva") ?? params.get("id_reserva") ?? "");
+  const [name, setName] = useState(() => params.get("nome") ?? params.get("name") ?? "");
+  const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [whatsappAccepted, setWhatsappAccepted] = useState(false);
   const [sending, setSending] = useState(false);
@@ -45,7 +47,8 @@ export default function GuestPhoneConfirmation() {
   }, [tenant?.primary_color, isLoading]);
   useEffect(() => {
     setReservation(params.get("reserva") ?? params.get("id_reserva") ?? "");
-    setSent(false); setMessage(""); setPhone(""); setWhatsappAccepted(false);
+    setName(params.get("nome") ?? params.get("name") ?? "");
+    setSent(false); setMessage(""); setEmail(""); setPhone(""); setWhatsappAccepted(false);
   }, [params, slug]);
 
   async function submit(event: FormEvent) {
@@ -53,7 +56,7 @@ export default function GuestPhoneConfirmation() {
     if (locked.current) return;
     setMessage("");
     let payload;
-    try { payload = validateGuestPhone({ id_reserva: reservation, telefone: phone }); }
+    try { payload = validateGuestPhone({ id_reserva: reservation, telefone: phone, nome: name, email }); }
     catch (error) { setMessage(error instanceof Error ? error.message : "Verifique os dados."); return; }
     locked.current = true; setSending(true);
     try {
@@ -111,6 +114,16 @@ export default function GuestPhoneConfirmation() {
                 <Label htmlFor="reservation">ID da reserva</Label>
                 <Input id="reservation" value={reservation} onChange={event => setReservation(event.target.value)}
                   maxLength={100} autoComplete="off" required disabled={sending} className="guest-phone-input h-12" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="name">Nome completo</Label>
+                <Input id="name" value={name} onChange={event => setName(event.target.value)}
+                  maxLength={100} autoComplete="name" required disabled={sending} className="guest-phone-input h-12" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">E-mail</Label>
+                <Input id="email" type="email" value={email} onChange={event => setEmail(event.target.value)}
+                  maxLength={255} autoComplete="email" required disabled={sending} className="guest-phone-input h-12" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phone">Celular</Label>
