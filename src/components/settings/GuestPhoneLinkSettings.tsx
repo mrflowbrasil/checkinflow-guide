@@ -16,6 +16,7 @@ export function GuestPhoneLinkSettings({ slug }: { slug: string }) {
   const [saving, setSaving] = useState(false);
   const normalized = value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
   const url = `${window.location.origin}/g/${slug}/confirmar-celular`;
+  const example = `${url}?reserva=ABC123&nome=Maria%20Silva`;
   useEffect(() => { setValue(slug); }, [slug]);
   useEffect(() => {
     setCheck(null);
@@ -53,10 +54,10 @@ export function GuestPhoneLinkSettings({ slug }: { slug: string }) {
       </div>
       <p role="status" className="text-xs text-muted-foreground">{checking ? "Verificando disponibilidade…" : normalized === slug ? "Endereço atual" : check?.available ? `Disponível: ${normalized}` : check?.reason === "taken" ? "Este endereço já está em uso." : check?.reason === "reserved" ? "Este endereço é reservado." : "Use de 3 a 40 letras, números ou hífens."}</p>
     </div>
-    <p className="text-sm break-all">{url}?reserva=ABC123</p>
+    <p className="text-sm break-all">{example}</p>
     <div className="flex flex-wrap gap-2">
       <Button variant="outline" onClick={async () => { try { await navigator.clipboard.writeText(url); toast.success("Link copiado!"); } catch { toast.error("Não foi possível copiar o link."); } }}><Copy className="h-4 w-4" />Copiar link</Button>
-      <Button asChild variant="outline"><a href={`${url}?reserva=ABC123`} target="_blank" rel="noopener noreferrer"><ExternalLink className="h-4 w-4" />Visualizar exemplo</a></Button>
+      <Button asChild variant="outline"><a href={example} target="_blank" rel="noopener noreferrer"><ExternalLink className="h-4 w-4" />Visualizar exemplo</a></Button>
     </div>
     <p className="text-xs text-muted-foreground">O endereço é compartilhado com o Link da Bio. Ao alterá-lo, ambos são atualizados; os endereços anteriores continuam funcionando.</p>
   </Card>;
