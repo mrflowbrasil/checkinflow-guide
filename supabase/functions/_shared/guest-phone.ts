@@ -1,10 +1,23 @@
 export const GUEST_PHONE_WEBHOOK = "https://n8n.mrflow.com.br/webhook/confirmacelular";
 
-export function validateGuestPhone(input: { id_reserva: string; telefone: string; nome: string; email: string }) {
+// Standard Brazilian CPF check-digit validation (modulo 11).
+export function isValidCpf(rawCpf: string) {
+  const digits = rawCpf.replace(/\D/g, "");
+  if (digits.length !== 11 || /^(\d)\1{10}$/.test(digits)) return false;
+  let sum = 0;
+  for (let i = 0; i < 9; i++) sum += Number(digits[i]) * (10 - i);
+  if (((sum * 10) % 11) % 10 !== Number(digits[9])) return false;
+  sum = 0;
+  for (let i = 0; i < 10; i++) sum += Number(digits[i]) * (11 - i);
+  return ((sum * 10) % 11) % 10 === Number(digits[10]);
+}
+
+export function validateGuestPhone(input: { id_reserva: string; telefone: string; nome: string; email: string; cpf: string }) {
   const id_reserva = input.id_reserva.trim();
   const telefone = input.telefone.replace(/[\s().-]/g, "");
   const nome = input.nome.trim().replace(/\s+/g, " ");
   const email = input.email.trim().toLowerCase();
+  const cpf = input.cpf.replace(/\D/g, "");
   if (!/^[a-zA-Z0-9_-]{1,100}$/.test(id_reserva)) {
     throw new Error("Informe um ID de reserva válido.");
   }
@@ -14,10 +27,13 @@ export function validateGuestPhone(input: { id_reserva: string; telefone: string
   if (!/^[^\s@]{1,64}@[^\s@]{1,255}\.[^\s@]{2,}$/.test(email)) {
     throw new Error("Informe um e-mail válido.");
   }
+  if (!isValidCpf(cpf)) {
+    throw new Error("Informe um CPF válido.");
+  }
   if (!/^\+?[1-9]\d{7,14}$/.test(telefone)) {
     throw new Error("Informe um celular válido, com DDD e código do país.");
   }
-  return { id_reserva, telefone, nome, email };
+  return { id_reserva, telefone, nome, email, cpf };
 }
 
 export type GuestPhoneWebhookContext = {
@@ -31,7 +47,7 @@ export type GuestPhoneWebhookContext = {
 };
 
 export async function forwardGuestPhone(
-  data: { id_reserva: string; telefone: string; nome: string; email: string },
+  data: { id_reserva: string; telefone: string; nome: string; email: string; cpf: string },
   context: GuestPhoneWebhookContext,
   send: typeof fetch = fetch,
 ) {

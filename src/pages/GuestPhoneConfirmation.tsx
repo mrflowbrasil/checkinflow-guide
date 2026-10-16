@@ -17,6 +17,7 @@ export default function GuestPhoneConfirmation() {
   const [reservation, setReservation] = useState(() => params.get("reserva") ?? params.get("id_reserva") ?? "");
   const [name, setName] = useState(() => params.get("nome") ?? params.get("name") ?? "");
   const [email, setEmail] = useState("");
+  const [cpf, setCpf] = useState("");
   const [phone, setPhone] = useState("");
   const [whatsappAccepted, setWhatsappAccepted] = useState(false);
   const [sending, setSending] = useState(false);
@@ -48,7 +49,7 @@ export default function GuestPhoneConfirmation() {
   useEffect(() => {
     setReservation(params.get("reserva") ?? params.get("id_reserva") ?? "");
     setName(params.get("nome") ?? params.get("name") ?? "");
-    setSent(false); setMessage(""); setEmail(""); setPhone(""); setWhatsappAccepted(false);
+    setSent(false); setMessage(""); setEmail(""); setCpf(""); setPhone(""); setWhatsappAccepted(false);
   }, [params, slug]);
 
   async function submit(event: FormEvent) {
@@ -56,7 +57,7 @@ export default function GuestPhoneConfirmation() {
     if (locked.current) return;
     setMessage("");
     let payload;
-    try { payload = validateGuestPhone({ id_reserva: reservation, telefone: phone, nome: name, email }); }
+    try { payload = validateGuestPhone({ id_reserva: reservation, telefone: phone, nome: name, email, cpf }); }
     catch (error) { setMessage(error instanceof Error ? error.message : "Verifique os dados."); return; }
     locked.current = true; setSending(true);
     try {
@@ -119,6 +120,12 @@ export default function GuestPhoneConfirmation() {
                 <Label htmlFor="name">Nome completo</Label>
                 <Input id="name" value={name} onChange={event => setName(event.target.value)}
                   maxLength={100} autoComplete="name" required disabled={sending} className="guest-phone-input h-12" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="cpf">CPF</Label>
+                <Input id="cpf" inputMode="numeric" placeholder="000.000.000-00" value={cpf}
+                  onChange={event => setCpf(event.target.value)} maxLength={14} required disabled={sending}
+                  autoComplete="off" className="guest-phone-input h-12" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">E-mail</Label>

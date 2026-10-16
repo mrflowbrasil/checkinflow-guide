@@ -10,6 +10,7 @@ const schema = z.object({
   telefone: z.string().min(1).max(40),
   nome: z.string().min(1).max(100),
   email: z.string().min(1).max(255),
+  cpf: z.string().min(1).max(20),
 }).strict();
 // Bound per-instance throttling; never store phone numbers or reservation IDs.
 const attempts = new Map<string, { count: number; until: number }>();
