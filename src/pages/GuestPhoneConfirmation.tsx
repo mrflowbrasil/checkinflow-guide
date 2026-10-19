@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Seo } from "@/components/Seo";
-import { validateGuestPhone } from "../../supabase/functions/_shared/guest-phone";
+import { validateGuestPhone, validateHostPhone } from "../../supabase/functions/_shared/guest-phone";
 import { resolveGuestPhoneWorkspace } from "../../supabase/functions/_shared/guest-phone-workspace";
 import { DEFAULT_PHONE_COUNTRY, getCountries, getCountryCallingCode, normalizeGuestMobile, type CountryCode } from "../../supabase/functions/_shared/guest-phone-number";
 
@@ -20,7 +20,7 @@ const phoneCountries = getCountries().sort((a, b) => {
   return (countryNames.of(a) ?? a).localeCompare(countryNames.of(b) ?? b, "pt-BR");
 });
 
-export default function GuestPhoneConfirmation() {
+export default function GuestPhoneConfirmation({ host = false }: { host?: boolean }) {
   const { slug } = useParams<{ slug: string }>();
   const [params] = useSearchParams();
   const [reservation, setReservation] = useState(() => params.get("reserva") ?? params.get("id_reserva") ?? "");
@@ -68,7 +68,7 @@ export default function GuestPhoneConfirmation() {
     if (locked.current) return;
     setMessage("");
     let payload;
-    try { payload = validateGuestPhone({ id_reserva: reservation, telefone: normalizeGuestMobile(phone, phoneCountry), nome: name, email, cpf }); }
+    try { payload = host ? { ...validateHostPhone({ id_reserva: reservation, telefone: normalizeGuestMobile(phone, phoneCountry) }), origem: "anfitriao" } : validateGuestPhone({ id_reserva: reservation, telefone: normalizeGuestMobile(phone, phoneCountry), nome: name, email, cpf }); }
     catch (error) { setMessage(error instanceof Error ? error.message : "Verifique os dados."); return; }
     locked.current = true; setSending(true);
     try {
@@ -101,7 +101,7 @@ export default function GuestPhoneConfirmation() {
     <div ref={root} className={`guide-root guide-template-${tenant.template ?? "clean"} guest-phone-page min-h-screen`}
       data-btn-shape={tenant.button_shape ?? "rounded"} data-btn-border={tenant.button_border ?? "none"}>
       <Seo title={`Confirme seu celular | ${tenant.name}`} description="Confirme seu celular para receber informações sobre sua hospedagem."
-        path={`/g/${slug}/confirmar-celular`} noindex />
+        path={`/g/${slug}/${host ? "registrar-celular" : "confirmar-celular"}`} noindex />
       <main className="mx-auto w-full max-w-lg px-6 pb-12 pt-10 sm:pt-16">
         <header className="mb-10 flex flex-col items-center gap-4 text-center">
           <img src={tenant.logo_url || "/mrflow-logo.webp"} alt={tenant.logo_url ? tenant.name : "Mr Flow"} width={160} height={80} className="h-20 w-40 object-contain" />
@@ -110,23 +110,28 @@ export default function GuestPhoneConfirmation() {
         {sent ? (
           <section role="status" className="space-y-5 py-10 text-center">
             <CheckCircle2 className="mx-auto h-12 w-12" />
-            <h1 className="text-3xl font-semibold">Celular confirmado!</h1>
-            <p className="text-base leading-relaxed">Obrigado! Recebemos seu número para enviar as informações da sua hospedagem.</p>
+            <h1 className="text-3xl font-semibold">{host ? "Celular registrado!" : "Celular confirmado!"}</h1>
+            <p className="text-base leading-relaxed">{host ? "O celular do hóspede foi enviado com sucesso." : "Obrigado! Recebemos seu número para enviar as informações da sua hospedagem."}</p>
+            {host && <Button type="button" variant="outline" onClick={() => { setSent(false); setReservation(""); setPhone(""); setPhoneCountry(DEFAULT_PHONE_COUNTRY); }}>Registrar outro</Button>}
           </section>
         ) : (
           <>
-            <div className="space-y-5">
+            {host ? <div className="space-y-3">
+              <h1 className="text-3xl font-semibold leading-tight">Registrar celular do hóspede</h1>
+              <p className="text-base leading-relaxed">Informe o ID da reserva e o celular obtido com o hóspede.</p>
+            </div> : <div className="space-y-5">
               <p className="text-sm font-semibold uppercase">Aviso importante</p>
               <h1 className="text-3xl font-semibold leading-tight sm:text-4xl">Confirme seu celular para sua hospedagem</h1>
               <p className="text-base leading-relaxed">O número de celular pode não ser compartilhado pela Booking.com com a hospedagem. Para receber as informações da sua chegada, confirme seu contato abaixo.</p>
               <p className="text-sm leading-relaxed">Sua reserva continua válida. Esta confirmação é apenas para facilitar nossa comunicação.</p>
-            </div>
+            </div>}
             <form onSubmit={submit} className="mt-8 space-y-5" noValidate>
               <div className="space-y-2">
                 <Label htmlFor="reservation">ID da reserva</Label>
                 <Input id="reservation" value={reservation} onChange={event => setReservation(event.target.value)}
                   maxLength={100} autoComplete="off" required disabled={sending} className="guest-phone-input h-12" />
               </div>
+              {!host && <>
               <div className="space-y-2">
                 <Label htmlFor="name">Nome completo</Label>
                 <Input id="name" value={name} onChange={event => setName(event.target.value)}
@@ -143,6 +148,7 @@ export default function GuestPhoneConfirmation() {
                 <Input id="email" type="email" value={email} onChange={event => setEmail(event.target.value)}
                   maxLength={255} autoComplete="email" required disabled={sending} className="guest-phone-input h-12" />
               </div>
+              </>}
               <div className="space-y-2">
                 <Label htmlFor="phone">Celular</Label>
                 <div className="grid grid-cols-[minmax(0,145px)_minmax(0,1fr)] gap-2">
@@ -166,6 +172,7 @@ export default function GuestPhoneConfirmation() {
                 <p id="phone-note" className="text-xs leading-relaxed">{phoneCountry === "BR" ? "Informe o DDD e os 9 dígitos do celular." : "Informe o celular com o código de área."}</p>
               </div>
               {message && <p role="alert" className="text-sm font-medium">{message}</p>}
+              {!host && <>
               <div className="flex items-start gap-3">
                 <Checkbox id="whatsapp-accepted" checked={whatsappAccepted}
                   onCheckedChange={checked => setWhatsappAccepted(checked === true)} disabled={sending} className="mt-0.5 shrink-0" />
@@ -173,11 +180,12 @@ export default function GuestPhoneConfirmation() {
                   Aceito receber informações sobre minha reserva pelo WhatsApp
                 </Label>
               </div>
+              </>}
               <Button type="submit" disabled={sending} className="guide-cta-primary guest-phone-submit h-12 w-full text-base">
-                {sending ? <Loader2 className="animate-spin" /> : <Send />} {sending ? "Enviando…" : "Confirmar celular"}
+                {sending ? <Loader2 className="animate-spin" /> : <Send />} {sending ? "Enviando…" : host ? "Registrar celular" : "Confirmar celular"}
               </Button>
-              <p className="flex items-start gap-2 text-xs leading-relaxed"><ShieldCheck className="h-4 w-4 shrink-0" />
-                Ao enviar, você compartilha seu celular com a hospedagem para comunicações relacionadas à reserva.</p>
+              {!host &&               <p className="flex items-start gap-2 text-xs leading-relaxed"><ShieldCheck className="h-4 w-4 shrink-0" />
+                Ao enviar, você compartilha seu celular com a hospedagem para comunicações relacionadas à reserva.</p>}
             </form>
           </>
         )}

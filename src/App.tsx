@@ -128,6 +128,7 @@ const App = () => (
               <Route path="/invite/:token" element={<Invite />} />
               <Route path="/g/:slug" element={<GuestGuide />} />
               <Route path="/g/:slug/confirmar-celular" element={<GuestPhoneConfirmation />} />
+              <Route path="/g/:slug/registrar-celular" element={<GuestPhoneConfirmation host />} />
               <Route path="/c/:tenantSlug" element={<PublicCatalog />} />
               <Route path="/termos" element={<Terms />} />
               <Route path="/privacidade" element={<Privacy />} />

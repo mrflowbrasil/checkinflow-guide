@@ -1,16 +1,17 @@
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { z } from "npm:zod@3";
-import { forwardGuestPhone, validateGuestPhone } from "../_shared/guest-phone.ts";
+import { forwardGuestPhone, validateGuestPhone, validateHostPhone } from "../_shared/guest-phone.ts";
 import { resolveGuestPhoneWorkspace } from "../_shared/guest-phone-workspace.ts";
 
 const schema = z.object({
   slug: z.string().regex(/^[a-zA-Z0-9_-]{1,150}$/),
   id_reserva: z.string().min(1).max(100),
   telefone: z.string().min(1).max(40),
-  nome: z.string().min(1).max(100),
-  email: z.string().min(1).max(255),
-  cpf: z.string().min(1).max(20),
+  nome: z.string().min(1).max(100).optional(),
+  email: z.string().min(1).max(255).optional(),
+  cpf: z.string().min(1).max(20).optional(),
+  origem: z.enum(["hospede", "anfitriao"]).optional(),
 }).strict();
 // Bound per-instance throttling; never store phone numbers or reservation IDs.
 const attempts = new Map<string, { count: number; until: number }>();
@@ -27,7 +28,11 @@ Deno.serve(async (req) => {
     const parsed = schema.safeParse(JSON.parse(text));
     if (!parsed.success) return json({ error: "Verifique o ID da reserva e o celular." }, 400);
     let payload;
-    try { payload = validateGuestPhone(parsed.data); }
+    const origem = parsed.data.origem ?? "hospede";
+    try {
+      payload = origem === "anfitriao" ? validateHostPhone(parsed.data)
+        : validateGuestPhone({ ...parsed.data, nome: parsed.data.nome ?? "", email: parsed.data.email ?? "", cpf: parsed.data.cpf ?? "" });
+    }
     catch (error) { return json({ error: error instanceof Error ? error.message : "Dados inválidos." }, 400); }
     const now = Date.now();
     for (const [key, value] of attempts) if (value.until <= now) attempts.delete(key);
@@ -64,7 +69,7 @@ Deno.serve(async (req) => {
       tenant_id: tenant.id,
       tenant_name: tenant.name,
       integration,
-    }));
+    }, fetch, origem));
   } catch {
     return json({ error: "Não foi possível enviar agora. Tente novamente." }, 502);
   }
