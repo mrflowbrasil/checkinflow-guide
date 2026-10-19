@@ -1,8 +1,39 @@
 import { describe, expect, it, vi } from "vitest";
 import { forwardGuestPhone, validateGuestPhone } from "../../supabase/functions/_shared/guest-phone";
 import { resolveGuestPhoneWorkspace } from "../../supabase/functions/_shared/guest-phone-workspace";
+import { DEFAULT_PHONE_COUNTRY, normalizeGuestMobile } from "../../supabase/functions/_shared/guest-phone-number";
 
 describe("confirmação de celular", () => {
+  it("usa Brasil como país padrão", () => {
+    expect(DEFAULT_PHONE_COUNTRY).toBe("BR");
+  });
+  it("normaliza DDD e celular brasileiro para o formato exigido no webhook", () => {
+    expect(normalizeGuestMobile("(21) 99882-0088", "BR")).toBe("+5521998820088");
+    expect(normalizeGuestMobile("+55 (21) 99882-0088", "BR")).toBe("+5521998820088");
+  });
+  it("obriga a informar o celular", () => {
+    expect(() => normalizeGuestMobile("", "BR")).toThrow("Informe seu número de celular.");
+  });
+  it("recusa celular brasileiro incompleto ou sem DDD", () => {
+    for (const value of ["2199882008", "998820088", "123", "219988200888"]) {
+      expect(() => normalizeGuestMobile(value, "BR")).toThrow();
+    }
+  });
+  it("recusa telefone fixo brasileiro", () => {
+    expect(() => normalizeGuestMobile("2122220088", "BR")).toThrow();
+  });
+  it("valida celular estrangeiro pelo país selecionado", () => {
+    expect(normalizeGuestMobile("912345678", "PT")).toBe("+351912345678");
+    expect(() => normalizeGuestMobile("+351912345678", "BR")).toThrow();
+  });
+  it("exige DDI no payload validado no servidor", () => {
+    expect(() => validateGuestPhone({ ...payload, telefone: "21998820088" })).toThrow();
+  });
+  it("envia o celular no webhook como +5521998820088", async () => {
+    const send = vi.fn().mockResolvedValue(new Response(null, { status: 200 }));
+    await forwardGuestPhone({ ...payload, telefone: "+55 (21) 99882-0088" }, context, send);
+    expect(JSON.parse(send.mock.calls[0][1].body).telefone).toBe("+5521998820088");
+  });
   const context = {
     tenant_id: "workspace-abmnb", tenant_name: "ABMnb",
     integration: {

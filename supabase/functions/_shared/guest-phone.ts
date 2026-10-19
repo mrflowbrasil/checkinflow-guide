@@ -1,3 +1,5 @@
+import { normalizeGuestMobile } from "./guest-phone-number.ts";
+
 export const GUEST_PHONE_WEBHOOK = "https://n8n.mrflow.com.br/webhook/confirmacelular";
 
 // Standard Brazilian CPF check-digit validation (modulo 11).
@@ -14,7 +16,7 @@ export function isValidCpf(rawCpf: string) {
 
 export function validateGuestPhone(input: { id_reserva: string; telefone: string; nome: string; email: string; cpf: string }) {
   const id_reserva = input.id_reserva.trim();
-  const telefone = input.telefone.replace(/[\s().-]/g, "");
+  const telefone = normalizeGuestMobile(input.telefone);
   const nome = input.nome.trim().replace(/\s+/g, " ");
   const email = input.email.trim().toLowerCase();
   const cpf = input.cpf.replace(/\D/g, "");
@@ -29,9 +31,6 @@ export function validateGuestPhone(input: { id_reserva: string; telefone: string
   }
   if (!isValidCpf(cpf)) {
     throw new Error("Informe um CPF válido.");
-  }
-  if (!/^\+?[1-9]\d{7,14}$/.test(telefone)) {
-    throw new Error("Informe um celular válido, com DDD e código do país.");
   }
   return { id_reserva, telefone, nome, email, cpf };
 }
