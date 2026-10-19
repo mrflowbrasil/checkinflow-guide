@@ -7,9 +7,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Seo } from "@/components/Seo";
 import { validateGuestPhone } from "../../supabase/functions/_shared/guest-phone";
 import { resolveGuestPhoneWorkspace } from "../../supabase/functions/_shared/guest-phone-workspace";
+import { DEFAULT_PHONE_COUNTRY, getCountries, getCountryCallingCode, normalizeGuestMobile, type CountryCode } from "../../supabase/functions/_shared/guest-phone-number";
+
+const countryNames = new Intl.DisplayNames(["pt-BR"], { type: "region" });
+const phoneCountries = getCountries().sort((a, b) => {
+  if (a === DEFAULT_PHONE_COUNTRY) return -1;
+  if (b === DEFAULT_PHONE_COUNTRY) return 1;
+  return (countryNames.of(a) ?? a).localeCompare(countryNames.of(b) ?? b, "pt-BR");
+});
 
 export default function GuestPhoneConfirmation() {
   const { slug } = useParams<{ slug: string }>();
@@ -19,6 +28,7 @@ export default function GuestPhoneConfirmation() {
   const [email, setEmail] = useState("");
   const [cpf, setCpf] = useState("");
   const [phone, setPhone] = useState("");
+  const [phoneCountry, setPhoneCountry] = useState<CountryCode>(DEFAULT_PHONE_COUNTRY);
   const [whatsappAccepted, setWhatsappAccepted] = useState(false);
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
@@ -50,6 +60,7 @@ export default function GuestPhoneConfirmation() {
     setReservation(params.get("reserva") ?? params.get("id_reserva") ?? "");
     setName(params.get("nome") ?? params.get("name") ?? "");
     setSent(false); setMessage(""); setEmail(""); setCpf(""); setPhone(""); setWhatsappAccepted(false);
+    setPhoneCountry(DEFAULT_PHONE_COUNTRY);
   }, [params, slug]);
 
   async function submit(event: FormEvent) {
@@ -57,7 +68,7 @@ export default function GuestPhoneConfirmation() {
     if (locked.current) return;
     setMessage("");
     let payload;
-    try { payload = validateGuestPhone({ id_reserva: reservation, telefone: phone, nome: name, email, cpf }); }
+    try { payload = validateGuestPhone({ id_reserva: reservation, telefone: normalizeGuestMobile(phone, phoneCountry), nome: name, email, cpf }); }
     catch (error) { setMessage(error instanceof Error ? error.message : "Verifique os dados."); return; }
     locked.current = true; setSending(true);
     try {
@@ -134,10 +145,25 @@ export default function GuestPhoneConfirmation() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phone">Celular</Label>
-                <Input id="phone" type="tel" autoComplete="tel" inputMode="tel" placeholder="+55 (11) 99999-9999"
-                  value={phone} onChange={event => setPhone(event.target.value)} maxLength={40} required disabled={sending}
-                  aria-describedby="phone-note" className="guest-phone-input h-12" />
-                <p id="phone-note" className="text-xs leading-relaxed">Inclua o código do país e o DDD.</p>
+                <div className="grid grid-cols-[minmax(0,145px)_minmax(0,1fr)] gap-2">
+                  <Select value={phoneCountry} onValueChange={value => {
+                    if (phoneCountries.includes(value as CountryCode)) setPhoneCountry(value as CountryCode);
+                    setMessage("");
+                  }} disabled={sending}>
+                    <SelectTrigger aria-label="País e DDI" className="guest-phone-input h-12 min-w-0">
+                      <SelectValue>{phoneCountry} +{getCountryCallingCode(phoneCountry)}</SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {phoneCountries.map(country => <SelectItem key={country} value={country}>
+                        {countryNames.of(country) ?? country} (+{getCountryCallingCode(country)})
+                      </SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                  <Input id="phone" type="tel" autoComplete="tel-national" inputMode="tel" placeholder={phoneCountry === "BR" ? "(21) 99882-0088" : "Número de celular"}
+                    value={phone} onChange={event => setPhone(event.target.value)} maxLength={40} required disabled={sending}
+                    aria-describedby="phone-note" className="guest-phone-input h-12 min-w-0" />
+                </div>
+                <p id="phone-note" className="text-xs leading-relaxed">{phoneCountry === "BR" ? "Informe o DDD e os 9 dígitos do celular." : "Informe o celular com o código de área."}</p>
               </div>
               {message && <p role="alert" className="text-sm font-medium">{message}</p>}
               <div className="flex items-start gap-3">
