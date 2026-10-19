@@ -17,6 +17,7 @@ export function GuestPhoneLinkSettings({ slug }: { slug: string }) {
   const normalized = value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
   const url = `${window.location.origin}/g/${slug}/confirmar-celular`;
   const example = `${url}?reserva=ABC123&nome=Maria%20Silva`;
+  const hostUrl = `${window.location.origin}/g/${slug}/registrar-celular`;
   useEffect(() => { setValue(slug); }, [slug]);
   useEffect(() => {
     setCheck(null);
@@ -58,6 +59,14 @@ export function GuestPhoneLinkSettings({ slug }: { slug: string }) {
     <div className="flex flex-wrap gap-2">
       <Button variant="outline" onClick={async () => { try { await navigator.clipboard.writeText(url); toast.success("Link copiado!"); } catch { toast.error("Não foi possível copiar o link."); } }}><Copy className="h-4 w-4" />Copiar link</Button>
       <Button asChild variant="outline"><a href={example} target="_blank" rel="noopener noreferrer"><ExternalLink className="h-4 w-4" />Visualizar exemplo</a></Button>
+    </div>
+    <div className="space-y-2 border-t pt-4">
+      <p className="text-sm font-medium">Página do anfitrião (registro manual)</p>
+      <p className="text-sm break-all">{hostUrl}</p>
+      <div className="flex flex-wrap gap-2">
+        <Button variant="outline" onClick={async () => { try { await navigator.clipboard.writeText(hostUrl); toast.success("Link copiado!"); } catch { toast.error("Não foi possível copiar o link."); } }}><Copy className="h-4 w-4" />Copiar link</Button>
+        <Button asChild variant="outline"><a href={hostUrl} target="_blank" rel="noopener noreferrer"><ExternalLink className="h-4 w-4" />Abrir página</a></Button>
+      </div>
     </div>
     <p className="text-xs text-muted-foreground">O endereço é compartilhado com o Link da Bio. Ao alterá-lo, ambos são atualizados; os endereços anteriores continuam funcionando.</p>
   </Card>;
