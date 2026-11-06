@@ -46,6 +46,7 @@ export type GuestPhoneWebhookContext = {
   tenant_id: string;
   tenant_name: string;
   integration: {
+    provider?: string;
     system_url: string;
     public_site_url: string | null;
     credentials_encrypted: string | null;
@@ -65,7 +66,7 @@ export async function forwardGuestPhone(
     origem,
     tenant_id: context.tenant_id,
     tenant_name: context.tenant_name,
-    integration_provider: context.integration ? "stays" : null,
+    integration_provider: context.integration ? (context.integration.provider ?? "stays") : null,
     system_url: context.integration?.system_url ?? null,
     public_site_url: context.integration?.public_site_url ?? null,
     // Already stored as Base64(login:password) by integrations-connect.
