@@ -57,14 +57,21 @@ Deno.serve(async (req) => {
       return data?.tenant_id ?? null;
     });
     if (!tenant) return json({ error: "Hospedagem não encontrada." }, 404);
-    // Privileged access is limited to Stays credentials for the resolved active workspace.
+    // Privileged access is limited to Stays/Hostaway credentials for the resolved active workspace.
     // Neither credentials nor upstream response bodies are returned to the guest.
     const admin = createClient(url, serviceKey, { auth: { persistSession: false } });
-    const { data: integration, error: integrationError } = await admin
+    // Supports any reservations provider (Stays or Hostaway); prefer a connected one.
+    const { data: integrations, error: integrationError } = await admin
       .from("tenant_integrations")
-      .select("system_url, public_site_url, credentials_encrypted")
-      .eq("tenant_id", tenant.id).eq("provider", "stays").maybeSingle();
+      .select("provider, status, system_url, public_site_url, credentials_encrypted, updated_at")
+      .eq("tenant_id", tenant.id).in("provider", ["stays", "hostaway"])
+      .order("updated_at", { ascending: false });
     if (integrationError) throw integrationError;
+    const picked = (integrations ?? []).find((i) => i.status === "connected") ?? integrations?.[0] ?? null;
+    const integration = picked ? {
+      provider: picked.provider, system_url: picked.system_url ?? "",
+      public_site_url: picked.public_site_url, credentials_encrypted: picked.credentials_encrypted,
+    } : null;
     return json(await forwardGuestPhone(payload, {
       tenant_id: tenant.id,
       tenant_name: tenant.name,
