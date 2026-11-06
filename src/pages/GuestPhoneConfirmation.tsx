@@ -165,7 +165,7 @@ export default function GuestPhoneConfirmation({ host = false }: { host?: boolea
                       </SelectItem>)}
                     </SelectContent>
                   </Select>
-                  <Input id="phone" type="tel" autoComplete="tel-national" inputMode="tel" placeholder={phoneCountry === "BR" ? "(21) 99882-0088" : "Número de celular"}
+                  <Input id="phone" type="tel" autoComplete="tel-national" inputMode="tel" placeholder={phoneCountry === "BR" ? "(11) 99999-9999" : "Número de celular"}
                     value={phone} onChange={event => setPhone(event.target.value)} maxLength={40} required disabled={sending}
                     aria-describedby="phone-note" className="guest-phone-input h-12 min-w-0" />
                 </div>

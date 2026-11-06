@@ -8,14 +8,14 @@ describe("confirmação de celular", () => {
     expect(DEFAULT_PHONE_COUNTRY).toBe("BR");
   });
   it("normaliza DDD e celular brasileiro para o formato exigido no webhook", () => {
-    expect(normalizeGuestMobile("(21) 99882-0088", "BR")).toBe("+5521998820088");
-    expect(normalizeGuestMobile("+55 (21) 99882-0088", "BR")).toBe("+5521998820088");
+    expect(normalizeGuestMobile("(11) 99999-9999", "BR")).toBe("+5511999999999");
+    expect(normalizeGuestMobile("+55 (11) 99999-9999", "BR")).toBe("+5511999999999");
   });
   it("obriga a informar o celular", () => {
     expect(() => normalizeGuestMobile("", "BR")).toThrow("Informe seu número de celular.");
   });
   it("recusa celular brasileiro incompleto ou sem DDD", () => {
-    for (const value of ["2199882008", "998820088", "123", "219988200888"]) {
+    for (const value of ["1199999999", "999999999", "123", "119999999999"]) {
       expect(() => normalizeGuestMobile(value, "BR")).toThrow();
     }
   });
@@ -27,12 +27,12 @@ describe("confirmação de celular", () => {
     expect(() => normalizeGuestMobile("+351912345678", "BR")).toThrow();
   });
   it("exige DDI no payload validado no servidor", () => {
-    expect(() => validateGuestPhone({ ...payload, telefone: "21998820088" })).toThrow();
+    expect(() => validateGuestPhone({ ...payload, telefone: "11999999999" })).toThrow();
   });
-  it("envia o celular no webhook como +5521998820088", async () => {
+  it("envia o celular no webhook como +5511999999999", async () => {
     const send = vi.fn().mockResolvedValue(new Response(null, { status: 200 }));
-    await forwardGuestPhone({ ...payload, telefone: "+55 (21) 99882-0088" }, context, send);
-    expect(JSON.parse(send.mock.calls[0][1].body).telefone).toBe("+5521998820088");
+    await forwardGuestPhone({ ...payload, telefone: "+55 (11) 99999-9999" }, context, send);
+    expect(JSON.parse(send.mock.calls[0][1].body).telefone).toBe("+5511999999999");
   });
   const context = {
     tenant_id: "workspace-abmnb", tenant_name: "ABMnb",
