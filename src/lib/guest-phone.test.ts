@@ -67,6 +67,7 @@ describe("confirmação de celular", () => {
       method: "POST", body: JSON.stringify({
         id_reserva: "ABC123", telefone: "+5511999999999", nome: "Maria Silva", email: "maria@exemplo.com",
         cpf: "12345678909",
+        origem: "hospede",
         tenant_id: "workspace-abmnb", tenant_name: "ABMnb", integration_provider: "stays",
         system_url: "https://example.stays.net", public_site_url: "https://example.com",
         authorization: "Basic dGVzdC11c2VyOnRlc3QtcGFzc3dvcmQ=",
