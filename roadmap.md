@@ -7,3 +7,11 @@
 - [x] Confirmar aceitação do webhook no reenvio do teste.
 - [x] Usar slug do workspace na página e no envio.
 - [x] Adicionar configuração do endereço e validar o fluxo em sessão autenticada e envio real por abmnb.
+
+# Rotina de senhas
+
+- [x] Alterar process-lock-code-schedules para execução a cada hora e verificar a configuração salva.
+
+# Conta de anúncios
+
+- [ ] Conectar a conta de anúncios (aguarda autorização do usuário; tentativa anterior interrompida).
